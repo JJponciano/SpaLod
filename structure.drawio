@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-09-01T14:31:20.934Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" etag="vjPROEWQlAtiuWVeICx1" version="15.0.4" type="github">
+<mxfile host="app.diagrams.net" modified="2021-09-01T14:52:35.683Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" etag="GPazld68KzUpkiqOm6zy" version="15.0.4" type="github">
   <diagram id="kHqexBjPhEpHhAyhCyUR" name="Page-1">
     <mxGraphModel dx="2048" dy="726" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -37,7 +37,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="MG3up2Yn2TR1iBBidIfu-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-5">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="248" y="320" as="targetPoint" />
             <mxPoint x="528" y="100" as="sourcePoint" />
@@ -144,7 +144,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-35" value="DBpedia Voc" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
-          <mxGeometry x="133" y="320" width="41" height="49" as="geometry" />
+          <mxGeometry x="150" y="320" width="41" height="49" as="geometry" />
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-49" value="Enrichment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;fillColor=#6a00ff;strokeColor=#3700CC;exitX=0.07;exitY=0.4;exitDx=0;exitDy=0;exitPerimeter=0;strokeWidth=2;fontColor=#7F00FF;labelBorderColor=none;labelBackgroundColor=#FFFFFF;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-8" target="MG3up2Yn2TR1iBBidIfu-67">
           <mxGeometry relative="1" as="geometry">
