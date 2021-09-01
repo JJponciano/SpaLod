@@ -1,11 +1,11 @@
-<mxfile host="app.diagrams.net" modified="2021-09-01T12:55:49.614Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" etag="olv0QltVQQ6DM6RXV4-F" version="15.0.4" type="github">
+<mxfile host="app.diagrams.net" modified="2021-09-01T12:59:17.020Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" etag="KGbZsbpc5xxgDw2sf0J9" version="15.0.4" type="github">
   <diagram id="kHqexBjPhEpHhAyhCyUR" name="Page-1">
     <mxGraphModel dx="1865" dy="617" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="MG3up2Yn2TR1iBBidIfu-48" value="Universal Spatial Knowledge base" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;verticalAlign=top;" vertex="1" parent="1">
-          <mxGeometry x="236" y="620" width="344" height="210" as="geometry" />
+          <mxGeometry x="216" y="620" width="344" height="210" as="geometry" />
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-13" value="" style="group" vertex="1" connectable="0" parent="1">
           <mxGeometry x="-20" y="40" width="270" height="190" as="geometry" />
@@ -185,7 +185,22 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-38" value="Vocabulaire Universal&lt;br&gt;" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=#b85450;fillColor=#f8cecc;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
-          <mxGeometry x="280" y="720" width="41" height="49" as="geometry" />
+          <mxGeometry x="280" y="710" width="60" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-55" value="TBox" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="290" y="729.5" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-56" value="Knowledge" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn2.iconfinder.com/data/icons/picol-vector/32/rdf-128.png" vertex="1" parent="1">
+          <mxGeometry x="422" y="699.5" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-57" value="&lt;span style=&quot;color: rgb(0 , 0 , 0) ; font-family: &amp;#34;helvetica&amp;#34; ; font-size: 12px ; font-style: normal ; font-weight: 400 ; letter-spacing: normal ; text-align: center ; text-indent: 0px ; text-transform: none ; word-spacing: 0px ; background-color: rgb(248 , 249 , 250) ; display: inline ; float: none&quot;&gt;ABox&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="452" y="724.5" width="50" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-58" value="Expresses" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-38" target="MG3up2Yn2TR1iBBidIfu-56">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="350" y="710" as="sourcePoint" />
+            <mxPoint x="400" y="660" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
