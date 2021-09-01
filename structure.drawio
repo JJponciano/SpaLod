@@ -1,9 +1,12 @@
-<mxfile host="app.diagrams.net" modified="2021-09-01T12:59:17.020Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" etag="KGbZsbpc5xxgDw2sf0J9" version="15.0.4" type="github">
+<mxfile host="app.diagrams.net" modified="2021-09-01T13:07:24.666Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" etag="O2qLC48S3AXRixDq2o8A" version="15.0.4" type="github">
   <diagram id="kHqexBjPhEpHhAyhCyUR" name="Page-1">
     <mxGraphModel dx="1865" dy="617" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-48" target="MG3up2Yn2TR1iBBidIfu-61">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-48" value="Universal Spatial Knowledge base" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;verticalAlign=top;" vertex="1" parent="1">
           <mxGeometry x="216" y="620" width="344" height="210" as="geometry" />
         </mxCell>
@@ -37,14 +40,13 @@
         <mxCell id="MG3up2Yn2TR1iBBidIfu-7" value="KML" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="MG3up2Yn2TR1iBBidIfu-16">
           <mxGeometry x="150" y="140" width="80" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="MG3up2Yn2TR1iBBidIfu-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-1">
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-1" target="MG3up2Yn2TR1iBBidIfu-34">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="90" y="320" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="MG3up2Yn2TR1iBBidIfu-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-2">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="160" y="320" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="77" y="280" />
+              <mxPoint x="77" y="280" />
+            </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
@@ -98,7 +100,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="MG3up2Yn2TR1iBBidIfu-26" value="Vocabulaire 1" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-26" value="Voc1" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
           <mxGeometry x="228" y="320" width="41" height="49" as="geometry" />
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-29" target="MG3up2Yn2TR1iBBidIfu-38">
@@ -109,7 +111,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="MG3up2Yn2TR1iBBidIfu-29" value="Vocabulaire 2" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-29" value="Voc2" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
           <mxGeometry x="300" y="320" width="41" height="49" as="geometry" />
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-30" target="MG3up2Yn2TR1iBBidIfu-38">
@@ -121,7 +123,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="MG3up2Yn2TR1iBBidIfu-30" value="Vocabulaire 3" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-30" value="Voc3" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
           <mxGeometry x="384" y="320" width="41" height="49" as="geometry" />
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-31" target="MG3up2Yn2TR1iBBidIfu-38">
@@ -132,7 +134,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="MG3up2Yn2TR1iBBidIfu-31" value="Vocabulaire 4" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-31" value="Voc4" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
           <mxGeometry x="461" y="320" width="41" height="49" as="geometry" />
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-34" target="MG3up2Yn2TR1iBBidIfu-38">
@@ -155,7 +157,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-35" value="DBpedia Voc" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.book_journal;" vertex="1" parent="1">
-          <mxGeometry x="140" y="320" width="41" height="49" as="geometry" />
+          <mxGeometry x="133" y="320" width="41" height="49" as="geometry" />
         </mxCell>
         <mxCell id="MG3up2Yn2TR1iBBidIfu-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;exitX=0.07;exitY=0.4;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-8" target="MG3up2Yn2TR1iBBidIfu-48">
           <mxGeometry relative="1" as="geometry">
@@ -201,6 +203,26 @@
             <mxPoint x="350" y="710" as="sourcePoint" />
             <mxPoint x="400" y="660" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-60" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-2" target="MG3up2Yn2TR1iBBidIfu-35">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-61" value="SPARQL-end point" style="shape=umlState;rounded=1;verticalAlign=middle;align=center;absoluteArcSize=1;arcSize=10;umlStateConnection=connPointRefEntry;boundedLbl=1;" vertex="1" parent="1">
+          <mxGeometry x="411.5" y="880" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-65" target="MG3up2Yn2TR1iBBidIfu-61">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-65" value="QGIS" style="aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.azure.computer" vertex="1" parent="1">
+          <mxGeometry x="650" y="882.5" width="50" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" edge="1" parent="1" source="MG3up2Yn2TR1iBBidIfu-67">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="487" y="930" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MG3up2Yn2TR1iBBidIfu-67" value="Web interface" style="aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.azure.computer" vertex="1" parent="1">
+          <mxGeometry x="451.99999999999994" y="970" width="69.44" height="62.5" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
