@@ -1,1 +1,88 @@
-<mxfile host="app.diagrams.net" modified="2021-09-20T09:03:27.716Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15" version="15.2.9" etag="xK-jVRDoNGFWjXazr3gO" type="github"><diagram id="ugJbxVFwD4lHUtUxqI62">UzV2zq1wL0osyPDNT0nNUTV2VTV2LsrPL4GwciucU3NyVI0MMlNUjV1UjYwMgFjVyA2HrCFY1qAgsSg1rwSLBiADYTaQg2Y1AA==</diagram></mxfile>
+<mxfile host="app.diagrams.net" modified="2021-09-20T09:21:02.316Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15" etag="GmNOBwsjhTLqs5Lxj01t" version="15.2.9" type="github">
+  <diagram id="ugJbxVFwD4lHUtUxqI62" name="Page-1">
+    <mxGraphModel dx="1852" dy="741" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="q807mVVGihyvrkogR0lC-17" value="Working data" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=none;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="210" y="320" width="160" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-1" value="IA" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="10" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-2" value="Machine Learning/ Deep Learning" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="150" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-3" value="Knowledge-based" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="150" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-4" value="" style="endArrow=none;html=1;" edge="1" parent="1" source="q807mVVGihyvrkogR0lC-2" target="q807mVVGihyvrkogR0lC-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="450" as="sourcePoint" />
+            <mxPoint x="160" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-5" value="" style="endArrow=none;html=1;" edge="1" parent="1" source="q807mVVGihyvrkogR0lC-3" target="q807mVVGihyvrkogR0lC-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="180" y="170" as="sourcePoint" />
+            <mxPoint x="320" y="100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-6" value="Pattern recognition" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-7" value="" style="endArrow=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="q807mVVGihyvrkogR0lC-6" target="q807mVVGihyvrkogR0lC-2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="370" as="sourcePoint" />
+            <mxPoint x="210" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-8" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn3.iconfinder.com/data/icons/lined-office-1/64/Artboard_23-128.png" vertex="1" parent="1">
+          <mxGeometry x="-76.5" y="406" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-9" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn2.iconfinder.com/data/icons/architecture-interior/24/architecture-interior-24-128.png" vertex="1" parent="1">
+          <mxGeometry x="-120" y="351" width="49" height="49" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-10" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn2.iconfinder.com/data/icons/home-sweet-home-4/320/chair-128.png" vertex="1" parent="1">
+          <mxGeometry x="-114.5" y="406" width="38" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-11" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn3.iconfinder.com/data/icons/delta/128/Chair.png;imageBorder=#FF6666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="294" y="349" width="76" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-12" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn4.iconfinder.com/data/icons/education-and-school-glyph-24-px/24/Classroom_chair_computer_desk_student_chair_student_desk_university_desk-128.png" vertex="1" parent="1">
+          <mxGeometry x="-68" y="352" width="48" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-13" value="Training data" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=none;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="-124" y="320" width="160" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-15" value="Chair" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-20" y="415" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-16" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1" source="q807mVVGihyvrkogR0lC-13" target="q807mVVGihyvrkogR0lC-6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="320" as="sourcePoint" />
+            <mxPoint x="410" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-18" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1" source="q807mVVGihyvrkogR0lC-17" target="q807mVVGihyvrkogR0lC-6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="320" as="sourcePoint" />
+            <mxPoint x="410" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-19" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn3.iconfinder.com/data/icons/lined-office-1/64/Artboard_23-128.png;fillColor=none;imageBorder=#00CC00;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="220" y="415" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-20" value="Why?" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="70" y="373.5" width="80" height="53" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-21" value="Quality depends on the similarities between training data and working data&amp;nbsp;" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-124" y="490" width="494" height="53" as="geometry" />
+        </mxCell>
+        <mxCell id="q807mVVGihyvrkogR0lC-22" value="pointnet++" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="210" y="170" width="40" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
