@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-09-20T09:39:34.815Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15" etag="d69zXWxsUWH21OMpmLTg" version="15.2.9" type="github">
+<mxfile host="app.diagrams.net" modified="2021-09-20T09:53:27.033Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15" etag="GyMG2EfG9UMRGWGmponQ" version="15.2.9" type="github">
   <diagram id="ugJbxVFwD4lHUtUxqI62" name="Page-1">
     <mxGraphModel dx="1852" dy="741" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -122,7 +122,7 @@
           <mxGeometry x="845" y="620" width="190" height="53" as="geometry" />
         </mxCell>
         <mxCell id="q807mVVGihyvrkogR0lC-37" value="Recognition as a Riddle" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="810" y="680" width="300" height="26" as="geometry" />
+          <mxGeometry x="840" y="680" width="200" height="26" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
