@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2020 Dr Jean-Jacques Ponciano <jean-jacques@ponciano.info>.
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA 02110-1301  USA
+-->
+<html>
+    <head>
+        <title>title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div th:fragment="navbar">
+            <div id="topnavbar" class="topnav">
+                <div id="innernavBar">
+                </div>
+            </div>
+            <script  type='text/javascript'>
+
+                /*Variable to give*/
+                //
+                // var contentNav = [ ' <a href="/home/">Semantic Segmentation</a>', '<a href=" /home/publication">Scientific Publications</a>', ' <a href="/home/info">Information</a> ', '<a class="active" href="/home/processing">Process my point clouds</a>']
+                var elements =  [ ' <a href="/home/">Semantic Segmentation</a>', '<a href=" /home/publication">Scientific Publications</a>', ' <a href="/home/info">Information</a> ', '<a class="active" href="/home/processing">Process my point clouds</a>'];
+        var navContentClose = '<span id="openspan" onclick="openNav()">&#9776;</span>  ';
+
+
+        // change the content of the nav according to the screen size
+        var resizeFn = function () {
+                        document.getElementById("innernavBar").innerHTML = "";
+                if (window.screen.width > 768) {
+
+                    elements.forEach(element => {
+
+                        var newA = document.createElement("a");
+                        newA.href = element.link;
+                        newA.innerHTML = element.value;
+                        if (element.active == "true") {
+                            newA.className = "active";
+                        }
+                        document.getElementById("innernavBar").appendChild(newA);
+                    });
+                } else {
+                        document.getElementById("innernavBar").innerHTML = navContentClose;
+                    }
+
+                }
+            
+        
+        
+        
+        
+                function openNav() {
+                            document.getElementById("topnavbar").className = "overlaynav";
+                    var navContentOver = '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a> ';
+                    /**/
+                    var innerbar = document.getElementById("innernavBar");
+                    innerbar.innerHTML = navContentOver;
+                    elements.forEach(element => {
+                        var newA = document.createElement("a");
+                        newA.href = element.link;
+                        newA.innerHTML = element.value;
+                        if (element.active == "true") {
+                                newA.className = "active";
+                        }
+                        innerbar.appendChild(newA);
+                        var hr = document.createElement("hr");
+                        hr.className = "major";
+                        innerbar.appendChild(hr);
+                    });
+                    /**/
+                        }
+            
+                
+                
+                
+                
+                    function closeNav() {
+                            document.getElementById("topnavbar").className = "topnav";
+                    resizeFn();
+                    }
+            
+        
+        
+        
+                window.addEventListener('load', resizeFn());
+                            window.addEventListener('resize', resizeFn);
+            </script>
+        </div>
+    </body>
+</html>

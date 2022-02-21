@@ -1,0 +1,44 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+	<span id="loginspan"></span>
+<div id="logindialog" title="Login">
+  <p class="validateTips">All form fields are required.</p>
+ 
+  <form>
+    <fieldset>
+      <label for="username">Username:</label>
+      <input type="text" name="username" id="username" value="" class="text ui-widget-content ui-corner-all"><br/>
+      <label for="password">Password:</label>
+      <input type="text" name="password" id="password" value="" class="text ui-widget-content ui-corner-all">
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    </fieldset>
+  </form>
+</div>
+<div id="header">
+<header>
+<h1 id="servicetitle" align="center">SemanticWFS Configurations</h1>
+</header>
+</div>
+<div class="sticky row crumbs"><div class="col-sm-12 col-md-10 col-md-offset-1"><a href="../">Landingpage</a> / <a href="#">Semantic WFS Configuration</a></div></div><br/>
+<div class="container-fluid" role="main">
+  <div class="row">
+  <div class="col-sm-12">
+  Choose one of the following options to configure:
+  <ul>
+  <li><a href="featuretypeconfig.html">Configure Feature Types</a></li>
+  <li><a href="triplestoreconfig.html">Configure Triple Stores</a></li>
+  <li><a href="addfeaturetype.html">Add FeatureTypes from Ontology sources</a></li>
+  </ul>
+  </div></div></div>
+<div id="footer">
+<a href="../">Back to LandingPage</a>
+</div>
+<script src="js/utils.js"></script>
+</body>
+</html>

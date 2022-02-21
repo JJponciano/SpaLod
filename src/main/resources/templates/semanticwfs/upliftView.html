@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head th:replace="fragments/head :: head">
+    <title>Getting Started: Serving Web Content</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+    <body>
+        <script  type='text/javascript'>
+            var elements = [
+                {link: "/home", value: "Home", active: "true"},
+                {link: "/metadata", value: "Metadata", active: "false"},
+                {link: "/metadata/uplift", value: "Metadata uplift", active: "false"}];
+        </script>
+        <header id="header">
+            <div th:insert="fragments/nav :: navbar"></div>
+            <h1>Metadata uplift</h1>
+        </header>
+        
+        <!--  <form th:action="@{/metadata/uplift}" method="post">
+            <input type="submit" value="Metadata uplift"/>
+        </form>
+        -->
+        <div th:if="${message}">
+		<h2 th:text="${message}"/>
+	</div>
+
+	<div>
+		 <!--  <form method="POST" enctype="multipart/form-data" action="/metadata/uplift">-->
+                 <form th:action="@{/metadata/uplift}" method="post" enctype="multipart/form-data">
+			<table>
+				<tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
+				<tr><td></td><td><input type="submit" value="Upload" /></td></tr>
+			</table>
+		</form>
+	</div>
+
+	<div>
+		<ul>
+			<li th:each="file : ${files}">
+				<a th:href="${file}" th:text="${file}" />
+			</li>
+		</ul>
+	</div>
+    </body>
+</html>

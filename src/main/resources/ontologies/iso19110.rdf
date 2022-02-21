@@ -1,0 +1,1853 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:metadata="http://data.bioontology.org/metadata/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:base="http://def.isotc211.org/iso19150/-2/2012/base#">
+    <Ontology>
+        <terms:source>http://standards.iso.org/iso/19110/ed-1/en/</terms:source>
+        <rdfs:label>ISO 19110:2005 Methodology for feature cataloguing</rdfs:label>
+        <versionInfo>2005-02-15</versionInfo>
+    </Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bioontology.org/metadata/prefixIRI -->
+
+    <AnnotationProperty rdf:about="http://data.bioontology.org/metadata/prefixIRI"/>
+    
+
+
+    <!-- http://def.isotc211.org/iso19150/-2/2012/base#aggregationType -->
+
+    <AnnotationProperty rdf:about="http://def.isotc211.org/iso19150/-2/2012/base#aggregationType"/>
+    
+
+
+    <!-- http://def.isotc211.org/iso19150/-2/2012/base#associationName -->
+
+    <AnnotationProperty rdf:about="http://def.isotc211.org/iso19150/-2/2012/base#associationName"/>
+    
+
+
+    <!-- http://def.isotc211.org/iso19150/-2/2012/base#isAbstract -->
+
+    <AnnotationProperty rdf:about="http://def.isotc211.org/iso19150/-2/2012/base#isAbstract"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/isFormatOf -->
+
+    <AnnotationProperty rdf:about="http://purl.org/dc/terms/isFormatOf"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/source -->
+
+    <AnnotationProperty rdf:about="http://purl.org/dc/terms/source"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#definition -->
+
+    <AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#definition"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#inScheme -->
+
+    <AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#inScheme"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#members -->
+
+    <AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#members"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#prefLabel -->
+
+    <AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#prefLabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.cardinality -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.cardinality">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19103/2005/Multiplicities#Multiplicity"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>cardinality</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.relation -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.relation">
+        <inverseOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAssociation.roleName"/>
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAssociation"/>
+        <base:aggregationType>partOfSharedAggregation</base:aggregationType>
+        <base:associationName>Role</base:associationName>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>relation</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.rolePlayer -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.rolePlayer">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>rolePlayer</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.type -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.type">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_RoleType"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>type</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding.globalProperty -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding.globalProperty">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>globalProperty</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundAssociationRole.rolePlayer -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundAssociationRole.rolePlayer">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundAssociationRole"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>rolePlayer</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundFeatureAttribute.valueType -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundFeatureAttribute.valueType">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundFeatureAttribute"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19103/2005/Names#TypeName"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>valueType</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics.constrainedBy -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics.constrainedBy">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint"/>
+        <base:aggregationType>partOfSharedAggregation</base:aggregationType>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>constrainedBy</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics.featureType -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics.featureType">
+        <inverseOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.carrierOfCharacteristics"/>
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <base:aggregationType>partOfCompositeAggregation</base:aggregationType>
+        <base:associationName>Member Of</base:associationName>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>featureType</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference.definitionSource -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference.definitionSource">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>definitionSource</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource.source -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource.source">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19115/2003/CitationAndResponsiblePartyInformation#CI_Citation"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>source</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAssociation.roleName -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAssociation.roleName">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAssociation"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole"/>
+        <base:associationName>Role</base:associationName>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>roleName</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.listedValue -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.listedValue">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>listedValue</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.valueMeasurementUnit -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.valueMeasurementUnit">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19103/2005/UnitsOfMeasure#UnitOfMeasure"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>valueMeasurementUnit</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.valueType -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.valueType">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19103/2005/Names#TypeName"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>valueType</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.definitionSource -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.definitionSource">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource"/>
+        <base:aggregationType>partOfSharedAggregation</base:aggregationType>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>definitionSource</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.featureType -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.featureType">
+        <inverseOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.featureCatalogue"/>
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <base:associationName>ConsistsOf</base:associationName>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>featureType</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.globalProperty -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.globalProperty">
+        <inverseOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.featureCatalogue"/>
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>globalProperty</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.inheritanceRelation -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.inheritanceRelation">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+        <base:aggregationType>partOfSharedAggregation</base:aggregationType>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>inheritanceRelation</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.producer -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.producer">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19115/2006/CitationAndResponsiblePartyInformation#CI_ResponsibleParty"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>producer</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.affectsValuesOf -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.affectsValuesOf">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>affectsValuesOf</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.observesValuesOf -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.observesValuesOf">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>observesValuesOf</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.triggeredByValuesOf -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.triggeredByValuesOf">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>triggeredByValuesOf</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.aliases -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.aliases">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19103/2005/Names#LocalName"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>aliases</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.carrierOfCharacteristics -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.carrierOfCharacteristics">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+        <base:associationName>Member Of</base:associationName>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>carrierOfCharacteristics</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.constrainedBy -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.constrainedBy">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint"/>
+        <base:aggregationType>partOfSharedAggregation</base:aggregationType>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>constrainedBy</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.definitionReference -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.definitionReference">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference"/>
+        <base:aggregationType>partOfSharedAggregation</base:aggregationType>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>definitionReference</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.featureCatalogue -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.featureCatalogue">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue"/>
+        <base:aggregationType>partOfSharedAggregation</base:aggregationType>
+        <base:associationName>ConsistsOf</base:associationName>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>featureCatalogue</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.inheritsFrom -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.inheritsFrom">
+        <inverseOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.subtype"/>
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+        <base:associationName>Specialization</base:associationName>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>inheritsFrom</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.inheritsTo -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.inheritsTo">
+        <inverseOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.supertype"/>
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+        <base:associationName>Generalization</base:associationName>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>inheritsTo</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.typeName -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.typeName">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19103/2005/Names#LocalName"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>typeName</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.subtype -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.subtype">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <base:associationName>Specialization</base:associationName>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>subtype</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.supertype -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.supertype">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <base:associationName>Generalization</base:associationName>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>supertype</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.definitionReference -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.definitionReference">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference"/>
+        <base:aggregationType>partOfSharedAggregation</base:aggregationType>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>definitionReference</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.cardinality -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.cardinality">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19103/2005/Multiplicities#Multiplicity"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>cardinality</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.definitionReference -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.definitionReference">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference"/>
+        <base:aggregationType>partOfSharedAggregation</base:aggregationType>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>definitionReference</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.featureCatalogue -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.featureCatalogue">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue"/>
+        <base:aggregationType>partOfCompositeAggregation</base:aggregationType>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>featureCatalogue</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.memberName -->
+
+    <ObjectProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.memberName">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+        <rdfs:range rdf:resource="http://def.isotc211.org/iso19103/2005/Names#LocalName"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>memberName</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.isNavigable -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.isNavigable">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>isNavigable</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.isOrdered -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.isOrdered">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>isOrdered</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding.description -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding.description">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>description</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint.description -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint.description">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>description</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference.sourceIdentifier -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference.sourceIdentifier">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>sourceIdentifier</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.code -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.code">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>code</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.functionalLanguage -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.functionalLanguage">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>functionalLanguage</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.formalDefinition -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.formalDefinition">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>formalDefinition</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.signature -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.signature">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>signature</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.code -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.code">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>code</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.definition -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.definition">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>definition</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.isAbstract -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.isAbstract">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>isAbstract</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.description -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.description">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>description</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.name -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.name">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>name</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.uniqueInstance -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.uniqueInstance">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>uniqueInstance</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.code -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.code">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>code</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.definition -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.definition">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>definition</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.label -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.label">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>label</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.definition -->
+
+    <DatatypeProperty rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.definition">
+        <rdfs:domain rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>definition</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://def.isotc211.org/iso19103/2005/Multiplicities#Multiplicity -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19103/2005/Multiplicities#Multiplicity">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19103_538:Multiplicity</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19103/2005/Names#LocalName -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19103/2005/Names#LocalName">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19103_533:LocalName</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19103/2005/Names#TypeName -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19103/2005/Names#TypeName">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19103_533:TypeName</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19103/2005/UnitsOfMeasure#UnitOfMeasure -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19103/2005/UnitsOfMeasure#UnitOfMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19103_530:UnitOfMeasure</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_AssociationRole -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_AssociationRole">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19109_1010:GF_AssociationRole</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_AssociationType -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_AssociationType">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19109_1010:GF_AssociationType</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_AttributeType -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_AttributeType">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19109_1010:GF_AttributeType</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_Constraint -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_Constraint">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19109_1010:GF_Constraint</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_FeatureType -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_FeatureType">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19109_1010:GF_FeatureType</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_InheritanceRelation -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_InheritanceRelation">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19109_1010:GF_InheritanceRelation</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_Operation -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_Operation">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19109_1010:GF_Operation</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_PropertyType -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_PropertyType">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19109_1010:GF_PropertyType</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_AssociationRole"/>
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.cardinality"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19103/2005/Multiplicities#Multiplicity"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.relation"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAssociation"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.rolePlayer"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.type"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_RoleType"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.cardinality"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.type"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.rolePlayer"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.isNavigable"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.isOrdered"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.isNavigable"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole.isOrdered"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_AssociationRole</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_AssociationRole</rdfs:label>
+        <skos:definition>A role of the association FC_AssociationRole::relation. .lt.ocl.gt.roleName .eq. FC_Member::memberName;FC_PropertyType::cardinality realizes GF_AssociationRole::cardinality.lt..sl.ocl.gt.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding.globalProperty"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding.description"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding.description"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_Binding</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_Binding</rdfs:label>
+        <skos:definition>Class that is used to describe the specifics of how a property type is bound to a particular feature type. Used as an association class for the association MemberOf between feature type and property type.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundAssociationRole -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundAssociationRole">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundAssociationRole.rolePlayer"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundAssociationRole.rolePlayer"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_BoundAssociationRole</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_BoundAssociationRole</rdfs:label>
+        <skos:definition>Class that is used to describe the specifics of how a global association role is bound to a particular feature type. </skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundFeatureAttribute -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundFeatureAttribute">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Binding"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundFeatureAttribute.valueType"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19103/2005/Names#TypeName"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_BoundFeatureAttribute.valueType"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_BoundFeatureAttribute</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_BoundFeatureAttribute</rdfs:label>
+        <skos:definition>Class that is used to describe the specifics of how a global feature attribute is bound to a particular feature type. </skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics.constrainedBy"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics.featureType"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics.featureType"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_CarrierOfCharacteristics</metadata:prefixIRI>
+        <base:isAbstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</base:isAbstract>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_CarrierOfCharacteristics</rdfs:label>
+        <skos:definition>Abstract class for local feature properties and bound global properties of a feature type</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_Constraint"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint.description"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint.description"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_Constraint</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_Constraint</rdfs:label>
+        <skos:definition>A class for defining constraints for types.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference.definitionSource"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference.definitionSource"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference.sourceIdentifier"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference.sourceIdentifier"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_DefinitionReference</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_DefinitionReference</rdfs:label>
+        <skos:definition>Class that links a data instance to the source of its definition.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource.source"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19115/2003/CitationAndResponsiblePartyInformation#CI_Citation"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource.source"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_DefinitionSource</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_DefinitionSource</rdfs:label>
+        <skos:definition>Class that specifies the source of a definition.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAssociation -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAssociation">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_AssociationType"/>
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAssociation.roleName"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_AssociationRole"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAssociation.roleName"/>
+                <minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</minCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_FeatureAssociation</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_FeatureAssociation</rdfs:label>
+        <skos:definition>Relationship that links instances of this feature type with instances of the same or of a different feature type. The memberOf-linkBetween association in the General Feature Model is not directly implemented here since it can be easily derived from combining the Role and MemberOf associations.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_AttributeType"/>
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.listedValue"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.valueMeasurementUnit"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19103/2005/UnitsOfMeasure#UnitOfMeasure"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.valueType"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19103/2005/Names#TypeName"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.valueMeasurementUnit"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.valueType"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.code"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureAttribute.code"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_FeatureAttribute</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_FeatureAttribute</rdfs:label>
+        <skos:definition>Characteristic of a feature type.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19139/2007/Catalogues#CT_Catalogue"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.definitionSource"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionSource"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.featureType"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.globalProperty"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.inheritanceRelation"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.producer"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19115/2006/CitationAndResponsiblePartyInformation#CI_ResponsibleParty"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.featureType"/>
+                <minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</minCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.producer"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.functionalLanguage"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue.functionalLanguage"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_FeatureCatalogue</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_FeatureCatalogue</rdfs:label>
+        <skos:definition>A feature catalogue contains the definition of some number feature types with other information necessary for their definitions.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_Operation"/>
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.affectsValuesOf"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.observesValuesOf"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.triggeredByValuesOf"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.formalDefinition"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.signature"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.signature"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureOperation.formalDefinition"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_FeatureOperation</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_FeatureOperation</rdfs:label>
+        <skos:definition>Operation that every instance of an associated feature type must implement..lt.ocl.gt.triggeredByValuesOf realizes GF_Operation::triggeredByValuesOf;observesValuesOf realizes GF_Operation::observesValuesOf;affectsValuesOf realizes GF_Operation::affectsValuesOf.lt..sl.ocl.gt.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_FeatureType"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.aliases"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19103/2005/Names#LocalName"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.carrierOfCharacteristics"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.constrainedBy"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_Constraint"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.definitionReference"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.featureCatalogue"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.inheritsFrom"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.inheritsTo"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.typeName"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19103/2005/Names#LocalName"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.featureCatalogue"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.typeName"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.definitionReference"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.code"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.definition"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.isAbstract"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.isAbstract"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.code"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType.definition"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_FeatureType</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_FeatureType</rdfs:label>
+        <skos:definition>Class of real world phenomena with common properties.lt.ocl.gt.typeName realizes GF_FeatureType::typeName;isAbstract realizes GF_FeatureType::isAbstract;constrainedBy realizes GF_FeatureType::constrainedBy.lt..sl.ocl.gt.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_InheritanceRelation"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.subtype"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.supertype"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureType"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.subtype"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.supertype"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.description"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.name"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.uniqueInstance"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.description"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.uniqueInstance"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_InheritanceRelation.name"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_InheritanceRelation</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_InheritanceRelation</rdfs:label>
+        <skos:definition>FC_InheritanceRelation realizes GF_InheritanceRelation. .lt.ocl.gt.FC_InheritanceRelation always assumes that its GF_InheritanceRelation::uniqueInstance is TRUE..lt..sl.ocl.gt.</skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.definitionReference"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.definitionReference"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.code"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.definition"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.label"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.label"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.code"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_ListedValue.definition"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_ListedValue</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_ListedValue</rdfs:label>
+        <skos:definition>Value for an enumerated feature attribute domain, including its codes and interpretation. </skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType">
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19109/2005/GeneralFeatureModel#GF_PropertyType"/>
+        <rdfs:subClassOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_CarrierOfCharacteristics"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.cardinality"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19103/2005/Multiplicities#Multiplicity"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.definitionReference"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_DefinitionReference"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.featureCatalogue"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_FeatureCatalogue"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.memberName"/>
+                <allValuesFrom rdf:resource="http://def.isotc211.org/iso19103/2005/Names#LocalName"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.cardinality"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.memberName"/>
+                <cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</cardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.definitionReference"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.featureCatalogue"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.definition"/>
+                <allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_PropertyType.definition"/>
+                <maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</maxCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_PropertyType</metadata:prefixIRI>
+        <base:isAbstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</base:isAbstract>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_PropertyType</rdfs:label>
+        <skos:definition>Abstract class for local and global feature properties. </skos:definition>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_RoleType -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_RoleType">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19110:FC_RoleType</metadata:prefixIRI>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <rdfs:label>FC_RoleType</rdfs:label>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19115/2003/CitationAndResponsiblePartyInformation#CI_Citation -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19115/2003/CitationAndResponsiblePartyInformation#CI_Citation">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19115_1187:CI_Citation</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19115/2006/CitationAndResponsiblePartyInformation#CI_ResponsibleParty -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19115/2006/CitationAndResponsiblePartyInformation#CI_ResponsibleParty">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19115_1273:CI_ResponsibleParty</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://def.isotc211.org/iso19139/2007/Catalogues#CT_Catalogue -->
+
+    <Class rdf:about="http://def.isotc211.org/iso19139/2007/Catalogues#CT_Catalogue">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iso19139_705:CT_Catalogue</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Thing">
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">owl:Thing</metadata:prefixIRI>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#Collection -->
+
+    <Class rdf:about="http://www.w3.org/2004/02/skos/core#Collection">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">skos:Collection</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#Concept -->
+
+    <Class rdf:about="http://www.w3.org/2004/02/skos/core#Concept">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">skos:Concept</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#ConceptScheme -->
+
+    <Class rdf:about="http://www.w3.org/2004/02/skos/core#ConceptScheme">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <metadata:prefixIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">skos:ConceptScheme</metadata:prefixIRI>
+    </Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType -->
+
+    <NamedIndividual rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <terms:isFormatOf rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_RoleType"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <skos:prefLabel>FC_RoleType - ConceptScheme</skos:prefLabel>
+    </NamedIndividual>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleTypeCollection -->
+
+    <NamedIndividual rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleTypeCollection">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+        <skos:members>
+            <rdf:Description/>
+        </skos:members>
+        <skos:prefLabel>FC_RoleType - Collection</skos:prefLabel>
+    </NamedIndividual>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType/aggregation -->
+
+    <NamedIndividual rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType/aggregation">
+        <rdf:type rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_RoleType"/>
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <skos:inScheme rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType"/>
+        <skos:prefLabel>aggregation</skos:prefLabel>
+    </NamedIndividual>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType/composition -->
+
+    <NamedIndividual rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType/composition">
+        <rdf:type rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_RoleType"/>
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <skos:inScheme rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType"/>
+        <skos:prefLabel>composition</skos:prefLabel>
+    </NamedIndividual>
+    
+
+
+    <!-- http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType/ordinary -->
+
+    <NamedIndividual rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType/ordinary">
+        <rdf:type rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing#FC_RoleType"/>
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <rdfs:isDefinedBy>http://standards.iso.org/iso/19110/ed-1/en/</rdfs:isDefinedBy>
+        <skos:inScheme rdf:resource="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing/code/FC_RoleType"/>
+        <skos:prefLabel>ordinary</skos:prefLabel>
+    </NamedIndividual>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    </rdf:Description>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="http://bioportal.bioontology.org/ontologies/versionSubject">
+        <versionInfo>2005-02-15</versionInfo>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://def.isotc211.org/iso19110/2005/MethodologyForFeatureCataloguing">
+        <versionInfo>2005-02-15</versionInfo>
+        <rdfs:label>ISO 19110:2005 Methodology for feature cataloguing</rdfs:label>
+        <terms:source>http://standards.iso.org/iso/19110/ed-1/en/</terms:source>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.3.1) https://github.com/owlcs/owlapi -->
+

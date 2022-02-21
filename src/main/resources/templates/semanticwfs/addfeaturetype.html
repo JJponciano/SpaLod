@@ -1,0 +1,165 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="css/style.css"/>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script>
+
+$.fn.sortSelect = function() {
+    var op = this.children("option");
+    op.sort(function(a, b) {
+        return a.text > b.text ? 1 : -1;
+    })
+    return this.empty().append(op);
+}
+
+$.ajax({
+    url:'epsg.txt',
+    success: function (data){
+      $('#crs').html(data)
+    }
+  });
+
+function getGeoClassesFromEndpoint(){
+	$.ajax({
+	       url: '../rest/service/getGeoClassesFromEndpoint?endpoint='+$('#endpoints').val(),
+	       type: 'Get',         // HTTP-Methode, hier: POST
+	       processData: false,
+	       contentType: false,
+	       // und wenn alles erfolgreich verlaufen ist, schreibe eine Meldung
+	       // in das Response-Div
+	       success: function(data) { 
+	    	   res=data
+	    	   options=""
+	    	   for(cls in data){
+	    		   options+="<option value=\""+cls+"\">"+data[cls]+"</option>"
+	    		   console.log(data[cls])
+	    	   }
+	    	   $('#classes').html(options);
+	    	   $('#classes').sortSelect();
+	       }
+	    });
+}
+
+function getPropertiesForClass(){
+	$.ajax({
+	       url: '../rest/service/getPropertiesByClass?endpoint='+$('#endpoints').val()+'&class='+$('#classes').val(),
+	       type: 'Get',         // HTTP-Methode, hier: POST
+	       processData: false,
+	       contentType: false,
+	       // und wenn alles erfolgreich verlaufen ist, schreibe eine Meldung
+	       // in das Response-Div
+	       success: function(data) { 
+	    	   res=data
+	    	   options=""
+	    	   for(cls in data){
+	    		   options+="<option value=\""+cls+"\">"+data[cls]+"</option>"
+	    		   console.log(data[cls])
+	    	   }
+	    	   $('#properties').html(options);
+	    	   $('#properties').sortSelect();
+	       }
+	    });
+}
+
+var endpoints={}
+
+function getEndpoints(){
+	$.ajax({
+	       url: '../rest/service/getEndpoints',
+	       type: 'Get',         // HTTP-Methode, hier: POST
+	       processData: false,
+	       contentType: false,
+	       // und wenn alles erfolgreich verlaufen ist, schreibe eine Meldung
+	       // in das Response-Div
+	       success: function(data) { 
+	    	   console.log(data)
+	    	   endpoints=data
+	    	   res=data
+	    	   options=""
+	    	   for(cls in res["endpoints"]){
+	    		   console.log(res["endpoints"][cls])
+	    		   options+="<option value=\""+res["endpoints"][cls]["endpoint"]+"\">"+res["endpoints"][cls]["name"]+"</option>"
+	    	   }
+	    	   console.log(options)
+	    	   $('#endpoints').html(options)
+	    	   $('#endpoints').sortSelect();
+	       }
+	    });
+}
+
+function addFeatureType(){
+	console.log(endpoints)
+	query="SELECT DISTINCT ?item ?rel ?val ?the_geom WHERE{ ?item <"+endpoints["endpoints"][$('#endpoints').val()]["type"]+"> <"+$('#classes').val()+"> . ?item ?rel ?val . OPTIONAL { ?val <"+endpoints["endpoints"][$('#endpoints').val()]["geo"][0]+"> ?the_geom . } }"
+	console.log("Query: "+query);
+	console.log("query="+encodeURIComponent(query)+"&typename="+encodeURIComponent($('#typename').val())+"&indvar=item&class="+$('#classes').val()+"&bboxlimit=500&namespace=&triplestore="+encodeURIComponent($('#endpoints').val()))
+	$.ajax({
+	       url: '../rest/service/addFeatureType?query='+encodeURIComponent(query)+"&indvar=item&type=WFS&class="+$('#classes').val()+"&typename="+encodeURIComponent($('#typename').val())+"&namespace=&triplestore="+encodeURIComponent($('#endpoints').val())+"&description="+encodeURIComponent($('#description').val())+"&targetCRS="+encodeURIComponent($('#crs').val()),
+	       type: 'Get',         // HTTP-Methode, hier: POST
+	       processData: false,
+	       contentType: false,
+	       // und wenn alles erfolgreich verlaufen ist, schreibe eine Meldung
+	       // in das Response-Div
+	       success: function(data) { 
+	    	   console.log(data)
+	    	   setTimeout(function() { 
+	    		    window.location.href = "../collections/"+$('#typename').val()+"/items/"
+	    		 }, 2000);
+	       }
+	 });
+}
+
+</script>
+</head>
+<body>
+	<span id="loginspan"></span>
+<div id="logindialog" title="Login">
+  <p class="validateTips">All form fields are required.</p>
+ 
+  <form>
+    <fieldset>
+      <label for="username">Username:</label>
+      <input type="text" name="username" id="username" value="" class="text ui-widget-content ui-corner-all"><br/>
+      <label for="password">Password:</label>
+      <input type="text" name="password" id="password" value="" class="text ui-widget-content ui-corner-all">
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    </fieldset>
+  </form>
+</div>
+<div id="header">
+<header>
+<h1 id="servicetitle" align="center">FeatureType Selection</h1>
+</header>
+</div>
+<div class="sticky row crumbs"><div class="col-sm-12 col-md-10 col-md-offset-1"><a href="../">Landingpage</a> / <a href="configuration.html">SemanticWFS Configuration</a> / <a href="addfeaturetype.html">Add Feature Type</a></div></div>
+<div class="container" role="main">
+  <div class="row">
+  <div class="col-sm-12">
+<table width="100%">
+<tr><td>Endpoints:</td><td><select id="endpoints" onChange="getGeoClassesFromEndpoint()"></select></td></tr>
+<tr><td>Classes: </td><td><select id="classes" onChange="getPropertiesForClass()"></select></td></tr>
+<!-- Properties: <select id="properties"></select><br/>-->
+<tr><td>Typename: </td><td><input type="text" id="typename"/></td></tr>
+<tr><td>Description: </td><td><input type="text" id="description"/></td></tr>
+<tr><td>Target CRS:</td><td><select id="crs"></select></td></tr>
+<tr><td><button id="addFeatureType" onClick="addFeatureType()">Add Feature Type</button></td></td></tr>
+</table>
+</div></div></div>
+<div id="footer">
+<a href="../">Back to Configurations</a>
+</div>
+</body>
+<script>
+$(function() {
+	getEndpoints();
+});
+</script>
+<script src="js/utils.js"></script>
+</html>

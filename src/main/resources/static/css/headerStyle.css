@@ -1,0 +1,18 @@
+.pictureOfHeader{
+	width: 180px; 
+	margin-left: 55px; 
+	margin-top: 4px; 
+	margin-bottom: 24px;
+}
+.titleOfHeader{
+	text-align: center;
+	font-weight: bold;
+	font-size: 2.8em;
+	margin: auto;
+}
+.textOfHeader{
+	width: 20%;
+	font-size: 1.8em;
+}
+
+

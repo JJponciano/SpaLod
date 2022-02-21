@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<!--
+ Copyright (C) 2021 Dr. Jean-Jacques Ponciano.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ 
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301  USA
+-->
+<html xmlns:th="https://www.thymeleaf.org">
+<head th:replace="fragments/head :: head">
+    <title>Getting Started: Serving Web Content</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<script type="text/javascript">
+        var elements = [
+                {link: "/home", value: "Home", active:"true"},
+                {link: "/data_management", value: "Data management", active: "false"},
+                {link: "/SPARQL_endpoint", value: "SPARQL endpoint", active: "false"},
+                {link: "/semantic_WFS", value: "Semantic WFS", active: "false"},
+                {link: "/metadata_catalogue", value: "Metadata catalogue", active: "false"},
+                {link: "/thematic_map", value: "Thematic map", active: "false"},
+                {link: "/documentation", value: "Documentation", active: "false"}];
+    </script>
+
+    <!--Header with the picture, title and Contact-->
+    <div class="containerfull">
+    <a href="/home"><img class="pictureOfHeader" src="https://www.verwaltung-innovativ.de/SharedDocs/Bilder/DE/Artikel/GDI_DE_Logo.jpg?__blob=poster&v=2"></a> 
+    <span class="titleOfHeader">Linked Data</span>
+    <span class="textOfHeader">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Flag_of_the_United_Kingdom_%282-3%29.svg/1024px-Flag_of_the_United_Kingdom_%282-3%29.svg.png" style="width: 32px; margin-right: 13px;">English | <a href="/login" style="text-decoration: none; color: #333333;">Login</a> | <a href="/contact" style="text-decoration: none; color: #333333">Contact</a><br><br>
+        <a href="https://www.gdi-de.org" target="_blank"><img src="/pictures/GDI-DE.jpg" style="width: 250px; float: right;"></a></span>
+    </div>
+    
+    <header id="header">
+        <div th:insert="fragments/nav :: navbar"></div>
+        <h1>Test SPARQL request</h1>
+    </header>
+    <body>
+    <div class="containerfull">
+        <div class="containercontent">
+            <div class="container-fluid" role="main">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="tableContentSPARQL">
+
+                        <table border="1">
+                            <thead>
+                                <tr><th colspan="3">Results of the request</th></tr>
+                                <tr>
+                                    <th><span th:text="${cl[0]}"></span></th>
+                                    <th><span th:text="${cl[1]}"></span></th>
+                                    <th><span th:text="${cl[2]}"></span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="md: ${MDlist}">
+                                    <td style="width: 170px;"><span th:text="${md[0]}"></span></td>
+                                    <td style="width: 170px;"><span th:text="${md[1]}"></span></td>
+                                    <td style="width: 170px;"><span th:text="${md[2]}"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <section>
+                        <pre>
+                            <code th:text="${errorMessage}"></code>
+                        </pre>
+                    </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--The boxes "Provider" and "Contact"-->
+        <div class="containerbox">
+            <div class="box">
+                <div class="titlebox">
+                    <span> Provider</span>
+                </div>
+                <div class="normalfont">
+                    <br><span class="boldfont"> GDI-DE Geodateninfrastruktur Deutschland</span>
+                    <span><a href="https://www.gdi-de.org/" target="_blank" style="color: #007F7F;text-decoration: none;"> https://www.gdi-de.org</a></span><br><br>
+                </div>
+            </div>
+            <div class="box">
+                <div class="titlebox">
+                    <span>Contact</span>
+                </div>
+                <div class="normalfont">
+                    <br><span class="boldfont"> Coordination Office SDI Germany:</span><br>
+                    Telefon: 069 6333-258<br>
+                    Telefax: 069 6333-446<br>
+                    <a href="mailto:mail@gdi-de.org" style="color: #000000; text-decoration: none;"> mail@gdi-de.org</a><br>
+                    <a href="https://www.gdi-de.org" target="_blank" style="color: #000000; text-decoration: none;"> www.gdi-de.org</a><br><br>
+                    <span class="boldfont"> Postal address:</span><br>
+                    Coordination Office SDI Germany<br>
+                    Federal Office for Cartography and Geodesy<br>
+                    Richard-Strauss-Avenue 11<br>
+                    60598 Frankfurt am Main, Germany<br><br>
+                    <span class="boldfont"> Press contact:</span> <a href="mailto:pressekontakt@gdi-de.org" target="_blank" style="color: #000000; text-decoration: none;" >pressekontakt@gdi-de.org</a> <br><br>
+                    <span class="boldfont"> Twitter:</span> <a href="https://twitter.com/gdi_de" target="_blank" style="color: #000000; text-decoration: none;">www.twitter.com/gdi_de</a> <br><br>
+                </div>
+            </div>  
+        </div>
+    </div>
+</body>
+
+<!--The footer of the application-->
+<footer>
+    <hr style="height: 1px; background-color: #FF0000">
+    <div style="float: right;">
+        <span class="footerpage">This page in [ <span style="color: #007F7F">XML</span>  ]  [<span style="color: #007F7F"> JSON </span>] </span><br>
+        <span class="footertext">© 2019 - Bundesamt für Kartographie und Geodäsie, Richard-Strauss-Allee 11, 60598 Frankfurt am Main<img style="width: 25px; margin-left: 10px;" src="https://logodix.com/logo/1010052.png"></span>
+    </div>
+</footer>
+</html>

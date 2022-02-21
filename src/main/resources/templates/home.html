@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2021 Claire Prudhomme <claire@prudhomme.info>.
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA 02110-1301  USA
+-->
+<html>
+
+    <head th:replace="fragments/head :: head">
+       
+    </head>
+
+<body> <link rel="stylesheet" type="text/css" href="/css/slidebar.css">
+
+ <!--Header with the picture, title and Contact-->
+ <div class="containerfull">
+    <a href="/home"><img class="pictureOfHeader" src="https://www.verwaltung-innovativ.de/SharedDocs/Bilder/DE/Artikel/GDI_DE_Logo.jpg?__blob=poster&v=2"></a>
+    <span class="titleOfHeader">Linked Data</span>
+    <span class="textOfHeader">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Flag_of_the_United_Kingdom_%282-3%29.svg/1024px-Flag_of_the_United_Kingdom_%282-3%29.svg.png" style="width: 32px; margin-right: 13px;">English | <a href="/login" style="text-decoration: none; color: #333333;">Login</a> | <a href="/contact" style="text-decoration: none; color: #333333">Contact</a><br><br>
+        <a href="https://www.gdi-de.org" target="_blank"><img src="/pictures/GDI-DE.jpg" style="width: 250px; float: right;"></a></span>
+    </div>
+
+    <header id="header">
+        <div th:insert="fragments/nav :: navbar"></div>
+        <h1  style="text-align: right;">BKG Linked Data and Semantic Data management</h1>
+    </header>
+
+    <div class="containerfull">
+        <div class="containercontent">
+            <h2> Welcome to BKG Linked Data and Semantic Data management. </h2>
+            
+            <div class="sticky row crumbs">
+                <div class="container-fluid" role="main">
+                    <div class="row">
+                        <div class="col-sm-12" style="margin-left: 20px;">
+                            <p>
+                                This Website is the result of the two years project of research and development, entitled “Intelligent data collection, storage and provision within public administration”. This project has been realized in partnership with the institute i3mainz. 
+                                <br><br>
+                                It provides the ability to integrate data into a triplestore, verify and modify data, manage related schemas, and explore Linked Data to enrich the data.
+                                <br><br>
+                                Data are available and accessible through a Semantic Web Feature Service following OGC standard. It also provides a metadata catalogue, where you can integrate into the triplestore, visualize and modify metadata. The metadata catalogue is accessible through a web service following the OGC API Records standard. 
+                                <br>
+                                It gives an access to the triplestore, where data and metadata are semantically stored through RDF graph. Finally, you can create thematic map from integrated Feature collection and Linked Open Data.
+                            </p>
+                             <div class="row">
+            <div class="column">
+                <div class="content">
+                    <img src="https://github.com/Cprudhomme/SpalodWFS/wiki//images/Geo21.jpg" alt="" style="width:100%">
+                    <h3>
+                        <a href="/maps/">Thematic map</a>
+                    </h3>
+                     
+ 
+                    <p>
+                        Create a thematic map according to a chosen class from Wikidata or from the local ontology.
+                    </p>
+ 
+ 
+                </div>
+            </div>
+             
+            <div class="column">
+                <div class="content">
+                    <img src="https://github.com/Cprudhomme/SpalodWFS/wiki//images/13-2.jpg" alt="" style="width:100%">
+                        
+                    <h3>
+                        <a href="/enrichment/">Enrichment</a>
+                    </h3>
+                     
+                     
+ 
+                    <p>
+                        Enrich the local ontology thanks to a SPARQL query from Wikidata.
+                    </p>
+ 
+ 
+                </div>
+            </div>
+             
+            <div class="column">
+                <div class="content">
+                    <img src="https://github.com/Cprudhomme/SpalodWFS/wiki//images/menu3.jpg"  alt="" style="width:100%">
+
+                       
+                    <h3>
+                        <a href="/SpalodWFS/collections">Metadata Catalogue</a>
+                    </h3>
+                     
+                     
+ 
+<p>
+                        Overview of Metadata to choose and access on the wanted data.
+                    </p>
+ 
+ 
+                </div>
+            </div>
+             
+          
+        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!--The boxes "Provider" and "Contact"-->
+        <div class="containerbox">
+            <div class="box">
+                <div class="titlebox">
+                    <span> Provider</span>
+                </div>
+                <div class="normalfont">
+                    <br><span class="boldfont"> GDI-DE Geodateninfrastruktur Deutschland</span>
+                    <span><a href="https://www.gdi-de.org/" target="_blank" style="color: #007F7F;text-decoration: none;"> https://www.gdi-de.org</a></span><br><br>
+                </div>
+            </div>
+            <div class="box">
+                <div class="titlebox">
+                    <span>Contact</span>
+                </div>
+                <div class="normalfont">
+                    <br><span class="boldfont"> Coordination Office SDI Germany:</span><br>
+                    Telefon: 069 6333-258<br>
+                    Telefax: 069 6333-446<br>
+                    <a href="mailto:mail@gdi-de.org" style="color: #000000; text-decoration: none;"> mail@gdi-de.org</a><br>
+                    <a href="https://www.gdi-de.org" target="_blank" style="color: #000000; text-decoration: none;"> www.gdi-de.org</a><br><br>
+                    <span class="boldfont"> Postal address:</span><br>
+                    Coordination Office SDI Germany<br>
+                    Federal Office for Cartography and Geodesy<br>
+                    Richard-Strauss-Avenue 11<br>
+                    60598 Frankfurt am Main, Germany<br><br>
+                    <span class="boldfont"> Press contact:</span> <a href="mailto:pressekontakt@gdi-de.org" target="_blank" style="color: #000000; text-decoration: none;" >pressekontakt@gdi-de.org</a> <br><br>
+                    <span class="boldfont"> Twitter:</span> <a href="https://twitter.com/gdi_de" target="_blank" style="color: #000000; text-decoration: none;">www.twitter.com/gdi_de</a> <br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!--<div th:insert="fragments/footer :: footer"></div>-->
+</body>
+
+<!--The footer of the application-->
+<footer>
+    <hr style="height: 1px; background-color: #FF0000">
+    <div style="float: right;">
+        <span class="footerpage">This page in [ <span style="color: #007F7F">XML</span>  ]  [<span style="color: #007F7F"> JSON </span>] </span><br>
+        <span class="footertext">© 2019 - Bundesamt für Kartographie und Geodäsie, Richard-Strauss-Allee 11, 60598 Frankfurt am Main<img style="width: 25px; margin-left: 10px;" src="https://logodix.com/logo/1010052.png"></span>
+    </div>
+</footer>
+</html>

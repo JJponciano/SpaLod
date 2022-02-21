@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<!--
+ Copyright (C) 2021 Dr. Jean-Jacques Ponciano.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ 
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301  USA
+-->
+<html xmlns:th="https://www.thymeleaf.org">
+    <head th:replace="fragments/head :: head">
+        <title>Spalod</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+
+        <!--Header with the picture, title and Contact-->
+        <div class="containerfull">
+            <a href="/home"><img class="pictureOfHeader" src="https://www.verwaltung-innovativ.de/SharedDocs/Bilder/DE/Artikel/GDI_DE_Logo.jpg?__blob=poster&v=2"></a> 
+            <span class="titleOfHeader">Linked Data</span>
+            <span class="textOfHeader">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Flag_of_the_United_Kingdom_%282-3%29.svg/1024px-Flag_of_the_United_Kingdom_%282-3%29.svg.png" style="width: 32px; margin-right: 13px;">English | <a href="/login" style="text-decoration: none; color: #333333;">Login</a> | <a href="/contact" style="text-decoration: none; color: #333333">Contact</a><br><br>
+                <a href="https://www.gdi-de.org" target="_blank"><img src="/pictures/GDI-DE.jpg" style="width: 250px; float: right;"></a>
+            </span>
+        </div>
+
+        <header id="header">
+            <div th:insert="fragments/nav :: navbar"></div>
+            <h1>GeoJSON management</h1>
+        </header>
+
+        <div class="containerfull">
+            <div class="containercontent">
+
+                <section>
+                    <h2>Downlift</h2>
+                    <div th:if="${message}">
+                        <h3 th:text="${message}"/>
+                    </div>
+
+                    <div  th:if="${not #lists.isEmpty(individuals)}">
+                        <form th:action="@{/geojson/downlift}"th:object="${dataindiv}" method="post" enctype="multipart/form-data">
+                            <select th:field="*{name}" th:each="md: ${individuals}">
+
+                                <option th:value="${md}" th:text="${md}"></option>
+
+                            </select>
+
+                            <input type="submit" value="Downlift" />
+
+
+                        </form>
+                    </div>
+                    <div th:if="${message}">
+                        <h2 th:text="${message}"/>
+                    </div>
+                    <div>
+                        <ul>
+                            <li th:each="file : ${files}">
+                                <a th:href="${file}" th:text="${file}" />
+                            </li>
+                        </ul>
+                    </div>
+                </section><!-- end Uplift -->
+            </div>
+
+            <!--The boxes "Provider" and "Contact"-->
+            <div class="containerbox">
+                <div class="box">
+                    <div class="titlebox">
+                        <span> Provider</span>
+                    </div>
+                    <div class="normalfont">
+                        <br><span class="boldfont"> GDI-DE Geodateninfrastruktur Deutschland</span>
+                        <span><a href="https://www.gdi-de.org/" target="_blank" style="color: #007F7F;text-decoration: none;"> https://www.gdi-de.org</a></span><br><br>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="titlebox">
+                        <span>Contact</span>
+                    </div>
+                    <div class="normalfont">
+                        <br><span class="boldfont"> Coordination Office SDI Germany:</span><br>
+                        Telefon: 069 6333-258<br>
+                        Telefax: 069 6333-446<br>
+                        <a href="mailto:mail@gdi-de.org" style="color: #000000; text-decoration: none;"> mail@gdi-de.org</a><br>
+                        <a href="https://www.gdi-de.org" target="_blank" style="color: #000000; text-decoration: none;"> www.gdi-de.org</a><br><br>
+                        <span class="boldfont"> Postal address:</span><br>
+                        Coordination Office SDI Germany<br>
+                        Federal Office for Cartography and Geodesy<br>
+                        Richard-Strauss-Avenue 11<br>
+                        60598 Frankfurt am Main, Germany<br><br>
+                        <span class="boldfont"> Press contact:</span> <a href="mailto:pressekontakt@gdi-de.org" target="_blank" style="color: #000000; text-decoration: none;" >pressekontakt@gdi-de.org</a> <br><br>
+                        <span class="boldfont"> Twitter:</span> <a href="https://twitter.com/gdi_de" target="_blank" style="color: #000000; text-decoration: none;">www.twitter.com/gdi_de</a> <br><br>
+                    </div>
+                </div>  
+            </div>
+        </div>
+    </body>
+
+    <!--The footer of the application-->
+ <div th:insert="fragments/footer :: footer"></div>
+
+
+</html>

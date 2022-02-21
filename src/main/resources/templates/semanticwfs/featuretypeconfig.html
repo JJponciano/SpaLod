@@ -1,0 +1,472 @@
+<html>
+<head>
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+<link rel="stylesheet" href="css/yasqe.css"/>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="css/style.css"/>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="js/yasqe.js"></script>
+<script src="js/proj4.js"></script>
+<script src="js/prefixes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+ <style>
+  #mapid { height: 500px;}
+  </style>
+<script>
+var overlayMaps={}
+var overlayControl;
+var markercollection=[]
+var first=true;
+var featuretypeToQuery={}
+var featuretypeToEndPoint={}
+var colorcodes={}
+
+$(document).ready( function () {
+    
+    $.ajax({
+	    url:'epsg.txt',
+	    success: function (data){
+	      $('#crs').html(data)
+	    }
+	  });
+    
+	$.getJSON("../service/featureTypes", function(result){
+		   $('#servicetitle').html(result["servicetitle"]);
+		   var selectcontent="";
+		   var tablecontent="<thead><tr><th>FeatureType</th><th>Query</th><th>Namespace</th><th>Metadata Namespace</th><th>IndVariable</th><th>CRS</th><th>Triple Store</th><th>Options</th></tr></thead><tbody>"
+		   for(featuretype in result["datasets"]){
+			   selectcontent+="<option value=\""+result["datasets"][featuretype]["query"]+"\">"+result["datasets"][featuretype]["name"]+"</option>"
+			   featuretypeToQuery[result["datasets"][featuretype]["name"]]=result["datasets"][featuretype]["query"]
+			   featuretypeToEndPoint[result["datasets"][featuretype]["name"]]=result["datasets"][featuretype]["triplestore"]
+			   tablecontent+="<tr><td>"
+			   +result["datasets"][featuretype]["name"]+"</td><td>"
+			   +result["datasets"][featuretype]["query"]+"</td><td><a href=\""+result["datasets"][featuretype]["namespace"]+"\">"
+			   +result["datasets"][featuretype]["namespace"]+"</a></td><td><a href=\""+result["datasets"][featuretype]["namespacesmetadata"]+"\">"
+			   +result["datasets"][featuretype]["namespacesmetadata"]+"</a></td><td>"
+			   +result["datasets"][featuretype]["indvar"]+"</td><td>"
+			   +result["datasets"][featuretype]["targetCRS"]+"</td><td><a href=\""+result["datasets"][featuretype]["triplestore"]+"\">"
+			   +result["datasets"][featuretype]["triplestore"]+"</a></td>"
+			   +"<td><i class=\"fa fa-pencil-square\" aria-hidden=\"true\"></i><i class=\"fa fa-minus-square\" aria-hidden=\"true\"></i> </td>"
+			   +"</tr>"
+		   }
+		   tablecontent+="</tbody>"
+		   $('#samplequeries').html(selectcontent);
+		   $('#featuretypes').html(tablecontent);
+		   $('#featuretypes').DataTable();
+		   $("#featuretypes").on('mousedown.edit', "i.fa.fa-pencil-square", function(e) {
+
+		        $(this).removeClass().addClass("fa fa-envelope-o");
+		        var $row = $(this).closest("tr").off("mousedown");
+		        var $tds = $row.find("td").not(':first').not(':last');
+
+		        $.each($tds, function(i, el) {
+		          var txt = $(this).text();
+		          $(this).html("").append("<input type='text' value=\""+txt+"\">");
+		        });
+
+		      });
+		   $("#featuretypes").on('mousedown', "input", function(e) {
+		        e.stopPropagation();
+		      });
+
+		      $("#featuretypes").on('mousedown.save', "i.fa.fa-envelope-o", function(e) {
+		        
+		        $(this).removeClass().addClass("fa fa-pencil-square");
+		        var $row = $(this).closest("tr");
+		        var $tds = $row.find("td").not(':first').not(':last');
+		        
+		        $.each($tds, function(i, el) {
+		          var txt = $(this).find("input").val()
+		          $(this).html(txt);
+		        });
+		      });
+		      
+		      
+		       $("#featuretypes").on('mousedown', "#selectbasic", function(e) {
+		        e.stopPropagation();
+		      });
+		});
+	$.getJSON("../service/prefixes", function(result){
+		   $('#prefixes').html(result);
+		});
+} );
+
+function trimcoords(coords,length){
+	return coords.length > length ? coords.replace("undefined,","").substring(0, length - 3) + "...)" : coords;	
+}
+
+function getRandomColor() {
+	  var letters = '0123456789ABCDEF';
+	  var color = '#';
+	  for (var i = 0; i < 6; i++) {
+	    color += letters[Math.floor(Math.random() * 16)];
+	  }
+	  console.log(color)
+	  return color;
+}
+
+function clearMap() {
+    for(i in mymap._layers) {
+        if(mymap._layers[i]._path != undefined) {
+            try {
+                mymap.removeLayer(mymap._layers[i]);
+            }
+            catch(e) {
+                console.log("problem with " + e + mymap._layers[i]);
+            }
+        }
+    }
+	if(!first){
+		mymap.removeControl(overlayControl);
+	}else{
+		first=false;
+	}
+	// now put the control back
+
+	layercontrol.addTo(mymap);
+	for(marker in markercollection){
+		mymap.removeLayer(markercollection[marker])
+	}
+	markercollection=[]
+    /*    for(decorator in decorators){
+		mymap.removeLayer(decorators[decorator])
+	}
+	decorators=[]*/
+}
+
+function saveTextAsFile(tosave,fileext,filename)
+{
+    var a = document.createElement('a');
+    a.style = "display: none";  
+    var blob= new Blob([tosave], {type:'text/plain'});
+    var url = window.URL.createObjectURL(blob);
+    var filename = filename+fileext;
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);  
+    }, 1000);
+}
+
+function saveFeatures() {
+	$("#featuretypes > tr.item").each(function() {
+		  $this = $(this);
+		  var value = $this.find("span.value").html();
+		  var quantity = $this.find("input.quantity").val();
+	});
+    var data = new FormData(); // das ist unser Daten-Objekt ...
+    data.append('username',document.getElementById('username').value)
+    data.append('password',document.getElementById('password').value)
+    $.ajax({
+       url: '../rest/service/login',
+       data: data,          // Das ist unser Datenobjekt.
+       type: 'POST',         // HTTP-Methode, hier: POST
+       processData: false,
+       contentType: false,
+       // und wenn alles erfolgreich verlaufen ist, schreibe eine Meldung
+       // in das Response-Div
+       success: function(data) { 
+    	   if(data!=""){
+    		   $('#loginspan').html("You are not logged in <button onClick=\"openLoginDialog()\">Login</button>")
+    	   }else{
+        	 Cookies.set('bkguplifttoken',data)
+        	 $('#loginspan').html("You are logged in <button onClick=\"logout()\">Logout</button>")
+    	   }
+       }
+    });
+ }
+
+function sendQuery(geojsonres){
+	var url=document.location.href
+	if(!(url.endsWith("/"))){
+		url+="/"
+	}
+	if(!yasqe.getValue().includes("?item") || (!yasqe.getValue().includes("?the_geom") && !yasqe.getValue().includes("?lat") && yasqe.getValue().includes("?lon"))){
+		alert("Query must include the variable ?item for the instance and at least the variable ?the_geom or the variables ?lat and ?lon for the geometry!");
+		return;
+	}
+	var endpoint=$('#samplequeries :selected').text()
+	console.log(endpoint);
+	if(!(endpoint.includes("http"))){
+	    endpoint=url+$('#dataset').val()
+	}
+    $.get("../service/queryservice?query="+encodeURIComponent(yasqe.getValue())+"&endpoint="+encodeURIComponent(featuretypeToEndPoint[$('#samplequeries :selected').text()]), function(data, status){
+        //alert("Data: " + data + "\nStatus: " + status);
+        var json=JSON.parse(data)
+        clearMap();
+        var overlays={}
+        //for(layer in json){
+            var officiallayer=L.geoJSON(json,{
+            	coordsToLatLng: function (coords) {
+            		//console.log($('#dataset').val())
+            		/*if($('#dataset').val()=="linkedgeodata.ttl"){
+            			return new L.LatLng(coords[0], coords[1], coords[2]);
+            		}*/
+            		return new L.LatLng(coords[1], coords[0], coords[2]);
+
+                },
+                pointToLayer: function (feature, latlng) {
+                	var greyIcon = new L.Icon({
+                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    });
+                	var mark=L.marker(latlng,{icon: greyIcon})
+                	markercollection.push(mark)
+                    return mark;
+                },
+                style: function(){
+                	return {fillColor: ("color" in json?json["color"]:colorArray[layer%colorArray.length]),
+                        color: ("color" in json?json["color"]:colorArray[layer%colorArray.length])}
+                },
+            	onEachFeature: function (feature, layer) {
+            		 var popup="Item: <a href='"+feature.id+"' target='_blank'>"+
+            		 (feature.id.includes('#')?feature.id.substring(feature.id.lastIndexOf('#')+1):feature.id)+"</a>"
+            		 if("http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in feature.properties){
+            		 	if(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].includes("http") && feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].includes("#")){
+            	 			ns=feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(0,feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].indexOf('#'))
+            	 			if(!(ns in colorcodes)){
+            					colorcodes[ns]=getRandomColor();
+            				}
+            		 		popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('#')+1)+"</a>)"
+            	 		}else if(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].includes("http")){
+            	  			ns=feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(0,feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].indexOf('/'))
+            	 			if(!(ns in colorcodes)){
+            					colorcodes[ns]=getRandomColor();
+            				}
+            		 		popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('/')+1)+"</a>)"
+            	 		}else{
+            		 		popup+="("+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+")"
+            		 	}
+            		 }
+            		 popup+="<br/>Properties:<ul>"
+            	   Object.keys(feature.properties).sort().forEach(function(prop) {
+            	   	if(prop=="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"){
+            	   		return;
+            	   	}
+            	 if(prop.includes("http") && prop.includes("#")){
+            	 		ns=prop.substring(0,prop.indexOf('#'))
+            	 		if(!(ns in colorcodes)){
+            				colorcodes[ns]=getRandomColor();
+            			}
+            		 	popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+prop.substring(prop.lastIndexOf('#')+1)+"</a> - "
+            	 }else if(prop.includes("http")){
+            	  		ns=prop.substring(0,prop.indexOf('/'))
+            	 		if(!(ns in colorcodes)){
+            				colorcodes[ns]=getRandomColor();
+            			}
+            		 	popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+prop.substring(prop.lastIndexOf('/')+1)+"</a> - "
+            	 }else{
+            		 	popup+="<li>"+prop+" - "
+            		 }
+            	 if(Array.isArray(feature.properties[prop])){
+            		 popup+="<ul>"
+            			 for(pr in feature.properties[prop]){
+                			 if(feature.properties[prop][pr].includes("http") && feature.properties[prop][pr].includes("^^")){
+                        	     ns=feature.properties[prop][pr].substring(0,feature.properties[prop][pr].indexOf('^^'))
+                        	 	 if(!(ns in colorcodes)){
+                        			colorcodes[ns]=getRandomColor();
+                        		 }
+                        	     popup+="<li><a href='"+feature.properties[prop][pr].substring(feature.properties[prop][pr].indexOf("^^")+2)+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+feature.properties[prop][pr].substring(0,feature.properties[prop][pr].lastIndexOf('^')-1)+"</a></li> "
+                        	 }else if(feature.properties[prop][pr].includes("http") && feature.properties[prop][pr].includes("#")){
+                        	 	ns=feature.properties[prop][pr].substring(0,feature.properties[prop][pr].indexOf('#'))
+                        	 	 if(!(ns in colorcodes)){
+                        			colorcodes[ns]=getRandomColor();
+                        		 }
+                        	     popup+="<li><a href='"+feature.properties[prop][pr]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+feature.properties[prop][pr].substring(feature.properties[prop][pr].lastIndexOf('#')+1)+"</a></li> "
+                        	 }else if(feature.properties[prop][pr].includes("http") || feature.properties[prop][pr].includes("file:/")){
+                        	  	 ns=feature.properties[prop][pr].substring(0,feature.properties[prop][pr].indexOf('/'))
+                        	 	 if(!(ns in colorcodes)){
+                        			colorcodes[ns]=getRandomColor();
+                        		 }
+                        	     popup+="<li><a href='"+feature.properties[prop][pr]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+feature.properties[prop][pr].substring(feature.properties[prop][pr].lastIndexOf('/')+1)+"</a></li> "
+                        	 }else{
+                        	  popup+="<li>"+feature.properties[prop][pr]+"</li>"
+                        	 }
+                		 }
+            		 popup+="</ul>"
+            	 }
+            	 else if(feature.properties[prop].includes("http") && feature.properties[prop].includes("^^")){
+            	     ns=feature.properties[prop].substring(0,feature.properties[prop].indexOf('^^'))
+            	 	 if(!(ns in colorcodes)){
+            			colorcodes[ns]=getRandomColor();
+            		 }
+            	     popup+="<a href='"+feature.properties[prop]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+feature.properties[prop].substring(0,feature.properties[prop].lastIndexOf('^')-1)+"</a>"
+            	 }else if(feature.properties[prop].includes("http") && feature.properties[prop].includes("#")){
+            	 	ns=feature.properties[prop].substring(0,feature.properties[prop].indexOf('#'))
+            	 	 if(!(ns in colorcodes)){
+            			colorcodes[ns]=getRandomColor();
+            		 }
+            	     popup+="<a href='"+feature.properties[prop]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+feature.properties[prop].substring(feature.properties[prop].lastIndexOf('#')+1)+"</a>"
+            	 }else if(feature.properties[prop].includes("http") || feature.properties[prop].includes("file:/")){
+            	  	 ns=feature.properties[prop].substring(0,feature.properties[prop].indexOf('/'))
+            	 	 if(!(ns in colorcodes)){
+            			colorcodes[ns]=getRandomColor();
+            		 }
+            	     popup+="<a href='"+feature.properties[prop]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+feature.properties[prop].substring(feature.properties[prop].lastIndexOf('/')+1)+"</a>"
+            	 }else{
+            	  popup+=feature.properties[prop]
+            	 }
+            	 popup+="</li>"
+            	 });
+            		 popup+="</ul>"
+            	console.log(feature)
+            	   layer.bindPopup(popup,{maxWidth : 560});
+            }});
+            gardensLayerGroup = L.layerGroup()
+            .addLayer(officiallayer)
+            .addTo(mymap);
+            overlays[json["name"]]=gardensLayerGroup;
+            //layercontrol.addOverlay(gardensLayerGroup, json["geojson"][layer]["name"]);
+            //overlayMaps[layer+""]=officiallayer;
+
+        //}
+        mymap.removeControl(layercontrol);
+		// add one with the cities
+		overlayControl = L.control.layers(baseMaps, overlays).addTo(mymap);
+        mymap.fitBounds(officiallayer.getBounds());
+        $('#queryres').DataTable();
+        //$("#queryres").tablesorter();
+        if(geojsonres){
+        	saveTextAsFile(JSON.stringify(json["geojson"][0],null, 2),".geojson","queryresult")
+        }
+    });
+  }
+
+function chooseSampleQuery(){
+	yasqe.setValue(prefixList+"\n"+$('#samplequeries :selected').val().replace(".",".\n").replace("}","\n}\n").replace("{","{\n")+" LIMIT 10")
+    $('#queryinput').val(prefixList+"\n"+$('#samplequeries :selected').val().replace(".",".\n").replace("}","\n}\n").replace("{","{\n")+" LIMIT 10");
+}
+    
+function addFeature(){
+	newrow="<tr><td>"+$('#featuretypename').val()+"</td><td>"+yasqe.getValue()+"</td><td></td><td>"+$('#indvariable').val()+"</td><td></td><td>"+$('#triplestore').val()+"</td><td></td></tr>"
+	$('#featuretypes').append(newrow)
+}
+
+function getGeoClassesFromEndpoint(endpoint){
+	$.ajax({
+	       url: '../rest/service/getGeoClassesFromEndpoint?endpoint='+endpoint,
+	       data: data,          // Das ist unser Datenobjekt.
+	       type: 'Get',         // HTTP-Methode, hier: POST
+	       processData: false,
+	       contentType: false,
+	       // und wenn alles erfolgreich verlaufen ist, schreibe eine Meldung
+	       // in das Response-Div
+	       success: function(data) { 
+	    	   res=JSON.parse(data)
+	    	   for(cls in data){
+	    		   console.log(data[cls])
+	    	   }
+	       }
+	    });
+}
+
+</script>
+</head>
+<body>
+	<span id="loginspan"></span>
+<div id="logindialog" title="Login">
+  <p class="validateTips">All form fields are required.</p>
+ 
+  <form>
+    <fieldset>
+      <label for="username">Username:</label>
+      <input type="text" name="username" id="username" value="" class="text ui-widget-content ui-corner-all"><br/>
+      <label for="password">Password:</label>
+      <input type="text" name="password" id="password" value="" class="text ui-widget-content ui-corner-all">
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    </fieldset>
+  </form>
+</div>
+<div id="header">
+<header>
+<h1 id="servicetitle" align="center">Feature Type Configuration</h1>
+</header>
+</div>
+<div class="sticky row crumbs"><div class="col-sm-12 col-md-10 col-md-offset-1"><a href="../">Landingpage</a> / <a href="configuration.html">Semantic WFS Configuration</a> / <a href="configuration.html">Feature Type Configuration</a></div></div>
+<div class="container-fluid" role="main">
+  <div class="row">
+  <div class="col-sm-6">
+<span id="numberexamples"></span> Feature Type Queries:
+<script>
+$( document ).ready(function() {
+	chooseSampleQuery();
+});
+</script>
+<select id="samplequeries" onChange="chooseSampleQuery()">
+</select>
+<br/>
+<textarea id="queryinput" rows=4 cols=45>
+</textarea>
+<button id="sendQueryButton" onClick="sendQuery(false)">Test Query</button>
+<button id="sendQueryGeoJSONButton" onClick="sendQuery(true)">Test Query with GeoJSON result</button>
+<table width="100%" class="description">
+<tr><td>Featuretype Name:</td><td><input type="text" id="featuretypename"/></td><td>Query Template:<select><option>All Values</option></select></tr>
+<tr><td>TripleStore:</td><td><input type="text" id="triplestore"/></td><td>Classes:<select id="classload"></select><button id="loadclasses">Load Classes</button></select></td></tr>
+<tr><td>IndVariable:</td><td><input type="text" id="indvariable"/></td></tr>
+<tr><td>CRS:</td><td><select id="crs"></select></td></tr>
+<tr><td colspan="2"><button id="addquery" onClick="addFeature()">Add FeatureType</button></td></tr>
+</table>
+</div>
+<div class="col-sm-6" id="mapid">
+      
+<script>
+var mymap = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).setView([51.505, -0.09], 13);
+	//var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+	var layer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+	});
+	var yasqe = YASQE.fromTextArea(document.getElementById("queryinput"));
+	var wmsLayer = L.tileLayer.wms('https://sgx.geodatenzentrum.de/wms_topplus_web_open', {
+layers: 'web',
+format: 'image/png',
+ transparent: true,
+attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a href="http://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf">Datenquellen</a>'
+});
+	var baseMaps = {
+    "BKG": wmsLayer,
+        "OSM": layer
+	};
+	baseMaps["OSM"].addTo(mymap);
+	L.control.scale({
+	position: 'bottomright',
+	imperial: false
+}).addTo(mymap);
+var layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(mymap);
+</script>
+  </div></div><div class="row">
+  <div class="col-sm-12">
+  
+<table id="featuretypes" width="100%" border="1" class="description">
+</table>
+<span id="prefixes">
+
+</span>
+
+</div></div></div>
+<div id="footer">
+<a href="configuration.html">Back to Configurations</a>
+</div>
+<script src="js/utils.js"></script>
+</body>
+</html>
