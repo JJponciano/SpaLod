@@ -18,8 +18,8 @@
  */
 package info.ponciano.lab.Spalodwfs;
 
-import info.ponciano.lab.Spalodwfs.controllers.storage.StorageProperties;
-import info.ponciano.lab.Spalodwfs.controllers.storage.StorageService;
+import info.ponciano.lab.Spalodwfs.geotime.controllers.storage.StorageProperties;
+import info.ponciano.lab.Spalodwfs.geotime.controllers.storage.StorageService;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.boot.CommandLineRunner;
