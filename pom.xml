@@ -9,10 +9,10 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>info.ponciano.lab</groupId>
-    <artifactId>Spalodwfs</artifactId>
+    <artifactId>geotimewfs</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Spalodwfs</name>
-    <description>Source of Spalodwfs project</description>
+    <name>spalod</name>
+    <description>Source of spalod project</description>
     <repositories>
         <repository>
             <id>project.local</id>
