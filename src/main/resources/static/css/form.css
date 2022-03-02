@@ -1,0 +1,95 @@
+
+@CHARSET "UTF-8";
+
+/*
+
+* {
+	box-sizing: border-box;
+} */
+
+/* body {
+	font-family: Roboto, Helvetica, sans-serif;
+} */
+/* Fixez le bouton sur le côté gauche de la page the button on the left side of the page */
+.open-btn {
+	display: flex;
+	justify-content: left;
+}
+/* Stylez et fixez le bouton sur la page */
+.open-button {
+	background-color: #1c87c9;
+	color: black;
+	/* padding: 12px 20px; */
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	opacity: 0.8;
+	position: fixed;
+}
+/* Positionnez la forme Popup */
+.login-popup {
+	position: relative;
+	text-align: center;
+	width: 100%;
+}
+/* Masquez la forme Popup */
+.form-popup {
+	display: none;
+	position: fixed;
+	left: 45%;
+	top: 5%;
+	transform: translate(-45%, 5%);
+	border: 2px solid #666;
+	z-index: 9;
+}
+/* Styles pour le conteneur de la forme */
+.form-container {
+	max-width: 750px;
+  max-height: 750px;
+	/* padding: 20px; */
+	background-color: #fff;
+}
+/* Largeur complète pour les champs de saisie */
+.form-container input[type=text], .form-container input[type=password] {
+	width: 100%;
+	/* padding: 10px; */
+	margin: 5px 0 22px 0;
+	border: none;
+	background: #eee;
+}
+/* Quand les entrées sont concentrées, faites quelque chose */
+.form-container input[type=text]:focus, .form-container input[type=password]:focus
+	{
+	background-color: #ddd;
+	outline: none;
+}
+/* Stylez le bouton de connexion */
+.form-container .btn {
+	background-color: #8ebf42;
+	color: red;
+	border: none;
+	cursor: pointer;
+	width: 100%;
+	margin-bottom: 10px;
+	opacity: 0.8;
+}
+/* Stylez le bouton pour annuler */
+.form-container .cancel {
+	background-color: #cc0000;
+}
+/* Planez les effets pour les boutons */
+.form-container .btn:hover, .open-button:hover {
+	opacity: 1;
+}
+
+.buttonC {
+    display: block;
+    width: 115px;
+    height: 25px;
+    background: #4E9CAF;
+    text-align: center;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    line-height: 25px;
+}

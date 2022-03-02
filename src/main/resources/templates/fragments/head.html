@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2020 Dr Jean-Jacques Ponciano <jean-jacques@ponciano.info>.
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA 02110-1301  USA
+-->
+<html lang="en">
+    <body>
+    <head th:fragment="head" id="head">
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+              integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+              crossorigin="" />
+
+        <link rel="stylesheet" type="text/css" href="/css/testSPARQL.css">
+        <link rel="stylesheet" type="text/css" href="/css/asideBox.css"> 
+        <link rel="stylesheet" type="text/css" href="/css/footerStyle.css">
+        <link rel="stylesheet" type="text/css" href="/css/headerStyle.css">
+
+        <link rel="stylesheet" type="text/css" href="/semanticwfs/css/leaflet_legend.css" />
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet-coverage@0.7/leaflet-coverage.css">
+         <link rel="stylesheet" type="text/css" href="/css/shpView.css">
+        <link rel="stylesheet" type="text/css"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+              integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="/semanticwfs/css/style.css">
+        <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'
+              rel='stylesheet' type="text/css" />
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+        <script type="application/json" src="/semanticwfs/js/proj4.js"></script>
+        <script type="application/json" src="/semanticwfs/js/prefixes.js"></script>
+        <script type="application/json" src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+                integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
+        <script type="application/json" src="/semanticwfs/js/leaflet.pattern.js"></script>
+        <script type="application/json" src="/semanticwfs/js/Leaflet.geojsoncss.min.js"></script>
+        <script type="application/json" src="/semanticwfs/js/leaflet_legend.js"></script>
+        <script type="application/json" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script type="application/json" src="https://unpkg.com/covutils@0.6/covutils.min.js"></script>
+        <script type="application/json" src="https://unpkg.com/leaflet-coverage@0.7/leaflet-coverage.min.js"></script>
+        <script type="application/json" src="https://cdn.jsdelivr.net/covjson-reader/0.16/covjson-reader.min.js"></script>
+        <script type="application/json"
+        src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js"></script>
+        <script type="application/json" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+        <script type="application/json"
+        src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+
+    </head>
+</body>
+<footer>
+    <hr style="height: 1px; background-color: #FF0000">
+    <div style="float: right;">
+        <span class="footerpage">This page in [ <span style="color: #007F7F">XML</span>  ]  [<span style="color: #007F7F"> JSON </span>] </span><br><br>
+        <span class="footertext">© 2019 - Bundesamt für Kartographie und Geodäsie, Richard-Strauss-Allee 11, 60598 Frankfurt am Main<span class="picturefooter"><img style="width: 25px;" src="https://lh3.googleusercontent.com/proxy/FtTXJW5cgTzLOBNerZ4JJo_iQBgLfp8C9CQEXle2LV-ic_-ijMJ9YZmzp4We1c2-LY8Hm9ODjEXX4BG2uQ6juO53zUpturZwD0tDAZR-Ii0e5b9juunj"></span>     
+        </span>
+    </div>
+</footer>
+</html>

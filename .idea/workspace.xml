@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/SpalodwfsApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/SpalodwfsApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/array_uplift/ArrayUpliftController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/array_uplift/ArrayUpliftController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/array_uplift/ArrayUpliftModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/array_uplift/ArrayUpliftModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/array_uplift/ArrayUpliftModelImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/array_uplift/ArrayUpliftModelImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/last/EnrichmentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/EnrichmentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/last/GeoJsonController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/GeoJsonController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/last/GeoJsonForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/GeoJsonForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/last/Home.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/Home.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/last/MapsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/MapsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/last/sparql/SparqlController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/sparql/SparqlController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/last/sparql/SparqlQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/sparql/SparqlQuery.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/security/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/security/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/security/WebSecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/security/WebSecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/storage/FileSystemStorageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/storage/FileSystemStorageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/storage/FilleController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/storage/FilleController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/storage/StorageException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/storage/StorageException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/storage/StorageFileNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/storage/StorageFileNotFoundException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/storage/StorageProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/storage/StorageProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/controllers/storage/StorageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/storage/StorageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/Catalog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/Catalog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/Catalogs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/Catalogs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/CswModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/CswModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/FeatureCollection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/FeatureCollection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/FeatureCollectionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/FeatureCollectionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/JGit.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/JGit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/LocalFCManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/LocalFCManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/Metadata.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/Metadata.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/PropertyForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/PropertyForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/PropertyMapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/PropertyMapping.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/SHPdata.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/SHPdata.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/Schema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/Schema.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/SchemaValidation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/SchemaValidation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/SemanticWFSRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/SemanticWFSRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/SparqlQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/SparqlQuery.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/StringForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/StringForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/StringRest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/StringRest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/geojson/Feature.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/geojson/Feature.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/geojson/FeatureCollection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/geojson/FeatureCollection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/geojson/GeoJsonRDF.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/geojson/GeoJsonRDF.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/geojson/Geometry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/geojson/Geometry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/importer/FormatImporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/importer/FormatImporter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/importer/GMLImporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/importer/GMLImporter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/parser/ConfigParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/parser/ConfigParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/parser/KnownSchemaParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/parser/KnownSchemaParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/semantic/KB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/semantic/KB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/semantic/KnowledgeBaseInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/semantic/KnowledgeBaseInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/semantic/OntoManagement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/semantic/OntoManagement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/semantic/OntoManagementException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/semantic/OntoManagementException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/models/semantic/OwlManagement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/semantic/OwlManagement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/info/ponciano/lab/Spalodwfs/GeotimewfsApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/info/ponciano/lab/Spalodwfs/array_uplift/ArrayUpliftTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/info/ponciano/lab/Spalodwfs/models/CatalogTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/info/ponciano/lab/Spalodwfs/models/Catalogs_Test.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/info/ponciano/lab/Spalodwfs/models/FeatureCollectionTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/info/ponciano/lab/Spalodwfs/models/SHPdataTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/info/ponciano/lab/Spalodwfs/models/geojson/GeoJsonRDFTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/info/ponciano/lab/Spalodwfs/models/semantic/KBTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/info/ponciano/lab/Spalodwfs/models/semantic/OwlManagementTest.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="25prhI9cnr8xKTAjw5Le3UNOh2Z" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../pisport" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RunManager">
+    <configuration name="SpalodwfsApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="info.ponciano.lab.Spalodwfs.SpalodwfsApplication" />
+      <module name="SpaLod" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="info.ponciano.lab.Spalodwfs.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.SpalodwfsApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="" />
+      <created>1646234989327</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1646234989327</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

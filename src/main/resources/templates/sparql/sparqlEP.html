@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!--
+ Copyright (C) 2021 Dr. Jean-Jacques Ponciano.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ 
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301  USA
+-->
+<html>
+    <head th:replace="fragments/head :: head"></head>
+    <link rel="stylesheet" type="text/css" href="/css/last.css">
+    <script type='text/javascript'>
+        function toggle(className, displayState) {
+            var elements = document.getElementsByClassName(className)
+
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = displayState;
+            }
+        }
+        function langEn() {
+            toggle('en', 'block'); // Shows
+            toggle('fr', 'none'); // hides
+        }
+        function langFR() {
+            toggle('fr', 'block'); // Shows
+            toggle('en', 'none'); // hides
+        }
+    </script>
+    <body onLoad="langEn()">
+        <div th:insert="fragments/nav :: navbar"></div>
+
+        <div id="wrapper">
+            <!-- Main -->
+            <div id="main">
+                <div class="inner">
+
+
+                    <header id="header">
+                        <h1 class="en">Enter your query</h1>
+                        <h1 class="fr">Entrez votre requête</h1>
+                        <div id="flag">
+                              <img width="35px" alt="" src="images/FR.png" onclick="langFR()"
+                                   style="cursor: pointer;">   <img width="35px" alt=""
+                                   src="images/EU.png" onclick="langEn()" style="cursor: pointer;">
+
+                        </div>
+                    </header>
+
+                    
+                    <section>
+                        <form action="#" th:action="@{/sparqlend/query}" th:object="${squery}" method="post">
+                            <label id="title">Query:</label>
+                            <textarea  id="sparqlQuery" rows="10" cols="500" th:field="*{query}">SELECT WHERE{}</textarea>
+                            <input type="submit" value="Submit">
+                        </form>
+
+                    </section>
+                    <section>
+                        <pre>
+                            <code th:text="${queryresult}"></code>
+                        </pre>
+                    </section>
+                </div><!-- End inner -->
+            </div> <!--  END Main -->
+        </div> <!-- END Wrapper -->
+        <div th:insert="fragments/footer :: footer"></div>
+    </body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<!--
+ Copyright (C) 2021 Dr. Jean-Jacques Ponciano.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ 
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301  USA
+-->
+<html>
+    <head th:replace="fragments/head :: head"></head>
+    <link rel="stylesheet" type="text/css" href="/css/last.css">
+    <script type='text/javascript'>
+        function toggle(className, displayState) {
+            var elements = document.getElementsByClassName(className)
+
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = displayState;
+            }
+        }
+        function langEn() {
+            toggle('en', 'block'); // Shows
+            toggle('fr', 'none'); // hides
+        }
+        function langFR() {
+            toggle('fr', 'block'); // Shows
+            toggle('en', 'none'); // hides
+        }
+    </script>
+    <body onLoad="langEn()">
+        <div th:insert="fragments/nav :: navbar"></div>
+
+        <div id="wrapper">
+            <!-- Main -->
+
+            <div class="containerfull">
+                <div class="containercontent">
+
+
+
+                    <header id="header">
+                        <h1 class="en">Thematic Maps</h1>
+                        <h1 class="fr">Cartes thématiques</h1>
+                        <div id="flag">
+                              <img width="35px" alt="" src="images/FR.png" onclick="langFR()"
+                                   style="cursor: pointer;">   <img width="35px" alt=""
+                                   src="images/EU.png" onclick="langEn()" style="cursor: pointer;">
+
+                        </div>
+                    </header>
+
+                    <section>
+
+
+                        <div  th:if="${not #lists.isEmpty(individuals)}">
+                            <form th:action="@{/maps/select}"th:object="${dataindiv}" method="post" enctype="multipart/form-data">
+                                <select th:field="*{name}" >
+                                    <div th:each="md: ${individuals}">
+                                        <option th:value="${md}" th:text="${md}"></option>
+
+                                </select>
+
+                                <input type="submit" value="Select" />
+
+
+                            </form>
+                        </div>
+                    </section><!-- end  -->
+
+                    <!-- Map -->
+                    <div th:if="${MDlist}" id=map  style="position : relative; width: 800px; height: 800px; margin: 0 auto;">
+                        <!-- Leaflet script and stylesheet -->
+                        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+                        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+                              integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+
+                        <!-- Retreving data from the request -->
+                        <script th:inline="javascript">
+                                       var dataArray = /*[[${MDlist}]]*/ 'default';
+                                       // Function used to retrieve size of the data array 
+                                       // Data is stored as followed :
+                                       // data = [ itemIndex, itemLabel, latitude, longitude]
+                                       Object.size = function (obj) {
+                                           var size = 0,
+                                                   key;
+                                           for (key in obj) {
+                                               if (obj.hasOwnProperty(key))
+                                                   size++;
+                                           }
+                                           return size;
+                                       };
+                                       var sizeOfArray = Object.size(dataArray);
+
+                        </script>
+                        <script>
+                            // Creation of one layer of points
+                            var query = new L.layerGroup();
+
+                            // ---------------------------------------------------------- 
+                            // -----------------------------  MARKER -----------------------------
+
+                            // Deffinition
+                            var hs = L.icon({
+                                iconUrl: 'http://localhost:8080/pictures/signaturen/HS.png',
+                                iconSize: [38, 95], // size of the icon
+                                shadowSize: [50, 64], // size of the shadow
+                                iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+                                shadowAnchor: [4, 62], // the same for the shadow
+                                popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+                            });
+                            // End definition
+
+                            // Loop to add every point of the results to the map 
+                            for (let i = 0; i < sizeOfArray; i++) {
+
+                                // To add a point :
+                                // L.marker([latitude, longitude]).bindPopup(nameOfThePoint).addTo(nameOfTheLayer);
+                                L.marker([dataArray[i][2], dataArray[i][3]]).bindPopup(dataArray[i][1], {icon: hs}).addTo(query);
+
+                            }
+                            //  ----------------------------- END MARKER -----------------------------
+                            // ----------------------------------------------------------
+                            var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+                                    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                                    mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+                            // Creation of two layers : grayscale, and streets map 
+                            // It is also possible to add a satelite map, landform map, ..
+                            var grayscale = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+                                    streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+
+                            // Definition of the map, and setup of details : coordinates of the center, zoom level and layers that appear on loading
+                            var map = L.map('map', {
+                                center: [49.99, 8.24],
+                                zoom: 6,
+                                layers: [streets, query]
+                            });
+
+                            // Definition of layers
+                            var baseLayers = {
+                                "Grayscale": grayscale,
+                                "Streets": streets
+                            };
+
+                            // Definition of point layers
+                            var overlays = {
+                                "Query": query
+                            };
+                            // Add layers and points layers to the map 
+                            L.control.layers(baseLayers, overlays).addTo(map);
+                        </script>
+                    </div> 
+                    </section>
+                    <section>
+
+                        <!-- Displaying the table of results -->
+                        <div th:if="${MDlist}" class="tableContentSPARQL">
+
+                            <span id="nbOfResults" style="width: 150px; height: 10px"> 0 result(s).</span>
+
+                            <script type="text/javascript">
+                                document.getElementById("nbOfResults").innerHTML = sizeOfArray.toString().concat(" result(s).");
+                            </script>                    
+                            <table border="1" style="width: 700px; margin: 0 auto;">
+                                <thead>
+                                    <!-- Definition of the 4 columns -->
+                                    <tr><th colspan="4" style="text-align: center; font-size: 1.2em;">Results of the query</th></tr>
+                                    <tr style="text-align: center;">
+                                        <th><span>item</span></th>
+                                        <th><span>itemLabel</span></th>
+                                        <th><span>Latitude</span></th>
+                                        <th><span>Longitude</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filling the 4 columns with the results from WikiData-->
+                                    <tr th:each="md: ${MDlist}">
+                                        <td style="width: 170px;"><span th:text="${md[0]}"></span></td>
+                                        <td style="width: 170px;"><span th:text="${md[1]}"></span></td>
+                                        <td style="width: 170px;"><span th:text="${md[2]}"></span></td>
+                                        <td style="width: 170px;"><span th:text="${md[3]}"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+
+            </div><!-- End inner -->
+        </div> <!--  END Main -->
+    </div> <!-- END Wrapper -->
+    <div th:insert="fragments/footer :: footer"></div>
+</body>
+</html>

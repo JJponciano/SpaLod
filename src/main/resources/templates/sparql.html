@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<!--
+ Copyright (C) 2021 Dr. Jean-Jacques Ponciano.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ 
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301  USA
+-->
+<html>
+    <head th:replace="fragments/head :: head">
+        <title>Spalod</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+
+
+        <!--Header with the picture, title and Contact-->
+
+        <div class="containerfull">
+            <a href="/home"><img class="pictureOfHeader" src="https://www.verwaltung-innovativ.de/SharedDocs/Bilder/DE/Artikel/GDI_DE_Logo.jpg?__blob=poster&v=2"></a> 
+            <span class="titleOfHeader">Linked Data</span>
+            <span class="textOfHeader">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Flag_of_the_United_Kingdom_%282-3%29.svg/1024px-Flag_of_the_United_Kingdom_%282-3%29.svg.png" style="width: 32px; margin-right: 13px;">English | <a href="/login" style="text-decoration: none; color: #333333;">Login</a> | <a href="/contact" style="text-decoration: none; color: #333333">Contact</a><br><br>
+                <a href="https://www.gdi-de.org" target="_blank"><img src="/pictures/GDI-DE.jpg" style="width: 250px; float: right;"></a></span>
+        </div>
+
+        <!-- Navigation bar and page title -->
+
+        <header id="header">
+            <div th:insert="fragments/nav :: navbar"></div>
+            <h1>Linked Data enrichment</h1>
+        </header>
+
+
+        <!-- Body -->
+        <!-- The onLoad() function fill the query space with an example -->
+    <body onload="onLoad()">
+
+        <script type="text/javascript">
+
+            // Definition of example queries
+            const queries = {
+                schools: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q3914.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                twentyBiggestCities: 'SELECT DISTINCT ?city ?cityLabel ?latitude ?longitude ?population WHERE {\n SERVICE wikibase:label { bd:serviceParam wikibase:language "de". } \n VALUES ?instanceOfCity { \n wd:Q515 \n  } \n  ?city (wdt:P31/(wdt:P279*)) ?instanceOfCity; \n wdt:P17 wd:Q183; \n p:P625 ?statement. \n ?statement psv:P625 ?coordinate_node. \n ?coordinate_node wikibase:geoLatitude ?latitude; \n wikibase:geoLongitude ?longitude. \n OPTIONAL { ?city wdt:P1082 ?population. } \n } \nORDER BY DESC (?population) \nLIMIT 20',
+                tenBiggestStadiums: 'SELECT ?item ?itemLabel ?latitude ?longitude ?capacity WHERE {\n?item wdt:P31 wd:Q1154710;\nwdt:P17 wd:Q183;\n    p:P625 ?statement.\n  ?statement psv:P625 ?coordinate_node.\n?coordinate_node wikibase:geoLatitude ?latitude;\nwikibase:geoLongitude ?longitude.\nSERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de". }\n OPTIONAL { ?item wdt:P1083 ?capacity. }\n}\nORDER BY DESC (?capacity)\nLIMIT 10',
+                hospitals: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q16917.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                policeStations: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q861951.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                fireStations: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q1195942.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                supermarkets: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q180846.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                museums: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q33506.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                libraries: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q7075.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                trainStations: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q55488.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                banks: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q22687.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                restaurants: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q11707.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                cinemas: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q41253.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                monuments: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q4989906.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                hotels: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q27686.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                airports: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q1248784.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                stadiums: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q483110.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                swimmingPools: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q200023.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                serviceStation: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q205495.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                weatherStation: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q19010.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                researchLaboratory: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q483242.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                port: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q44782.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+                cities: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q515.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
+            };
+
+            // Displaying the new value of the cursor 
+            function showVal(newNbOfPoints) {
+                document.getElementById("nbOfPoints").innerHTML = newNbOfPoints;
+            }
+
+            // Updating the request if the cursor moves or if another example is selected
+            function updateRequest() {
+                checkRequest();
+//                document.getElementById('requestChoice').addEventListener('click', () => checkRequest());
+//                document.getElementById('pointsCursor').addEventListener('click', () => checkRequest());
+            }
+
+            // On page loading, displays the value of the cursor and shows a request
+            function onLoad() {
+                document.getElementById("nbOfPoints").innerHTML = document.getElementById("pointsCursor").value;
+                document.getElementById("sparqlText").value = queries[document.getElementById('requestChoice').value].concat(document.getElementById('pointsCursor').value);
+            }
+
+
+            // Checks if the request should be updated or not
+            function checkRequest() {
+                if (document.getElementById('requestChoice').value !== "twentyBiggestCities"
+                        && document.getElementById('requestChoice').value !== "tenBiggestStadiums") {
+                    document.getElementById("sparqlText").value =
+                            queries[document.getElementById('requestChoice').value].concat(document.getElementById('pointsCursor').value);
+                } else {
+                    document.getElementById("sparqlText").value = queries[document.getElementById('requestChoice').value];
+                }
+            }
+        </script>
+
+        <div class="containerfull">
+            <div class="containercontent">
+
+                <!-- Calls the onLoad() function -->
+                <div  onload="onLoad()">
+                    <section class='inline cent'>
+                        <div class='inline w30'>
+                            <!-- List of example requests -->
+                            <span style="font-weight: bold; font-size: 1.5em;">Class to enrich:</span>
+                            <select name="classToEnrich" id="requestChoice" value="schools" onChange="updateRequest()">
+                                <option value="schools">Schule (Q3914)</option>
+                                <option value="twentyBiggestCities">20 biggest cities in Germany</option>
+                                <option value="tenBiggestStadiums">10 biggest football stadiums in Germany</option>
+                                <option value="hospitals">Krankenhaus (Q16917)</option>
+                                <option value="policeStations">Polizeistation (Q861951)</option>
+                                <option value="fireStations">Feuerwache (Q1195942)</option>
+                                <option value="supermarkets">Supermarkt (Q180846)</option>
+                                <option value="museums">Museen (Q33506)</option>
+                                <option value="libraries">Bibliotheken (Q7075)</option>
+                                <option value="trainStations">Bahnhöfe (Q55488)</option>
+                                <option value="banks">Banken (Q22687)</option>
+                                <option value="restaurants">Restaurants (Q11707)</option>
+                                <option value="cinemas">Kinos (Q41253)</option>
+                                <option value="monuments">Denkmäler(Q4989906)</option>
+                                <option value="hotels">Hotels (Q27686)</option>
+                                <option value="airports">Flughäfen (Q1248784)</option>
+                                <option value="stadiums">Stadien (Q483110)</option>
+                                <option value="swimmingPools">Schwimmbäder (Q200023)</option>
+                                <option value="serviceStation">Tankstellen (Q205495)</option>
+                                <option value="weatherStation">Wetterstationen (Q19010)</option>
+                                <option value="researchLaboratory">Forschungslaboratorien (Q483242)</option>
+                                <option value="port">Häfen (Q44782)</option>
+                                <option value="cities">Städte (Q515)</option>
+                            </select>
+                        </div>
+                        <div class='inline w30'>
+                            <!-- Cursor - It is possible to change the value range and the step of change on the input line -->
+                            <span style="font-weight: bold; font-size: 1.5em;">Max items number :</span>
+                            <span id="nbOfPoints"> </span>
+                            <input type="range" id="pointsCursor" min="100" max="1000" value="500" step="50" class="inputRange" oninput="showVal(this.value)" onclick="updateRequest()">
+                        </div>
+                        <div class='inline w30' >
+                            <!-- Text box showing the error, if the request does not work -->
+                            <span style="font-weight: bold; font-size: 1.5em;">Potential error</span>
+                            <pre style="margin-right: 30px; max-height: 400px;">
+                            <code th:text="${errorMessage}"></code>
+                            </pre> 
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Text box where the request is shown -->
+                <div style="float: right;" onload="onLoad()">
+                    <form action="#" th:action="@{/enrichment/results}" th:object="${squery}" method="post">
+
+                        <!-- Text box -->
+                        <textarea id="sparqlText" rows="16" cols="60" style="font-size: 1.6em; width: 100%; height: 100%; line-height: 150%" th:field="*{results}">YOUR QUERY</textarea><br>
+                        <!-- Submit button -->
+                        <input style="margin-left: auto; margin-right: auto; font-size: 1.4em;" type="submit" name="Submit" value="Get the query results">
+                    </form>
+                </div>
+                <section>
+
+
+                </section>
+                <section> 
+
+                    <!-- Map -->
+                    <div id=map  style="position : relative; width: 800px; height: 800px; margin: 0 auto;">
+                        <!-- Leaflet script and stylesheet -->
+                        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+                        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+                              integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+                        <link rel="stylesheet" href="../static/css/asideBox.css" type="text/css">
+                        <link rel="stylesheet" href="../static/css/main.css" type="text/css"/>
+                        <link rel="stylesheet" href="../static/css/testSPARQL.css" type="text/css">
+                        <link rel="stylesheet" href="../static/css/testSPARQL.css" type="text/css"/>
+
+
+
+
+
+                        <!-- Retreving data from the request -->
+                        <script th:inline="javascript">
+                    var dataArray = /*[[${MDlist}]]*/ 'default';
+                    // Function used to retrieve size of the data array 
+                    // Data is stored as followed :
+                    // data = [ itemIndex, itemLabel, latitude, longitude]
+                    Object.size = function (obj) {
+                        var size = 0,
+                                key;
+                        for (key in obj) {
+                            if (obj.hasOwnProperty(key))
+                                size++;
+                        }
+                        return size;
+                    };
+                    var sizeOfArray = Object.size(dataArray);
+
+                        </script>
+                        <script>
+                            // Creation of one layer of points
+                            var query = new L.layerGroup()
+
+                            // Loop to add every point of the results to the map 
+                            for (let i = 0; i < sizeOfArray; i++) {
+
+                                // To add a point :
+                                // L.marker([latitude, longitude]).bindPopup(nameOfThePoint).addTo(nameOfTheLayer);
+                                L.marker([dataArray[i][2], dataArray[i][3]]).bindPopup(dataArray[i][1]).addTo(query);
+
+                            }
+                            var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+                                    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                                    mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+                            // Creation of two layers : grayscale, and streets map 
+                            // It is also possible to add a satelite map, landform map, ..
+                            var grayscale = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+                                    streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+
+                            // Definition of the map, and setup of details : coordinates of the center, zoom level and layers that appear on loading
+                            var map = L.map('map', {
+                                center: [49.99, 8.24],
+                                zoom: 6,
+                                layers: [streets, query]
+                            });
+
+                            // Definition of layers
+                            var baseLayers = {
+                                "Grayscale": grayscale,
+                                "Streets": streets
+                            };
+
+                            // Definition of point layers
+                            var overlays = {
+                                "Query": query
+                            };
+                            // Add layers and points layers to the map 
+                            L.control.layers(baseLayers, overlays).addTo(map);
+                        </script>
+                    </div> 
+                </section>
+                <section>
+
+                    <!-- Displaying the table of results -->
+                    <div th:if="${MDlist}" class="tableContentSPARQL">
+                        
+                        <form action="#" th:action="@{/enrichment/enrich}" th:object="${stringform}" method="post">
+                            <label id="mapname">Map Name:</label>
+                            <input id="nameMap" type="text" th:field="*{string}"/>
+                            <input type="submit" value="Enrich the ontology"/>
+                        </form>
+                        
+                        <span id="nbOfResults" style="width: 150px; height: 10px"> 0 result(s).</span>
+
+                        <script type="text/javascript">
+                            document.getElementById("nbOfResults").innerHTML = sizeOfArray.toString().concat(" result(s).");
+                        </script>                    
+                        <table border="1" style="width: 700px; margin: 0 auto;">
+                            <thead>
+                                <!-- Definition of the 4 columns -->
+                                <tr><th colspan="4" style="text-align: center; font-size: 1.2em;">Results of the query</th></tr>
+                                <tr style="text-align: center;">
+                                    <th><span>item</span></th>
+                                    <th><span>itemLabel</span></th>
+                                    <th><span>Latitude</span></th>
+                                    <th><span>Longitude</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Filling the 4 columns with the results from WikiData-->
+                                <tr th:each="md: ${MDlist}">
+                                    <td style="width: 170px;"><span th:text="${md[0]}"></span></td>
+                                    <td style="width: 170px;"><span th:text="${md[1]}"></span></td>
+                                    <td style="width: 170px;"><span th:text="${md[2]}"></span></td>
+                                    <td style="width: 170px;"><span th:text="${md[3]}"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <!--The footer of the application-->
+        <footer th:replace="fragments/footer :: footer">
+    </body>
+
+
+</html>

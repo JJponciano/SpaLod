@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+  <head>
+<title>BKG WFS Triple Stores</title>
+<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="css/yasqe.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+   integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+   crossorigin=""></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+  <script src="js/yasqe.js"></script>
+  <script src="js/proj4.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.1/js/jquery.tablesorter.min.js"></script>
+   <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script> 
+<script src="js/prefixes.js"></script>
+  <script>
+  function saveTextAsFile(tosave,fileext,filename)
+  {
+      var a = document.createElement('a');
+      a.style = "display: none";
+      var blob= new Blob([tosave], {type:'text/plain'});
+      var url = window.URL.createObjectURL(blob);
+      var filename = filename+fileext;
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+      }, 1000);
+  }
+
+	var colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+		  '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+		  '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+		  '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+		  '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+		  '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+		  '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+		  '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+		  '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+		  '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
+
+var overlayMaps={}
+var overlayControl;
+var markercollection=[]
+var first=true;
+function clearMap() {
+    for(i in mymap._layers) {
+        if(mymap._layers[i]._path != undefined) {
+            try {
+                mymap.removeLayer(mymap._layers[i]);
+            }
+            catch(e) {
+                console.log("problem with " + e + mymap._layers[i]);
+            }
+        }
+    }
+	if(!first){
+		mymap.removeControl(overlayControl);
+	}else{
+		first=false;
+	}
+	// now put the control back
+
+	layercontrol.addTo(mymap);
+	for(marker in markercollection){
+		mymap.removeLayer(markercollection[marker])
+	}
+	markercollection=[]
+    /*    for(decorator in decorators){
+		mymap.removeLayer(decorators[decorator])
+	}
+	decorators=[]*/
+}
+
+
+
+  function sendQuery(geojsonres){
+	var url=document.location.href
+	if(!(url.endsWith("/"))){
+		url+="/"
+	}
+	var endpoint=$('#dataset').val()
+	if(!(endpoint.includes("http"))){
+	    endpoint=url+$('#dataset').val()
+	}
+    $.get("../rest/service/queryservice?query="+encodeURIComponent(yasqe.getValue())+"&endpoint="+encodeURIComponent(endpoint), function(data, status){
+        //alert("Data: " + data + "\nStatus: " + status);
+        var json=JSON.parse(data)
+                $('#number').text(json["size"]+" Results");
+        var i=1;
+        var table="<thead><tr><th>Counter</th>"
+        for(variable in json["features"][0]){
+        	table+="<th>"+variable+"</th>"
+        }
+        table+="</tr></thead><tbody>"
+        for(obj in json["features"]){
+        	table+="<tr><td>"+i+++"</td>"
+        	for(variable in json["features"][obj]){
+        		if(json["features"][obj][variable].toString().startsWith("http") || json["features"][obj][variable].toString().startsWith("https")){
+            		table+="<td><a href=\""+json["features"][obj][variable]+"\" target=\"_blank\">"+json["features"][obj][variable]+"</a></td>"
+        		}else{
+            		table+="<td>"+json["features"][obj][variable]+"</td>"        			
+        		}
+        	}
+        	table+="</tr>"
+        }
+        $('#queryres').html(table+"</tbody>")
+
+        clearMap();
+        var overlays={}
+        for(layer in json["geojson"]){
+            var officiallayer=L.geoJSON(json["geojson"][layer],{
+            	coordsToLatLng: function (coords) {
+            		//console.log($('#dataset').val())
+            		/*if($('#dataset').val()=="linkedgeodata.ttl"){
+            			return new L.LatLng(coords[0], coords[1], coords[2]);
+            		}*/
+            		return new L.LatLng(coords[1], coords[0], coords[2]);
+
+                },
+                pointToLayer: function (feature, latlng) {
+                	var greyIcon = new L.Icon({
+                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    });
+                	var mark=L.marker(latlng,{icon: greyIcon})
+                	markercollection.push(mark)
+                    return mark;
+                },
+                style: function(){
+                	return {fillColor: ("color" in json["geojson"][layer]?json["geojson"][layer]["color"]:colorArray[layer%colorArray.length]),
+                        color: ("color" in json["geojson"][layer]?json["geojson"][layer]["color"]:colorArray[layer%colorArray.length])}
+                },
+            	onEachFeature: function (feature, layer) {
+            		 var popup="GeoJSON Result<br/><ul>"
+             		 for(prop in feature.properties){
+            		 	popup+="<li>"+prop+" - ";
+            		 	var value=trimcoords(feature.properties[prop],90)
+                		if(value.startsWith("http") || value.startsWith("https")){
+                    		popup+="<a href=\""+value+"\" target=\"_blank\">"+value+"</a>"
+                		}else{
+                			popup+=value        			
+                		}
+            		 	popup+="</li>"
+            		 }
+            		 popup+="</ul>"
+            	     layer.bindPopup(popup);
+            }});
+            gardensLayerGroup = L.layerGroup()
+            .addLayer(officiallayer)
+            .addTo(mymap);
+            overlays[json["geojson"][layer]["name"]]=gardensLayerGroup;
+            //layercontrol.addOverlay(gardensLayerGroup, json["geojson"][layer]["name"]);
+            //overlayMaps[layer+""]=officiallayer;
+
+        }
+        mymap.removeControl(layercontrol);
+		// add one with the cities
+		overlayControl = L.control.layers(baseMaps, overlays).addTo(mymap);
+        mymap.fitBounds(officiallayer.getBounds());
+        $('#queryres').DataTable();
+        //$("#queryres").tablesorter();
+        if(geojsonres){
+        	saveTextAsFile(JSON.stringify(json["geojson"][0],null, 2),".geojson","queryresult")
+        }
+    });
+  }
+
+  function trimcoords(coords,length){
+		return coords.length > length ? coords.replace("undefined,","").substring(0, length - 3) + "...)" : coords;
+ }
+
+  function chooseSampleQuery(){
+	  	var queryString=prefixList+"\n"+$('#samplequeries :selected').val().replace(".",".\n").replace("}","\n}\n").replace("{","{\n");
+	  	if(queryString.includes("LIMIT")){
+	  		queryString=queryString.substring(0,queryString.indexOf("LIMIT"));
+	  	}
+        yasqe.setValue(queryString+" LIMIT 10")
+        $('#queryinput').val(queryString+" LIMIT 10");
+  }
+	  	
+  function loadSampleQueries(){
+		$.getJSON("../rest/service/queryConfigs", function(result){
+	        options=""
+			for(featuretype in result){
+				if(featuretype==$('#dataset').val()){
+					for(query in result[featuretype]){
+						options+="<option value=\""+result[featuretype][query]["query"]+" LIMIT 100\">"+result[featuretype][query]["name"]+"</option>"
+					}
+				}
+			}
+	        $('#samplequeries').html(options);
+	        chooseSampleQuery();
+		});
+  }
+        
+  function refreshQueries(){
+      $('#samplequeries').html(tripleStoreToQueries[$('#dataset').val()]);
+      chooseSampleQuery();
+  }
+  </script>
+  <style>
+  #mapid { height: 500px;}
+  </style>
+  <style>
+.table-wrapper-scroll-y {
+  display: block;
+  max-height: 500px;
+  max-width: 100%;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+</style>
+</head>
+<body>
+<header>
+<div id="header">
+<h1 align="center">BKG WFS Triple Stores</h1>
+</div>
+</header>
+<div class="container-fluid" role="main">
+  <div class="row">
+  <div class="col-sm-5">
+Query Input:<br/>
+<span id="numberexamples"></span> Example Queries:
+<script>
+var tripleStoreToQueries={}
+$( document ).ready(function() {
+	$.getJSON("../rest/service/getEndpoints", function(result){
+        options=""
+		   for(featuretype in result["endpoints"]){
+			   options+="<option value=\""+result["endpoints"][featuretype]["endpoint"]+"\">"+result["endpoints"][featuretype]["name"]+"</option>"
+		   }
+        endpoints=result["endpoints"]
+        $('#dataset').html(options);
+	});
+	yasqe.setValue("SELECT ?a ?b ?c\n WHERE {\n ?a ?b ?c .\n }\n LIMIT 10")
+});
+</script>
+<br/>
+<select id="samplequeries" onChange="chooseSampleQuery()">
+<option value='SELECT ?id ?name ?wkt_geom WHERE { ?id rdf:type gn:NamedPlace . ?id gn:name ?geog_name . ?geog_name gn:spelling ?spelling . ?spelling gn:text ?name . ?id geosparql:hasGeometry ?id_geom .  ?id_geom geosparql:asWKT ?wkt_geom .  } LIMIT 100'>100 NamedPlaces</option>
+</select>
+<br/>
+<textarea id="queryinput" rows=16 cols=45>
+</textarea><br/>
+<select id="dataset" onChange="loadSampleQueries()">
+</select>
+<br/>
+<b>Note: </b> Query variables ending in "_geom" are rendered in the map view.
+<br/>
+<b>Note2: </b> Egenhofer relation functions beginning with ST can take both raster and vector data as input.
+<br/>
+<button id="sendQueryButton" onClick="sendQuery(false)">Query</button>
+<button id="sendQueryGeoJSONButton" onClick="sendQuery(true)">Query with GeoJSON result</button>
+</div>
+
+    <div class="col-sm-7" id="mapid">
+
+
+<script>
+var mymap = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).setView([51.505, -0.09], 13);
+	//var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+	var layer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+	});
+	var yasqe = YASQE.fromTextArea(document.getElementById("queryinput"));
+	var wmsLayer = L.tileLayer.wms('https://sgx.geodatenzentrum.de/wms_topplus_web_open', {
+layers: 'web',
+format: 'image/png',
+ transparent: true,
+attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a href="http://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf">Datenquellen</a>'
+});
+	var baseMaps = {
+    "BKG": wmsLayer,
+        "OSM": layer
+	};
+	baseMaps["OSM"].addTo(mymap);
+	L.control.scale({
+	position: 'bottomright',
+	imperial: false
+}).addTo(mymap);
+var layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(mymap);
+</script>
+    </div>
+  </div>
+
+
+QueryResult:
+<span id="number"></span>
+ <div class="row">
+  <div class="col-sm-12" id="queryresult" class="table-wrapper-scroll-y">
+<table align="center" id="queryres" class="tablesorter" border="1">
+</table>
+</div></div></div><div id="footer">
+<a href="../">Back to Landingpage</a>
+</div>
+<script src="js/utils.js"></script>
+</body>
+</html>

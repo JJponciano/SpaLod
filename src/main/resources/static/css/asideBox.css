@@ -1,0 +1,46 @@
+.containerfull {
+	display: flex;
+	margin: 0px;
+	padding: 0px;
+}
+.containercontent {
+	padding: 10px;
+	width: 80%;
+}
+.containerbox {
+	display: flex;
+	align-items: right;
+	flex-direction: column;
+	padding-right: 0px;
+	margin-right: 0px;
+}
+.box {
+	border: 1px solid black;
+	width: 300px;
+	margin: 10px;
+	margin-right: 0px;
+}
+.titlebox {
+	width: 100%;
+	border: 2px solid gray;
+	padding:  30px;
+	background-color: lightgray;
+	text-align: left;
+	font-family: "Proxima Nova Condensed Bold","Source Sans Pro", sans-serif;
+	font-size: 1.4em;
+	font-weight: bold;
+}
+.boldfont {
+	margin-bottom: 20px;
+	font-family: "Source Sans Pro", sans-serif;
+	font-weight: bold;
+}
+.normalfont {
+	font-family: "Source Sans Pro", sans-serif;
+	font-size: 0.9em;
+}
+
+.inputRange{
+	content: attr(min);
+	content: attr(max);
+}

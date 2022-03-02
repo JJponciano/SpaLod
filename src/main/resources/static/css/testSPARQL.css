@@ -1,0 +1,64 @@
+.tableContentSPARQL{
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.tableContentSPARQL th {
+    width: 170px;
+}
+
+.tableContentSPARQL th:hover{
+    background-color:  #000000;
+    color: white;
+}
+
+.tableContentSPARQL td:hover{
+    background-color: #383434;
+    color: white;
+}
+caption.tableContentSPARQL{
+    caption-side: top;
+}
+
+.documentation p {
+    color: #383434;
+    font-size: 1.2em;
+}
+
+.documentation span {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #870909
+}
+
+.documentation a {
+    color: #383434;
+    text-decoration: none;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.documentation a:hover {
+    color: #007F7F;
+    text-decoration: none;
+}
+.inline {
+    display: inline-block;
+}
+.red {
+    border: #870909 solid 2px;
+}
+
+.cent {
+    width: 100%;
+}
+
+.w30 {
+    width: 30%;
+}
+
+sparqlQuery {
+  max-width: 100%;
+  border: #870909 solid 3px;
+}

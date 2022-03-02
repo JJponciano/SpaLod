@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2020 Dr Jean-Jacques Ponciano <jean-jacques@ponciano.info>.
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA 02110-1301  USA
+-->
+<html>
+    <head>
+    </head>
+    <body>
+        <div th:fragment="navbar" >
+            <div id="topnavbar" class="topnav">
+                <div id="innernavBar">
+                    <div>
+                        <link rel="stylesheet" type="text/css" href="/css/navbar.css">
+                        <!--Home menu-->
+                        <div class="dropdown">
+                            <button class="dropbtn" onclick="window.location.href = '/';">Home</button>
+                        </div>
+                        <!--Data management menu with 5 submenus-->
+                        <div class="dropdown">
+                            <!--Button corresponding to menu which have submenu,
+                              when the cursor pass in this button, it displays the submenus-->
+                            <button class="dropbtn">Data management</button>
+                            <div class="dropdown-content">
+                                <!--The Submenus with their url-->
+                                 <a href="/geojson/uplift">GeoJSON Uplift</a>
+                                  <a href="/geojson/downlift">GeoJSON Downlift</a>
+                                <a href="/data/ShpUplift">Shapefile importer</a>
+                                <a href="/enrichment/">Linked Data enrichment</a>
+                                <!--<a href="/schema/validation">Schema verification</a>-->
+                            </div>
+                        </div>
+                          <!--SPARQL endpoint-->
+                        <div class="dropdown">
+                            <button class="dropbtn" onclick="window.location.href = '/sparqlend/';">SPARQL endpoint</button>
+                        </div>
+                        
+                            <!--Thematic maps menu with 3 submenus-->
+                        <div class="dropdown">
+                            <button class="dropbtn">Thematic maps</button>
+                            <div class="dropdown-content">
+                                <a href="/enrichment/">Create a thematic map</a><!-- Before it was mapCreation -->
+                                <!--<a href="/mapExample">Spatio-temporal data example</a>-->
+                                <a href="/maps/">Thematic maps</a>
+                            </div>
+                        </div><!-- comment -->
+                        <!--SPARQL endpoint menu (external link)-->
+                        <div class="dropdown">
+                            <!--The button for a menu without subemnus
+                              the button have a function in JavaScript that gives to it a url that is reached when the button is clicked-->
+
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

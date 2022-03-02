@@ -1,0 +1,107 @@
+/*
+Copyright (C) 2020 Dr Jean-Jacques Ponciano <jean-jacques@ponciano.info>.
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA 02110-1301  USA
+*/
+/*
+    Created on : 5 Oct 2020, 18:37:43
+    Author     : Dr Jean-Jacques Ponciano <jean-jacques@ponciano.info>
+*/
+
+
+/*NAV BAR*/
+
+.topnav {
+  background-color: #870909;
+  display: flex;
+  justify-content: center;
+
+}
+
+#innernavBar {
+  position: relative;
+  min-height: 40px;
+}
+
+.dropbtn {
+  display: inline-block;
+  border: 2px solid gray;
+  position: relative;
+  background-color: #BD1B1B;
+  color: #ffffffb6;
+  text-align: center;
+  padding: 16px;
+  text-decoration: none;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+.dropbtn:hover {
+  background-color: white;
+  color: gray;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.btn {
+  display: inline-block;
+  border: 2px solid gray;
+  position: relative;
+  background-color: #870909;
+  color: #ffffffb6;
+  text-align: center;
+  padding: 16px;
+  text-decoration: none;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  min-width: 130px;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 1.3em;
+  text-align: center;
+  position: relative;
+}
+
+.dropdown-content a:hover {
+  background-color: #870909;
+  color: white;
+  font-size: 1.3em;
+  text-align: center;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn .btn {
+  background-color: white;
+  color: gray;
+}
