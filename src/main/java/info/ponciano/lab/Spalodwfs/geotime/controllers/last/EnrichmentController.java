@@ -76,6 +76,7 @@ public class EnrichmentController {
             //creation of thematic map dataset
             OntClass dataset = ont.createClass(GeoJsonRDF.DCAT_DATASET);
             OntClass mt = ont.createClass(KB.NS + "Thematic_Map");
+
             String name = KB.NS + sq.getString();
 
             Individual mapThem = dataset.createIndividual(name);
