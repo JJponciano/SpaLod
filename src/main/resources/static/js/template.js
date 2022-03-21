@@ -96,15 +96,15 @@
           );
         }
 
-        const mainNav = $("#tmMainNav");
-        mainNav.singlePageNav({
-          filter: ":not(.external)",
-          offset: $(".tm-nav-section").outerHeight(),
-          updateHash: true,
-          beforeStart: function() {
-            mainNav.removeClass("show");
-          }
-        });
+//        const mainNav = $("#tmMainNav");
+//        mainNav.singlePageNav({
+////          filter: ":not(.external)",
+//          offset: $(".tm-nav-section").outerHeight(),
+//          updateHash: true,
+//          beforeStart: function() {
+//            mainNav.removeClass("show");
+//          }
+//        });
 
         videoSec = $("#tmVideoSection");
 
