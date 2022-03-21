@@ -146,4 +146,10 @@ public class KB implements KnowledgeBaseInterface {
             Logger.getLogger(KB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public PiSparql getOntEmpty() throws OntoManagementException {
+        PiSparql o = new OwlManagement(DEFAULT_ONTO).ont;
+        o.setNs(NS);
+        return   o;
+    }
 }
