@@ -4,17 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="add template.js">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/lod.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/LodController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/LodController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/EnrichmentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/EnrichmentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/Home.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/Home.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/geojson/GeoJsonRDF.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/geojson/GeoJsonRDF.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/semantic/KB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/semantic/KB.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/template.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/template.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/home.html" afterDir="false" />
-    </list>
+    <list default="true" id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="add template.js" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
