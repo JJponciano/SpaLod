@@ -22,6 +22,7 @@ import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
 import info.ponciano.lab.pisemantic.PiOnt;
 import info.ponciano.lab.pisemantic.PiOntologyException;
 import info.ponciano.lab.pitools.utility.PiRegex;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -29,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
@@ -44,7 +46,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- *
  * @author Dr. Jean-Jacques Ponciano
  */
 public class GeoJsonRDF {
@@ -53,12 +54,12 @@ public class GeoJsonRDF {
      * Uplift a geoJSON file in an ontology
      *
      * @param pathGeoJson path of the file to read
-     * @param ont ontology model in with the uplift should be done
-     * @throws java.io.FileNotFoundException If the file is not found
-     * @throws org.json.simple.parser.ParseException if the file cannot be
-     * parsed.
+     * @param ont         ontology model in with the uplift should be done
+     * @throws java.io.FileNotFoundException                    If the file is not found
+     * @throws org.json.simple.parser.ParseException            if the file cannot be
+     *                                                          parsed.
      * @throws info.ponciano.lab.pisemantic.PiOntologyException if something is
-     * wrong or not yet supported
+     *                                                          wrong or not yet supported
      */
     public static void upliftGeoJSON(String pathGeoJson, PiOnt ont) throws FileNotFoundException, IOException, ParseException, PiOntologyException, Exception {
 
@@ -80,7 +81,7 @@ public class GeoJsonRDF {
         String name = featureCollection.getName();
         //create an individual
         OntClass dataset = ont.createClass(DCAT_DATASET);
-       // System.out.println(dataset);
+        // System.out.println(dataset);
         //creates the individual data
         String nameFC = ont.getNs() + name;
         //generate a new name if the name is already known
@@ -88,14 +89,13 @@ public class GeoJsonRDF {
             nameFC = ont.getNs() + dataset.getLocalName().toLowerCase() + "_" + UUID.randomUUID().toString();
         }
         Individual data = dataset.createIndividual(nameFC);
-       // System.out.println(data);
+        // System.out.println(data);
         featureUplift(allfeatures, ont, data);
 
     }
 
     public static void featureUplift(List<Feature> allfeatures, PiOnt ont, Individual data) throws Exception {
         for (Feature f : allfeatures) {
-
             //creates the geometry
             Geometry geometry = f.getGeometry();
             String type = geometry.getType();
@@ -104,29 +104,31 @@ public class GeoJsonRDF {
             if (ontClassGeo == null) {
                 throw new Exception(name1 + "\" does not exists but is requiered");
             }
+
+
             Individual indGeo = ontClassGeo.createIndividual(ont.getNs() + ontClassGeo.getLocalName().toLowerCase() + "_" + UUID.randomUUID().toString());
-           // System.out.println(indGeo);
+            // System.out.println(indGeo);
             var asWKT = ont.getDataProperty(GEOSPARQLAS_WKT);
             if (asWKT == null) {
                 throw new PiOntologyException("the property \"http://www.opengis.net/ont/geosparql#asWKT\" does not exists but is requiered");
             }
             var value = geometry.getWKTPoint();
             indGeo.addLiteral(asWKT, value);
-           // System.out.println(asWKT + " -> " + value);
+            // System.out.println(asWKT + " -> " + value);
             //creates a feature
             OntClass ontClassFeature = ont.getOntClass(GEOSPARQL_FEATURE);
             if (ontClassFeature == null) {
                 throw new PiOntologyException("the class \"http://www.opengis.net/ont/geosparql#Feature\" does not exists but is requiered");
             }
+
             Individual indF = ontClassFeature.createIndividual(KB.NS + ontClassFeature.getLocalName().toLowerCase() + "_" + UUID.randomUUID().toString());
-           // System.out.println(indF);
+
             //asigns a geometry to the feature
             var hasGeometry = ont.getObjectProperty(GEOSPARQLHAS_GEOMETRY);
             if (hasGeometry == null) {
                 throw new PiOntologyException("the property \"http://www.opengis.net/ont/geosparql#hasGeometry\" does not exists but is requiered");
             }
             indF.addProperty(hasGeometry, indGeo);
-           // System.out.println(hasGeometry + " -> " + indGeo);
             //asigns properties
             Map<String, Object> properties = f.getProperties();
             properties.forEach((k, v) -> {
@@ -135,11 +137,13 @@ public class GeoJsonRDF {
             });
             //asigns the feature to the datasets
             ObjectProperty hasFeature = ont.createObjectProperty("hasFeature");
-            data.addProperty(hasFeature, indF);
-             // System.out.println(hasFeature + " -> " + indF);
-
+            if (data != null)
+                data.addProperty(hasFeature, indF);
         }
     }
+
+
+
     public static final String SF = "http://www.opengis.net/ont/sf#";
     public static final String GEOSPARQLHAS_GEOMETRY = "http://www.opengis.net/ont/geosparql#hasGeometry";
     public static final String GEOSPARQLAS_WKT = "http://www.opengis.net/ont/geosparql#asWKT";
@@ -155,7 +159,7 @@ public class GeoJsonRDF {
 
             JSONArray features = (JSONArray) jsonObject.get("features");//get all feature
 
-            for (Iterator it = features.iterator(); it.hasNext();) {//for each feature
+            for (Iterator it = features.iterator(); it.hasNext(); ) {//for each feature
                 //extracts information
                 JSONObject feature = (JSONObject) it.next();
                 String type = (String) feature.get("type");
@@ -196,13 +200,13 @@ public class GeoJsonRDF {
     /**
      * Downlift in geoJSOn all information about a dataset
      *
-     * @param ont ontology under working
+     * @param ont        ontology under working
      * @param datasetURI URI of the dataset individual targeted (individual of
-     * dcat#Dataset)
+     *                   dcat#Dataset)
      * @return the GeoJSON String containing all information about the
      * individuals
      * @throws PiOntologyException if the downlift is impossible with the
-     * individual targeted.
+     *                             individual targeted.
      */
     public static String downlift(PiOnt ont, String datasetURI) throws PiOntologyException {
         JSONObject data = new JSONObject();
@@ -243,11 +247,9 @@ public class GeoJsonRDF {
                     feature.put("properties", propertiesJson);
                     features.add(feature);
                 }
-                case "type" ->
-                    data.put("type", "FeatureCollection");//should be a FeatureCollection
+                case "type" -> data.put("type", "FeatureCollection");//should be a FeatureCollection
 
-                default ->
-                    throw new PiOntologyException(predicate.getLocalName() + " not yet supported");
+                default -> throw new PiOntologyException(predicate.getLocalName() + " not yet supported");
             }
         }
         data.put("features", features);
