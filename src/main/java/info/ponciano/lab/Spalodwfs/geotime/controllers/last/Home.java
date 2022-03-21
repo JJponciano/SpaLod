@@ -18,10 +18,13 @@
  */
 package info.ponciano.lab.Spalodwfs.geotime.controllers.last;
 
+import info.ponciano.lab.Spalodwfs.geotime.models.SparqlQuery;
+import info.ponciano.lab.Spalodwfs.geotime.models.StringForm;
 import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagementException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 /**
  *
@@ -39,4 +42,5 @@ public class Home {
         String rtn="home";
         return rtn;
     }
+
 }

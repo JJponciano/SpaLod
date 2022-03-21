@@ -146,6 +146,8 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.2.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: info.ponciano.lab:pisemantic:1.0" level="project" />
     <orderEntry type="library" name="Maven: info.ponciano.lab:pitools:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: me.tongfei:progressbar:0.5.5" level="project" />
+    <orderEntry type="library" name="Maven: jline:jline:2.12" level="project" />
     <orderEntry type="library" name="Maven: org.apache.sis.core:sis-feature:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.sis.core:sis-utility:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.sis.core:sis-metadata:1.0" level="project" />

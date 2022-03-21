@@ -5,12 +5,12 @@
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
- 
+
  This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -27,7 +27,7 @@
         <!--Header with the picture, title and Contact-->
 
         <div class="containerfull">
-            <a href="/home"><img class="pictureOfHeader" src="https://www.verwaltung-innovativ.de/SharedDocs/Bilder/DE/Artikel/GDI_DE_Logo.jpg?__blob=poster&v=2"></a> 
+            <a href="/home"><img class="pictureOfHeader" src="https://www.verwaltung-innovativ.de/SharedDocs/Bilder/DE/Artikel/GDI_DE_Logo.jpg?__blob=poster&v=2"></a>
             <span class="titleOfHeader">Linked Data</span>
             <span class="textOfHeader">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Flag_of_the_United_Kingdom_%282-3%29.svg/1024px-Flag_of_the_United_Kingdom_%282-3%29.svg.png" style="width: 32px; margin-right: 13px;">English | <a href="/login" style="text-decoration: none; color: #333333;">Login</a> | <a href="/contact" style="text-decoration: none; color: #333333">Contact</a><br><br>
@@ -75,7 +75,7 @@
                 cities: 'SELECT ?item ?itemLabel ?latitude ?longitude WHERE {\n  ?item wdt:P31 wd:Q515.\n  ?item wdt:P17 wd:Q183.\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\n}\nLIMIT ',
             };
 
-            // Displaying the new value of the cursor 
+            // Displaying the new value of the cursor
             function showVal(newNbOfPoints) {
                 document.getElementById("nbOfPoints").innerHTML = newNbOfPoints;
             }
@@ -152,7 +152,7 @@
                             <span style="font-weight: bold; font-size: 1.5em;">Potential error</span>
                             <pre style="margin-right: 30px; max-height: 400px;">
                             <code th:text="${errorMessage}"></code>
-                            </pre> 
+                            </pre>
                         </div>
                     </section>
                 </div>
@@ -171,7 +171,7 @@
 
 
                 </section>
-                <section> 
+                <section>
 
                     <!-- Map -->
                     <div id=map  style="position : relative; width: 800px; height: 800px; margin: 0 auto;">
@@ -191,7 +191,7 @@
                         <!-- Retreving data from the request -->
                         <script th:inline="javascript">
                     var dataArray = /*[[${MDlist}]]*/ 'default';
-                    // Function used to retrieve size of the data array 
+                    // Function used to retrieve size of the data array
                     // Data is stored as followed :
                     // data = [ itemIndex, itemLabel, latitude, longitude]
                     Object.size = function (obj) {
@@ -210,7 +210,7 @@
                             // Creation of one layer of points
                             var query = new L.layerGroup()
 
-                            // Loop to add every point of the results to the map 
+                            // Loop to add every point of the results to the map
                             for (let i = 0; i < sizeOfArray; i++) {
 
                                 // To add a point :
@@ -222,7 +222,7 @@
                                     'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
                                     mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
-                            // Creation of two layers : grayscale, and streets map 
+                            // Creation of two layers : grayscale, and streets map
                             // It is also possible to add a satelite map, landform map, ..
                             var grayscale = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
                                     streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
@@ -244,27 +244,27 @@
                             var overlays = {
                                 "Query": query
                             };
-                            // Add layers and points layers to the map 
+                            // Add layers and points layers to the map
                             L.control.layers(baseLayers, overlays).addTo(map);
                         </script>
-                    </div> 
+                    </div>
                 </section>
                 <section>
 
                     <!-- Displaying the table of results -->
                     <div th:if="${MDlist}" class="tableContentSPARQL">
-                        
+
                         <form action="#" th:action="@{/enrichment/enrich}" th:object="${stringform}" method="post">
                             <label id="mapname">Map Name:</label>
                             <input id="nameMap" type="text" th:field="*{string}"/>
                             <input type="submit" value="Enrich the ontology"/>
                         </form>
-                        
+
                         <span id="nbOfResults" style="width: 150px; height: 10px"> 0 result(s).</span>
 
                         <script type="text/javascript">
                             document.getElementById("nbOfResults").innerHTML = sizeOfArray.toString().concat(" result(s).");
-                        </script>                    
+                        </script>
                         <table border="1" style="width: 700px; margin: 0 auto;">
                             <thead>
                                 <!-- Definition of the 4 columns -->
