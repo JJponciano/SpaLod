@@ -131,3 +131,4 @@ test.owl
 .workspace
 catalog-v001.xml
 SpalodOutput.owl
+tmp/
