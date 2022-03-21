@@ -18,6 +18,7 @@
  */
 package info.ponciano.lab.Spalodwfs.geotime.controllers.last;
 
+import info.ponciano.lab.Spalodwfs.geotime.controllers.storage.FileDownloadController;
 import info.ponciano.lab.Spalodwfs.geotime.models.SparqlQuery;
 import info.ponciano.lab.Spalodwfs.geotime.models.StringForm;
 import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagementException;
@@ -25,6 +26,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
+import java.io.File;
 
 /**
  *
@@ -35,11 +38,20 @@ public class Home {
        @GetMapping("/")
     public String thematicMaps(Model model) throws OntoManagementException  {
         String rtn="home";
-        return rtn;
+           init();
+           return rtn;
     }
-      @GetMapping("/home")
+
+    private void init() {
+        File f = new File(FileDownloadController.DIR);
+        if (!f.exists())
+            f.mkdir();
+    }
+
+    @GetMapping("/home")
     public String home(Model model) throws OntoManagementException  {
         String rtn="home";
+        init();
         return rtn;
     }
 
