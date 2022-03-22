@@ -54,8 +54,6 @@
                                 <tr><td></td><td><input type="submit" value="Upload" /></td></tr>
                             </table>
                         </form>
-                    </div>
-                    <div>
                         <ul>
                             <li th:each="file : ${files}">
                                 <a th:href="${file}" th:text="${file}" />
