@@ -74,7 +74,10 @@ MA 02110-1301  USA
                                 <a class="nav-link" href="/lod">LOD <span class="sr-only">(current)</span></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/uplift">Uplift</a>
+                                <a class="nav-link" href="/uplift">GeoJSON</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/sparqlend">SPARQL</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/assessment">Assessment</a>
@@ -172,9 +175,9 @@ MA 02110-1301  USA
                         <input type="range" id="pointsCursor" min="100" max="1000" value="500" step="50"
                                class="inputRange" oninput="showVal(this.value)" onclick="updateRequest()">
                     </div>
-                    <div class='inline w30'>
+                    <div class='inline w30' th:if="${errorMessage}">
                         <!-- Text box showing the error, if the request does not work -->
-                        <span style="font-weight: bold; font-size: 1.5em;">Potential error</span>
+                        <span style="font-weight: bold; font-size: 1.5em;">Error</span>
                         <pre style="margin-right: 30px; max-height: 400px;">
                             <code th:text="${errorMessage}"></code>
                             </pre>
@@ -293,11 +296,26 @@ MA 02110-1301  USA
                 <p>
                     <a class="button" th:href="${ontPath}">Download RDF file</a>
 
+                <!--Directly Enrich the KB-->
                 <form action="#" th:action="@{/lodenrich}"method="post">
                     <input type="submit" value="Enrich the Knowledge based"/>
                 </form>
+
                 </p>
             </section>
+            <!--INFORMATION SECTION-->
+            <section class="col-md-6 col-sm-12 tm-feature-block">
+                <header class="tm-feature-header">
+                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
+                    <h3 class="tm-feature-h">Information</h3>
+                </header>
+                <p th:if="${message}" th:text="${message}"/>
+
+                <p th:if="${file}">
+                    <a class="button" th:href="${file}">Download file</a>
+                </p>
+            </section>
+
 
             <section class="col-md-6 col-sm-12 tm-feature-block">
                 <header class="tm-feature-header">
@@ -361,7 +379,6 @@ MA 02110-1301  USA
 
 <script src="js/lod.js"></script>
 <script src="js/jquery-1.9.1.min.js"></script>
-<!-- Single Page Nav plugin works with this version of jQuery -->
 <script src="js/jquery.singlePageNav.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/template.js"></script>
