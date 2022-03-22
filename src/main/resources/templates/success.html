@@ -28,13 +28,12 @@
             <h1>Congratulations !</h1>
         </header>
         <div class="containercontent">
-            <p th:text="${message}"/>
+            <p th:if="${message}" th:text="${message}"/>
 
             <p th:if="${file}">
                 <a  class="button" th:href="${file}">Download file</a>
             </p>
-        </div
-        ></div>
+        </div>
     <div th:insert="fragments/footer :: footer"></div>
 
 </body>
