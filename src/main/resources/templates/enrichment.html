@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2022 Claire Ponciano <claire@prudhomme.info>.
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA 02110-1301  USA
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>SPALOD</title>
+    <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600"
+    />
+    <!-- https://fonts.google.com/specimen/Open+Sans -->
+    <link rel="stylesheet" href="css/all.min.css"/>
+    <!-- https://fontawesome.com/ -->
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <!-- https://getbootstrap.com/ -->
+    <link rel="stylesheet" href="css/tooplate-style.css"/>
+
+</head>
+
+<body onload="onLoad()">
+<!-- page header -->
+<div class="container" id="home">
+    <div class="col-12 text-center">
+        <div class="tm-page-header">
+            <i class="fas fa-4x fa-chart-bar mr-4"></i>
+            <h1 class="d-inline-block text-uppercase">SPALOD</h1>
+        </div>
+    </div>
+</div>
+<!-- navbar -->
+<div class="tm-nav-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="navbar navbar-expand-md navbar-light">
+                    <button
+                            class="navbar-toggler"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#tmMainNav"
+                            aria-controls="tmMainNav"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation"
+                    >
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="tmMainNav">
+                        <ul class="navbar-nav mx-auto tm-navbar-nav">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="/home">Home</a
+                                >
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/lod">LOD </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/uplift">GeoJSON</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/sparqlend">SPARQL</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/assessment">Assessment</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/enrichment">Enrichment<span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link external" href="">References</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Video Banner -->
+<section class="tm-banner-section" id="tmVideoSection">
+    <div class="container tm-banner-text-container">
+        <div class="row">
+            <div class="col-12">
+                <header>
+                    <h2 class="tm-banner-title">SPALOD</h2>
+                    <p class="mx-auto tm-banner-subtitle">
+                        Spatial data management with semantic web technology and Linked Open Data (LOD)
+                    </p>
+                </header>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video -->
+    <video id="hero-vid" autoplay="" loop="" muted>
+        <source src="videos/city-night-blur-01.mp4" type="video/mp4"/>
+        Your browser does not support the video tag.
+    </video>
+</section>
+
+<div class="container" id="enrichment">
+    <!-- Banner-->
+    <div class="row">
+        <div class="col-12">
+            <div class="tm-parallax">
+                <header class="tm-parallax-header">
+                    <h2 class="">Enrichment</h2>
+                </header>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content-->
+    <div class="container tm-features-section" id="features2">
+        <div class="row tm-features-row">
+            <section class="col-md-6 col-sm-12 tm-feature-block">
+                <header class="tm-feature-header">
+                    <i class="fas fa-5x fa-anchor tm-feature-icon"></i>
+                    <h3 class="tm-feature-h"> Enrichment from RDF/OWL file</h3>
+                </header>
+                <form th:action="@{/enrichment}" method="post" enctype="multipart/form-data">
+                    <table>
+                        <tr>
+                            <td>RDF/OWL files to upload:</td>
+                            <td><input type="file" name="file" multiple="multiple"/></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><input type="submit" value="Upload"/></td>
+                        </tr>
+                    </table>
+                </form>
+            </section>
+            <!--INFORMATION SECTION-->
+            <section class="col-md-6 col-sm-12 tm-feature-block">
+                <header class="tm-feature-header">
+                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
+                    <h3 class="tm-feature-h">Information</h3>
+                </header>
+                <p th:if="${message}" th:text="${message}"/>
+
+                <p th:if="${file}">
+                    <a class="button" th:href="${file}">Download file</a>
+                </p>
+            </section>
+
+
+            <!--Matching SECTION-->
+            <section class="col-md-6 col-sm-12 tm-feature-block">
+                <header class="tm-feature-header">
+                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
+                    <h3 class="tm-feature-h">Matching</h3>
+                </header>
+                <div th:if="${not #lists.isEmpty(unknown)}">
+
+                    <form th:action="@{/matching_validation}" th:object="${vocMatching}" method="post"
+                          enctype="multipart/form-data">
+                            <input th:each="md: ${unknown}" th:value="${md}" th:field="${md}"/>
+
+                        <table>
+                            <thead>
+                            <tr>
+                                <th> Input</th>
+                                <th> Value</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="book, itemStat : *{unknown}">
+                                <td><input th:field="*{unknown[__${itemStat.index}__].input}" /></td>
+                                <td><input th:field="*{unknown[__${itemStat.index}__].value}" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+
+
+
+                        <input type="submit" value="Enrich"/>
+                    </form>
+                </div>
+
+
+            </section>
+        </div>
+    </div>
+</div> <!-- End content + banner-->
+
+
+<footer class="container tm-footer">
+    <div class="row tm-footer-row">
+        <p class="col-md-10 col-sm-12 mb-0">
+            <!--            Copyright &copy; 2022 Claire Ponciano:-->
+            <a rel="nofollow" href="https://i3mainz.hs-mainz.de/" class="tm-footer-link">i3mainz</a>
+        </p>
+        <div class="col-md-2 col-sm-12 scrolltop">
+            <div class="scroll icon"><i class="fa fa-4x fa-angle-up"></i></div>
+        </div>
+    </div>
+</footer>
+
+<script src="js/lod.js"></script>
+<script src="js/jquery-1.9.1.min.js"></script>
+<script src="js/jquery.singlePageNav.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/template.js"></script>
+
+</body>
+</html>
