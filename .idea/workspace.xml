@@ -4,7 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="add template.js" />
+    <list default="true" id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="add template.js">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/assessment.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/endpoint.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/enrichment.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/uplift.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/LodController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/LodController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/sparql/SparqlQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/controllers/last/sparql/SparqlQuery.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/error.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/error.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/geojson/geoJSON.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/geojson/geoJSON.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/lod.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/lod.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/success.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/success.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,7 +69,12 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\49151\Documents\GitHub\SpaLod\src\main\resources\templates" />
     </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="info.ponciano.lab.Spalodwfs" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="info.ponciano.lab.Spalodwfs.geotime.controllers.last" />
+      <recent name="info.ponciano.lab.Spalodwfs" />
       <recent name="info.ponciano.lab.Spalodwfs.geotime.controllers.storage" />
     </key>
   </component>
