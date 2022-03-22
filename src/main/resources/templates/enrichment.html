@@ -171,33 +171,49 @@ MA 02110-1301  USA
                     <i class="fas fa-5x fa-atom tm-feature-icon"></i>
                     <h3 class="tm-feature-h">Matching</h3>
                 </header>
-                <div th:if="${not #lists.isEmpty(unknown)}">
 
-                    <form th:action="@{/matching_validation}" th:object="${vocMatching}" method="post"
-                          enctype="multipart/form-data">
-                            <input th:each="md: ${unknown}" th:value="${md}" th:field="${md}"/>
+<!--                    <form th:action="@{/matching_validation}" th:object="${vocMatching}" method="post"-->
+<!--                          enctype="multipart/form-data">-->
+<!--                            <input th:each="md: ${unknown}" th:value="${md}" th:field="${md}"/>-->
 
-                        <table>
-                            <thead>
-                            <tr>
-                                <th> Input</th>
-                                <th> Value</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="book, itemStat : *{unknown}">
-                                <td><input th:field="*{unknown[__${itemStat.index}__].input}" /></td>
-                                <td><input th:field="*{unknown[__${itemStat.index}__].value}" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-
-
-
-                        <input type="submit" value="Enrich"/>
+<!--                        <table>-->
+<!--                            <thead>-->
+<!--                            <tr>-->
+<!--                                <th> Input</th>-->
+<!--                                <th> Value</th>-->
+<!--                            </tr>-->
+<!--                            </thead>-->
+<!--                            <tbody>-->
+<!--                            <tr th:each="book, itemStat : *{unknown}">-->
+<!--                                <td><input th:field="*{unknown[__${itemStat.index}__].input}" /></td>-->
+<!--                                <td><input th:field="*{unknown[__${itemStat.index}__].value}" /></td>-->
+<!--                            </tr>-->
+<!--                            </tbody>-->
+<!--                        </table>-->
+<!--                        <input type="submit" value="Enrich"/>-->
+<!--                    </form>-->
+<!--                    vocMatching-->
+                    <form action="#" th:action="@{/matching_validation}" th:object="${form}"
+                          method="post">
+                        <fieldset>
+                            <input type="submit" id="submitButton" th:value="Save">
+                            <input type="reset" id="resetButton" name="reset" th:value="Reset"/>
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th> Origin</th>
+                                    <th> Value</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="book, itemStat : *{data}">
+                                    <td><input th:field="*{data[__${itemStat.index}__].input}" /></td>
+                                    <td><input th:field="*{data[__${itemStat.index}__].value}" /></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </fieldset>
                     </form>
-                </div>
 
 
             </section>
