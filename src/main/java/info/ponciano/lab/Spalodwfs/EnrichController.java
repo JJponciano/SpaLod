@@ -54,7 +54,7 @@ public class EnrichController {
             PiSparql ont = new PiSparql(file_path);
 
             //init list of unknown properties and classes
-            List<String> unknown = new ArrayList<>();
+           MatchingDataCreationDto unknown = new MatchingDataCreationDto();
             List<String[]> remainingData = new ArrayList<>();
 
             //extract subject predicate and object for each individuals
@@ -69,14 +69,14 @@ public class EnrichController {
                 //test if the property is known in the ontology
                 boolean knowP = kb.getOntProperty(p.getURI()) == null;
                 if (knowP) {
-                    unknown.add(p.getURI());
+                    unknown.add(new MatchingDataModel(p.getURI(),""));
                 }
                  if( o.isResource()&&o.asResource().getURI()==null){
                      System.err.printf("------------- URI NULL FOR: "+o);
                  }else {
                      boolean knowC = o.isResource() && kb.getOntClass(o.asResource().getURI()) == null;
                      if (knowC) {
-                         unknown.add(o.asResource().getURI());
+                         unknown.add(new MatchingDataModel(o.asResource().getURI(),""));
                      }
                      //if the property and the class(if it is ) are known, add it to the ontology.
                      if (knowP && (!o.isResource() || knowC)) {
@@ -97,10 +97,10 @@ public class EnrichController {
             }
             KB.get().save();
 
-            if (unknown.isEmpty())
+            if (unknown.getData().isEmpty())
                 model.addAttribute("message", "Knowledge base enriched !");
             else {
-                model.addAttribute("unknown", unknown);
+                model.addAttribute("form", unknown);
             }
             return "enrichment";
         } catch (Exception ex) {
