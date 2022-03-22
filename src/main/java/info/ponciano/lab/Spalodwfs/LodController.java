@@ -11,8 +11,11 @@ import info.ponciano.lab.Spalodwfs.geotime.models.geojson.Geometry;
 import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
 import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagementException;
 import info.ponciano.lab.pisemantic.PiSparql;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.vocabulary.RDF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -143,21 +146,30 @@ public class LodController {
     }
 
     @PostMapping("/lodenrich")
-    public String enrich(Model model) {
+    public String lodenrich( Model model) {
         try {
             PiSparql ont = KB.get().getOnt();
-            enrich(ont);
+            //creation of thematic map dataset
+            OntClass dataset = ont.createClass(GeoJsonRDF.DCAT_DATASET);
+            OntClass mt = ont.createClass(KB.NS + "Dataset");
+
+            String name = KB.NS + UUID.randomUUID().toString();
+
+            Individual data = dataset.createIndividual(name);
+            data.addProperty(RDF.type, mt);
+
+            enrich(ont,data);
             KB.get().save();
             model.addAttribute("message", "The Knowledge-base was enriched!");
-            return "success";
+            return "lod";
         } catch (Exception ex) {
             Logger.getLogger(EnrichmentController.class.getName()).log(Level.SEVERE, null, ex);
             model.addAttribute("message", ex.getMessage());
-            return "error";
+            return "lod";
         }
     }
 
-    private void enrich(PiSparql ont) throws Exception {
+    private void enrich(PiSparql ont,Individual data) throws Exception {
 
         List<Feature> features = new ArrayList<>();
         //for each item
@@ -169,7 +181,7 @@ public class LodController {
             f.addProperty("hasLabel", r[1]);
             features.add(f);
         }
-        GeoJsonRDF.featureUplift(features, ont, null);
+        GeoJsonRDF.featureUplift(features, ont, data);
     }
 
 
@@ -177,7 +189,7 @@ public class LodController {
     private String getOntPath() throws Exception {
         PiSparql ont = KB.get().getOntEmpty();
         //creation of thematic map dataset
-        enrich(ont);
+        enrich(ont,null);
 
         String p = UUID.randomUUID().toString() + ".owl";
         ont.write(FileDownloadController.DIR+p);
