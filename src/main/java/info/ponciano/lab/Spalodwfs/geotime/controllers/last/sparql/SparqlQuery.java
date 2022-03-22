@@ -29,7 +29,7 @@ public class SparqlQuery {
         this.query = query;
     }
 
-    SparqlQuery() {
+    public SparqlQuery() {
     
     }
 
