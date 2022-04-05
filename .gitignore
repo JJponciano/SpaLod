@@ -132,4 +132,4 @@ test.owl
 catalog-v001.xml
 SpalodOutput.owl
 tmp/
-dynamic_storage/Spalod.owl
+dynamic_storage/*
