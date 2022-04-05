@@ -53,8 +53,8 @@ public class EnrichController {
             //Read the ontology
             PiSparql ont = new PiSparql(file_path);
 
-            //init list of unknown properties and classes
-           MatchingDataCreationDto unknown = new MatchingDataCreationDto();
+            //init list of data_unknown properties and classes
+           MatchingDataCreationDto data_unknown = new MatchingDataCreationDto();
             List<String[]> remainingData = new ArrayList<>();
 
             //extract subject predicate and object for each individuals
@@ -67,19 +67,19 @@ public class EnrichController {
                 Resource p = next.getResource("?p");
                 RDFNode o = next.get("?o");
                 //test if the property is known in the ontology
-                boolean knowP = kb.getOntProperty(p.getURI()) == null;
-                if (knowP) {
-                    unknown.add(new MatchingDataModel(p.getURI(),""));
+                boolean unknownP = kb.getOntProperty(p.getURI()) == null;
+                if (unknownP) {
+                    data_unknown.add(new MatchingDataModel(p.getURI(),""));
                 }
                  if( o.isResource()&&o.asResource().getURI()==null){
                      System.err.printf("------------- URI NULL FOR: "+o);
                  }else {
-                     boolean knowC = o.isResource() && kb.getOntClass(o.asResource().getURI()) == null;
-                     if (knowC) {
-                         unknown.add(new MatchingDataModel(o.asResource().getURI(),""));
+                     boolean unknowC = o.isResource() && kb.getOntClass(o.asResource().getURI()) == null;
+                     if (unknowC) {
+                         data_unknown.add(new MatchingDataModel(o.asResource().getURI(),""));
                      }
                      //if the property and the class(if it is ) are known, add it to the ontology.
-                     if (knowP && (!o.isResource() || knowC)) {
+                     if (!unknownP && (!o.isResource() || unknowC)) {
 //                    if (o.isResource()) {
 //                        String query1 = "INSERT DATA{<" + s.getURI() + "> <" + p.getURI() + "><" + o.asResource().getURI() + ">}";
 //                        ont.update(query1);
@@ -97,10 +97,10 @@ public class EnrichController {
             }
             KB.get().save();
 
-            if (unknown.getData().isEmpty())
+            if (data_unknown.getData().isEmpty())
                 model.addAttribute("message", "Knowledge base enriched !");
             else {
-                model.addAttribute("form", unknown);
+                model.addAttribute("form", data_unknown);
             }
             return "enrichment";
         } catch (Exception ex) {
