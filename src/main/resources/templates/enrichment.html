@@ -193,7 +193,7 @@ MA 02110-1301  USA
 <!--                        <input type="submit" value="Enrich"/>-->
 <!--                    </form>-->
 <!--                    vocMatching-->
-                    <form action="#" th:action="@{/matching_validation}" th:object="${form}"
+                    <form  th:if="${form}" action="#" th:action="@{/matching_validation}" th:object="${form}    "
                           method="post">
                         <fieldset>
                             <input type="submit" id="submitButton" th:value="Save">
