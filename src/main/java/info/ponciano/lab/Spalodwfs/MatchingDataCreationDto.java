@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MatchingDataCreationDto {
-    private List<MatchingDataModel> data;
+    List<MatchingDataModel> data;
 
     // default and parameterized constructor
-
     public MatchingDataCreationDto(List<MatchingDataModel> data) {
         this.data = data;
     }
