@@ -41,6 +41,9 @@ class UnknownDataManagerTest {
 
         List<String[]> remainingData = udm.getRemainingData();
         System.out.println("remainingData: " + remainingData.size());
+        for (String[] strings : remainingData) {
+            System.out.println(strings[0]+" "+strings[1]+" "+strings[2]);
+        }
 
         List<RDFNode> noUri = udm.getNoUri();
         System.out.println("noUri = " + noUri.size());
