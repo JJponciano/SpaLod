@@ -15,26 +15,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 class UnknownDataManager implements Runnable {
-    private List<String[]> remainingData;
-    private List<String[]> data_known;
-    private MatchingDataCreationDto data_unknown;
-    private List<RDFNode> noUri;
-    private OntModel schemaOrg;
-    private OntModel source,  target;
+    private final List<String[]> remainingData;
+    private final List<String[]> data_known;
+    private final MatchingDataCreationDto data_unknown;
+    private final List<RDFNode> noUri;
+    private final OntModel schemaOrg;
+    private final OntModel source, target;
+    private final List<String> knowFixed;
+    private final List<String> allClasses;
 
     UnknownDataManager(OntModel source, OntModel target) {
-        this.source=source;
-        this.target=target;
+        this.source = source;
+        this.target = target;
         this.data_unknown = new MatchingDataCreationDto();
         this.remainingData = new ArrayList<>();
         this.data_known = new ArrayList<>();
         this.noUri = new ArrayList<>();
         this.schemaOrg = KB.getSchemaOrg();
+        this.knowFixed = new ArrayList<>();
+        this.knowFixed.add("http://www.w3.org/2002/07/owl#NamedIndividual");
+        this.allClasses = new ArrayList<>();
+        ExtendedIterator<OntClass> ontClassExtendedIterator = target.listNamedClasses();
+        while (ontClassExtendedIterator.hasNext()) {
+            String uri = ontClassExtendedIterator.next().getURI();
+            this.allClasses.add(uri);
+        }
     }
 
     public void run() {
         //extract subject predicate and object for each individual
-        ResultSet select = KB.select(source, "Select ?s ?p ?o WHERE{?s ?p ?o}");
+        ResultSet select = KB.select(target, "Select ?s ?p ?o WHERE{?s ?p ?o}");
         while (select.hasNext()) {
             QuerySolution next = select.next();
             Resource s = next.getResource("?s");
@@ -44,6 +54,7 @@ class UnknownDataManager implements Runnable {
             //check that the triples is well-formed
             //test if the object is known in the ontology
             boolean dataOk = true;
+
             if (s.getURI() == null) {
                 this.noUri.add(s);
                 dataOk = false;
@@ -58,25 +69,24 @@ class UnknownDataManager implements Runnable {
             }
             if (dataOk) {
                 //test if the property is known in the ontology
-                boolean unknownP = target.containsResource(p);
-                if (unknownP) {
-                    ExtendedIterator<OntProperty> lps = this.schemaOrg.listOntProperties();
+                boolean knownP = source.containsResource(p);
+                if (!knownP) {
+                    ExtendedIterator<OntProperty> lps = this.schemaOrg.listAllOntProperties();
                     String proposal = predictFromSchemaOrg(p, lps);
                     addUnknown(p, proposal);
                 }
-                //test if the subject is known in the ontology
-                boolean unknownS = target.containsResource(s);
-                if (unknownS) {
-                    ExtendedIterator<OntClass> lps = this.schemaOrg.listClasses();
-                    String proposal = predictFromSchemaOrg(p, lps);
-                    addUnknown(s, proposal);
-                }
-                //test if the object is known in the ontology
-                boolean unknownClass = o.isResource() && target.containsResource(o);
-                if (unknownClass) {
-                    ExtendedIterator<OntClass> lps = this.schemaOrg.listClasses();
-                    String proposal = predictFromSchemaOrg(p, lps);
+                //test if the object is not a resource or is not a class or is known in the fixed memory or in the ontology
+                boolean knownClass = !o.isResource() || !allClasses.contains(o.asResource().getURI())|| this.knowFixed.contains(o.asResource().getURI()) || source.containsResource(o) ;
+                if (!knownClass) {
+                    ExtendedIterator<OntClass> lps = this.schemaOrg.listNamedClasses();
+                    String proposal = predictFromSchemaOrg(o.asResource(), lps);
                     addUnknown(o.asResource(), proposal);
+                }
+                boolean knownS = !allClasses.contains(s.getURI())|| this.knowFixed.contains(s.getURI()) || source.containsResource(s) ;
+                if (!knownS) {
+                    ExtendedIterator<OntClass> lps = this.schemaOrg.listNamedClasses();
+                    String proposal = predictFromSchemaOrg(s, lps);
+                    addUnknown(s, proposal);
                 }
 
                 // Convert the object in String
@@ -88,7 +98,7 @@ class UnknownDataManager implements Runnable {
                 }
 
                 // if the property is known and the object is not a resource or is known
-                if (!unknownS && !unknownP && (!o.isResource() || !unknownClass)) {     //Add to the data known
+                if (knownP && (!o.isResource() || knownClass)&& knownS) {     //Add to the data known
                     this.data_known.add(new String[]{s.getURI(), p.getURI(), o_string});
                 } else {
                     this.remainingData.add(new String[]{s.getURI(), p.getURI(), o_string});
@@ -101,47 +111,25 @@ class UnknownDataManager implements Runnable {
         return remainingData;
     }
 
-    public void setRemainingData(List<String[]> remainingData) {
-        this.remainingData = remainingData;
-    }
-
     public List<String[]> getData_known() {
         return data_known;
-    }
-
-    public void setData_known(List<String[]> data_known) {
-        this.data_known = data_known;
     }
 
     public MatchingDataCreationDto getData_unknown() {
         return data_unknown;
     }
 
-    public void setData_unknown(MatchingDataCreationDto data_unknown) {
-        this.data_unknown = data_unknown;
-    }
-
     public List<RDFNode> getNoUri() {
         return noUri;
     }
 
-    public void setNoUri(List<RDFNode> noUri) {
-        this.noUri = noUri;
-    }
-
-    public OntModel getSchemaOrg() {
-        return schemaOrg;
-    }
-
-    public void setSchemaOrg(OntModel schemaOrg) {
-        this.schemaOrg = schemaOrg;
-    }
 
     private String predictFromSchemaOrg(Resource p, ExtendedIterator listsDataP) {
         String proposal = "";
+
         while (proposal.isBlank() && listsDataP.hasNext()) {
             Resource nextP = (Resource) listsDataP.next();
-            if (nextP.getURI().contains(p.getLocalName())) {
+            if (nextP.getURI() != null && nextP.getURI().contains(p.getLocalName())) {
                 proposal = nextP.getURI();
             }
         }
@@ -152,7 +140,7 @@ class UnknownDataManager implements Runnable {
         MatchingDataModel mdm = new MatchingDataModel(p.getURI(), proposal);
 
         //test if the data is not already known
-        if (this.data_known.contains(mdm)) {
+        if (!this.data_unknown.contains(mdm)) {
             this.data_unknown.add(mdm);
         }
     }
