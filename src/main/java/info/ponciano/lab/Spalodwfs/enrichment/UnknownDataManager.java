@@ -1,7 +1,6 @@
 package info.ponciano.lab.Spalodwfs.enrichment;
 
 import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
-import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
@@ -24,6 +23,11 @@ class UnknownDataManager implements Runnable {
     private final List<String> knowFixed;
     private final List<String> allClasses;
 
+    /**
+     * Creates a new instance of UnknownDataManager.
+     * @param source OntModel that have to be enriched with the target
+     * @param target OntModel that will be used for the enrichment
+     */
     UnknownDataManager(OntModel source, OntModel target) {
         this.source = source;
         this.target = target;
@@ -42,6 +46,9 @@ class UnknownDataManager implements Runnable {
         }
     }
 
+    /**
+     * Run the algorithm that set up data_known,data_unknown, noUri and remainingData.
+     */
     public void run() {
         //extract subject predicate and object for each individual
         ResultSet select = KB.select(target, "Select ?s ?p ?o WHERE{?s ?p ?o}");
@@ -124,6 +131,12 @@ class UnknownDataManager implements Runnable {
     }
 
 
+    /**
+     * Predict the value of the resources according to a local name matching with Schema.or.
+     * @param p resource to set the value
+     * @param listsDataP list of resources contained in schema.org ontology according to the type (property or class) of p
+     * @return the predicted value or an empty string.
+     */
     private String predictFromSchemaOrg(Resource p, ExtendedIterator listsDataP) {
         String proposal = "";
 
@@ -136,6 +149,11 @@ class UnknownDataManager implements Runnable {
         return proposal;
     }
 
+    /**
+     * Add an unknown resource and proposal
+     * @param p resource to add
+     * @param proposal proposition of resources uri
+     */
     private void addUnknown(Resource p, String proposal) {
         MatchingDataModel mdm = new MatchingDataModel(p.getURI(), proposal);
 
