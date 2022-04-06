@@ -41,4 +41,9 @@ public class MatchingDataModel {
     public int hashCode() {
         return input != null ? input.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return  input + ',' + value ;
+    }
 }
