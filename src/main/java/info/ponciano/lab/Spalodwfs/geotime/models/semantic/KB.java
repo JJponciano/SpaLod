@@ -18,14 +18,16 @@
  */
 package info.ponciano.lab.Spalodwfs.geotime.models.semantic;
 
+import info.ponciano.lab.pisemantic.PiOnt;
 import info.ponciano.lab.pisemantic.PiSparql;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.*;
 
 /**
  * Knowledge base singleton class to manage semantic access.
@@ -40,6 +42,8 @@ public class KB implements KnowledgeBaseInterface {
     public static final String NS = "http://lab.ponciano.info/ont/spalod#";
     private static final String DEFAULT_ONTO_ISO = "src/main/resources/ontologies/iso-19115.owl";
     private static final String DEFAULT_ONTO = "src/main/resources/ontologies/spalod.owl";
+    private static final String SCHEAMORD_PATH = "src/main/resources/ontologies/schemaorg.owl";
+
     public static final String OUT_ONTO = "SpalodOutput.owl";
     private OwlManagement model;
 
@@ -64,6 +68,13 @@ public class KB implements KnowledgeBaseInterface {
         } else {
             this.model = new OwlManagement(DEFAULT_ONTO);
             this.model.ont.setNs(NS);
+        }
+    }
+    public static OntModel getSchemaOrg() {
+        try {
+            return new PiOnt(SCHEAMORD_PATH).getOnt();
+        } catch (FileNotFoundException e) {
+            return null;
         }
     }
 
@@ -151,5 +162,15 @@ public class KB implements KnowledgeBaseInterface {
         PiSparql o = new OwlManagement(DEFAULT_ONTO).ont;
         o.setNs(NS);
         return   o;
+    }
+
+    public static ResultSet select(OntModel ont,String queryString) {
+        if (queryString != null && !queryString.isEmpty()) {
+            Query query = QueryFactory.create(queryString);
+            QueryExecution queryExecution = QueryExecutionFactory.create(query, ont);
+            return queryExecution.execSelect();
+        } else {
+            return null;
+        }
     }
 }
