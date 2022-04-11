@@ -98,20 +98,39 @@ class UnknownDataManager implements Runnable {
 
                 // Convert the object in String
                 String o_string;
-                if (o.isResource()) {
-                    o_string = o.asResource().getURI();
-                } else {
-                    o_string = o.asLiteral().toString();
-                }
+                o_string = convert(o);
 
                 // if the property is known and the object is not a resource or is known
                 if (knownP && (!o.isResource() || knownClass)&& knownS) {     //Add to the data known
-                    this.data_known.add(new String[]{s.getURI(), p.getURI(), o_string});
+                    this.data_known.add(new String[]{"<"+s.getURI()+">","<"+ p.getURI()+">", o_string});
                 } else {
-                    this.remainingData.add(new String[]{s.getURI(), p.getURI(), o_string});
+                    this.remainingData.add(new String[]{"<"+s.getURI()+">","<"+ p.getURI()+">", o_string});
                 }
             }
         }
+    }
+
+    /**
+     * Convert the Object node in string usable in SPARQL.
+     * @param o object to be converted
+     * @return  The URI of the literal xsd syntax of the object
+     */
+    private String convert(RDFNode o) {
+        String o_string;
+        if (o.isResource()) {
+            o_string ="<"+ o.asResource().getURI()+">" ;
+        } else {
+            String litURI = o.asLiteral().getDatatype().getURI();
+            String lexicalForm = o.asLiteral().getLexicalForm();
+            if(lexicalForm.contains("\n")) {
+                lexicalForm = lexicalForm.replaceAll("\\n", " ");
+            }
+            if(lexicalForm.contains("\"")) {
+                lexicalForm = lexicalForm.replaceAll("\"", "'");
+            }
+            o_string = "\""+ lexicalForm +"\"^^xsd:"+ litURI.substring(litURI.lastIndexOf('#')+1,litURI.length());
+        }
+        return o_string;
     }
 
     public List<String[]> getRemainingData() {
