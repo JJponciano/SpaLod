@@ -19,6 +19,7 @@
 package info.ponciano.lab.Spalodwfs.geotime.models.semantic;
 
 import info.ponciano.lab.pisemantic.PiOnt;
+import info.ponciano.lab.pisemantic.PiOntologyException;
 import info.ponciano.lab.pisemantic.PiSparql;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
+import org.apache.jena.update.UpdateAction;
 
 /**
  * Knowledge base singleton class to manage semantic access.
@@ -62,13 +64,12 @@ public class KB implements KnowledgeBaseInterface {
             } catch (Exception e) {
                 file.delete();
                 this.model = new OwlManagement(DEFAULT_ONTO);
-                this.model.ont.setNs(NS);
             }
 
         } else {
             this.model = new OwlManagement(DEFAULT_ONTO);
-            this.model.ont.setNs(NS);
         }
+        this.model.ont.setNs(NS);
     }
     public static OntModel getSchemaOrg() {
         try {
@@ -172,5 +173,17 @@ public class KB implements KnowledgeBaseInterface {
         } else {
             return null;
         }
+    }
+    public void update(String[] statement) {
+
+            String query="INSERT DATA{"+statement[0]+" "+statement[1]+" "+statement[2]+"}";
+        System.out.println("query = " + query);
+        try {
+             this.getOnt().update(query);
+        } catch (PiOntologyException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
