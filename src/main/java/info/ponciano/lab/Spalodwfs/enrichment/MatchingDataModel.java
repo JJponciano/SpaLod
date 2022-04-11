@@ -6,6 +6,11 @@ public class MatchingDataModel {
     public String input;
     public String value;
 
+    public MatchingDataModel() {
+        this.input = "";
+        this.value = "";
+    }
+
     public MatchingDataModel(String input, String value) {
         this.input = input;
         this.value = value;
