@@ -433,6 +433,10 @@ figure {
   transition: opacity 0s linear;
 }
 
+.full_size{
+    width: 100%;
+}
+
 @media (min-width: 768px) {
   .tm-feature-block {
     margin-bottom: 0;
@@ -550,3 +554,4 @@ figure {
     padding: 10px 15px;
   }
 }
+
