@@ -7,11 +7,14 @@ import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagementExcepti
 import info.ponciano.lab.pisemantic.PiOntologyException;
 import info.ponciano.lab.pisemantic.PiSparql;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +35,8 @@ import java.util.logging.Logger;
 public class EnrichController {
 
     private final StorageService storageService;
+    private UnknownDataManager udm;
+    private List<String[]> data;
 
     @Autowired
     public EnrichController(StorageService storageService) {
@@ -43,66 +49,71 @@ public class EnrichController {
         return rtn;
     }
 
-    @PostMapping("/enrichment")
-    public String uplift(@RequestParam("file") MultipartFile file, Model model) {
+    @PostMapping("/matching_validation")
+    public String matching(@ModelAttribute MatchingDataCreationDto form, Model model) {
+        String message = "Knowledge base enriched !";
+
         try {
-            //RedirectAttributes redirectAttributes) {
+            List<MatchingDataModel> data = form.getData();
+            for (MatchingDataModel datum : data) {
+                // for each value, replace in the data the input by the value
+                String value = "<" + datum.getValue() + ">";
+                String input = "<" + datum.getInput() + ">";
+                if (value != null && !value.isBlank()&&value.contains("http")&&value.contains("/")) {
+                    for (int i = 0; i < this.data.size(); i++) {
+                        String[] strings = this.data.get(i);
+                        for (int j = 0; j < strings.length; j++) {
+                            if (strings[j].equals(input))
+                                strings[j] = value;
+                        }
+                    }
+                }
+            }
+            this.enrich();
+        } catch (OntoManagementException | IOException e) {
+            message = "Wrong URI given:\n" + e.getMessage();
+        }
+
+        model.addAttribute("message", message);
+        return "/enrichment";
+    }
+
+    @PostMapping("/enrichment")
+    public String enrichment(@RequestParam("file") MultipartFile file, Model model) {
+        try {
             // store file
             storageService.store(file);
-
+            this.data = new ArrayList<>();
             //File reading
             String filename = file.getOriginalFilename();
             String file_path = KB.STORAGE_DIR + "/" + filename;
             //Read the ontology
-            PiSparql ont = new PiSparql(file_path);
+            OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+            target.read(file_path);
             OntModel kb = KB.get().getOnt().getOnt();
 
-            //init list of data_unknown properties and classes
-            MatchingDataCreationDto data_unknown = new MatchingDataCreationDto();
-            List<String[]> remainingData = new ArrayList<>();
-
-            //extract subject predicate and object for each individuals
-            ResultSet select = ont.select("Select ?s ?p ?o WHERE{?s ?p ?o}");
-
-
-            while (select.hasNext()) {
-                QuerySolution next = select.next();
-                Resource s = next.getResource("?s");
-                Resource p = next.getResource("?p");
-                RDFNode o = next.get("?o");
-                //test if the property is known in the ontology
-                if (p.getURI().toLowerCase().contains("test"))
-                    System.out.println("here");
-                boolean unknownP =kb.containsResource(p);
-                if (unknownP) {
-                    data_unknown.add(new MatchingDataModel(p.getURI(), ""));
-                }
-                if (o.isResource() && o.asResource().getURI() == null) {
-                    System.err.printf("------------- URI NULL FOR: " + o);
-                } else {
-                    boolean unknownClass = o.isResource() && kb.getResource(o.asResource().getURI()) == null;
-                    if (unknownClass) {
-                        data_unknown.add(new MatchingDataModel(o.asResource().getURI(), ""));
-                    }
-                    //if the property and the class(if it is ) are known, add it to the ontology.
-                    if (!unknownP && (!o.isResource() || unknownClass)) {
-//                         update(ont, s, p, o);
-                    } else {
-                        if (o.isResource())
-                            remainingData.add(new String[]{s.getURI(), p.getURI(), o.asResource().getURI()});
-                        else
-                            remainingData.add(new String[]{s.getURI(), p.getURI(), o.asLiteral().toString()});
-                    }
-                }
-            }
-            KB.get().save();
-
-            if (data_unknown.getData().isEmpty())
-                model.addAttribute("message", "Knowledge base enriched !");
-            else {
+            //Extract data and split them in unknown, known and
+            this.udm = new UnknownDataManager(kb, target);
+            udm.run();
+            //get data unknown to send to the user
+            MatchingDataCreationDto data_unknown = udm.getData_unknown();
+            List<String[]> remainingData = udm.getRemainingData();
+            if (!remainingData.isEmpty()) {
                 model.addAttribute("form", data_unknown);
             }
+
+            this.data.addAll(udm.getData_known());
+            this.data.addAll(udm.getRemainingData());
+            //LOG
+            String message = "";
+            List<RDFNode> noUri = udm.getNoUri();
+            for (RDFNode ind : noUri) {
+                message += "\n " + ind.toString() + " has not an URI";
+            }
+
+            model.addAttribute("message", message);
             return "enrichment";
+
         } catch (Exception ex) {
             Logger.getLogger(GeoJsonController.class.getName()).log(Level.SEVERE, null, ex);
             model.addAttribute("message", ex.getMessage());
@@ -110,7 +121,18 @@ public class EnrichController {
         }
     }
 
-    private void update(PiSparql ont, Resource s, Resource p, RDFNode o) throws PiOntologyException {
+    private void enrich() throws OntoManagementException, IOException {
+
+        if (!this.data.isEmpty()) {
+            // enrich the ontology with the data know
+            for (String[] strings : this.data) {
+                KB.get().update(strings);
+            }
+            KB.get().save();
+        }
+    }
+
+    private void update(PiSparql ont, Resource s, Resource p, @NotNull RDFNode o) throws PiOntologyException {
         if (o.isResource()) {
             String query1 = "INSERT DATA{<" + s.getURI() + "> <" + p.getURI() + "><" + o.asResource().getURI() + ">}";
             ont.update(query1);
