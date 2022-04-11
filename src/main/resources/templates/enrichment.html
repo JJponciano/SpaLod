@@ -166,7 +166,7 @@ MA 02110-1301  USA
 
 
             <!--Matching SECTION-->
-            <section >
+            <section class="full_size" >
                 <header class="tm-feature-header">
                     <i class="fas fa-5x fa-atom tm-feature-icon"></i>
                     <h3 class="tm-feature-h">Matching</h3>
@@ -194,11 +194,11 @@ MA 02110-1301  USA
 <!--                    </form>-->
 <!--                    vocMatching-->
                     <form  th:if="${form}" action="#" th:action="@{/matching_validation}" th:object="${form}    "
-                          method="post">
-                        <fieldset>
+                          method="post"  class="full_size">
+                        <fieldset class="full_size">
                             <input type="submit" id="submitButton" th:value="Save">
                             <input type="reset" id="resetButton" name="reset" th:value="Reset"/>
-                            <table>
+                            <table class="full_size" >
                                 <thead>
                                 <tr>
                                     <th> Origin</th>
@@ -207,8 +207,8 @@ MA 02110-1301  USA
                                 </thead>
                                 <tbody>
                                 <tr th:each="book, itemStat : *{data}">
-                                    <td><input th:field="*{data[__${itemStat.index}__].input}" /></td>
-                                    <td><input th:field="*{data[__${itemStat.index}__].value}" /></td>
+                                    <td><input class="full_size" th:field="*{data[__${itemStat.index}__].input}" /></td>
+                                    <td><input class="full_size" th:field="*{data[__${itemStat.index}__].value}" /></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -216,7 +216,7 @@ MA 02110-1301  USA
                     </form>
 
 
-            </section>
+            </sectionfull_size>
         </div>
     </div>
 </div> <!-- End content + banner-->
