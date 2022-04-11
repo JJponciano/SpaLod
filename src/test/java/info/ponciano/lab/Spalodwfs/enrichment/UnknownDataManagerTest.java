@@ -1,5 +1,7 @@
 package info.ponciano.lab.Spalodwfs.enrichment;
 
+import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
+import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagementException;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -13,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UnknownDataManagerTest {
 
     @Test
-    void run() {
+    void run() throws OntoManagementException {
         String path_ont_source = "src/test/resources/source.owl";
         String path_ont_target = "src/test/resources/test.owl";
         OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
@@ -24,11 +26,13 @@ class UnknownDataManagerTest {
         UnknownDataManager udm = new UnknownDataManager(source, target);
         udm.run();
         List<String[]> data_known = udm.getData_known();
-        System.out.println("data_known: " + data_known.size());
-
         MatchingDataCreationDto data_unknown = udm.getData_unknown();
-        System.out.println("data_unknown = " + data_unknown);
         List<MatchingDataModel> data = data_unknown.getData();
+        List<String[]> remainingData = udm.getRemainingData();
+        List<RDFNode> noUri = udm.getNoUri();
+
+        System.out.println("data_known: " + data_known.size());
+        System.out.println("data_unknown = " + data_unknown);
         assertEquals(3, data.size());
 
         for (MatchingDataModel datum : data) {
@@ -39,15 +43,21 @@ class UnknownDataManagerTest {
             }
         }
 
-        List<String[]> remainingData = udm.getRemainingData();
+
         System.out.println("remainingData: " + remainingData.size());
         for (String[] strings : remainingData) {
             System.out.println(strings[0]+" "+strings[1]+" "+strings[2]);
         }
 
-        List<RDFNode> noUri = udm.getNoUri();
+
         System.out.println("noUri = " + noUri.size());
         assertEquals(9, noUri.size());
+
+        // try to enrich the ontology
+        for (String[] strings : data_known) {
+            KB.get().update(strings);
+        }
+
 
     }
 }
