@@ -130,6 +130,7 @@ MA 02110-1301  USA
         </div>
     </div>
 
+
     <!-- Content-->
     <div class="container tm-features-section" id="features2">
         <div class="row tm-features-row">
@@ -144,17 +145,102 @@ MA 02110-1301  USA
                     <input type="submit" value="Submit">
                 </form>
             </section>
+
+            <!--Map -->
+            <section>
+                <header class="tm-feature-header">
+                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
+                    <h3 class="tm-feature-h">Map</h3>
+                </header>
+                <div id=map style="position : relative; width: 800px; height: 800px; margin: 0 auto;">
+                    <!-- Leaflet script and stylesheet -->
+                    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+                            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+                            crossorigin=""></script>
+                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+                          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+                          crossorigin=""/>
+                    <link rel="stylesheet" href="../static/css/asideBox.css" type="text/css">
+                    <link rel="stylesheet" href="../static/css/main.css" type="text/css"/>
+                    <link rel="stylesheet" href="../static/css/testSPARQL.css" type="text/css">
+                    <link rel="stylesheet" href="../static/css/testSPARQL.css" type="text/css"/>
+
+
+                    <!-- Retreving data from the request -->
+                    <script th:inline="javascript">
+                        var dataArray = /*[[${MDlist}]]*/ 'default';
+                        // Function used to retrieve size of the data array
+                        // Data is stored as followed :
+                        // data = [latitude, longitude]
+                        Object.size = function (obj) {
+                            var size = 0,
+                                    key;
+                            for (key in obj) {
+                                if (obj.hasOwnProperty(key))
+                                    size++;
+                            }
+                            return size;
+                        };
+                        var sizeOfArray = Object.size(dataArray);
+                        console.log(sizeOfArray);
+
+                    </script>
+                    <script>
+                            // Creation of one layer of points
+                            var query = new L.layerGroup()
+
+                            // Loop to add every point of the results to the map
+                            for (let i = 0; i < sizeOfArray; i++) {
+                                // To add a point :
+                                // L.marker([latitude, longitude]).bindPopup(nameOfThePoint).addTo(nameOfTheLayer);
+                                L.marker([dataArray[i][0], dataArray[i][1]]).bindPopup(dataArray[i][0] + "," + dataArray[i][1]).addTo(query);
+
+                            }
+                            var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+                                    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                                    mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+                            // Creation of two layers : grayscale, and streets map
+                            // It is also possible to add a satelite map, landform map, ..
+                            var grayscale = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+                                    streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+
+                            // Definition of the map, and setup of details : coordinates of the center, zoom level and layers that appear on loading
+                            var map = L.map('map', {
+                                center: [49.99, 8.24],
+                                zoom: 6,
+                                layers: [streets, query]
+                            });
+
+                            // Definition of layers
+                            var baseLayers = {
+                                "Grayscale": grayscale,
+                                "Streets": streets
+                            };
+
+                            // Definition of point layers
+                            var overlays = {
+                                "Query": query
+                            };
+                            // Add layers and points layers to the map
+                            L.control.layers(baseLayers, overlays).addTo(map);
+
+                    </script>
+                </div>
+            </section>
             <section >
                 <header class="tm-feature-header">
                     <i class="fas fa-5x fa-atom tm-feature-icon"></i>
                     <h3 class="tm-feature-h">Results</h3>
                 </header>
                 <p>
-                    <pre>
+                <pre>
                         <code th:text="${queryresult}"></code>
                     </pre>
                 </p>
             </section>
+
+
 
             <!--INFORMATION SECTION-->
             <section class="col-md-6 col-sm-12 tm-feature-block">
