@@ -1,17 +1,14 @@
-<!DOCTYPE html>
++<!DOCTYPE html>
 <!--
 Copyright (C) 2022 Claire Ponciano <claire@prudhomme.info>.
-
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
 version 2.1 of the License, or (at your option) any later version.
-
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Lesser General Public License for more details.
-
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -271,7 +268,25 @@ MA 02110-1301  USA
 
                             var greenIcon = L.icon({
                                 iconUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-orange.png',
-                                shadowUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-shadow.png',
+                                //shadowUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-shadow.png',
+                                    iconSize:     [38, 95], // size of the icon
+                                    shadowSize:   [50, 64], // size of the shadow
+                                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                                    shadowAnchor: [4, 62],  // the same for the shadow
+                                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                            });
+                            var restaurantIcon = L.icon({
+                                iconUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-green.png',
+                                //shadowUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-shadow.png',
+                                    iconSize:     [38, 95], // size of the icon
+                                    shadowSize:   [50, 64], // size of the shadow
+                                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                                    shadowAnchor: [4, 62],  // the same for the shadow
+                                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                            });
+                            var schoolIcon = L.icon({
+                                iconUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-red.png',
+                                //shadowUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-shadow.png',
                                     iconSize:     [38, 95], // size of the icon
                                     shadowSize:   [50, 64], // size of the shadow
                                     iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
@@ -281,10 +296,18 @@ MA 02110-1301  USA
 
                             // Loop to add every point of the results to the map
                             for (let i = 0; i < sizeOfArray; i++) {
-                                // To add a point :
-                                // L.marker([latitude, longitude]).bindPopup(nameOfThePoint).addTo(nameOfTheLayer);
-                                L.marker([dataArray[i][0], dataArray[i][1]],{icon: greenIcon}).bindPopup(dataArray[i][0] + "," + dataArray[i][1]+ "\n" + dataArray[i][2]).addTo(query);
 
+                                switch (dataArray[i][3]){
+                                case 'school':
+                                    L.marker([dataArray[i][0],dataArray[i][1]],{icon: schoolIcon}).bindPopup(dataArray[i][0] + "," + dataArray[i][1] + " " + dataArray[i][2]).addTo(query);
+                                    break;
+                                case 'restaurant':
+                                    L.marker([dataArray[i][0],dataArray[i][1]],{icon: restaurantIcon}).bindPopup(dataArray[i][0] + "," + dataArray[i][1] + " " + dataArray[i][2]).addTo(query);
+                                    break;
+                                default:
+                                    L.marker([dataArray[i][0],dataArray[i][1]],{icon: greenIcon}).bindPopup(dataArray[i][0] + "," + dataArray[i][1] + " " + dataArray[i][2]).addTo(query);
+                                    break;
+                                }
                             }
                             var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
                                     'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
