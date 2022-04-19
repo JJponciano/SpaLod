@@ -34,6 +34,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -125,8 +126,11 @@ public class EndPointController {
         //for all the QuerySolution in the ResultSet file
         while(resultset.hasNext()){
             QuerySolution solu = resultset.next();
-            String[] ls = new String[3];
+            String[] ls = new String[4];
             RDFNode object = solu.get("?o");
+
+            String[] schoolkeywords = {"schul","gymnasium","kolleg","collegium","school","lyzeum","akademie","academy","école","berufsbildungszentrum","bsz","studien","bildungs","seminar","skolen","universität"};
+            String[] restaurantkeywords = {"restaurant"};
 
             if (object.isLiteral()){
                 String point_toprocess = object.asLiteral().getString();
@@ -138,7 +142,25 @@ public class EndPointController {
                 ls[0] = x;
                 ls[1] = y;
                 ls[2] = solu.get("?l").asLiteral().getString();
-                Arrays.deepToString(ls);
+                ls[3]="default";
+
+
+
+                for(String s :schoolkeywords ) {
+                    if (ls[2].toLowerCase().contains(s)) {
+                        ls[3] = "school";
+                        break;
+                    }
+                }
+                if(ls[3]=="default") {
+                    for (String s : restaurantkeywords) {
+                        if (ls[2].toLowerCase().contains(s)) {
+                            ls[3] = "restaurant";
+                            break;
+                        }
+                    }
+                }
+
                 rl.add(ls);
             }
         }
