@@ -87,6 +87,7 @@ public class EndPointController {
                 + "PREFIX p: <http://www.wikidata.org/prop/>\r\n"
                 + "PREFIX ps: <http://www.wikidata.org/prop/statement/>\r\n"
                 + "PREFIX psv: <http://www.wikidata.org/prop/statement/value/>"
+                + "PREFIX gs: <http://www.opengis.net/ont/geosparql#>"
                 + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>";
         try {
             String queryString = prefixes + sq.getQuery();
@@ -124,7 +125,7 @@ public class EndPointController {
         //for all the QuerySolution in the ResultSet file
         while(resultset.hasNext()){
             QuerySolution solu = resultset.next();
-            String[] ls = new String[2];
+            String[] ls = new String[3];
             RDFNode object = solu.get("?o");
 
             if (object.isLiteral()){
@@ -136,6 +137,7 @@ public class EndPointController {
                 String y = coord[0];
                 ls[0] = x;
                 ls[1] = y;
+                ls[2] = solu.get("?l").asLiteral().getString();
                 Arrays.deepToString(ls);
                 rl.add(ls);
             }
