@@ -5,8 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="add template.js">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/boundingBox.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/mousseCoordinates.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/img/filter-icon-2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/img/filter-icon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/img/move-handle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/img/resize-handle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/boundingBox.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/miniMap.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/moussePosition.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/endpoint.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/templates/endpoint.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/endpoint.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,13 +59,14 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources/static/img" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Benjamin\Documents\Esirem\4A\Stage Allemagne\GituHub\Map_SparQL\SpaLod\src\main\resources\static\img" />
       <recent name="C:\Users\49151\Documents\GitHub\SpaLod\src\main\resources\templates" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
