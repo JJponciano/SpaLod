@@ -34,6 +34,9 @@ MA 02110-1301  USA
     <!-- https://getbootstrap.com/ -->
     <link rel="stylesheet" href="css/tooplate-style.css"/>
 
+    <link rel="stylesheet" href="css/boundingBox.css"/>
+    <link rel="stylesheet" href="css/mousseCoordinates.css"/>
+
 </head>
 
 <body onload="onLoad()">
@@ -209,7 +212,7 @@ MA 02110-1301  USA
                     <h3 class="tm-feature-h">Map</h3>
                 </header>
                 <!--Map -->
-                <div id=map style="position : relative; width: 800px; height: 800px; margin: 0 auto;">
+                <div id=map style="position : relative; width: 1200px; height: 800px; margin: 0 auto;">
                     <!-- Leaflet script and stylesheet -->
                     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
                             integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
@@ -217,10 +220,16 @@ MA 02110-1301  USA
                     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
                           integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
                           crossorigin=""/>
-                    <link rel="stylesheet" href="../static/css/asideBox.css" type="text/css">
-                    <link rel="stylesheet" href="../static/css/main.css" type="text/css"/>
-                    <link rel="stylesheet" href="../static/css/testSPARQL.css" type="text/css">
-                    <link rel="stylesheet" href="../static/css/testSPARQL.css" type="text/css"/>
+                    <link href="../static/css/asideBox.css" type="text/css">
+                    <link href="../static/css/main.css" type="text/css"/>
+                    <link href="../static/css/testSPARQL.css" type="text/css">
+                    <link href="../static/css/testSPARQL.css" type="text/css"/>
+                    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+                    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js"
+                            integrity="sha512-WL3nAJlWFKoDShduxQRyY3wkBnQsINXdIfWIW48ZaPgYz1wYNnxIwFMMgigzSgjNBC2WWZ8Y8/sSyUU6abuF0g=="
+                            crossorigin=""
+                            referrerpolicy="no-referrer"></script>
 
 
                     <!-- Retreving data from the request -->
@@ -246,40 +255,77 @@ MA 02110-1301  USA
                             // Creation of one layer of points
                             var query = new L.layerGroup()
 
+                            var greenIcon = L.icon({
+                                iconUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-orange.png',
+                                //shadowUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-shadow.png',
+                                    iconSize:     [38, 95], // size of the icon
+                                    shadowSize:   [50, 64], // size of the shadow
+                                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                                    shadowAnchor: [4, 62],  // the same for the shadow
+                                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                            });
+                            var restaurantIcon = L.icon({
+                                iconUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-green.png',
+                                //shadowUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-shadow.png',
+                                    iconSize:     [38, 95], // size of the icon
+                                    shadowSize:   [50, 64], // size of the shadow
+                                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                                    shadowAnchor: [4, 62],  // the same for the shadow
+                                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                            });
+                            var schoolIcon = L.icon({
+                                iconUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-red.png',
+                                //shadowUrl: 'https://leafletjs.com/SlavaUkraini/examples/custom-icons/leaf-shadow.png',
+                                    iconSize:     [38, 95], // size of the icon
+                                    shadowSize:   [50, 64], // size of the shadow
+                                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                                    shadowAnchor: [4, 62],  // the same for the shadow
+                                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                            });
+
                             // Loop to add every point of the results to the map
                             for (let i = 0; i < sizeOfArray; i++) {
-
                                 // To add a point :
                                 // L.marker([latitude, longitude]).bindPopup(nameOfThePoint).addTo(nameOfTheLayer);
-                                L.marker([dataArray[i][2], dataArray[i][3]]).bindPopup(dataArray[i][1]).addTo(query);
+                                L.marker([dataArray[i][2],dataArray[i][3]],{icon: greenIcon}).bindPopup(dataArray[i][2] + "," + dataArray[i][3] + " " + dataArray[i][1]).addTo(query);
 
                             }
                             var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
                                     'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
                                     mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
+                            var rUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
                             // Creation of two layers : grayscale, and streets map
                             // It is also possible to add a satelite map, landform map, ..
                             var grayscale = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
-                                    streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+                                streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+                                relief = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {maxZoom: 17, attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
+                                mini_grayscale = new L.TileLayer(mbUrl, {id: 'mapbox/light-v9', minZoom: 0, maxZoom: 13, attribution: mbAttr});
+                                mini_streets = new L.TileLayer(mbUrl, {id: 'mapbox/streets-v11', minZoom: 0, maxZoom: 13, attribution: mbAttr});
+                                mini_relief = new L.TileLayer(rUrl, {minZoom: 0, maxZoom: 13, attribution: mbAttr});
+
 
                             // Definition of the map, and setup of details : coordinates of the center, zoom level and layers that appear on loading
                             var map = L.map('map', {
                                 center: [49.99, 8.24],
                                 zoom: 6,
+                                minZoom: 2,
+                                fullscreenControl: true,
                                 layers: [streets, query]
                             });
 
                             // Definition of layers
                             var baseLayers = {
                                 "Grayscale": grayscale,
-                                "Streets": streets
+                                "Streets": streets,
+                                "Relief" : relief
                             };
 
                             // Definition of point layers
                             var overlays = {
                                 "Query": query
                             };
+
                             // Add layers and points layers to the map
                             L.control.layers(baseLayers, overlays).addTo(map);
 
@@ -382,6 +428,10 @@ MA 02110-1301  USA
 <script src="js/jquery.singlePageNav.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/template.js"></script>
+<script src="js/boundingBox.js"/></script>
+<script src="js/moussePosition.js"/></script>
+<script src="js/miniMap.js"></script>
+
 
 </body>
 </html>

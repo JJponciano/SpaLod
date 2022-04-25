@@ -69,16 +69,4 @@ L.control.mousePosition = function (options) {
 return new L.Control.MousePosition(options);
 };
 
-var a = `.leaflet-container .leaflet-control-mouseposition {
-      background-color: rgba(255, 255, 255, 0.7);
-      box-shadow: 0 0 5px #bbb;
-      padding: 0 5px;
-      margin:0;
-      color: #333;
-      font: 11px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
-    }`;
-var styleSheet = document.createElement("style");
-styleSheet.innerText = a;
-
-document.head.appendChild(styleSheet);
 L.control.mousePosition().addTo(map);

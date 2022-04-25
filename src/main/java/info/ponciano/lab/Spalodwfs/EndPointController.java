@@ -132,6 +132,7 @@ public class EndPointController {
             String[] schoolkeywords = {"schul","gymnasium","kolleg","collegium","school","lyzeum","akademie","academy","école","berufsbildungszentrum","bsz","studien","bildungs","seminar","skolen","universität"};
             String[] restaurantkeywords = {"restaurant"};
 
+
             if (object.isLiteral()){
                 String point_toprocess = object.asLiteral().getString();
                 String a = point_toprocess.split("\\(" ) [1];
