@@ -81,7 +81,6 @@ public class LodController {
                 + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>";
 
         try {
-
             String queryString = prefixes + sq.getResults();
             Query query = QueryFactory.create(queryString);
             System.out.println(queryString);
@@ -179,6 +178,7 @@ public class LodController {
             Feature f = new Feature(geo);
             f.addProperty("hasWikidataOrigin", r[0]);
             f.addProperty("hasLabel", r[1]);
+            f.addProperty("hasType", r[4]);
             features.add(f);
         }
         GeoJsonRDF.featureUplift(features, ont, data);

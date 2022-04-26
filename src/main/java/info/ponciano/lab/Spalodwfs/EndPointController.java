@@ -93,11 +93,13 @@ public class EndPointController {
         try {
             String queryString = prefixes + sq.getQuery();
             r = KB.get().getOnt().selectAsText(queryString);
+
             List<String> cn = new ArrayList<String>();
             List<String[]> rl = new ArrayList<String[]>();
             //store results in ResultSet format
             ResultSet resultset = KB.get().getOnt().select(queryString);
             //gives the column names of the query
+
             cn = getResults(resultset, rl);
             this.columnNames = cn;
             this.resultList = rl;
@@ -129,9 +131,6 @@ public class EndPointController {
             String[] ls = new String[4];
             RDFNode object = solu.get("?o");
 
-            String[] schoolkeywords = {"schul","gymnasium","kolleg","collegium","school","lyzeum","akademie","academy","école","berufsbildungszentrum","bsz","studien","bildungs","seminar","skolen","universität"};
-            String[] restaurantkeywords = {"restaurant"};
-
             if (object.isLiteral()){
                 String point_toprocess = object.asLiteral().getString();
                 String a = point_toprocess.split("\\(" ) [1];
@@ -141,26 +140,81 @@ public class EndPointController {
                 String y = coord[0];
                 ls[0] = x;
                 ls[1] = y;
-                ls[2] = solu.get("?l").asLiteral().getString();
-                ls[3]="default";
+                ls[2] = solu.get("?l").asLiteral().getString().replace("@de","");
+                String code = "";
+                try{ code =solu.get("?c").asLiteral().getString();}catch(Exception e){}
 
 
-
-                for(String s :schoolkeywords ) {
-                    if (ls[2].toLowerCase().contains(s)) {
-                        ls[3] = "school";
+                switch(code){
+                    case "Q3914":
+                        ls[3]="HS";
                         break;
-                    }
+                    case "Q1195942":
+                        ls[3]="Feuerwehr";
+                        break;
+                    case "Q16917":
+                        ls[3]="KHV";
+                        break;
+                    case "Q33506":
+                        ls[3]="Museen";
+                        break;
+                    case "Q205495":
+                        ls[3]="Tankstellen";
+                        break;
+                    case "Q2140665": // or Q1477760
+                        ls[3]="LadeSt";
+                        break;
+                    case "Q180846":
+                        ls[3]="Supermarkt";
+                        break;
+                    case "Q7075":
+                        ls[3]="Bibliothek";
+                        break;
+                    case "Q44782":
+                        ls[3]="Seehaefen";
+                        break;
+                    case "Q55488":
+                        ls[3]="Bahnhof";
+                        break;
+                    case "Q11707":
+                        ls[3]="Restaurant";
+                        break;
+                    case "Q41253":
+                        ls[3]="Kino";
+                        break;
+                    case "Q4989906":
+                        ls[3]="Denkmal";
+                        break;
+                    case "Q861951":
+                        ls[3]="BPOL";
+                        break;
+                    case "Q27686":
+                        ls[3]="Hotel";
+                        break;
+                    case "Q483110":
+                        ls[3]="Stadium";
+                        break;
+                    case "Q1248784":
+                        ls[3]="Flughaefen";
+                        break;
+                    case "Q22908":
+                        ls[3]="Seniorenheime";
+                        break;
+                    case "Q200023":
+                        ls[3]="Schwimmbad";
+                        break;
+                    case "Q19010":
+                        ls[3]="Wetterstation";
+                        break;
+                    case "Q483242":
+                        ls[3]="Laboratorium";
+                        break;
+                    case "Q364005":
+                        ls[3]="Kita";
+                        break;
+                    default :
+                        ls[3]="KmBAB";
                 }
-                if(ls[3]=="default") {
-                    for (String s : restaurantkeywords) {
-                        if (ls[2].toLowerCase().contains(s)) {
-                            ls[3] = "restaurant";
-                            break;
-                        }
-                    }
-                }
-
                 rl.add(ls);
             }
         }

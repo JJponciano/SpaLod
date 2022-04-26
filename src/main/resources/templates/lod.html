@@ -162,7 +162,7 @@ MA 02110-1301  USA
                             <option value="stadiums">Stadien (Q483110)</option>
                             <option value="swimmingPools">Schwimmbäder (Q200023)</option>
                             <option value="serviceStation">Tankstellen (Q205495)</option>
-                            <option value="weatherStation">Wetterstationen (Q19010)</option>
+                            <option value="weatherStation">Wetterstationen (Q190107)</option>
                             <option value="researchLaboratory">Forschungslaboratorien (Q483242)</option>
                             <option value="port">Häfen (Q44782)</option>
                             <option value="cities">Städte (Q515)</option>
@@ -259,7 +259,7 @@ MA 02110-1301  USA
                                     mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
                             // Creation of two layers : grayscale, and streets map
-                            // It is also possible to add a satelite map, landform map, ..
+                            // It is also possible to add a satellite map, landform map, ..
                             var grayscale = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
                                     streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
 
@@ -341,15 +341,17 @@ MA 02110-1301  USA
                                 <th><span>itemLabel</span></th>
                                 <th><span>Latitude</span></th>
                                 <th><span>Longitude</span></th>
+                                <th><span>Category</span></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <!-- Filling the 4 columns with the results from WikiData-->
+                            <!-- Filling the 5 columns with the results from WikiData-->
                             <tr th:each="md: ${MDlist}">
                                 <td style="width: 170px;"><span th:text="${md[0]}"></span></td>
                                 <td style="width: 170px;"><span th:text="${md[1]}"></span></td>
                                 <td style="width: 170px;"><span th:text="${md[2]}"></span></td>
                                 <td style="width: 170px;"><span th:text="${md[3]}"></span></td>
+                                <td style="width: 170px;"><span th:text="${md[4]}"></span></td>
                             </tr>
                             </tbody>
                         </table>
