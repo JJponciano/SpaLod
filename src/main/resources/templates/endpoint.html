@@ -209,9 +209,9 @@ MA 02110-1301  USA
                             // Loop to add every point of the results to the map
                             for (let i = 0; i < sizeOfArray; i++) {
                                  L.marker(
-                                      [dataArray[i][0], dataArray[i][1]],
-                                      { icon: new MarkerIcon({iconUrl: path + dataArray[i][3] +'.png'}) }
-                                 ).bindPopup(dataArray[i][0]+","+dataArray[i][1]+" "+dataArray[i][2]).addTo(query);
+                                      [dataArray[i][2], dataArray[i][3]],
+                                      { icon: new MarkerIcon({iconUrl: path + dataArray[i][0] +'.png'}) }
+                                 ).bindPopup(dataArray[i][2]+","+dataArray[i][3]+" "+dataArray[i][1]).addTo(query);
                             }
                             var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
                                     'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -250,8 +250,10 @@ MA 02110-1301  USA
                             };
 
                             // Add layers and points layers to the map
-                            L.control.layers(baseLayers, overlays).addTo(map);
-
+                            var layerControl = L.control.layers(baseLayers, overlays).addTo(map);
+                            var testBoundingBox = false; // Check is bounding box was open
+                            var testSection = "sparql";
+                            var endpoint = false;
 
                     </script>
                 </div>

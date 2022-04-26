@@ -138,82 +138,82 @@ public class EndPointController {
                 String[] coord = a.split(" ");
                 String x = coord[1];
                 String y = coord[0];
-                ls[0] = x;
-                ls[1] = y;
-                ls[2] = solu.get("?l").asLiteral().getString().replace("@de","");
+                ls[2] = x;
+                ls[3] = y;
+                ls[1] = solu.get("?l").asLiteral().getString().replace("@de","");
                 String code = "";
                 try{ code =solu.get("?c").asLiteral().getString();}catch(Exception e){}
 
 
                 switch(code){
                     case "Q3914":
-                        ls[3]="HS";
+                        ls[0]="HS";
                         break;
                     case "Q1195942":
-                        ls[3]="Feuerwehr";
+                        ls[0]="Feuerwehr";
                         break;
                     case "Q16917":
-                        ls[3]="KHV";
+                        ls[0]="KHV";
                         break;
                     case "Q33506":
-                        ls[3]="Museen";
+                        ls[0]="Museen";
                         break;
                     case "Q205495":
-                        ls[3]="Tankstellen";
+                        ls[0]="Tankstellen";
                         break;
                     case "Q2140665": // or Q1477760
-                        ls[3]="LadeSt";
+                        ls[0]="LadeSt";
                         break;
                     case "Q180846":
-                        ls[3]="Supermarkt";
+                        ls[0]="Supermarkt";
                         break;
                     case "Q7075":
-                        ls[3]="Bibliothek";
+                        ls[0]="Bibliothek";
                         break;
                     case "Q44782":
-                        ls[3]="Seehaefen";
+                        ls[0]="Seehaefen";
                         break;
                     case "Q55488":
-                        ls[3]="Bahnhof";
+                        ls[0]="Bahnhof";
                         break;
                     case "Q11707":
-                        ls[3]="Restaurant";
+                        ls[0]="Restaurant";
                         break;
                     case "Q41253":
-                        ls[3]="Kino";
+                        ls[0]="Kino";
                         break;
                     case "Q4989906":
-                        ls[3]="Denkmal";
+                        ls[0]="Denkmal";
                         break;
                     case "Q861951":
-                        ls[3]="BPOL";
+                        ls[0]="BPOL";
                         break;
                     case "Q27686":
-                        ls[3]="Hotel";
+                        ls[0]="Hotel";
                         break;
                     case "Q483110":
-                        ls[3]="Stadium";
+                        ls[0]="Stadium";
                         break;
                     case "Q1248784":
-                        ls[3]="Flughaefen";
+                        ls[0]="Flughaefen";
                         break;
                     case "Q22908":
-                        ls[3]="Seniorenheime";
+                        ls[0]="Seniorenheime";
                         break;
                     case "Q200023":
-                        ls[3]="Schwimmbad";
+                        ls[0]="Schwimmbad";
                         break;
                     case "Q19010":
-                        ls[3]="Wetterstation";
+                        ls[0]="Wetterstation";
                         break;
                     case "Q483242":
-                        ls[3]="Laboratorium";
+                        ls[0]="Laboratorium";
                         break;
                     case "Q364005":
-                        ls[3]="Kita";
+                        ls[0]="Kita";
                         break;
                     default :
-                        ls[3]="KmBAB";
+                        ls[0]="KmBAB";
                 }
                 rl.add(ls);
             }

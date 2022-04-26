@@ -86,12 +86,10 @@ L.LocationFilter = L.Layer.extend({
     options: {
         enableButton: {
             enableText: "",
-            disableText: "",
-            title:"Bounding Box"
+            disableText: ""
         },
         adjustButton: {
-            text: "",
-            title:"Select area within current zoom"
+            text: "Select area within current zoom",
         },
         buttonPosition: 'topleft'
     },
@@ -269,7 +267,31 @@ L.LocationFilter = L.Layer.extend({
         this._westBounds = new L.LatLngBounds(new L.LatLng(this._sw.lat, this._osw.lng, true), this._nw);
         this._eastBounds = new L.LatLngBounds(this._se, new L.LatLng(this._ne.lat, this._one.lng, true));
         this._southBounds = new L.LatLngBounds(this._osw, new L.LatLng(this._sw.lat, this._one.lng, true));
-        window.boxBounds= this.getBounds();
+
+        // Display bounding box result
+        boxBounds= this.getBounds();
+        if (testBoundingBox){
+            boundingQuery.removeFrom(map);
+        }else{
+            testBoundingBox = true;
+        }
+        layerControl.remove();
+        layerControl = L.control.layers(baseLayers, overlays).addTo(map);
+        boundingQuery = new L.layerGroup();
+        for (let i = 0; i < sizeOfArray; i++) {
+            // To add a point :
+            // L.marker([latitude, longitude]).bindPopup(nameOfThePoint).addTo(nameOfTheLayer);
+            if((boxBounds._northEast.lat >= dataArray[i][2]) && (boxBounds._northEast.lng >= dataArray[i][3]) && (boxBounds._southWest.lat <= dataArray[i][2]) && (boxBounds._southWest.lng <= dataArray[i][3])){
+                 L.marker(
+                      [dataArray[i][2], dataArray[i][3]],
+                      { icon: new MarkerIcon({iconUrl: path + dataArray[i][0] +'.png'}) }
+                 ).bindPopup(dataArray[i][2]+","+dataArray[i][3]+" "+dataArray[i][1]).addTo(boundingQuery);
+            }
+        }
+        layerControl.addOverlay(boundingQuery,"Selection");
+        query.removeFrom(map);
+        boundingQuery.addTo(map);
+
     },
 
     /* Initializes rectangles and markers */
