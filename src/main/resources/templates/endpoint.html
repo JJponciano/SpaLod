@@ -31,6 +31,9 @@ MA 02110-1301  USA
     <!-- https://getbootstrap.com/ -->
     <link rel="stylesheet" href="css/tooplate-style.css"/>
 
+    <link rel="stylesheet" href="css/boundingBox.css"/>
+    <link rel="stylesheet" href="css/mousseCoordinates.css"/>
+
 </head>
 
 <body>
@@ -184,7 +187,6 @@ MA 02110-1301  USA
                             return size;
                         };
                         var sizeOfArray = Object.size(dataArray);
-                        console.log(sizeOfArray);
 
                     </script>
                     <script>
@@ -250,8 +252,8 @@ MA 02110-1301  USA
                             // Add layers and points layers to the map
                             L.control.layers(baseLayers, overlays).addTo(map);
 
+
                     </script>
-                    <!-- bounding box -->
                 </div>
             </section>
             <section >

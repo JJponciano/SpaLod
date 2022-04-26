@@ -269,6 +269,7 @@ L.LocationFilter = L.Layer.extend({
         this._westBounds = new L.LatLngBounds(new L.LatLng(this._sw.lat, this._osw.lng, true), this._nw);
         this._eastBounds = new L.LatLngBounds(this._se, new L.LatLng(this._ne.lat, this._one.lng, true));
         this._southBounds = new L.LatLngBounds(this._osw, new L.LatLng(this._sw.lat, this._one.lng, true));
+        window.boxBounds= this.getBounds();
     },
 
     /* Initializes rectangles and markers */
@@ -488,57 +489,5 @@ L.LocationFilter = L.Layer.extend({
         this._buttonContainer.addTo(this._map);
     }
 });
-
-var a = `div.leaflet-marker-icon.location-filter.resize-marker {
-             background: url( img/resize-handle.png ) no-repeat;
-             cursor: move;
-         }
-         div.leaflet-marker-icon.location-filter.move-marker {
-             background: url( img/move-handle.png ) no-repeat;
-             cursor: move;
-         }
-
-         .leaflet-container div.location-filter.button-container a.enable-button {
-             padding: 6px 5px 12px 25px;
-             background-image: url( img/filter-icon.png );
-             background-color: #fff;
-             background-repeat: no-repeat;
-             background-position: left center;
-             border: 1.5px solid rgba(0,0,0,0.2);
-         }
-         .leaflet-container div.location-filter.button-container a.enable-button:hover,
-         .leaflet-container div.location-filter.button-container.enabled a.enable-button {
-             background-image: url( img/filter-icon.png );
-             background-color: #f4f4f4;
-             background-repeat: no-repeat;
-             background-position: left center;
-             border: 1.5px solid rgba(0,0,0,0.2);
-         }
-
-         .leaflet-container div.location-filter.button-container a.adjust-button {
-             margin-left: 2px;
-             padding: 6px 5px 12px 25px;
-             background-image: url( img/filter-icon-2.png );
-             background-color: #fff;
-             background-repeat: no-repeat;
-             background-position: left center;
-             border: 1.5px solid rgba(0,0,0,0.2);
-         }
-         .leaflet-container div.location-filter.button-container a.adjust-button:hover {
-             background-image: url( img/filter-icon-2.png );
-             background-color: #f4f4f4;
-             background-repeat: no-repeat;
-             background-position: left center;
-             border: 1.5px solid rgba(0,0,0,0.2);
-         }`;
-
-var styleSheet = document.createElement("style");
-styleSheet.innerText = a;
-document.head.appendChild(styleSheet);
-
 // Add bounding box it to the map
 var locationFilter = new L.LocationFilter().addTo(map);
-
-// Get coordinates of bounding box
-var bounds = locationFilter.getBounds();
-console.log(bounds);
