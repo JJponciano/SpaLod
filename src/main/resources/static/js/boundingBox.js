@@ -86,10 +86,12 @@ L.LocationFilter = L.Layer.extend({
     options: {
         enableButton: {
             enableText: "",
-            disableText: ""
+            disableText: "",
+            title:"Bounding Box"
         },
         adjustButton: {
-            text: "Select area within current zoom",
+            text: "",
+            title:"Select area within current zoom"
         },
         buttonPosition: 'topleft'
     },
