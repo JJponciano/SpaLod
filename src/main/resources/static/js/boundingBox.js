@@ -271,8 +271,9 @@ L.LocationFilter = L.Layer.extend({
         this._southBounds = new L.LatLngBounds(this._osw, new L.LatLng(this._sw.lat, this._one.lng, true));
 
         // Display bounding box result
-        boxBounds= this.getBounds();
+        window.boxBounds= this.getBounds();
         if (testBoundingBox){
+            try { updateRequest(); } catch (error) {};
             boundingQuery.removeFrom(map);
         }else{
             testBoundingBox = true;

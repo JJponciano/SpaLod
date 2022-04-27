@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="add template.js">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/EndPointController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/EndPointController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/LodController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/LodController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/boundingBox.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/boundingBox.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/lod.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/lod.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/templates/endpoint.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/endpoint.html" afterDir="false" />
