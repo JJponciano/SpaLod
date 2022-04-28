@@ -134,6 +134,11 @@ MA 02110-1301  USA
     </div>
     <!-- Content-->
     <div class="container tm-features-section" id="features2">
+        <div tripleStore class="tripleStore">
+            <input type="radio" name="tripleStore" id="Wikidata" checked> Wikidata
+            <input type="radio" name="tripleStore" id="DBPedia"> DBPedia
+            <input type="radio" name="tripleStore" id="LinkedGeoData"> LinkedGeoData
+        </div>
         <div class="row tm-features-row">
             <section class="col-md-6 col-sm-12 tm-feature-block">
                 <header class="tm-feature-header">
@@ -212,7 +217,7 @@ MA 02110-1301  USA
                     <h3 class="tm-feature-h">Map</h3>
                 </header>
                 <!--Map -->
-                <div id=map style="position : relative; width: 1200px; height: 800px; margin: 0 auto;">
+                <div id=map style="position : relative; width: 1200px; height: 800px; margin-bottom: 20px;">
                     <!-- Leaflet script and stylesheet -->
                     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
                             integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
