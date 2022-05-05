@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="add template.js">
+    <list default="true" id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="Add sh script and Dockerfile">
+      <change beforePath="$PROJECT_DIR$/.idea/SpaLod.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SpaLod.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/EnrichController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/EnrichController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/MatchingDataCreationDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/MatchingDataCreationDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/enrichment.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/enrichment.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +19,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="JUnit5 Test Class" />
       </list>
     </option>
   </component>
@@ -32,6 +33,13 @@
       <filtered-out-file-type name="TAG" />
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
+  </component>
+  <component name="GithubProjectSettings">
+    <option name="branchProtectionPatterns">
+      <list>
+        <option value="main" />
+      </list>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -52,6 +60,8 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources/templates" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
@@ -61,8 +71,14 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\49151\Documents\GitHub\SpaLod\src\main\resources\templates" />
     </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="info.ponciano.lab.Spalodwfs" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="info.ponciano.lab.Spalodwfs.enrichment" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="info.ponciano.lab.Spalodwfs.geotime.controllers.last" />
@@ -70,13 +86,13 @@
       <recent name="info.ponciano.lab.Spalodwfs.geotime.controllers.storage" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.SpalodwfsApplication">
     <configuration name="SpalodwfsApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="info.ponciano.lab.Spalodwfs.SpalodwfsApplication" />
       <module name="SpaLod" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="info.ponciano.lab.Spalodwfs.*" />
+          <option name="PATTERN" value="info.ponciano.lab.Spalodwfs.enrichment.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -84,9 +100,42 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="UnknownDataManagerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="SpaLod" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="info.ponciano.lab.Spalodwfs.enrichment.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="info.ponciano.lab.Spalodwfs.enrichment" />
+      <option name="MAIN_CLASS_NAME" value="info.ponciano.lab.Spalodwfs.enrichment.UnknownDataManagerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UnknownDataManagerTest.run" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="SpaLod" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="info.ponciano.lab.Spalodwfs.enrichment.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="info.ponciano.lab.Spalodwfs.enrichment" />
+      <option name="MAIN_CLASS_NAME" value="info.ponciano.lab.Spalodwfs.enrichment.UnknownDataManagerTest" />
+      <option name="METHOD_NAME" value="run" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.SpalodwfsApplication" />
+        <item itemvalue="JUnit.UnknownDataManagerTest.run" />
+        <item itemvalue="JUnit.UnknownDataManagerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -106,7 +155,21 @@
       <option name="project" value="LOCAL" />
       <updated>1647866565323</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="update pom">
+      <created>1651743355131</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1651743355131</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Add sh script and Dockerfile">
+      <created>1651747066302</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1651747066302</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -122,6 +185,32 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="add template.js" />
-    <option name="LAST_COMMIT_MESSAGE" value="add template.js" />
+    <MESSAGE value="update pom" />
+    <MESSAGE value="Add sh script and Dockerfile" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add sh script and Dockerfile" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/enrichment/UnknownDataManager.java</url>
+          <line>52</line>
+          <option name="timeStamp" value="41" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="JUnit">
+        <watch expression="query" />
+      </configuration>
+      <configuration name="Application">
+        <watch expression="strings.length" language="JAVA" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/SpaLod$UnknownDataManagerTest_run.ic" NAME="UnknownDataManagerTest.run Coverage Results" MODIFIED="1649257278817" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>info.ponciano.lab.Spalodwfs.enrichment.*</FILTER>
+    </SUITE>
   </component>
 </project>

@@ -26,4 +26,8 @@ RUN mvn install:install-file \
 -Dversion=1.0-SNAPSHOT\
 -Dpackaging=jar
 
-
+# command not cached
+ARG CACHEBUST=1
+RUN git -C  /home/spalod/ pull
+RUN mvn -f /home/spalod/pom.xml package
+RUN chmod 755 /home/spalod/spalod.sh
