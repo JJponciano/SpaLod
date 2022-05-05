@@ -3,6 +3,12 @@ Spatial data management with semantic web technology and Linked Open Data (LOD)
 
 ## Docker 
 
+Clone the repository and go inside:
+```bash
+git clone https://github.com/JJponciano/SpaLod.git
+cd SpaLod
+```
+
 Build the docker image and run the container
 ```bash
 docker build -t spalod .
@@ -15,9 +21,10 @@ docker exec spalod-container /home/spalod/spalod.sh
 ```
 
 ## Installation 
-Clone the repository:
+Clone the repository and go inside:
 ```bash
-git clone https://github.com/JJponciano/SpaLod.git /home/spalod
+git clone https://github.com/JJponciano/SpaLod.git
+cd SpaLod
 ```
 Install dependencies
 ```bash
