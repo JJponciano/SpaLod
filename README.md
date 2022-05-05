@@ -46,7 +46,7 @@ mvn install:install-file \
 ```
 Build the binaries
 ```bash
-mvn /home/spalod/pom.xml package```
+mvn /home/spalod/pom.xml package
 ```
 Run the server:
 ```bash
