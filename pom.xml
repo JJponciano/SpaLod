@@ -73,10 +73,7 @@
         </dependency>
         <!-- END OAuth2 management -->
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -117,11 +114,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.opengis</groupId>
             <artifactId>geoapi</artifactId>
@@ -172,11 +165,7 @@
             <artifactId>spring-boot</artifactId>
             <type>jar</type>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <type>jar</type>
-        </dependency>
+
         <dependency>
             <groupId>info.ponciano.lab</groupId>
             <artifactId>pisemantic</artifactId>
