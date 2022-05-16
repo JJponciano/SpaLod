@@ -20,6 +20,7 @@ package info.ponciano.lab.Spalodwfs.geotime.models;
 
 public class SparqlQuery {
 	String query;
+    String triplestore;
 
     public SparqlQuery(String query) {
         this.query = query;
@@ -36,4 +37,13 @@ public class SparqlQuery {
     public void setResults(String query) {
         this.query = query;
     }
+
+    public void setTriplestore(String triplestore) {
+        this.triplestore = triplestore;
+    }
+
+    public String getTriplestore() {
+        return triplestore;
+    }
 }
+

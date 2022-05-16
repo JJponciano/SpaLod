@@ -78,13 +78,18 @@ public class LodController {
                 + "PREFIX p: <http://www.wikidata.org/prop/>\r\n"
                 + "PREFIX ps: <http://www.wikidata.org/prop/statement/>\r\n"
                 + "PREFIX psv: <http://www.wikidata.org/prop/statement/value/>"
-                + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>";
+                + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>"
+                + "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>"
+                + "PREFIX dp: <http://dbpedia.org/resource/>"
+                + "PREFIX dpp: <http://dbpedia.org/property/>"
+                + "PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>";
 
         try {
             String queryString = prefixes + sq.getResults();
             Query query = QueryFactory.create(queryString);
             System.out.println(queryString);
-            QueryExecution qexec = QueryExecutionFactory.sparqlService("https://query.wikidata.org/sparql", query);
+            System.out.println(sq.getTriplestore());
+            QueryExecution qexec = QueryExecutionFactory.sparqlService("https://"+ sq.getTriplestore() + ".org/sparql", query);
             List<String> cn = new ArrayList<String>();
             List<String[]> rl = new ArrayList<String[]>();
             //store results in ResultSet format
@@ -136,10 +141,12 @@ public class LodController {
                 if (a.contains("^^http://www.w3.org/2001/XMLSchema#double")) {
                     a = a.replace("^^http://www.w3.org/2001/XMLSchema#double", "");
                 }
+                if (a.contains("^^http://www.w3.org/2001/XMLSchema#float")) {
+                    a = a.replace("^^http://www.w3.org/2001/XMLSchema#float", "");
+                }
                 ls[i] = a;
             }
             String code = ls[0];
-            System.out.println(ls[0]);
             switch(code){
                 case "Q3914":
                     ls[0]="HS";
