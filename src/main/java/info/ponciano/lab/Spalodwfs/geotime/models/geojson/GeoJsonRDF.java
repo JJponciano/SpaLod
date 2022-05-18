@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.lang.Number;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -191,7 +192,19 @@ public class GeoJsonRDF {
         JSONArray coords = (JSONArray) geometry.get("coordinates");//get all coordinates
         double[] coordinates = new double[coords.size()];
         for (int i = 0; i < coordinates.length; i++) {
-            coordinates[i] = (double) coords.get(i);
+            try{
+                if(coords.get(i).getClass().equals(Long.class)) {
+                    Long y = (long) coords.get(i);
+                    double d = y.doubleValue();
+                    coordinates[i] = d;
+                }else{
+                    coordinates[i] = (double) coords.get(i);
+                }
+
+            }catch (Exception e){
+                System.out.println(e);
+            }
+
         }
         Geometry geo = new Geometry(geotype, coordinates);
         return geo;

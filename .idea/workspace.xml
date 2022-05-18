@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7d396af6-bbde-45e1-966d-3bef19f55a6b" name="Changes" comment="add template.js">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/enrichment/UnknownDataManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/enrichment/UnknownDataManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/miniMap.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/miniMap.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/lod.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/lod.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/geojson/GeoJsonRDF.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/info/ponciano/lab/Spalodwfs/geotime/models/geojson/GeoJsonRDF.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
