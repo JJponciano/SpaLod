@@ -437,6 +437,10 @@ figure {
     width: 100%;
 }
 
+.tripleStore{
+    margin-bottom : 20px;
+}
+
 @media (min-width: 768px) {
   .tm-feature-block {
     margin-bottom: 0;

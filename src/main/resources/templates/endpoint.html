@@ -1,17 +1,14 @@
-<!DOCTYPE html>
++<!DOCTYPE html>
 <!--
 Copyright (C) 2022 Claire Ponciano <claire@prudhomme.info>.
-
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
 version 2.1 of the License, or (at your option) any later version.
-
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Lesser General Public License for more details.
-
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -33,6 +30,9 @@ MA 02110-1301  USA
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
     <!-- https://getbootstrap.com/ -->
     <link rel="stylesheet" href="css/tooplate-style.css"/>
+
+    <link rel="stylesheet" href="css/boundingBox.css"/>
+    <link rel="stylesheet" href="css/mousseCoordinates.css"/>
 
 </head>
 
@@ -130,6 +130,7 @@ MA 02110-1301  USA
         </div>
     </div>
 
+
     <!-- Content-->
     <div class="container tm-features-section" id="features2">
         <div class="row tm-features-row">
@@ -144,17 +145,130 @@ MA 02110-1301  USA
                     <input type="submit" value="Submit">
                 </form>
             </section>
+
+            <!--Map -->
+            <section>
+                <header class="tm-feature-header">
+                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
+                    <h3 class="tm-feature-h">Map</h3>
+                </header>
+                <div id=map style="position : relative; width: 1200px; height: 800px; margin-bottom: 20px;">
+                    <!-- Leaflet script and stylesheet -->
+                    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+                            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+                            crossorigin=""></script>
+                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+                          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+                          crossorigin=""/>
+                    <link href="../static/css/asideBox.css" type="text/css">
+                    <link href="../static/css/main.css" type="text/css"/>
+                    <link href="../static/css/testSPARQL.css" type="text/css">
+                    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+                    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js"
+                            integrity="sha512-WL3nAJlWFKoDShduxQRyY3wkBnQsINXdIfWIW48ZaPgYz1wYNnxIwFMMgigzSgjNBC2WWZ8Y8/sSyUU6abuF0g=="
+                            crossorigin=""
+                            referrerpolicy="no-referrer"></script>
+
+
+                    <!-- Retreving data from the request -->
+                    <script th:inline="javascript">
+                        var dataArray = /*[[${MDlist}]]*/ 'default';
+                        // Function used to retrieve size of the data array
+                        // Data is stored as followed :
+                        // data = [latitude, longitude]
+                        Object.size = function (obj) {
+                            var size = 0,
+                                    key;
+                            for (key in obj) {
+                                if (obj.hasOwnProperty(key))
+                                    size++;
+                            }
+                            return size;
+                        };
+                        var sizeOfArray = Object.size(dataArray);
+
+                    </script>
+                    <script>
+                            //custom  icon class
+                            var MarkerIcon = L.Icon.extend({
+                            options : {
+                                iconSize:[20, 20],
+                                shadowSize:[0, 0],
+                                iconAnchor: [10, 10],
+                                popupAnchor: [0, -10]
+                            }
+                            });
+
+                            // Creation of one layer of points
+                            var query = new L.layerGroup();
+
+                            //path to where the files are hosted
+                            //var path = 'https://raw.githubusercontent.com/JJponciano/SpaLod/main/src/main/resources/static/pictures/signaturen/';
+                            var path = '../pictures/signaturen/'
+                            // Loop to add every point of the results to the map
+                            for (let i = 0; i < sizeOfArray; i++) {
+                                 L.marker(
+                                      [dataArray[i][2], dataArray[i][3]],
+                                      { icon: new MarkerIcon({iconUrl: path + dataArray[i][0] +'.png'}) }
+                                 ).bindPopup(dataArray[i][2]+","+dataArray[i][3]+" "+dataArray[i][1]).addTo(query);
+                            }
+                            var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+                                    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                                    mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+                            var rUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+                            // Creation of two layers : grayscale, and streets map
+                            // It is also possible to add a satelite map, landform map, ..
+                            var grayscale = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+                                streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+                                relief = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {maxZoom: 17, attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
+                                mini_grayscale = new L.TileLayer(mbUrl, {id: 'mapbox/light-v9', minZoom: 0, maxZoom: 13, attribution: mbAttr});
+                                mini_streets = new L.TileLayer(mbUrl, {id: 'mapbox/streets-v11', minZoom: 0, maxZoom: 13, attribution: mbAttr});
+                                mini_relief = new L.TileLayer(rUrl, {minZoom: 0, maxZoom: 13, attribution: mbAttr});
+
+
+                            // Definition of the map, and setup of details : coordinates of the center, zoom level and layers that appear on loading
+                            var map = L.map('map', {
+                                center: [49.99, 8.24],
+                                zoom: 6,
+                                minZoom: 2,
+                                fullscreenControl: true,
+                                layers: [streets, query]
+                            });
+
+                            // Definition of layers
+                            var baseLayers = {
+                                "Grayscale": grayscale,
+                                "Streets": streets,
+                                "Relief" : relief
+                            };
+
+                            // Definition of point layers
+                            var overlays = {
+                                "Query": query
+                            };
+
+                            // Add layers and points layers to the map
+                            var layerControl = L.control.layers(baseLayers, overlays).addTo(map);
+                            var testBoundingBox = false; // Check is bounding box was open
+
+                    </script>
+                </div>
+            </section>
             <section >
                 <header class="tm-feature-header">
                     <i class="fas fa-5x fa-atom tm-feature-icon"></i>
                     <h3 class="tm-feature-h">Results</h3>
                 </header>
                 <p>
-                    <pre>
+                <pre>
                         <code th:text="${queryresult}"></code>
                     </pre>
                 </p>
             </section>
+
+
 
             <!--INFORMATION SECTION-->
             <section class="col-md-6 col-sm-12 tm-feature-block">
@@ -190,6 +304,9 @@ MA 02110-1301  USA
 <script src="js/jquery.singlePageNav.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/template.js"></script>
+<script src="js/boundingBox.js"/></script>
+<script src="js/moussePosition.js"/></script>
+<script src="js/miniMap.js"></script>
 
 </body>
 </html>

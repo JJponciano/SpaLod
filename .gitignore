@@ -132,4 +132,6 @@ catalog-v001.xml
 SpalodOutput.owl
 tmp/
 dynamic_storage/*
+.idea/
 .idea/workspace.xml
+test.owl

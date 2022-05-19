@@ -34,9 +34,8 @@ import java.util.logging.Logger;
 public class LodController {
 
     String r = null;
-    List<String> columnNames = new ArrayList<String>();
-    List<String[]> resultList = new ArrayList<String[]>();
     private final StorageService storageService;
+    private SparqlEnrichModel sem;
 
     @Autowired
     public LodController(StorageService storageService) {
@@ -62,103 +61,28 @@ public class LodController {
     @PostMapping("/lod")
     public String results(@ModelAttribute("squery") SparqlQuery sq, Model model) throws Exception {
 
-        //prefixes for SPARQL query
-        String prefixes = "PREFIX schema: <http://schema.org/>"
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"
-                + "PREFIX owl: <http://www.w3.org/2002/07/owl#>"
-                + "PREFIX hist: <http://wikiba.se/history/ontology#>"
-                + "PREFIX wd: <http://www.wikidata.org/entity/>"
-                + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>"
-                + "PREFIX wikibase: <http://wikiba.se/ontology#>"
-                + "PREFIX dct: <http://purl.org/dc/terms/>"
-                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-                + "PREFIX bd: <http://www.bigdata.com/rdf#>"
-                + "PREFIX wds: <http://www.wikidata.org/entity/statement/>\r\n"
-                + "PREFIX wdv: <http://www.wikidata.org/value/>"
-                + "PREFIX p: <http://www.wikidata.org/prop/>\r\n"
-                + "PREFIX ps: <http://www.wikidata.org/prop/statement/>\r\n"
-                + "PREFIX psv: <http://www.wikidata.org/prop/statement/value/>"
-                + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>";
-
         try {
+            String query=  sq.getResults();
+            String triplestore = "https://" + sq.getTriplestore() + ".org/sparql";
+            this.sem=new SparqlEnrichModel(triplestore,query);
 
-            String queryString = prefixes + sq.getResults();
-            Query query = QueryFactory.create(queryString);
-            System.out.println(queryString);
-            QueryExecution qexec = QueryExecutionFactory.sparqlService("https://query.wikidata.org/sparql", query);
-            List<String> cn = new ArrayList<String>();
-            List<String[]> rl = new ArrayList<String[]>();
-            //store results in ResultSet format
-            ResultSet resultset = qexec.execSelect();
-            //gives the column names of the query
-            cn = getResults(resultset, rl);
-            this.columnNames = cn;
-            this.resultList = rl;
         } catch (Exception e) {
             r = e.getMessage();
         }
-        String p = getOntPath();
         //add attributes to model
-        model.addAttribute("cl", columnNames);
-        model.addAttribute("MDlist", resultList);
+        model.addAttribute("cl", this.sem.getHeader());
+        model.addAttribute("MDlist", this.sem.getData());
         model.addAttribute("errorMessage", r);
-        model.addAttribute("ontPath", p);
+        model.addAttribute("ontPath", this.sem.getOntPath());
 
         return "lod";
-    }
-
-    public static List<String> getResults(ResultSet resultset, List<String[]> rl) {
-        List<String> cn;
-
-        cn = resultset.getResultVars();
-        System.out.println("Column Names : " + cn);
-        List<Integer> numberOfColumns = new ArrayList<Integer>();
-        for (int i = 0; i < cn.size(); i++) {
-            numberOfColumns.add(i);
-        }
-        System.out.println(numberOfColumns);
-        //for all the QuerySolution in the ResultSet file
-        while (resultset.hasNext()) {
-            QuerySolution solu = resultset.next();
-            String[] ls = new String[cn.size()];
-            for (int i = 0; i < cn.size(); i++) {
-                String columnName = cn.get(i);
-                RDFNode node = solu.get(columnName);
-                String a = null;
-
-                //test if resource
-                if (node.isResource()) {
-                    a = node.asResource().getLocalName();
-                }
-                //test if literal
-                if (node.isLiteral()) {
-                    a = node.asLiteral().toString();
-                }
-                if (a.contains("^^http://www.w3.org/2001/XMLSchema#double")) {
-                    a = a.replace("^^http://www.w3.org/2001/XMLSchema#double", "");
-                }
-                ls[i] = a;
-            }
-            Arrays.deepToString(ls);
-            rl.add(ls);
-        }
-        return cn;
     }
 
     @PostMapping("/lodenrich")
     public String lodenrich( Model model) {
         try {
             PiSparql ont = KB.get().getOnt();
-            //creation of thematic map dataset
-            OntClass dataset = ont.createClass(GeoJsonRDF.DCAT_DATASET);
-            OntClass mt = ont.createClass(KB.NS + "Dataset");
-
-            String name = KB.NS + UUID.randomUUID().toString();
-
-            Individual data = dataset.createIndividual(name);
-            data.addProperty(RDF.type, mt);
-
-            enrich(ont,data);
+            this.sem.enrich(ont);
             KB.get().save();
             model.addAttribute("message", "The Knowledge-base was enriched!");
             return "lod";
@@ -167,32 +91,5 @@ public class LodController {
             model.addAttribute("message", ex.getMessage());
             return "lod";
         }
-    }
-
-    private void enrich(PiSparql ont,Individual data) throws Exception {
-
-        List<Feature> features = new ArrayList<>();
-        //for each item
-        for (String[] r : resultList) {
-            //create a feature
-            Geometry geo = new Geometry("Point", Double.parseDouble(r[3]), Double.parseDouble(r[2]));
-            Feature f = new Feature(geo);
-            f.addProperty("hasWikidataOrigin", r[0]);
-            f.addProperty("hasLabel", r[1]);
-            features.add(f);
-        }
-        GeoJsonRDF.featureUplift(features, ont, data);
-    }
-
-
-
-    private String getOntPath() throws Exception {
-        PiSparql ont = KB.get().getOntEmpty();
-        //creation of thematic map dataset
-        enrich(ont,null);
-
-        String p = UUID.randomUUID().toString() + ".owl";
-        ont.write(FileDownloadController.DIR+p);
-        return (FileDownloadController.DOWNLOAD_DATA +p);
     }
 }

@@ -25,6 +25,7 @@ class UnknownDataManager implements Runnable {
 
     /**
      * Creates a new instance of UnknownDataManager.
+     *
      * @param source OntModel that have to be enriched with the target
      * @param target OntModel that will be used for the enrichment
      */
@@ -62,16 +63,20 @@ class UnknownDataManager implements Runnable {
             //test if the object is known in the ontology
             boolean dataOk = true;
 
+            boolean isNotW3cBased = !s.toString().contains("w3.org") && !p.toString().contains("w3.org") && !o.toString().contains("w3.org");
             if (s.getURI() == null) {
-                this.noUri.add(s);
+                if (isNotW3cBased)
+                    this.noUri.add(s);
                 dataOk = false;
             }
             if (p.getURI() == null) {
-                this.noUri.add(p);
+                if (isNotW3cBased)
+                    this.noUri.add(p);
                 dataOk = false;
             }
             if (o.isResource() && o.asResource().getURI() == null) {
-                this.noUri.add(o);
+                if (isNotW3cBased)
+                 this.noUri.add(o);
                 dataOk = false;
             }
             if (dataOk) {
@@ -83,13 +88,13 @@ class UnknownDataManager implements Runnable {
                     addUnknown(p, proposal);
                 }
                 //test if the object is not a resource or is not a class or is known in the fixed memory or in the ontology
-                boolean knownClass = !o.isResource() || !allClasses.contains(o.asResource().getURI())|| this.knowFixed.contains(o.asResource().getURI()) || source.containsResource(o) ;
+                boolean knownClass = !o.isResource() || !allClasses.contains(o.asResource().getURI()) || this.knowFixed.contains(o.asResource().getURI()) || source.containsResource(o);
                 if (!knownClass) {
                     ExtendedIterator<OntClass> lps = this.schemaOrg.listNamedClasses();
                     String proposal = predictFromSchemaOrg(o.asResource(), lps);
                     addUnknown(o.asResource(), proposal);
                 }
-                boolean knownS = !allClasses.contains(s.getURI())|| this.knowFixed.contains(s.getURI()) || source.containsResource(s) ;
+                boolean knownS = !allClasses.contains(s.getURI()) || this.knowFixed.contains(s.getURI()) || source.containsResource(s);
                 if (!knownS) {
                     ExtendedIterator<OntClass> lps = this.schemaOrg.listNamedClasses();
                     String proposal = predictFromSchemaOrg(s, lps);
@@ -101,10 +106,10 @@ class UnknownDataManager implements Runnable {
                 o_string = convert(o);
 
                 // if the property is known and the object is not a resource or is known
-                if (knownP && (!o.isResource() || knownClass)&& knownS) {     //Add to the data known
-                    this.data_known.add(new String[]{"<"+s.getURI()+">","<"+ p.getURI()+">", o_string});
+                if (knownP && (!o.isResource() || knownClass) && knownS) {     //Add to the data known
+                    this.data_known.add(new String[]{"<" + s.getURI() + ">", "<" + p.getURI() + ">", o_string});
                 } else {
-                    this.remainingData.add(new String[]{"<"+s.getURI()+">","<"+ p.getURI()+">", o_string});
+                    this.remainingData.add(new String[]{"<" + s.getURI() + ">", "<" + p.getURI() + ">", o_string});
                 }
             }
         }
@@ -112,23 +117,24 @@ class UnknownDataManager implements Runnable {
 
     /**
      * Convert the Object node in string usable in SPARQL.
+     *
      * @param o object to be converted
-     * @return  The URI of the literal xsd syntax of the object
+     * @return The URI of the literal xsd syntax of the object
      */
     private String convert(RDFNode o) {
         String o_string;
         if (o.isResource()) {
-            o_string ="<"+ o.asResource().getURI()+">" ;
+            o_string = "<" + o.asResource().getURI() + ">";
         } else {
             String litURI = o.asLiteral().getDatatype().getURI();
             String lexicalForm = o.asLiteral().getLexicalForm();
-            if(lexicalForm.contains("\n")) {
+            if (lexicalForm.contains("\n")) {
                 lexicalForm = lexicalForm.replaceAll("\\n", " ");
             }
-            if(lexicalForm.contains("\"")) {
+            if (lexicalForm.contains("\"")) {
                 lexicalForm = lexicalForm.replaceAll("\"", "'");
             }
-            o_string = "\""+ lexicalForm +"\"^^xsd:"+ litURI.substring(litURI.lastIndexOf('#')+1,litURI.length());
+            o_string = "\"" + lexicalForm + "\"^^xsd:" + litURI.substring(litURI.lastIndexOf('#') + 1, litURI.length());
         }
         return o_string;
     }
@@ -152,7 +158,8 @@ class UnknownDataManager implements Runnable {
 
     /**
      * Predict the value of the resources according to a local name matching with Schema.or.
-     * @param p resource to set the value
+     *
+     * @param p          resource to set the value
      * @param listsDataP list of resources contained in schema.org ontology according to the type (property or class) of p
      * @return the predicted value or an empty string.
      */
@@ -170,7 +177,8 @@ class UnknownDataManager implements Runnable {
 
     /**
      * Add an unknown resource and proposal
-     * @param p resource to add
+     *
+     * @param p        resource to add
      * @param proposal proposition of resources uri
      */
     private void addUnknown(Resource p, String proposal) {
