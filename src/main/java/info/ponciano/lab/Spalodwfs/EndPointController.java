@@ -100,7 +100,7 @@ public class EndPointController {
             ResultSet resultset = KB.get().getOnt().select(queryString);
             //gives the column names of the query
 
-            cn = getResults(resultset, rl);
+          //TODO DOES NOT WORK, use FEATURE and WKT with point for geometry  cn = getResults(resultset, rl);
             this.columnNames = cn;
             this.resultList = rl;
 
