@@ -382,24 +382,16 @@ MA 02110-1301  USA
                             <thead>
                             <!-- Definition of the 5 columns -->
                             <tr>
-                                <th colspan="5" style="text-align: center; font-size: 1.2em;">Results of the query</th>
+                                <th th:colspan="${#lists.size(cl)}" style="text-align: center; font-size: 1.2em;">Results of the query</th>
                             </tr>
-                            <tr style="text-align: center;">
-                                <th><span>Category</span></th>
-                                <th><span>ItemLabel</span></th>
-                                <th><span>Latitude</span></th>
-                                <th><span>Longitude</span></th>
-                                <th><span>Item</span></th>
-                            </tr>
+                            <td style="text-align: center;"  th:each="name: ${cl}">
+                                <span th:text="${name}"></span>
+                            </td>
                             </thead>
                             <tbody>
                             <!-- Filling the 5 columns with the results from WikiData-->
                             <tr th:each="md: ${MDlist}">
-                                <td style="width: 170px;"><span th:text="${md[0]}"></span></td>
-                                <td style="width: 170px;"><span th:text="${md[1]}"></span></td>
-                                <td style="width: 170px;"><span th:text="${md[2]}"></span></td>
-                                <td style="width: 170px;"><span th:text="${md[3]}"></span></td>
-                                <td style="width: 170px;"><span th:text="${md[4]}"></span></td>
+                                <td  th:each="m: ${md}" style="width: 170px;"><span th:text="${m}"></span></td>
                             </tr>
                             </tbody>
                         </table>
