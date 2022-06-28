@@ -253,14 +253,12 @@ MA 02110-1301  USA
                         return size;
                     };
                     var sizeOfArray = Object.size(dataArray);
-                    var sizeOfArrayBox = 0;
 
 
                     </script>
                     <script>
                             // Creation of one layer of points
                             var query = new L.layerGroup();
-                            window.sizeOfArrayBox = 0;
 
                             //custom  icon class
                             var MarkerIcon = L.Icon.extend({
@@ -284,8 +282,8 @@ MA 02110-1301  USA
                             for (let i = 0; i < sizeOfArray; i++) {
                                  L.marker(
                                       [dataArray[i][2], dataArray[i][3]],
-                                      { icon: new MarkerIcon({iconUrl: path + dataArray[i][0] +'.png'}) }
-                                 ).bindPopup("<div align='center'>"+dataArray[i][2]+","+dataArray[i][3]+ "</div><div align= 'center'>"+dataArray[i][1] +/></div>" ).addTo(query);
+                                      { icon: new MarkerIcon({iconUrl: path + dataArray[i][7] +'.png'}) }
+                                 ).bindPopup("<div align='center'>"+dataArray[i][2]+","+dataArray[i][3]+ "</div><div align= 'center'>"+dataArray[i][1]+"</div><div>Student count :"+dataArray[i][5] +"</div><div>"+"<object type='image/jpeg'><img src='https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/"+dataArray[i][6]+"'width=202 /></div>" ).addTo(query);
                             }
                             var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
                                     'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -351,7 +349,7 @@ MA 02110-1301  USA
                 <p>
                     <a class="button" th:href="${ontPath}">Download RDF file</a>
 
-                    <!--Directly Enrich the KB-->
+                <!--Directly Enrich the KB-->
                 <form action="#" th:action="@{/lodenrich}"method="post">
                     <input type="submit" value="Enrich the Knowledge based"/>
                 </form>
