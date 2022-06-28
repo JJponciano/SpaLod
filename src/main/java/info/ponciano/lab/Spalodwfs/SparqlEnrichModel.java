@@ -14,6 +14,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.vocabulary.RDF;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,6 +73,7 @@ public class SparqlEnrichModel {
 
                 String value = null;
                 //test if resource
+                if (node !=null){
                 if (node.isResource()) {
                     value = node.asResource().getLocalName();//TODO  change to uri if necessary (JJ ONLY )
                 } else
@@ -86,88 +88,99 @@ public class SparqlEnrichModel {
                 if (value.contains("^^http://www.w3.org/2001/XMLSchema#float")) {
                     value = value.replace("^^http://www.w3.org/2001/XMLSchema#float", "");
                 }
+                if (value.contains("^^http://www.w3.org/2001/XMLSchema#decimal")) {
+                    value = value.replace("^^http://www.w3.org/2001/XMLSchema#decimal", "");
+                }
                 properties[i] = value;
-            }
+            }}
             data.add(properties);
         }
     }
 
 
-    //TODO here the type should be set, not the "wikidataOrigin" and in a generic way based on hearder name (not index) such as "category"
+    //TODO here the type should be set, not the "wikidataOrigin" and in a generic way based on header name (not index) such as "category"
     public void replaceWikidataType() {
         for (int i = 0; i < data.size(); i++) {
+            String iconCat = "";
             String[] properties = data.get(i);
             String code = properties[0];
             switch (code) {
                 case "Q3914":
-                    properties[0] = "HS";
+                    iconCat = "HS";
                     break;
                 case "Q1195942":
-                    properties[0] = "Feuerwehr";
+                    iconCat = "Feuerwehr";
                     break;
                 case "Q16917":
-                    properties[0] = "KHV";
+                    iconCat = "KHV";
                     break;
                 case "Q33506":
-                    properties[0] = "Museen";
+                    iconCat = "Museen";
                     break;
                 case "Q205495":
-                    properties[0] = "Tankstellen";
+                    iconCat = "Tankstellen";
                     break;
                 case "Q2140665": // or Q1477760
-                    properties[0] = "LadeSt";
+                    iconCat = "LadeSt";
                     break;
                 case "Q180846":
-                    properties[0] = "Supermarkt";
+                    iconCat = "Supermarkt";
                     break;
                 case "Q7075":
-                    properties[0] = "Bibliothek";
+                    iconCat = "Bibliothek";
                     break;
                 case "Q44782":
-                    properties[0] = "Seehaefen";
+                    iconCat = "Seehaefen";
                     break;
                 case "Q55488":
-                    properties[0] = "Bahnhof";
+                    iconCat = "Bahnhof";
                     break;
                 case "Q11707":
-                    properties[0] = "Restaurant";
+                    iconCat = "Restaurant";
                     break;
                 case "Q41253":
-                    properties[0] = "Kino";
+                    iconCat = "Kino";
                     break;
                 case "Q4989906":
-                    properties[0] = "Denkmal";
+                    iconCat = "Denkmal";
                     break;
                 case "Q861951":
-                    properties[0] = "BPOL";
+                    iconCat = "BPOL";
                     break;
                 case "Q27686":
-                    properties[0] = "Hotel";
+                    iconCat = "Hotel";
                     break;
                 case "Q483110":
-                    properties[0] = "Stadium";
+                    iconCat = "Stadium";
                     break;
                 case "Q1248784":
-                    properties[0] = "Flughaefen";
+                    iconCat = "Flughaefen";
                     break;
                 case "Q22908":
-                    properties[0] = "Seniorenheime";
+                    iconCat = "Seniorenheime";
                     break;
                 case "Q200023":
-                    properties[0] = "Schwimmbad";
+                    iconCat = "Schwimmbad";
                     break;
                 case "Q19010":
-                    properties[0] = "Wetterstation";
+                    iconCat = "Wetterstation";
                     break;
                 case "Q483242":
-                    properties[0] = "Laboratorium";
+                    iconCat = "Laboratorium";
                     break;
                 case "Q364005":
-                    properties[0] = "Kita";
+                    iconCat = "Kita";
                     break;
                 default:
-                    properties[0] = "KmBAB";
+                    iconCat = "KmBAB";
             }
+
+            String[] newprop = Arrays.copyOf(properties, properties.length+1);//adds a new attribute for the icon type
+            newprop[properties.length]=iconCat;
+
+            if(header.size()< newprop.length) {header.add(properties.length,"iconCategory");}//adds the column's name to the list
+
+            data.set(i,newprop);
         }
     }
 
@@ -175,6 +188,7 @@ public class SparqlEnrichModel {
         return ontPath;
     }
     public void enrich(PiSparql ont) throws Exception {
+
         OntClass dataset = ont.createClass(GeoJsonRDF.DCAT_DATASET);
         String name = KB.NS + UUID.randomUUID();
         Individual data = dataset.createIndividual(name);
@@ -195,13 +209,17 @@ public class SparqlEnrichModel {
                     latitude= Double.parseDouble(properties[i]);
                 }
             }
+
             if(longitude==null||latitude==null)throw new UnsupportedOperationException("Latitude and Longitude are missing in the query. You should used it as key (e.g. ?latitude, ?longitude)");
             Geometry geo = new Geometry("Point", longitude,latitude);
             Feature f = new Feature(geo);
             for (int i = 0; i < this.header.size(); i++) {
                 String pname = this.header.get(i);
                 if(!pname.contains("longitude")&&!pname.contains("latitude")){
-                    f.addProperty(pname, properties[i]);
+                    if(pname.contains("img")){
+                        f.addProperty(pname,properties[i].toString());
+                    }
+                    else {f.addProperty(pname, properties[i]);}
                     features.add(f);
                 }
             }
@@ -228,11 +246,16 @@ public class SparqlEnrichModel {
 
     private void run() throws Exception {
         this.replaceWikidataType();
-        PiSparql ont = KB.get().getOntEmpty();
-        //creation of thematic map dataset
-        enrich(ont);
-        String p = UUID.randomUUID().toString() + ".owl";
-        ont.write(FileDownloadController.DIR+p);
-        this.ontPath = FileDownloadController.DOWNLOAD_DATA + p;
+       try {
+            PiSparql ont = KB.get().getOntEmpty();
+
+            //creation of thematic map dataset
+            enrich(ont);
+            String p = UUID.randomUUID().toString() + ".owl";
+            ont.write(FileDownloadController.DIR + p);
+            this.ontPath = FileDownloadController.DOWNLOAD_DATA + p;
+        }catch(Exception e){
+            System.out.println("Couldn't reach the knowledge base, is the model correctly initialized ?");
+        }
     }
 }
