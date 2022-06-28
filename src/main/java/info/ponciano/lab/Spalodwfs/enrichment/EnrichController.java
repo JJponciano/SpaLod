@@ -25,11 +25,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 @Controller
 public class EnrichController {
@@ -79,21 +82,31 @@ public class EnrichController {
     }
 
     @PostMapping("/enrichment")
-    public String enrichment(@RequestParam("file") MultipartFile file, Model model) {
+    public String enrichment(@RequestParam("file") MultipartFile file, Model model, @RequestParam(name = "filematch", required = false) MultipartFile filematch ) {
         try {
             // store file
             storageService.store(file);
+
             this.data = new ArrayList<>();
             //File reading
             String filename = file.getOriginalFilename();
             String file_path = KB.STORAGE_DIR + "/" + filename;
+
             //Read the ontology
             OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
             target.read(file_path);
             OntModel kb = KB.get().getOnt().getOnt();
 
+
             //Extract data and split them in unknown, known and
             this.udm = new UnknownDataManager(kb, target);
+
+            //add the eventual URI match file
+            if (!filematch.isEmpty()){
+                storageService.store(filematch);
+                String match_path = KB.STORAGE_DIR + "/" +filematch.getOriginalFilename();
+                udm.addMatches(Files.lines(Paths.get(match_path)));};
+
             udm.run();
             //get data unknown to send to the user
             MatchingDataCreationDto data_unknown = udm.getData_unknown();
