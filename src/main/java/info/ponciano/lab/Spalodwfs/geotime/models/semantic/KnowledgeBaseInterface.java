@@ -31,7 +31,7 @@ import org.apache.jena.query.ResultSet;
 public interface KnowledgeBaseInterface {
 
     /**
-     * Add prefix for every spaql query
+     * Add prefix for every sparql query
      *
      * @param key kew use as prefix
      * @param namespace name space to be added.      <pre>

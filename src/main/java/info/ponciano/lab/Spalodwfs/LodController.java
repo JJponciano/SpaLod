@@ -81,6 +81,7 @@ public class LodController {
     @PostMapping("/lodenrich")
     public String lodenrich( Model model) {
         try {
+
             PiSparql ont = KB.get().getOnt();
             this.sem.enrich(ont);
             KB.get().save();

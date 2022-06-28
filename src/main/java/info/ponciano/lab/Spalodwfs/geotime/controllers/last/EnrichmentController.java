@@ -94,7 +94,7 @@ public class EnrichmentController {
             }
             GeoJsonRDF.featureUplift(features, ont, mapThem);
             KB.get().save();
-            model.addAttribute("message", "The ontology wass enriched!");
+            model.addAttribute("message", "The ontology was enriched!");
              return "success";
         } catch (Exception ex) {
             Logger.getLogger(EnrichmentController.class.getName()).log(Level.SEVERE, null, ex);
