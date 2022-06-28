@@ -271,7 +271,8 @@ L.LocationFilter = L.Layer.extend({
         this._southBounds = new L.LatLngBounds(this._osw, new L.LatLng(this._sw.lat, this._one.lng, true));
 
         // Display bounding box result
-        window.boxBounds= this.getBounds();
+        window.boxBounds = this.getBounds();
+        window.boxDataArray = new Array();
         if (testBoundingBox){
             try { updateRequest(); } catch (error) {};
             boundingQuery.removeFrom(map);
@@ -289,12 +290,13 @@ L.LocationFilter = L.Layer.extend({
                       [dataArray[i][2], dataArray[i][3]],
                       { icon: new MarkerIcon({iconUrl: path + dataArray[i][0] +'.png'}) }
                  ).bindPopup(dataArray[i][2]+","+dataArray[i][3]+" "+dataArray[i][1]).addTo(boundingQuery);
+                 boxDataArray.push(dataArray[i]);
+                 sizeOfArrayBox = Object.size(boxDataArray);
             }
         }
         layerControl.addOverlay(boundingQuery,"Selection");
         query.removeFrom(map);
         boundingQuery.addTo(map);
-
     },
 
     /* Initializes rectangles and markers */
