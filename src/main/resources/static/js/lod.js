@@ -19,8 +19,8 @@
                 case("dbpedia"): queries = {schools: "SELECT ?category ?label ?lat ?long ?item\nWHERE {\n  VALUES ?category{ 'Q3914' }.\n  ?item a <http://schema.org/School>\n  { ?item dbpedia-owl:country dp:Germany}.\n  ?item rdfs:label ?label .\n  ?item geo:lat ?lat ; geo:long ?long\nFILTER(?lat <= "+ latNorthEast +").\nFILTER(?lat >= "+ latSouthWest +").\nFILTER(?long <= "+ lngNorthEast +").\nFILTER(?long >= "+ lngSouthWest +")\n  FILTER (LANGMATCHES(LANG(?label), 'de'))\n}\nLIMIT ",
                                             twentyBiggestCities :"SELECT DISTINCT ?city ?label ?lat ?long ?item ?population WHERE {\nVALUES ?city { 'Q515' }.\n ?item a <http://schema.org/City> { ?item dbpedia-owl:country dp:Germany}.\n ?item rdfs:label ?label .\n ?item geo:lat ?lat ; geo:long ?long.\n ?item dbpedia-owl:populationTotal ?population.\nFILTER(?lat <= "+ latNorthEast +").\nFILTER(?lat >= "+ latSouthWest +").\nFILTER(?long <= "+ lngNorthEast +").\nFILTER(?long >= "+ lngSouthWest +")\n FILTER (LANGMATCHES(LANG(?label), 'de'))\n}\nORDER BY DESC (?population)\nLIMIT 20",
                                             tenBiggestStadiums: "SELECT DISTINCT ?city ?label ?lat ?long ?item ?population WHERE {\nVALUES ?city { 'Q515' }.\n ?item a <http://schema.org/StadiumOrArena> { ?item dbpedia-owl:country dp:Germany}.\n ?item rdfs:label ?label .\n ?item geo:lat ?lat ; geo:long ?long.\n ?item dbpedia-owl:populationTotal ?population.\nFILTER(?lat <= "+ latNorthEast +").\nFILTER(?lat >= "+ latSouthWest +").\nFILTER(?long <= "+ lngNorthEast +").\nFILTER(?long >= "+ lngSouthWest +")\n FILTER (LANGMATCHES(LANG(?label), 'de'))\n}\nORDER BY DESC (?population)\nLIMIT 20",
-                                            hospitals:      "\nWHERE {\nVALUES ?category{ 'Q16917' }.\n?item a <http://schema.org/Hospital>\n{ ?item dbpedia-owl:country dp:Germany} UNION \n{?item dbpedia-owl:state ?s .\n?s dbpedia-owl:country dp:Germany} .\n?item rdfs:label ?label .\n?item geo:lat ?lat ; geo:long ?longFILTER(?lat <= "+ latNorthEast +").\nFILTER(?lat >= "+ latSouthWest +").\nFILTER(?long <= "+ lngNorthEast +").\nFILTER(?long >= "+ lngSouthWest +")\n  FILTER (LANGMATCHES(LANG(?label), 'de'))\n}\nLIMIT ",
-                                            policeStations: "This query isn't compatible with selected triplestore",
+                                            hospitals:      "SELECT ?category ?label ?lat ?long ?item\nWHERE {\nVALUES ?category{ 'Q16917' }.\n?item a <http://schema.org/Hospital>\n{ ?item dbpedia-owl:country dp:Germany} UNION \n{?item dbpedia-owl:state ?s .\n?s dbpedia-owl:country dp:Germany} .\n?item rdfs:label ?label .\n?item geo:lat ?lat ; geo:long ?longFILTER(?lat <= "+ latNorthEast +").\nFILTER(?lat >= "+ latSouthWest +").\nFILTER(?long <= "+ lngNorthEast +").\nFILTER(?long >= "+ lngSouthWest +")\n  FILTER (LANGMATCHES(LANG(?label), 'de'))\n}\nLIMIT ",
+                                            policeStations: "This query isn't compatible with selected triplestore\n\n",
                                             fireStations:   "SELECT ?category ?label ?lat ?long ?item\nWHERE {\n  VALUES ?category{ 'Q1195942' }.\n  ?item a <http://schema.org/FireStation>\n  { ?item dbpedia-owl:country dp:Germany}.\n  ?item rdfs:label ?label .\n  ?item geo:lat ?lat ; geo:long ?long\nFILTER(?lat <= "+ latNorthEast +").\nFILTER(?lat >= "+ latSouthWest +").\nFILTER(?long <= "+ lngNorthEast +").\nFILTER(?long >= "+ lngSouthWest +")\n  FILTER (LANGMATCHES(LANG(?label), 'de'))\n}\nLIMIT ",
                                             supermarkets:   "SELECT ?category ?label ?lat ?long ?item\nWHERE {\n  VALUES ?category{ 'Q180846' }.\n  ?item a <http://schema.org/GroceryStore>\n  { ?item dbpedia-owl:country dp:Germany}.\n  ?item rdfs:label ?label .\n  ?item geo:lat ?lat ; geo:long ?long\nFILTER(?lat <= "+ latNorthEast +").\nFILTER(?lat >= "+ latSouthWest +").\nFILTER(?long <= "+ lngNorthEast +").\nFILTER(?long >= "+ lngSouthWest +")\n  FILTER (LANGMATCHES(LANG(?label), 'de'))\n}\nLIMIT ",
                                             museums:        "SELECT ?category ?label ?lat ?long ?item\nWHERE {\n  VALUES ?category{ 'Q33506' }.\n  ?item a <http://schema.org/Museum>\n  { ?item dbpedia-owl:country dp:Germany}.\n  ?item rdfs:label ?label .\n  ?item geo:lat ?lat ; geo:long ?long\nFILTER(?lat <= "+ latNorthEast +").\nFILTER(?lat >= "+ latSouthWest +").\nFILTER(?long <= "+ lngNorthEast +").\nFILTER(?long >= "+ lngSouthWest +")\n  FILTER (LANGMATCHES(LANG(?label), 'de'))\n}\nLIMIT ",
@@ -88,8 +88,8 @@
                     lngSouthWest = boxBounds._southWest.lng;
 
                 }
-                var requete = document.getElementById('requestChoice').value;
-                if(requete =="researchLaboratory" || requete =="weatherStation"){
+                var request = document.getElementById('requestChoice').value;
+                if(request =="researchLaboratory" || request =="weatherStation" || request =="policeStations"){
                     document.getElementById('DBPedia').disabled = true;
                     if(document.getElementById('DBPedia').checked)
                         document.getElementById('Wikidata').checked = true;
@@ -98,8 +98,6 @@
 
                 updateQueries();
                 checkRequest();
-//                document.getElementById('requestChoice').addEventListener('click', () => checkRequest());
-//                document.getElementById('pointsCursor').addEventListener('click', () => checkRequest());
             }
 
             // On page loading, displays the value of the cursor and shows a request
