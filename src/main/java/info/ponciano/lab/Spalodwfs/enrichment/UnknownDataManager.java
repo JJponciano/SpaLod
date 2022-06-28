@@ -9,9 +9,11 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.iterator.ExtendedIterator;
-
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 class UnknownDataManager implements Runnable {
     private final List<String[]> remainingData;
@@ -22,6 +24,9 @@ class UnknownDataManager implements Runnable {
     private final OntModel source, target;
     private final List<String> knowFixed;
     private final List<String> allClasses;
+    private final List<String> lefts;
+    private final List<String> rights;
+    private Stream<String> matches;
 
     /**
      * Creates a new instance of UnknownDataManager.
@@ -40,6 +45,8 @@ class UnknownDataManager implements Runnable {
         this.knowFixed = new ArrayList<>();
         this.knowFixed.add("http://www.w3.org/2002/07/owl#NamedIndividual");
         this.allClasses = new ArrayList<>();
+        this.lefts = new ArrayList<>();
+        this.rights = new ArrayList<>();
         ExtendedIterator<OntClass> ontClassExtendedIterator = target.listNamedClasses();
         while (ontClassExtendedIterator.hasNext()) {
             String uri = ontClassExtendedIterator.next().getURI();
@@ -51,6 +58,10 @@ class UnknownDataManager implements Runnable {
      * Run the algorithm that set up data_known,data_unknown, noUri and remainingData.
      */
     public void run() {
+
+
+
+
         //extract subject predicate and object for each individual
         ResultSet select = KB.select(target, "Select ?s ?p ?o WHERE{?s ?p ?o}");
         while (select.hasNext()) {
@@ -165,12 +176,49 @@ class UnknownDataManager implements Runnable {
      */
     private String predictFromSchemaOrg(Resource p, ExtendedIterator listsDataP) {
         String proposal = "";
+        String uri = p.getLocalName();
 
-        while (proposal.isBlank() && listsDataP.hasNext()) {
+        if(lefts.contains(p.getURI())){
+            return rights.get(lefts.indexOf(p.getURI()));
+        }
+
+        double scoremax = 0;
+        while (listsDataP.hasNext()) {
+
             Resource nextP = (Resource) listsDataP.next();
-            if (nextP.getURI() != null && nextP.getURI().contains(p.getLocalName())) {
-                proposal = nextP.getURI();
+            if (nextP.getURI() != null ){
+                String uriNext = nextP.getLocalName();
+
+                //get the Jaccard distance between the two URIs
+                Set<String> intersectionSet = new HashSet<String>();
+                Set<String> unionSet = new HashSet<String>();
+                boolean unionFilled = false;
+                int leftLength = uriNext.length();
+                int rightLength = uri.length();
+                double score = 0;
+
+
+                for (int leftIndex = 0; leftIndex < leftLength; leftIndex++) {
+                    unionSet.add(String.valueOf(uriNext.charAt(leftIndex)));
+                    for (int rightIndex = 0; rightIndex < rightLength; rightIndex++) {
+                        if (!unionFilled) {
+                            unionSet.add(String.valueOf(uri.charAt(rightIndex)));
+                        }
+                        if (uriNext.charAt(leftIndex) == uri.charAt(rightIndex)) {
+                            intersectionSet.add(String.valueOf(uriNext.charAt(leftIndex)));
+                        }
+                    }
+                    unionFilled = true;
+                }
+
+                score = Double.valueOf(intersectionSet.size()) / Double.valueOf(unionSet.size());  //score prend la valeur J
+
+                if (score >= scoremax){
+                    scoremax=score;
+                    proposal = nextP.getURI();
+                }
             }
+
         }
         return proposal;
     }
@@ -187,6 +235,23 @@ class UnknownDataManager implements Runnable {
         //test if the data is not already known
         if (!this.data_unknown.contains(mdm)) {
             this.data_unknown.add(mdm);
+        }
+    }
+
+    public void addMatches(Stream<String> matches) {
+        this.matches = matches;
+        try {
+            ArrayList<String> str= new ArrayList<String>();
+            matches.forEach(e-> {
+                str.add(e);
+                String[] moitmoit = e.split(",");
+                lefts.add(moitmoit[0]);
+                rights.add(moitmoit[1]);
+            });
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());;
+
         }
     }
 }
