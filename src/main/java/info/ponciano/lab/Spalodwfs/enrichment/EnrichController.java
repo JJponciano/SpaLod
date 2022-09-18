@@ -18,10 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -31,13 +28,15 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
 @Controller
 public class EnrichController {
 
     private final StorageService storageService;
     private UnknownDataManager udm;
     private List<String[]> data;
-
+    private Progress progress=new Progress(0,"no current processing");
     @Autowired
     public EnrichController(StorageService storageService) {
         this.storageService = storageService;
@@ -48,7 +47,11 @@ public class EnrichController {
         String rtn = "enrichment";
         return rtn;
     }
-
+    @GetMapping(value = "/progress")
+    public @ResponseBody
+    Progress getProgress() {
+        return this.progress;
+    }
     @PostMapping("/matching_validation")
     public String matching(@ModelAttribute MatchingDataCreationDto form, Model model) {
         String message = "Knowledge base enriched !";
@@ -80,9 +83,15 @@ public class EnrichController {
 
     @PostMapping("/enrichment")
     public String enrichment(@RequestParam("file") MultipartFile file, Model model) {
+        this.progress=new Progress(0,"initialisation");
         System.out.println("------------------------/enrichment");
+
         try {
+            this.progress.setValue(10);
+            this.progress.setMessage("Ontology reading...");
             System.out.print("Ontology reading...");
+            String ext = file.getOriginalFilename().toLowerCase();
+            if (ext.endsWith(".owl")||ext.endsWith(".ttl")||ext.endsWith(".ont")||ext.endsWith(".rdf")) {
                 // store file
                 storageService.store(file);
                 this.data = new ArrayList<>();
@@ -94,9 +103,10 @@ public class EnrichController {
                 target.read(file_path);
                 OntModel kb = KB.get().getOnt().getOnt();
 
-            System.out.println("DONE!");
-
-            System.out.print("Analysing data...");
+                System.out.println("DONE!");
+                this.progress.setValue(30);
+                this.progress.setMessage("Data matching...");
+                System.out.print("Analysing data...");
                 //Extract data and split them in unknown, known and
                 this.udm = new UnknownDataManager(kb, target);
                 udm.run();
@@ -106,23 +116,28 @@ public class EnrichController {
                 if (!remainingData.isEmpty()) {
                     model.addAttribute("form", data_unknown);
                 }
-            System.out.println("DONE!");
+                System.out.println("DONE!");
+                this.progress.setValue(90);
+                this.progress.setMessage("Ontology saving...");
+                List<String[]> data_known = udm.getData_known();
+                this.data.addAll(data_known);
+                this.data.addAll(remainingData);
+                //LOG
+                String message = "";
+                if (remainingData.isEmpty()) message = "Information  integrated !" + System.lineSeparator();
+                List<RDFNode> noUri = udm.getNoUri();
+                for (RDFNode ind : noUri) {
+                    message += "\n " + ind.toString() + " has not an URI";
+                }
 
-            List<String[]> data_known = udm.getData_known();
-            this.data.addAll(data_known);
-            this.data.addAll(remainingData);
-            //LOG
-            String message = "";
-            if (remainingData.isEmpty())message="Information  integrated !"+System.lineSeparator();
-            List<RDFNode> noUri = udm.getNoUri();
-            for (RDFNode ind : noUri) {
-                message += "\n " + ind.toString() + " has not an URI";
+                model.addAttribute("message", message);
+                KB.get().save();
+                this.progress.setValue(100);
+                this.progress.setMessage("Work done!");
+            }else{
+                model.addAttribute("message", "File format not allowed. Please use the following: rdf, ttl, owl, or ont.");
             }
-
-            model.addAttribute("message", message);
-            KB.get().save();
             return "enrichment";
-
         } catch (Exception ex) {
             Logger.getLogger(GeoJsonController.class.getName()).log(Level.SEVERE, null, ex);
             model.addAttribute("message", ex.getMessage());
