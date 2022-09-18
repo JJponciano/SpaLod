@@ -49,10 +49,6 @@ class UnknownDataManagerTest {
             System.out.println(strings[0]+" "+strings[1]+" "+strings[2]);
         }
 
-
-        System.out.println("noUri = " + noUri.size());
-        assertEquals(9, noUri.size());
-
         // try to enrich the ontology
         for (String[] strings : data_known) {
             KB.get().update(strings);
