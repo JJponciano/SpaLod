@@ -80,38 +80,47 @@ public class EnrichController {
 
     @PostMapping("/enrichment")
     public String enrichment(@RequestParam("file") MultipartFile file, Model model) {
+        System.out.println("------------------------/enrichment");
         try {
-            // store file
-            storageService.store(file);
-            this.data = new ArrayList<>();
-            //File reading
-            String filename = file.getOriginalFilename();
-            String file_path = KB.STORAGE_DIR + "/" + filename;
-            //Read the ontology
-            OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-            target.read(file_path);
-            OntModel kb = KB.get().getOnt().getOnt();
+            System.out.print("Ontology reading...");
+                // store file
+                storageService.store(file);
+                this.data = new ArrayList<>();
+                //File reading
+                String filename = file.getOriginalFilename();
+                String file_path = KB.STORAGE_DIR + "/" + filename;
+                //Read the ontology
+                OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+                target.read(file_path);
+                OntModel kb = KB.get().getOnt().getOnt();
 
-            //Extract data and split them in unknown, known and
-            this.udm = new UnknownDataManager(kb, target);
-            udm.run();
-            //get data unknown to send to the user
-            MatchingDataCreationDto data_unknown = udm.getData_unknown();
-            List<String[]> remainingData = udm.getRemainingData();
-            if (!remainingData.isEmpty()) {
-                model.addAttribute("form", data_unknown);
-            }
+            System.out.println("DONE!");
 
-            this.data.addAll(udm.getData_known());
-            this.data.addAll(udm.getRemainingData());
+            System.out.print("Analysing data...");
+                //Extract data and split them in unknown, known and
+                this.udm = new UnknownDataManager(kb, target);
+                udm.run();
+                //get data unknown to send to the user
+                MatchingDataCreationDto data_unknown = udm.getData_unknown();
+                List<String[]> remainingData = udm.getRemainingData();
+                if (!remainingData.isEmpty()) {
+                    model.addAttribute("form", data_unknown);
+                }
+            System.out.println("DONE!");
+
+            List<String[]> data_known = udm.getData_known();
+            this.data.addAll(data_known);
+            this.data.addAll(remainingData);
             //LOG
             String message = "";
+            if (remainingData.isEmpty())message="Information  integrated !"+System.lineSeparator();
             List<RDFNode> noUri = udm.getNoUri();
             for (RDFNode ind : noUri) {
                 message += "\n " + ind.toString() + " has not an URI";
             }
 
             model.addAttribute("message", message);
+            KB.get().save();
             return "enrichment";
 
         } catch (Exception ex) {
