@@ -68,33 +68,52 @@ public class UpliftController {
         }
 
     }
+
     @PostMapping("/geojson_uplift")
     public String uplift(@RequestParam("file") MultipartFile file, Model model) {
-        try {
-            //RedirectAttributes redirectAttributes) {
-            // store file
-            storageService.store(file);
+        System.out.println("-------------------------/geojson_uplift" + " :");
 
-            //File reading
-            String filename = file.getOriginalFilename();
-            String geojsonfilepath = KB.STORAGE_DIR + "/" + filename;
+            try {
+                if (file.getOriginalFilename().toLowerCase().endsWith(".geojson")){
+                //RedirectAttributes redirectAttributes) {
+                // store file
+                storageService.store(file);
 
-            //execute the uplift
-            GeoJsonRDF.upliftGeoJSON(geojsonfilepath, KB.get().getOnt());
-            KB.get().save();
-            String out = "Spalod.owl";
-            String res = new StorageProperties().getLocation() + "/" + out;
-            System.out.println(res);
-            new PiFile(KB.OUT_ONTO).copy(res);
-            model.addAttribute("message", "The file was uplifted, you can now download the complete ontology");
-            model.addAttribute("file", "/files/" + out);
-            return "uplift";
-        } catch (Exception ex) {
-            Logger.getLogger(GeoJsonController.class.getName()).log(Level.SEVERE, null, ex);
-            model.addAttribute("message", ex.getMessage());
-            return "error";
+                //File reading
+                String filename = file.getOriginalFilename();
+                String geojsonfilepath = KB.STORAGE_DIR + "/" + filename;
+
+                //execute the upliftkl
+                PiSparql result = new PiSparql();
+                GeoJsonRDF.upliftGeoJSON(geojsonfilepath, result);
+                String out = filename + ".owl";
+                String res = new StorageProperties().getLocation() + "/" + out;
+                try {
+                    result.write(res);
+                    System.out.println("Results saved: " + res);
+                    model.addAttribute("message", "The file was uplifted, you can now download the complete ontology");
+                    model.addAttribute("file", "/files/" + out);
+                } catch (org.apache.jena.shared.BadURIException e) {
+                    String query = "SELECT ?s ?p ?o WHERE {?s ?p ?o}";
+
+                    String onto_triples = result.selectAsText(query);
+                    new PiFile("log.txt").writeTextFile(onto_triples);
+                    System.out.println(onto_triples);
+                    new PiFile("tmp.txt").writeTextFile(onto_triples);
+                    model.addAttribute("message", "File cannot be converted due to malformed URI");
+                }
+            } else {
+            model.addAttribute("message", "File extension must be geojson");
         }
+                return "uplift";
+            } catch (Exception ex) {
+                Logger.getLogger(GeoJsonController.class.getName()).log(Level.SEVERE, null, ex);
+                model.addAttribute("message", ex.getMessage());
+                return "error";
+            }
+
     }
+
     @PostMapping("/geojson_downlift")
     public String downlift(@ModelAttribute("dataindiv") GeoJsonForm di, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
