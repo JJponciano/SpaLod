@@ -169,6 +169,6 @@
     <orderEntry type="library" name="Maven: org.eclipse.jgit:org.eclipse.jgit:3.5.0.201409260305-r" level="project" />
     <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.50" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.javaewah:JavaEWAH:0.7.9" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains:annotations:23.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains:annotations:23.1.0" level="project" />
   </component>
 </module>
