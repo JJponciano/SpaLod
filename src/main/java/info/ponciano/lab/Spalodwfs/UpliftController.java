@@ -66,7 +66,6 @@ public class UpliftController {
             model.addAttribute("message", ex.getMessage());
             return "error";
         }
-
     }
 
     @PostMapping("/geojson_uplift")
