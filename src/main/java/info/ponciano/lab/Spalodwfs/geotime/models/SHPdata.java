@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.models;
+package info.ponciano.lab.spalodwfs.geotime.models;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.KB;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
@@ -34,8 +34,8 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
 
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagement;
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagementException;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.OntoManagement;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.OntoManagementException;
 import info.ponciano.lab.pitools.files.PiFile;
 
 /**
