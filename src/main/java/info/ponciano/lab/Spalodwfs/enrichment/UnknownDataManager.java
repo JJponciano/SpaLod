@@ -1,6 +1,7 @@
-package info.ponciano.lab.Spalodwfs.enrichment;
+package info.ponciano.lab.spalodwfs.enrichment;
 
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
+import info.ponciano.lab.pitools.files.PiFile;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.KB;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
@@ -10,8 +11,11 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 class UnknownDataManager implements Runnable {
     private final List<String[]> remainingData;
@@ -22,6 +26,7 @@ class UnknownDataManager implements Runnable {
     private final OntModel source, target;
     private final List<String> knowFixed;
     private final List<String> allClasses;
+    private final Map<String, String> map;
 
     /**
      * Creates a new instance of UnknownDataManager.
@@ -45,6 +50,16 @@ class UnknownDataManager implements Runnable {
             String uri = ontClassExtendedIterator.next().getURI();
             this.allClasses.add(uri);
         }
+        this.map = new HashMap<>();
+        try {
+            String[][] map = new PiFile("src/main/resources/ontologies/mapping_schemaorg.csv").readCSV(";");
+            for (String[] row : map) {
+                this.map.put(row[0].toLowerCase(), row[1]);
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -64,6 +79,7 @@ class UnknownDataManager implements Runnable {
             boolean dataOk = true;
 
             boolean isNotW3cBased = !s.toString().contains("w3.org") && !p.toString().contains("w3.org") && !o.toString().contains("w3.org");
+            //test if s, p, and o (for resource only) has no URI
             if (s.getURI() == null) {
                 if (isNotW3cBased)
                     this.noUri.add(s);
@@ -76,29 +92,45 @@ class UnknownDataManager implements Runnable {
             }
             if (o.isResource() && o.asResource().getURI() == null) {
                 if (isNotW3cBased)
-                 this.noUri.add(o);
+                    this.noUri.add(o);
                 dataOk = false;
             }
+            // if all as URI
             if (dataOk) {
                 //test if the property is known in the ontology
                 boolean knownP = source.containsResource(p);
                 if (!knownP) {
                     ExtendedIterator<OntProperty> lps = this.schemaOrg.listAllOntProperties();
-                    String proposal = predictFromSchemaOrg(p, lps);
-                    addUnknown(p, proposal);
+                    String proposal = predictFromSchemaOrg(p.getLocalName(), lps);
+                    addUnknown(p.getURI(), proposal);
                 }
                 //test if the object is not a resource or is not a class or is known in the fixed memory or in the ontology
-                boolean knownClass = !o.isResource() || !allClasses.contains(o.asResource().getURI()) || this.knowFixed.contains(o.asResource().getURI()) || source.containsResource(o);
+                String s1 = o.toString();
+                String uri="";
+                if(o.isResource())
+                    uri= o.asResource().getURI();
+                else
+                if(s1.startsWith("http://") ||s1.startsWith("https://")){
+                    uri=s1;
+                }
+                boolean knownClass = uri.isBlank();
+                knownClass= knownClass||!allClasses.contains(uri) ;
+                knownClass=knownClass||this.knowFixed.contains(uri);
+                knownClass=knownClass|| source.containsResource(o);
+                knownClass=knownClass|| !uri.contains("www.wikidata.org");
                 if (!knownClass) {
                     ExtendedIterator<OntClass> lps = this.schemaOrg.listNamedClasses();
-                    String proposal = predictFromSchemaOrg(o.asResource(), lps);
-                    addUnknown(o.asResource(), proposal);
+                    int ind=uri.lastIndexOf('/')+1;
+                    int ind2 = uri.lastIndexOf('#')+1;
+                    if(ind2>ind)ind=ind2;
+                    String proposal = predictFromSchemaOrg(uri.substring(ind,uri.length()), lps);
+                    addUnknown(uri, proposal);
                 }
                 boolean knownS = !allClasses.contains(s.getURI()) || this.knowFixed.contains(s.getURI()) || source.containsResource(s);
                 if (!knownS) {
                     ExtendedIterator<OntClass> lps = this.schemaOrg.listNamedClasses();
-                    String proposal = predictFromSchemaOrg(s, lps);
-                    addUnknown(s, proposal);
+                    String proposal = predictFromSchemaOrg(s.getLocalName(), lps);
+                    addUnknown(s.getURI(), proposal);
                 }
 
                 // Convert the object in String
@@ -163,13 +195,18 @@ class UnknownDataManager implements Runnable {
      * @param listsDataP list of resources contained in schema.org ontology according to the type (property or class) of p
      * @return the predicted value or an empty string.
      */
-    private String predictFromSchemaOrg(Resource p, ExtendedIterator listsDataP) {
+    private String predictFromSchemaOrg(String p, ExtendedIterator listsDataP) {
         String proposal = "";
 
-        while (proposal.isBlank() && listsDataP.hasNext()) {
-            Resource nextP = (Resource) listsDataP.next();
-            if (nextP.getURI() != null && nextP.getURI().contains(p.getLocalName())) {
-                proposal = nextP.getURI();
+        String key = p.toLowerCase();
+        if (map.containsKey(key)) {
+            proposal = map.get(key);
+        } else {
+            while (proposal.isBlank() && listsDataP.hasNext()) {
+                Resource nextP = (Resource) listsDataP.next();
+                if (nextP.getURI() != null && nextP.getURI().contains(p)) {
+                    proposal = nextP.getURI();
+                }
             }
         }
         return proposal;
@@ -181,11 +218,13 @@ class UnknownDataManager implements Runnable {
      * @param p        resource to add
      * @param proposal proposition of resources uri
      */
-    private void addUnknown(Resource p, String proposal) {
-        MatchingDataModel mdm = new MatchingDataModel(p.getURI(), proposal);
+    private void addUnknown(String p, String proposal) {
+        if(proposal.isBlank())proposal=p;
+        MatchingDataModel mdm = new MatchingDataModel(p, proposal);
 
         //test if the data is not already known
         if (!this.data_unknown.contains(mdm)) {
+            System.out.println("Propose " + proposal + " for " + p);
             this.data_unknown.add(mdm);
         }
     }
