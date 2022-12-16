@@ -1,16 +1,15 @@
-package info.ponciano.lab.Spalodwfs;
+package info.ponciano.lab.spalodwfs;
 
-import info.ponciano.lab.Spalodwfs.geotime.controllers.last.EnrichmentController;
-import info.ponciano.lab.Spalodwfs.geotime.controllers.last.GeoJsonController;
-import info.ponciano.lab.Spalodwfs.geotime.controllers.last.GeoJsonForm;
-import info.ponciano.lab.Spalodwfs.geotime.controllers.storage.StorageService;
-import info.ponciano.lab.Spalodwfs.geotime.models.SparqlQuery;
-import info.ponciano.lab.Spalodwfs.geotime.models.StringForm;
-import info.ponciano.lab.Spalodwfs.geotime.models.geojson.GeoJsonRDF;
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagementException;
+import info.ponciano.lab.spalodwfs.geotime.controllers.last.GeoJsonController;
+import info.ponciano.lab.spalodwfs.geotime.controllers.last.GeoJsonForm;
+import info.ponciano.lab.spalodwfs.geotime.controllers.storage.StorageService;
+import info.ponciano.lab.spalodwfs.geotime.models.SparqlQuery;
+import info.ponciano.lab.spalodwfs.geotime.models.StringForm;
+import info.ponciano.lab.spalodwfs.geotime.models.geojson.GeoJsonRDF;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.KB;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.OntoManagementException;
 import info.ponciano.lab.pisemantic.PiOnt;
-import info.ponciano.lab.pisemantic.PiSparql;
+import info.ponciano.lab.spalodwfs.lod.ExtractFromLOD;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class AssessmentController {
 
     String r = null;
     private final StorageService storageService;
-    private SparqlEnrichModel sem;
+    private ExtractFromLOD sem;
 
     @Autowired
     public AssessmentController(StorageService storageService) {
