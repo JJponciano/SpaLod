@@ -1,4 +1,4 @@
-package info.ponciano.lab.Spalodwfs.enrichment;
+package info.ponciano.lab.spalodwfs.enrichment;
 
 
 public class Progress {
