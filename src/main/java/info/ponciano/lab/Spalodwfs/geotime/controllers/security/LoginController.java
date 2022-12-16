@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.controllers.security;
+package info.ponciano.lab.spalodwfs.geotime.controllers.security;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
