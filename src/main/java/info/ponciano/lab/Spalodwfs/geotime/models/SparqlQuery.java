@@ -16,18 +16,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.models;
+package info.ponciano.lab.spalodwfs.geotime.models;
 
 public class SparqlQuery {
-	String query;
-    String triplestore;
 
-    public SparqlQuery(String query) {
+	private String query;
+    private String triplestore;
+
+
+    public SparqlQuery(String query, String triplestore) {
         this.query = query;
+        this.triplestore = triplestore;
     }
 
     public SparqlQuery() {
-    
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 
     public String getResults() {
@@ -44,6 +54,14 @@ public class SparqlQuery {
 
     public String getTriplestore() {
         return triplestore;
+    }
+
+    @Override
+    public String toString() {
+        return "SparqlQuery{" +
+                "query='" + query + '\'' +
+                ", triplestore='" + triplestore + '\'' +
+                '}';
     }
 }
 
