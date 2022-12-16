@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.models.importer;
+package info.ponciano.lab.spalodwfs.geotime.models.importer;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import info.ponciano.lab.Spalodwfs.geotime.models.parser.KnownSchemaParser;
+import info.ponciano.lab.spalodwfs.geotime.models.parser.KnownSchemaParser;
 
 
 @SuppressWarnings("deprecation")
