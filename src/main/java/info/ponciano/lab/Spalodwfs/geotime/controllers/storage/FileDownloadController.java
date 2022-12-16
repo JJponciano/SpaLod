@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package info.ponciano.lab.Spalodwfs.geotime.controllers.storage;
+package info.ponciano.lab.spalodwfs.geotime.controllers.storage;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
