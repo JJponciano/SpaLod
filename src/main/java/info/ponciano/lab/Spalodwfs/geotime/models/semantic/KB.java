@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.models.semantic;
+package info.ponciano.lab.spalodwfs.geotime.models.semantic;
 
 import info.ponciano.lab.pisemantic.PiOnt;
 import info.ponciano.lab.pisemantic.PiOntologyException;
@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
-import org.apache.jena.update.UpdateAction;
 
 /**
  * Knowledge base singleton class to manage semantic access.
@@ -49,27 +48,32 @@ public class KB implements KnowledgeBaseInterface {
     public static final String OUT_ONTO = "SpalodOutput.owl";
     private OwlManagement model;
 
-    public static KB get() throws OntoManagementException {
+    public static KB get()  {
         if (kb == null) {
             kb = new KB();
         }
         return kb;
     }
 
-    private KB() throws OntoManagementException {
+    private KB()  { try {
         File file = new File(OUT_ONTO);
         if (file.exists()) {
             try {
                 this.model = new OwlManagement(OUT_ONTO);
             } catch (Exception e) {
                 file.delete();
-                this.model = new OwlManagement(DEFAULT_ONTO);
+
+                    this.model = new OwlManagement(DEFAULT_ONTO);
+
             }
 
         } else {
             this.model = new OwlManagement(DEFAULT_ONTO);
         }
         this.model.ont.setNs(NS);
+    } catch (OntoManagementException ex) {
+        ex.printStackTrace();
+    }
     }
     public static OntModel getSchemaOrg() {
         try {
@@ -152,11 +156,7 @@ public class KB implements KnowledgeBaseInterface {
     }
 
     public static void main(String[] args) {
-        try {
             KB.get();
-        } catch (OntoManagementException ex) {
-            Logger.getLogger(KB.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     public PiSparql getOntEmpty() throws OntoManagementException {
@@ -166,7 +166,22 @@ public class KB implements KnowledgeBaseInterface {
     }
 
     public static ResultSet select(OntModel ont,String queryString) {
+        String prefix = "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n";
+        prefix = prefix + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n";
+        prefix = prefix + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
+        prefix = prefix + "PREFIX dbr:    <http://dbpedia.org/resource/>\n";
+        prefix = prefix + "PREFIX dbo:    <http://dbpedia.org/ontology/>\n";
+        prefix = prefix + "PREFIX dct:    <http://purl.org/dc/terms/>\n";
+        prefix = prefix + "PREFIX owl:    <http://www.w3.org/2002/07/owl#>\n";
+        prefix = prefix + "PREFIX prov:   <http://www.w3.org/ns/prov#>\n";
+        prefix = prefix + "PREFIX qb:     <http://purl.org/linked-data/cube#>\n";
+        prefix = prefix + "PREFIX qudt:   <http://qudt.org/1.1/schema/qudt#>\n";
+        prefix = prefix + "PREFIX schema: <http://schema.org/>\n";
+        prefix = prefix + "PREFIX skos:   <http://www.w3.org/2004/02/skos/core#>\n";
+        prefix = prefix + "PREFIX unit:   <http://qudt.org/vocab/unit#>\n";
+        prefix = prefix + "PREFIX sdmx:   <http://purl.org/linked-data/sdmx#>\n";
         if (queryString != null && !queryString.isEmpty()) {
+            queryString = prefix + queryString;
             Query query = QueryFactory.create(queryString);
             QueryExecution queryExecution = QueryExecutionFactory.create(query, ont);
             return queryExecution.execSelect();
