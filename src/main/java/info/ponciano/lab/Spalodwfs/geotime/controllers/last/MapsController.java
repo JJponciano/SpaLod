@@ -16,11 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.controllers.last;
+package info.ponciano.lab.spalodwfs.geotime.controllers.last;
 
-import info.ponciano.lab.Spalodwfs.geotime.controllers.storage.StorageService;
-import info.ponciano.lab.Spalodwfs.geotime.models.geojson.GeoJsonRDF;
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
+import info.ponciano.lab.spalodwfs.geotime.controllers.storage.StorageService;
+import info.ponciano.lab.spalodwfs.geotime.models.geojson.GeoJsonRDF;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.KB;
 import info.ponciano.lab.pisemantic.PiOnt;
 import info.ponciano.lab.pitools.utility.PiRegex;
 import java.util.ArrayList;
