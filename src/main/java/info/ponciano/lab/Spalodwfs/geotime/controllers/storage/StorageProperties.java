@@ -16,9 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.controllers.storage;
+package info.ponciano.lab.spalodwfs.geotime.controllers.storage;
 
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.KB;
 import info.ponciano.lab.pitools.files.PiFile;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
