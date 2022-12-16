@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs;
+package info.ponciano.lab.spalodwfs;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
