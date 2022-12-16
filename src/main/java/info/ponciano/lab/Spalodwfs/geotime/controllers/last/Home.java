@@ -16,16 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.controllers.last;
+package info.ponciano.lab.spalodwfs.geotime.controllers.last;
 
-import info.ponciano.lab.Spalodwfs.geotime.controllers.storage.FileDownloadController;
-import info.ponciano.lab.Spalodwfs.geotime.models.SparqlQuery;
-import info.ponciano.lab.Spalodwfs.geotime.models.StringForm;
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagementException;
+import info.ponciano.lab.spalodwfs.geotime.controllers.storage.FileDownloadController;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.OntoManagementException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.io.File;
 
