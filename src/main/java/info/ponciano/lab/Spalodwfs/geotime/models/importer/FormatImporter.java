@@ -16,10 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.models.importer;
+package info.ponciano.lab.spalodwfs.geotime.models.importer;
 
 
-import info.ponciano.lab.Spalodwfs.geotime.models.parser.ConfigParser;
+import info.ponciano.lab.spalodwfs.geotime.models.parser.ConfigParser;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
