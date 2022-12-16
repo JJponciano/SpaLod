@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.array_uplift;
+package info.ponciano.lab.spalodwfs.geotime.array_uplift;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
