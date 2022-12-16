@@ -1,17 +1,14 @@
-package info.ponciano.lab.Spalodwfs.enrichment;
+package info.ponciano.lab.spalodwfs.enrichment;
 
-import info.ponciano.lab.Spalodwfs.geotime.controllers.last.GeoJsonController;
-import info.ponciano.lab.Spalodwfs.geotime.controllers.storage.StorageService;
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagementException;
+import info.ponciano.lab.spalodwfs.geotime.controllers.last.GeoJsonController;
+import info.ponciano.lab.spalodwfs.geotime.controllers.storage.StorageService;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.KB;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.OntoManagementException;
 import info.ponciano.lab.pisemantic.PiOntologyException;
 import info.ponciano.lab.pisemantic.PiSparql;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.jetbrains.annotations.NotNull;
@@ -24,11 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Controller
 public class EnrichController {
@@ -43,9 +37,8 @@ public class EnrichController {
     }
 
     @GetMapping("/enrichment")
-    public String lod(Model model) throws OntoManagementException {
-        String rtn = "enrichment";
-        return rtn;
+    public String home(Model model){
+        return "enrichment";
     }
     @GetMapping(value = "/progress")
     public @ResponseBody
