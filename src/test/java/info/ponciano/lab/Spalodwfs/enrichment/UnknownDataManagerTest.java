@@ -1,7 +1,7 @@
-package info.ponciano.lab.Spalodwfs.enrichment;
+package info.ponciano.lab.spalodwfs.enrichment;
 
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.OntoManagementException;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.KB;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.OntoManagementException;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
