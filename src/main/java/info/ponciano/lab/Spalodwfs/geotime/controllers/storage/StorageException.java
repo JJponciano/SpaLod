@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.controllers.storage;
+package info.ponciano.lab.spalodwfs.geotime.controllers.storage;
 
 public class StorageException extends RuntimeException {
 
