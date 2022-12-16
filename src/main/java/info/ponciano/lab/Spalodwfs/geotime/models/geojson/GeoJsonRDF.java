@@ -16,9 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs.geotime.models.geojson;
+package info.ponciano.lab.spalodwfs.geotime.models.geojson;
 
-import info.ponciano.lab.Spalodwfs.geotime.models.semantic.KB;
+import info.ponciano.lab.pisemantic.PiSparql;
+import info.ponciano.lab.pitools.files.PiFile;
+import info.ponciano.lab.spalodwfs.geotime.models.semantic.KB;
 import info.ponciano.lab.pisemantic.PiOnt;
 import info.ponciano.lab.pisemantic.PiOntologyException;
 import info.ponciano.lab.pitools.utility.PiRegex;
@@ -26,11 +28,7 @@ import info.ponciano.lab.pitools.utility.PiRegex;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.lang.Number;
+import java.util.*;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -315,4 +313,50 @@ public class GeoJsonRDF {
             throw new PiOntologyException(geotype + " not yet supported");
         }
     }
+
+    public static void csv2RDF(PiSparql ont, String csvPath) throws Exception {
+        String[][] data = new PiFile(csvPath).readCSV(",");
+        csv2RDF(ont,data);
+    }
+    public static void csv2RDF(PiSparql ont, String[][] dataArray) throws Exception {
+        OntClass dataset = ont.createClass(GeoJsonRDF.DCAT_DATASET);
+        String name = KB.NS + UUID.randomUUID();
+        Individual data = dataset.createIndividual(name);
+
+        List<Feature> features = new ArrayList<>();
+
+        // search latitude and longitude index
+        int latInd = -1, longInd = -1;
+        for (int i = 0; i <dataArray[0].length; i++) {
+            String pname =dataArray[0][i];
+            if (pname.contains("longitude")) {
+                longInd = i;
+            } else if (pname.contains("latitude")) {
+                latInd = i;
+            }
+        }
+        if (latInd < 0 || longInd < 0)
+            throw new UnsupportedOperationException("Latitude or Longitude are missing");
+
+        //for each item (0 is the header)
+        for (int i = 1; i < dataArray.length; i++) {
+            String[] properties=dataArray[i];
+            //create its geometry
+            Geometry geo = new Geometry("Point", Double.parseDouble(properties[longInd]), Double.parseDouble(properties[latInd]));
+            //create its feature
+            Feature f = new Feature(geo);
+            //add every property to the feature
+            for (int k = 0; k < properties.length; k++) {
+                if (k != longInd && k != latInd) {
+                    f.addProperty(dataArray[0][k], properties[k]);
+                }
+            }
+            //add the features
+            features.add(f);
+        }
+        GeoJsonRDF.featureUplift(features, ont, data);
+    }
+
+
+
 }
