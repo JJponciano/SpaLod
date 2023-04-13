@@ -1,39 +1,75 @@
 <script setup>
 import NavBar from './components/NavBar.vue';
 import UserActions from './components/UserActions.vue';
+import MapView from './components/MapView.vue';
+import RDFData from './components/RDFData.vue';
 
 </script>
 
 <template>
   <div class="app">
-    <NavBar></NavBar>
     <div class="main">
       <div class="user-actions-container">
         <UserActions></UserActions>
       </div>
+      <div class="right-container">
+        <div class="map-container">
+          <MapView></MapView>
+        </div>
+        <div class="rdf-data-container">
+          <RDFData></RDFData>
+        </div>
+      </div>
     </div>
   </div>
+  <NavBar></NavBar>
 </template>
 
 <style scoped>
+
 .app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
 }
-
 .main {
-  flex: 1;
   display: flex;
   flex-direction: row;
+  flex: 1;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .user-actions-container {
   flex: 1;
-  padding: 20px;
+  padding: 75px 25px 0 25px;
 }
 
-@media (min-width: 1024px) {
-  
+.right-container {
+  display: flex;
+  flex-direction: column;
+  flex: 2 0 auto;
+  align-items: stretch;
+  padding: 75px 25px 0 0;
+}
+
+.map-container {
+  flex: 1;
+  margin: 0 0 20px 0;
+}
+
+.rdf-data-container {
+  flex: 1;
 }
 </style>
+
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+  }
+
+  .right-container {
+    flex: 1;
+  }
+}

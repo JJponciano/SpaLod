@@ -1,9 +1,10 @@
 <template>
     <div class="user-actions" :class="{dark: isDarkMode}">
-        <div class="search-bar">
-            <input type="text" v-model="searchText" placeholder="Search..." />
-            <button class="search-button" @click="search">Search</button>
-        </div>
+        <select v-model="selectedOption">
+            <option v-for="(option, index) in options" :key="index" :value="option.value">
+                {{ option.label }}
+            </option>
+        </select>
         <button @click="filterData">Filter</button>
         <button @click="addData">Add Data</button>
         <button @click="confirmRequest">Confirm Request</button>
@@ -14,11 +15,37 @@
 export default {
     data() {
         return {
-            searchText: '',
             isDarkMode: false,
+            selectedOption: "schools",
+            options: [
+                { label: 'Schule (Q3914)', value: 'schools' },
+                { label: '20 biggest cities in Germany', value: 'twentyBiggestCities' },
+                { label: '10 biggest football stadiums in Germany', value: 'tenBiggestStadiums' },
+                { label: 'Krankenhaus (Q16917)', value: 'hospitals' },
+                { label: 'Polizeistation (Q861951)', value: 'policeStations' },
+                { label: 'Feuerwache (Q1195942)', value: 'fireStations' },
+                { label: 'Supermarkt (Q180846)', value: 'supermarkets' },
+                { label: 'Museen (Q33506)', value: 'museums' },
+                { label: 'Bibliotheken (Q7075)', value: 'libraries' },
+                { label: 'Bahnhöfe (Q55488)', value: 'trainStations' },
+                { label: 'Banken (Q22687)', value: 'banks' },
+                { label: 'Restaurants (Q11707)', value: 'restaurants' },
+                { label: 'Kinos (Q41253)', value: 'cinemas' },
+                { label: 'Denkmäler (Q4989906)', value: 'monuments' },
+                { label: 'Hotels (Q27686)', value: 'hotels' },
+                { label: 'Flughäfen (Q1248784)', value: 'airports' },
+                { label: 'Stadien (Q483110)', value: 'stadiums' },
+                { label: 'Schwimmbäder (Q200023)', value: 'swimmingPools' },
+                { label: 'Tankstellen (Q205495)', value: 'serviceStation' },
+                { label: 'Wetterstationen (Q190107)', value: 'weatherStation' },
+                { label: 'Forschungslaboratorien (Q483242)', value: 'researchLaboratory' },
+                { label: 'Häfen (Q44782)', value: 'port' },
+                { label: 'Städte (Q515)', value: 'cities' },
+            ]
         };
     },
     mounted() {
+        this.detectDarkMode();
         window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
             this.isDarkMode = event.matches;
         });
@@ -36,6 +63,9 @@ export default {
         confirmRequest() {
             // TODO: Implement confirm request
         },
+        detectDarkMode() {
+            this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        },
     },
 };
 </script>
@@ -47,6 +77,7 @@ export default {
     flex-direction: column;
     display: flex;
     align-items: start;
+    height: calc(100vh - 100px);
 }
 
 .user-actions.dark {
@@ -59,30 +90,20 @@ export default {
     color: #1A202C;
 }
 
-.search-bar {
-    display: flex;
-    margin-bottom: 20px;
-}
-
-input[type="text"] {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 5px 0 0 5px;
-    background-color: #E5E7EB;
-    color: #1F2937;
-}
-
-.search-button {
-    padding: 10px 20px;
-    border-radius: 0 5px 5px 0;
-    border: none;
-    background-color: #4A5568;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-    font-size: 18px;
+select {
+    display: block;
+    font-size: 16px;
     font-weight: bold;
+    padding: 10px;
+    width: 100%;
+    border: 2px solid #1A202C;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #1A202C;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
 }
 
 button {
@@ -95,6 +116,9 @@ button {
     transition: background-color 0.2s ease-in-out;
     font-size: 18px;
     font-weight: bold;
+    margin-top: 10px;
+    width: 100%;
+    text-align: left;
 }
 
 button:hover {

@@ -19,11 +19,15 @@
       };
     },
     mounted() {
+      this.detectDarkMode();
       window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
         this.isDarkMode = event.matches;
       });
     },
     methods: {
+      detectDarkMode() {
+        this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      },
       navigateTo(page) {
         this.activeTab = page;
       },
