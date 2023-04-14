@@ -38,7 +38,6 @@ import RDFData from './components/RDFData.vue';
   flex: 1;
   align-items: stretch;
   justify-content: space-between;
-  width: 100%;
 }
 
 .user-actions-container {

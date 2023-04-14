@@ -7,7 +7,7 @@
         </select>
         <button @click="filterData">Filter</button>
         <button @click="addData">Add Data</button>
-        <button @click="confirmRequest">Confirm Request</button>
+        <button @click="confirmRequest" class="confirm">Confirm Request</button>
     </div>
 </template>
 
@@ -78,6 +78,10 @@ export default {
     display: flex;
     align-items: start;
     height: calc(100vh - 100px);
+    resize: horizontal;
+    overflow: auto;
+    width: 320px;
+    min-width: 200px;
 }
 
 .user-actions.dark {
@@ -98,8 +102,8 @@ select {
     width: 100%;
     border: 2px solid #1A202C;
     border-radius: 5px;
-    background-color: #fff;
-    color: #1A202C;
+    background-color: #4A5568;
+    color: white;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -119,6 +123,11 @@ button {
     margin-top: 10px;
     width: 100%;
     text-align: left;
+}
+
+.confirm {
+    background-color: #EF4444;
+    color: #fff;
 }
 
 button:hover {

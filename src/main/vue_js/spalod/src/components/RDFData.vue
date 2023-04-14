@@ -2,8 +2,8 @@
     <div class="rdf-data" :class="{dark: isDarkMode}">
         <h2>RDF Data</h2>
         <!-- TODO -->
-        <h3>C3 hasCity Mainz</h3>
-        <h3>C3.2 hasCoordinates 3424234.234243, 4242342.2342344</h3>
+        <p>C3 hasCity Mainz</p>
+        <p>C3.2 hasCoordinates 3424234.234243, 4242342.2342344</p>
     </div>
 </template>
 
@@ -32,6 +32,10 @@ export default {
 .rdf-data {
     padding: 20px;
     border-radius: 5px;
+    resize: both;
+    overflow: auto;
+    min-width: 500px;
+    min-height: 150px;
 }
 
 .rdf-data.dark {
@@ -46,5 +50,11 @@ export default {
 
 h2 {
     margin-top: 0;
+    font-weight: bold;
+}
+
+p {
+    font-size: 16px;
+    font-weight: bold;
 }
 </style>
