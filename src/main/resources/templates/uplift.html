@@ -86,7 +86,7 @@ MA 02110-1301  USA
                                 <a class="nav-link" href="/enrichment">Enrichment</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link external" href="">References</a>
+                                <a class="nav-link external" href="/sem">USKB</a>
                             </li>
                         </ul>
                     </div>
@@ -138,10 +138,11 @@ MA 02110-1301  USA
             <section class="col-md-6 col-sm-12 tm-feature-block">
                 <header class="tm-feature-header">
                     <i class="fas fa-5x fa-anchor tm-feature-icon"></i>
-                    <h3 class="tm-feature-h">GeoJSON Uplift</h3>
+                    <h3 class="tm-feature-h"> Uplift</h3>
                 </header>
                 <div>
                     <form th:action="@{/geojson_uplift}" method="post" enctype="multipart/form-data">
+                        <p>Convert your data into ontology consistent with GeoSPARQL. Currently supported formats are CSV and GEOJSON.</p>
                         <table>
                             <!--The field multiple="multiple" was aded to permits to chose several files-->
                             <tr>
@@ -161,25 +162,6 @@ MA 02110-1301  USA
                     </ul>
                 </div>
             </section>
-            <!--                DOWNLIFT of GEOJSON file-->
-            <section class="col-md-6 col-sm-12 tm-feature-block">
-                <header class="tm-feature-header">
-                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
-                    <h3 class="tm-feature-h">Downlift in GeoJSON</h3>
-                </header>
-                <div th:if="${not #lists.isEmpty(individuals)}">
-
-                    <form th:action="@{/geojson_downlift}" th:object="${dataindiv}" method="post"
-                          enctype="multipart/form-data">
-
-                        <select th:field="*{name}">
-                            <option th:each="md: ${individuals}" th:value="${md}" th:text="${md}"></option>
-                        </select>
-
-                        <input type="submit" value="Downlift"/>
-                    </form>
-                </div>
-            </section>
             <!--INFORMATION SECTION-->
             <section class="col-md-6 col-sm-12 tm-feature-block">
                 <header class="tm-feature-header">
@@ -191,6 +173,16 @@ MA 02110-1301  USA
                 <p th:if="${file}">
                     <a class="button" th:href="${file}">Download file</a>
                 </p>
+            </section>
+             <!--Results -->
+             <section class="full">
+                <header class="tm-feature-header">
+                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
+                    <h3 class="tm-feature-h" >Results</h3>
+                </header>
+                <!-- Displaying the table of results -->
+                <div id="tableContentSPARQL">
+                </div>
             </section>
 
 
@@ -211,11 +203,18 @@ MA 02110-1301  USA
     </div>
 </footer>
 
-<script src="js/lod.js"></script>
+<script src="js/lod2.js"></script>
+<script th:inline="javascript">
+    var data = /*[[${data}]]*/ 'default';
+     dataArray=data.data
+     createsTable(dataArray);
+</script> 
+
 <script src="js/jquery-1.9.1.min.js"></script>
 <script src="js/jquery.singlePageNav.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/template.js"></script>
+<script src="js/uplift.js" >  </script>
 
 </body>
 </html>

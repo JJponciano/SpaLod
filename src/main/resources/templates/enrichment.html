@@ -77,7 +77,7 @@ MA 02110-1301  USA
                                 <a class="nav-link" href="/lod">LOD </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/uplift">GeoJSON</a>
+                                <a class="nav-link" href="/uplift">Uplift</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/sparqlend">SPARQL</a>
@@ -89,7 +89,7 @@ MA 02110-1301  USA
                                 <a class="nav-link" href="/enrichment">Enrichment<span class="sr-only">(current)</span></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link external" href="">References</a>
+                                <a class="nav-link external" href="/sem">USKB</a>
                             </li>
                         </ul>
                     </div>
@@ -181,7 +181,6 @@ MA 02110-1301  USA
                           if (width >= 100) {
                                      console.log("task is completed"+width);
                                      clearInterval(id);
-                                     window.location.href = "completed_url";
                           } else {
                                      console.log(width);
                                      $.ajax({
@@ -233,13 +232,14 @@ MA 02110-1301  USA
                     <form  th:if="${form}" action="#" th:action="@{/matching_validation}" th:object="${form}    "
                           method="post"  class="full_size">
                         <fieldset class="full_size">
-                            <input type="submit" id="submitButton" th:value="Save">
-                            <input type="reset" id="resetButton" name="reset" th:value="Reset"/>
+
+                            <input class="button-12" type="submit" id="submitButton" th:value="Save">
+                            <input class="button-12" type="reset" id="resetButton" name="reset" th:value="Reset"/>
                             <table class="full_size" >
                                 <thead>
                                 <tr>
                                     <th> Origin</th>
-                                    <th> Value</th>
+                                    <th> Matched</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -254,6 +254,7 @@ MA 02110-1301  USA
 
 
             </sectionfull_size>
+                <button class="button-12"  id="infer" role="button">Infer</button>
         </div>
     </div>
 </div> <!-- End content + banner-->
@@ -272,6 +273,7 @@ MA 02110-1301  USA
 </footer>
 
 <script src="js/lod.js"></script>
+<script src="js/enrich.js"></script>
 <script src="js/jquery-1.9.1.min.js"></script>
 <script src="js/jquery.singlePageNav.min.js"></script>
 <script src="js/bootstrap.min.js"></script>

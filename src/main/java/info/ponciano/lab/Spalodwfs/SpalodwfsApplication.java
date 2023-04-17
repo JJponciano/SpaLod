@@ -16,12 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package info.ponciano.lab.Spalodwfs;
+package info.ponciano.lab.spalodwfs;
 
-import info.ponciano.lab.Spalodwfs.geotime.controllers.storage.StorageProperties;
-import info.ponciano.lab.Spalodwfs.geotime.controllers.storage.StorageService;
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,8 +25,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 //import org.springframework.security.core.annotation.AuthenticationPrincipal;
 //import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import info.ponciano.lab.spalodwfs.controller.storage.StorageProperties;
+import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 
 /**
  *public class of SpalodwfsApplication
