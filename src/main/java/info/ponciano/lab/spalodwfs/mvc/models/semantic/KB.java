@@ -80,15 +80,17 @@ public class KB implements KnowledgeBaseInterface {
         File file = new File(OUT_ONTO);
         if (file.exists()) {
             try {
+                System.out.println("Load: "+OUT_ONTO);
                 this.model = new OwlManagement(OUT_ONTO);
             } catch (Exception e) {
                 file.delete();
-
+                System.out.println("Reset from : "+DEFAULT_ONTO);
                     this.model = new OwlManagement(DEFAULT_ONTO);
 
             }
 
         } else {
+            System.out.println("Set from : "+DEFAULT_ONTO);
             this.model = new OwlManagement(DEFAULT_ONTO);
         }
         this.model.ont.setNs(NS);
