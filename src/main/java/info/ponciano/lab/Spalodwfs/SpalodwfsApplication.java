@@ -27,8 +27,8 @@ import org.springframework.context.annotation.Bean;
 //import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.RestController;
 
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageProperties;
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageService;
+import info.ponciano.lab.spalodwfs.controller.storage.StorageProperties;
+import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 
 /**
  *public class of SpalodwfsApplication
