@@ -18,7 +18,7 @@
  */
 package info.ponciano.lab.spalodwfs.mvc.controllers.last;
 
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.FileDownloadController;
+import info.ponciano.lab.spalodwfs.controller.storage.FileDownloadController;
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.OntoManagementException;
 
 import org.springframework.stereotype.Controller;
