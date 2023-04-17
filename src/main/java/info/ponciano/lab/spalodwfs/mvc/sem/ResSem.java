@@ -1,6 +1,6 @@
 package info.ponciano.lab.spalodwfs.mvc.sem;
 
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageService;
+import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 import info.ponciano.lab.spalodwfs.mvc.lod.ExtractFromLOD;
 import info.ponciano.lab.spalodwfs.mvc.models.SparqlQuery;
 
@@ -31,7 +31,8 @@ public class ResSem {
      */
     @PostMapping("/ressem")
     public SemData sparqlQuery(@RequestBody SparqlQuery sq) {
-        System.out.println("ressem:"+sq);
+        System.out.println("Query received:");
+        System.out.println(sq);
         try {
             String query = sq.getResults();
             String triplestore = sq.getTriplestore();
