@@ -2,7 +2,7 @@ package info.ponciano.lab.spalodwfs.mvc;
 
 import info.ponciano.lab.pisemantic.PiSparql;
 import info.ponciano.lab.pitools.files.PiFile;
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.FileDownloadController;
+import info.ponciano.lab.spalodwfs.controller.storage.FileDownloadController;
 import info.ponciano.lab.spalodwfs.mvc.models.geojson.Feature;
 import info.ponciano.lab.spalodwfs.mvc.models.geojson.GeoJsonRDF;
 import info.ponciano.lab.spalodwfs.mvc.models.geojson.Geometry;
