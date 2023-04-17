@@ -18,7 +18,7 @@
  */
 package info.ponciano.lab.spalodwfs.mvc.array_uplift;
 
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageService;
+import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 import info.ponciano.lab.spalodwfs.mvc.models.PropertyForm;
 import info.ponciano.lab.spalodwfs.mvc.models.PropertyMapping;
 import info.ponciano.lab.spalodwfs.mvc.models.SHPdata;
