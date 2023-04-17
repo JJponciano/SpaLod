@@ -1,7 +1,7 @@
 package info.ponciano.lab.spalodwfs.mvc.lod;
 
 import info.ponciano.lab.pitools.files.PiFile;
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.FileDownloadController;
+import info.ponciano.lab.spalodwfs.controller.storage.FileDownloadController;
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
 
 import org.apache.jena.query.*;
@@ -36,11 +36,9 @@ public class ExtractFromLOD {
             + "PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n";
     private List<String> header;
     private ArrayList<String[]> data;
-    private String outputFilePath, triplestore, query;
+    private String outputFilePath;
 
     public ExtractFromLOD(String triplestore, String q) throws Exception {
-        this.triplestore = triplestore;
-        this.query = q;
         init(triplestore, q);
         this.run();
     }
@@ -127,7 +125,7 @@ public class ExtractFromLOD {
         String p = UUID.randomUUID().toString() + ".csv";
         String[] ts = this.header.toArray(new String[this.header.size()]);
         String[][] d = this.data.toArray(new String[this.data.size()][this.data.get(0).length]);
-        this.writesCSV(FileDownloadController.DIR + p, d, ",", ts);
+        ExtractFromLOD.writesCSV(FileDownloadController.DIR + p, d, ",", ts);
         this.outputFilePath = FileDownloadController.DOWNLOAD_DATA + p;
     }
 
