@@ -1,7 +1,7 @@
 package info.ponciano.lab.spalodwfs.mvc.enrichment;
 
+import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 import info.ponciano.lab.spalodwfs.mvc.controllers.last.GeoJsonController;
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageService;
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.OntoManagementException;
 import info.ponciano.lab.pisemantic.PiOntologyException;
