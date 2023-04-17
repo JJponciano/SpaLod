@@ -4,11 +4,23 @@ import L from 'leaflet';
 export default {
     data() {
         return {
-            dataArray: 'default',
+            dataArray: [["Arzt", "C3", 50.000, 8.000], ["Bibliothek", "C3.2", 50.001, 8.001]],
             sizeOfArray: 0,
         };
     },
+    methods: {
+        objectSize(obj) {
+            var size = 0, key;
+            for (key in obj) {
+                if (obj.hasOwnProperty(key)) size++;
+            }
+            return size;
+        },
+    },
     mounted() {
+        // Path to where the files are hosted
+        var path = 'src/pictures/signaturen/';
+
         // Creation of one layer of points
         var query = new L.layerGroup();
 
@@ -21,6 +33,19 @@ export default {
                 popupAnchor: [0, -10],
             }
         });
+
+        this.sizeOfArray = this.objectSize(this.dataArray);
+
+        for (let i = 0; i < this.sizeOfArray; i++) {
+            L.marker(
+                [this.dataArray[i][2], this.dataArray[i][3]],
+                {
+                    icon: new MarkerIcon({
+                        iconUrl: path + this.dataArray[i][0] + '.png'
+                    })
+                }
+            ).bindPopup(this.dataArray[i][2] + "," + this.dataArray[i][3] + " " + this.dataArray[i][1]).addTo(query);
+        }
 
         var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
                                     'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
