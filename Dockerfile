@@ -1,5 +1,5 @@
 # This could also be another Ubuntu or Debian based distribution
-FROM ubuntu:impish
+FROM ubuntu:latest
 
 # Install maven
 RUN apt update && apt upgrade -y
