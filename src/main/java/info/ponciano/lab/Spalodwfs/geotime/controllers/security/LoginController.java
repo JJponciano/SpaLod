@@ -18,14 +18,27 @@
  */
 package info.ponciano.lab.Spalodwfs.geotime.controllers.security;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import javax.annotation.security.RolesAllowed;
 
-@Controller
-public class LoginController {
-	@GetMapping("/login")
-	public String login() {
-		return "login";
-	}
+import org.apache.jena.geosparql.spatial.property_functions.cardinal.SouthGeomPF;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+public class LoginController
+
+{
+   @RolesAllowed({"USER","ADMIN"})
+   @RequestMapping("/*")
+   public String getUser()
+   {
+      	return "Welcome User";
+   }
+
+   @RolesAllowed("ADMIN")
+   @RequestMapping("/admin")
+   public String getAdmin()
+   {
+      	return "Welcome Admin";
+   }
 }
