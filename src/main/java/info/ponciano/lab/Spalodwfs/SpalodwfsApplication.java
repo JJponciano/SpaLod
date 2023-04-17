@@ -18,8 +18,6 @@
  */
 package info.ponciano.lab.spalodwfs;
 
-import info.ponciano.lab.spalodwfs.geotime.controllers.storage.StorageProperties;
-import info.ponciano.lab.spalodwfs.geotime.controllers.storage.StorageService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,6 +26,9 @@ import org.springframework.context.annotation.Bean;
 //import org.springframework.security.core.annotation.AuthenticationPrincipal;
 //import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.RestController;
+
+import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageProperties;
+import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageService;
 
 /**
  *public class of SpalodwfsApplication
