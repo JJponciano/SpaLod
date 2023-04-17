@@ -18,8 +18,8 @@
  */
 package info.ponciano.lab.spalodwfs.mvc.controllers.last;
 
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageProperties;
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageService;
+import info.ponciano.lab.spalodwfs.controller.storage.StorageProperties;
+import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 import info.ponciano.lab.spalodwfs.mvc.models.geojson.GeoJsonRDF;
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
 import info.ponciano.lab.pisemantic.PiOnt;
