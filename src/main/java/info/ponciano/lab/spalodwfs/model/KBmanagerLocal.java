@@ -46,7 +46,8 @@ public class KBmanagerLocal {
 
     public void updateLocalFile(TripleOperation tripleOperation) {
         this.dataset.begin(ReadWrite.WRITE);
-        this.dataset.getDefaultModel().read(FileManager.get().open(inputFileName), null);//, "TURTLE"
+        this.dataset.setDefaultModel(KB.get().getOnt().getOnt());
+        //getDefaultModel().read(FileManager.get().open(inputFileName), null, "TURTLE");
         TripleData tripleData = tripleOperation.getTripleData();
         String updateQuery;
         if ("add".equalsIgnoreCase(tripleOperation.getOperation())) {
