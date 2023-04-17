@@ -6,7 +6,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.3.4.RELEASE</version>
-        <relativePath /> <!-- lookup parent from repository -->
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>info.ponciano.lab</groupId>
     <artifactId>spalod</artifactId>
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>3.5.0.201409260305-r</version>
+            <version>3.7.1.201504261725-r</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
