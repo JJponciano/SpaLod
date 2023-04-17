@@ -18,8 +18,8 @@
  */
 package info.ponciano.lab.spalodwfs.mvc;
 
+import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 import info.ponciano.lab.spalodwfs.mvc.controllers.last.sparql.SparqlQuery;
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageService;
 import info.ponciano.lab.spalodwfs.mvc.models.StringForm;
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
 
