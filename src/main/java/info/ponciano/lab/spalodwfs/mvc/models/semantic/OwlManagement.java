@@ -157,7 +157,7 @@ class OwlManagement extends OntoManagement {
      * @throws IOException If the file cannot be written.
      */
     public void saveOntology(String path) throws IOException {
-        this.ont.getOnt().write(new FileWriter(path));
+        this.ont.getOnt().write(new FileWriter(path), "TURTLE");
     }
 
     private Individual getIndividual(Node elemNode, OntClass nodeClass) throws DOMException, OntoManagementException {
