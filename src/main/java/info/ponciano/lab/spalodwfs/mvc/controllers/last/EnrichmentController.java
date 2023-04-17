@@ -18,7 +18,7 @@
  */
 package info.ponciano.lab.spalodwfs.mvc.controllers.last;
 
-import info.ponciano.lab.spalodwfs.mvc.controllers.storage.StorageService;
+import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 import info.ponciano.lab.spalodwfs.mvc.models.SparqlQuery;
 import info.ponciano.lab.spalodwfs.mvc.models.StringForm;
 import info.ponciano.lab.spalodwfs.mvc.models.geojson.Feature;
