@@ -19,8 +19,12 @@
 package info.ponciano.lab.spalodwfs.controller.security;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jena.geosparql.spatial.property_functions.cardinal.SouthGeomPF;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +43,7 @@ public class LoginController
    @RequestMapping("/admin")
    public String getAdmin()
    {
-      	return "Welcome Admin";
+         System.out.println("curl successful");
+         return "Welcome Admin";
    }
 }

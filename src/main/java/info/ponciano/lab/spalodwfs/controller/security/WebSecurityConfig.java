@@ -1,4 +1,3 @@
-package info.ponciano.lab.spalodwfs.controller.security;
 ///*
 // * Copyright (C)  2021 Dr Claire Prudhomme <claire@prudhomme.info).
 // *
@@ -130,7 +129,7 @@ package info.ponciano.lab.spalodwfs.controller.security;
 //        return new InMemoryUserDetailsManager(user);
 //    }
 //}
-package info.ponciano.lab.Spalodwfs.geotime.controllers.security;
+package info.ponciano.lab.spalodwfs.controller.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -155,6 +154,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.roles("ADMIN", "USER");
 	}
 	
+	/* How to login as an admin : curl -X POST -i http://localhost:8081/login -d "username=admin&password=admin123" -v
+		The -i and -v are used to find the JSESSIONID which is how the session cookie and will be used to authenticate the session
+		Now that we have the JSESSIONID value we can put it in the following command :
+		curl -b "JSESSIONID=value" http://localhost:8081/home
+		to access to the home page.
+		*/
+
+
 	@Override 
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
@@ -163,8 +170,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.anyRequest().authenticated()
 			.and()
 			.formLogin()
+				.usernameParameter("username")
+				.passwordParameter("password")
+				.defaultSuccessUrl("/home")
 			.and()
-			.oauth2Login();
+			.oauth2Login()
+			.and()
+			.csrf()
+            	.disable();
 	}
 	
 	@Bean
