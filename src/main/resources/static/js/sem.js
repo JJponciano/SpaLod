@@ -33,7 +33,7 @@
             sq.query=$("#sparqlText").val();
             sq.triplestore= ""
             console.log(sq);
-            $.postJSON("http://localhost:8080/ressem", sq, $.update)
+            $.postJSON("http://localhost:8081/ressem", sq, $.update)
         });
       
 
