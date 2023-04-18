@@ -1,0 +1,8 @@
+category;https://schema.org/category
+itemlabel;https://schema.org/name
+item;https://schema.org/Thing
+capacity;https://schema.org/seatingCapacity
+Q1154710;https://schema.org/StadiumOrArena
+Q589481;https://schema.org/StadiumOrArena
+Q2310214;https://schema.org/StadiumOrArena
+Q1763828;https://schema.org/StadiumOrArena
