@@ -81,13 +81,12 @@
 
             // Updating the request if the cursor moves or if another example is selected
             function updateRequest() {
-                if(testBoundingBox){
-                    latNorthEast = boxBounds._northEast.lat;
-                    latSouthWest = boxBounds._southWest.lat;
-                    lngNorthEast = boxBounds._northEast.lng;
-                    lngSouthWest = boxBounds._southWest.lng;
-
-                }
+//                if(testBoundingBox){
+//                    latNorthEast = boxBounds._northEast.lat;
+//                    latSouthWest = boxBounds._southWest.lat;
+//                    lngNorthEast = boxBounds._northEast.lng;
+//                    lngSouthWest = boxBounds._southWest.lng;
+//                }
                 var requete = document.getElementById('requestChoice').value;
                 if(requete =="researchLaboratory" || requete =="weatherStation"){
                     document.getElementById('DBPedia').disabled = true;
@@ -121,3 +120,4 @@
                     document.getElementById("sparqlText").value = queries[document.getElementById('requestChoice').value];
                 }
             }
+

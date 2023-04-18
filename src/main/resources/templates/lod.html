@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-Copyright (C) 2022 Claire Ponciano <claire@prudhomme.info>.
+Copyright (C) 2022 Claire Ponciano <contact@ponciano.info>.
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,9 @@ MA 02110-1301  USA
 
     <link rel="stylesheet" href="css/boundingBox.css"/>
     <link rel="stylesheet" href="css/mousseCoordinates.css"/>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="js/lod2.js" >  </script>
+   
 </head>
 
 <body onload="onLoad()">
@@ -77,7 +79,7 @@ MA 02110-1301  USA
                                 <a class="nav-link" href="/lod">LOD <span class="sr-only">(current)</span></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/uplift">GeoJSON</a>
+                                <a class="nav-link" href="/uplift">Uplift</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/sparqlend">SPARQL</a>
@@ -89,7 +91,7 @@ MA 02110-1301  USA
                                 <a class="nav-link" href="/enrichment">Enrichment</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link external" href="">References</a>
+                                <a class="nav-link external" href="/sem">USKB</a>
                             </li>
                         </ul>
                     </div>
@@ -121,24 +123,24 @@ MA 02110-1301  USA
     </video>
 </section>
 
-<!-- Banner-->
-<div class="container" id="lod">
+<div id="lod">
+    <!-- Banner-->
     <div class="row">
         <div class="col-12">
             <div class="tm-parallax">
                 <header class="tm-parallax-header">
-                    <h2 class="">LOD Query</h2>
+                    <h2 class="">Linked Open Data</h2>
                 </header>
             </div>
         </div>
     </div>
     <!-- Content-->
-    <div class="container tm-features-section" id="features2">
-
-        <div class="row tm-features-row">
-            <section class="col-md-6 col-sm-12 tm-feature-block">
+    <div id="features2 ">
+        <!--Fist row containing query and map -->
+            <!--Query-->
+            <section class="menu">
                 <header class="tm-feature-header">
-                    <i class="fas fa-5x fa-anchor tm-feature-icon"></i>
+                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
                     <h3 class="tm-feature-h">Query Parameters</h3>
                 </header>
                 <!--Query Parameters -->
@@ -186,220 +188,48 @@ MA 02110-1301  USA
                             <code th:text="${errorMessage}"></code>
                             </pre>
                     </div>
+                    <button class="button-12"  id="submitquery" role="button">Get the query results</button>
+                    <h3 id="download"></h3>
+                    
                 </div>
             </section>
-            <section class="col-md-6 col-sm-12 tm-feature-block">
-                <header class="tm-feature-header">
-                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
-                    <h3 class="tm-feature-h">Query</h3>
-                </header>
+                <!--End Query Parameters -->
+                <section class="main">
+                    <header class="tm-feature-header">
+                        <i class="fas fa-5x fa-atom tm-feature-icon"></i>
+                        <h3 class="tm-feature-h">Query</h3>
+                    </header>
                 <!-- Text box where the request is shown -->
                 <div style="float: right;" onload="onLoad()">
                     <form action="#" th:action="@{/lod}" th:object="${squery}" method="post">
                         <!-- Store list -->
-                        <div tripleStore class="tripleStore" onclick="updateRequest()">
-                            <label><input type="radio" th:field="*{triplestore}" name="tripleStore" id="Wikidata" checked value="query.wikidata"> Wikidata</label>
-                            <label><input type="radio" th:field="*{triplestore}" name="tripleStore" id="DBPedia" value="dbpedia"> DBPedia</label>
-                            <label><input type="radio" th:field="*{triplestore}" name="tripleStore" id="LinkedGeoData" value="linkedgeodata"> LinkedGeoData</label>
+                        <div tripleStore id="tripleStore" onclick="updateRequest()">
+                            <label><input type="radio" th:field="*{triplestore}" name="tripleStore" id="Wikidata" checked value="https://query.wikidata.org/sparql"> Wikidata</label>
+                            <label><input type="radio" th:field="*{triplestore}" name="tripleStore" id="DBPedia" value="https://dbpedia.org/sparql"> DBPedia</label>
+                            <label><input type="radio" th:field="*{triplestore}" name="tripleStore" id="LinkedGeoData" value="https://linkedgeodata.org/sparql"> LinkedGeoData</label>
                         </div>
                         <!-- Text box -->
                         <textarea id="sparqlText" rows="16" cols="60"
-                                  style="font-size: 1.6em; width: 100%; height: 100%; line-height: 150%"
-                                  th:field="*{results}">YOUR QUERY</textarea><br>
+                                  style="font-size: 1.6em; width: 100%; height: 100%; line-height: 150%">YOUR QUERY</textarea><br>
                         <!-- Submit button -->
-                        <input style="margin-left: auto; margin-right: auto; font-size: 1.4em;" type="submit"
-                               name="Submit" value="Get the query results">
                     </form>
+
                 </div>
+
             </section>
-            <section>
+            <!--End Query-->
+
+            <!--  -->
+             <!--Results -->
+            <section class="full">
                 <header class="tm-feature-header">
                     <i class="fas fa-5x fa-atom tm-feature-icon"></i>
-                    <h3 class="tm-feature-h">Map</h3>
-                </header>
-                <!--Map -->
-                <div id=map style="position : relative; width: 1200px; height: 800px; margin-bottom: 20px;">
-                    <!-- Leaflet script and stylesheet -->
-                    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-                            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-                            crossorigin=""></script>
-                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-                          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-                          crossorigin=""/>
-                    <link href="../static/css/asideBox.css" type="text/css">
-                    <link href="../static/css/main.css" type="text/css"/>
-                    <link href="../static/css/testSPARQL.css" type="text/css">
-                    <link href="../static/css/testSPARQL.css" type="text/css"/>
-                    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
-                    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js"
-                            integrity="sha512-WL3nAJlWFKoDShduxQRyY3wkBnQsINXdIfWIW48ZaPgYz1wYNnxIwFMMgigzSgjNBC2WWZ8Y8/sSyUU6abuF0g=="
-                            crossorigin=""
-                            referrerpolicy="no-referrer"></script>
-
-                    <!-- Retreving data from the request -->
-                    <script th:inline="javascript">
-                    var dataArray = /*[[${MDlist}]]*/ 'default';
-                    // Function used to retrieve size of the data array
-                    // Data is stored as followed :
-                    // data = [ itemIndex, itemLabel, latitude, longitude]
-                    Object.size = function (obj) {
-                        var size = 0,
-                                key;
-                        for (key in obj) {
-                            if (obj.hasOwnProperty(key))
-                                size++;
-                        }
-                        return size;
-                    };
-                    var sizeOfArray = Object.size(dataArray);
-
-
-                    </script>
-                    <script>
-                            // Creation of one layer of points
-                            var query = new L.layerGroup();
-
-                            //custom  icon class
-                            var MarkerIcon = L.Icon.extend({
-                            options : {
-                                iconSize:[20, 20],
-                                shadowSize:[0, 0],
-                                iconAnchor: [10, 10],
-                                popupAnchor: [0, -10]
-                            }
-                            });
-
-                            //path to where the files are hosted
-                            //var path = 'https://raw.githubusercontent.com/JJponciano/SpaLod/main/src/main/resources/static/pictures/signaturen/';
-                            var path = '../pictures/signaturen/'
-                            // Loop to add every point of the results to the map
-                            for (let i = 0; i < sizeOfArray; i++) {
-                                 L.marker(
-                                      [dataArray[i][2], dataArray[i][3]],
-                                      { icon: new MarkerIcon({iconUrl: path + dataArray[i][0] +'.png'}) }
-                                 ).bindPopup(dataArray[i][2]+","+dataArray[i][3]+" "+dataArray[i][1]).addTo(query);
-                            }
-                            var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-                                    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                                mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
-
-                            var rUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
-
-                            var topplusUrl = 'http://sgx.geodatenzentrum.de/wms_topplus_web_open';
-                            var topplusAttr = '&copy Bundesamt für Kartographie und Geodäsie 2017, <a href="http://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf">Datenquellen</a>';
-
-                            //var verUrl = 'https://sgx.geodatenzentrum.de/wms_vg250';
-                            //var verAttr = '&copy Bundesamt für Kartographie und Geodäsie 2017, <a href = "https://sg.geodatenzentrum.de/web_public/gdz/dokumentation/deu/vg250_01-01.pdf"</a>';
-
-                            // Creation of two layers : grayscale, and streets map
-                            // It is also possible to add a satellite map, landform map, ..
-                            var grayscale = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
-                                streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
-                                relief = L.tileLayer(rUrl, {maxZoom: 17, attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
-                                topplus = L.tileLayer.wms(topplusUrl, {layers: 'web', format: 'image/png',transparent: true, attribution: topplusAttr});
-                                //verwa = L.tileLayer.wms(verUrl, {layers: 'Kreis', format: 'image/png',transparent: true, attribution: topplusAttr});
-                                mini_grayscale = new L.TileLayer(mbUrl, {id: 'mapbox/light-v9', minZoom: 0, maxZoom: 13, attribution: mbAttr});
-                                mini_streets = new L.TileLayer(mbUrl, {id: 'mapbox/streets-v11', minZoom: 0, maxZoom: 13, attribution: mbAttr});
-                                mini_relief = new L.TileLayer(rUrl, {minZoom: 0, maxZoom: 13, attribution: mbAttr});
-                                mini_topplus = new L.tileLayer.wms(topplusUrl, {layers: 'web', format: 'image/png',transparent: true, attribution: topplusAttr});
-
-
-                            // Definition of the map, and setup of details : coordinates of the center, zoom level and layers that appear on loading
-                            var map = L.map('map', {
-                                center: [49.99, 8.24],
-                                zoom: 6,
-                                minZoom: 2,
-                                fullscreenControl: true,
-                                layers: [streets, query]
-                            });
-
-                            // Definition of layers
-                            var baseLayers = {
-                                "Grayscale": grayscale,
-                                "Streets": streets,
-                                "Relief" : relief,
-                                "Topplus" : topplus
-                            };
-
-                            // Definition of point layers
-                            var overlays = {
-                                "Query": query,
-                            };
-
-                            // Add layers and points layers to the map
-                            var layerControl = L.control.layers(baseLayers, overlays).addTo(map);
-                            var testBoundingBox = false; // Check is bounding box was open
-
-                    </script>
-                </div>
-            </section>
-            </section>
-
-            <section class="col-md-6 col-sm-12 tm-feature-block">
-                <header class="tm-feature-header">
-                    <i class="fas fa-5x fa-anchor tm-feature-icon"></i>
-                    <h3 class="tm-feature-h">Actions</h3>
-                </header>
-                <p>
-                    <a class="button" th:href="${ontPath}">Download RDF file</a>
-
-                <!--Directly Enrich the KB-->
-                <form action="#" th:action="@{/lodenrich}"method="post">
-                    <input type="submit" value="Enrich the Knowledge based"/>
-                </form>
-
-                </p>
-            </section>
-            <!--INFORMATION SECTION-->
-            <section class="col-md-6 col-sm-12 tm-feature-block">
-                <header class="tm-feature-header">
-                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
-                    <h3 class="tm-feature-h">Information</h3>
-                </header>
-                <p th:if="${message}" th:text="${message}"/>
-
-                <p th:if="${file}">
-                    <a class="button" th:href="${file}">Download file</a>
-                </p>
-            </section>
-
-
-            <section class="col-md-6 col-sm-12 tm-feature-block">
-                <header class="tm-feature-header">
-                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
-                    <h3 class="tm-feature-h">Results</h3>
+                    <h3 class="tm-feature-h" >Results</h3>
                 </header>
                 <!-- Displaying the table of results -->
-                <div th:if="${MDlist}" class="tableContentSPARQL">
-                    <div><span id="nbOfResults" style="width: 150px; height: 10px"> 0 result(s).</span>
-
-                        <script type="text/javascript">
-                            document.getElementById("nbOfResults").innerHTML = sizeOfArray.toString().concat(" result(s).");
-
-                        </script>
-                        <table border="1" style="width: 700px; margin: 0 auto;">
-                            <thead>
-                            <!-- Definition of the 5 columns -->
-                            <tr>
-                                <th th:colspan="${#lists.size(cl)}" style="text-align: center; font-size: 1.2em;">Results of the query</th>
-                            </tr>
-                            <td style="text-align: center;"  th:each="name: ${cl}">
-                                <span th:text="${name}"></span>
-                            </td>
-                            </thead>
-                            <tbody>
-                            <!-- Filling the 5 columns with the results from WikiData-->
-                            <tr th:each="md: ${MDlist}">
-                                <td  th:each="m: ${md}" style="width: 170px;"><span th:text="${m}"></span></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div id="tableContentSPARQL">
                 </div>
             </section>
-
-
 
         </div>
     </div>
@@ -407,7 +237,7 @@ MA 02110-1301  USA
 </div>
 
 
-<footer class="container tm-footer">
+<footer class="tm-footer">
     <div class="row tm-footer-row">
         <p class="col-md-10 col-sm-12 mb-0">
             <!--            Copyright &copy; 2022 Claire Ponciano:-->
@@ -424,9 +254,6 @@ MA 02110-1301  USA
 <script src="js/jquery.singlePageNav.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/template.js"></script>
-<script src="js/boundingBox.js"/></script>
-<script src="js/moussePosition.js"/></script>
-<script src="js/miniMap.js"></script>
 
 
 </body>

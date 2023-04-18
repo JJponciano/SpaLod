@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2022 Claire Ponciano <contact@ponciano.info>.
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA 02110-1301  USA
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>SPALOD</title>
+    <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600"
+    />
+    <!-- https://fonts.google.com/specimen/Open+Sans -->
+    <link rel="stylesheet" href="css/all.min.css"/>
+    <!-- https://fontawesome.com/ -->
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <!-- https://getbootstrap.com/ -->
+    <link rel="stylesheet" href="css/tooplate-style.css"/>
+
+    <link rel="stylesheet" href="css/boundingBox.css"/>
+    <link rel="stylesheet" href="css/mousseCoordinates.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="js/lod2.js" >  </script>
+   
+</head>
+
+<body onload="onLoad()">
+<!-- page header -->
+<div class="container" id="home">
+    <div class="col-12 text-center">
+        <div class="tm-page-header">
+            <i class="fas fa-4x fa-chart-bar mr-4"></i>
+            <h1 class="d-inline-block text-uppercase">SPALOD</h1>
+        </div>
+    </div>
+</div>
+<!-- navbar -->
+<div class="tm-nav-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="navbar navbar-expand-md navbar-light">
+                    <button
+                            class="navbar-toggler"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#tmMainNav"
+                            aria-controls="tmMainNav"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation"
+                    >
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="tmMainNav">
+                        <ul class="navbar-nav mx-auto tm-navbar-nav">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="/home">Home</a
+                                >
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/lod">LOD <span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/uplift">Uplift</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/sparqlend">SPARQL</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/assessment">Assessment</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/enrichment">Enrichment</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link external" href="/sem">USKB</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Video Banner -->
+<section class="tm-banner-section" id="tmVideoSection">
+    <div class="container tm-banner-text-container">
+        <div class="row">
+            <div class="col-12">
+                <header>
+                    <h2 class="tm-banner-title">SPALOD</h2>
+                    <p class="mx-auto tm-banner-subtitle">
+                        Spatial data management with semantic web technology and Linked Open Data (LOD)
+                    </p>
+                </header>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video -->
+    <video id="hero-vid" autoplay="" loop="" muted>
+        <source src="videos/city-night-blur-01.mp4" type="video/mp4"/>
+        Your browser does not support the video tag.
+    </video>
+</section>
+
+<div id="lod">
+
+    <!-- Banner-->
+    <div class="row">
+        <div class="col-12">
+            <div class="tm-parallax">
+                <header class="tm-parallax-header">
+                    <h2 class="">LOD Query</h2>
+                </header>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content-->
+    <div  id="features2">
+        <!--Fist row containing query and map -->
+            <!--Query-->
+            <section class="menu">
+                <header class="tm-feature-header">
+                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
+                    <h3 class="tm-feature-h">Query Parameters</h3>
+                </header>
+                <!--Query Parameters -->
+                <div onload="onLoad()">
+                    <div class='inline w30'>
+                        <!-- List of example requests -->
+                        <span style="font-weight: bold; font-size: 1.5em;">Class to enrich:</span>
+                        <select name="classToEnrich" id="requestChoice" value="schools" onChange="updateRequest()">
+                            <option value="schools">Schule (Q3914)</option>
+                            <option value="twentyBiggestCities">20 biggest cities in Germany</option>
+                            <option value="tenBiggestStadiums">10 biggest football stadiums in Germany</option>
+                            <option value="hospitals">Krankenhaus (Q16917)</option>
+                            <option value="policeStations">Polizeistation (Q861951)</option>
+                            <option value="fireStations">Feuerwache (Q1195942)</option>
+                            <option value="supermarkets">Supermarkt (Q180846)</option>
+                            <option value="museums">Museen (Q33506)</option>
+                            <option value="libraries">Bibliotheken (Q7075)</option>
+                            <option value="trainStations">Bahnhöfe (Q55488)</option>
+                            <option value="banks">Banken (Q22687)</option>
+                            <option value="restaurants">Restaurants (Q11707)</option>
+                            <option value="cinemas">Kinos (Q41253)</option>
+                            <option value="monuments">Denkmäler(Q4989906)</option>
+                            <option value="hotels">Hotels (Q27686)</option>
+                            <option value="airports">Flughäfen (Q1248784)</option>
+                            <option value="stadiums">Stadien (Q483110)</option>
+                            <option value="swimmingPools">Schwimmbäder (Q200023)</option>
+                            <option value="serviceStation">Tankstellen (Q205495)</option>
+                            <option value="weatherStation">Wetterstationen (Q190107)</option>
+                            <option value="researchLaboratory">Forschungslaboratorien (Q483242)</option>
+                            <option value="port">Häfen (Q44782)</option>
+                            <option value="cities">Städte (Q515)</option>
+                        </select>
+                    </div>
+                    <div class='inline w30'>
+                        <!-- Cursor - It is possible to change the value range and the step of change on the input line -->
+                        <span style="font-weight: bold; font-size: 1.5em;">Max items number :</span>
+                        <span id="nbOfPoints"> </span>
+                        <input type="range" id="pointsCursor" min="100" max="1000" value="500" step="50"
+                               class="inputRange" oninput="showVal(this.value)" onclick="updateRequest()">
+                    </div>
+                    <div class='inline w30' th:if="${errorMessage}">
+                        <!-- Text box showing the error, if the request does not work -->
+                        <span style="font-weight: bold; font-size: 1.5em;">Error</span>
+                        <pre style="margin-right: 30px; max-height: 400px;">
+                            <code th:text="${errorMessage}"></code>
+                            </pre>
+                    </div>
+                </div>
+                <!--End Query Parameters -->
+
+                <!-- Text box where the request is shown -->
+                <div style="float: right;" onload="onLoad()">
+                    <form action="#" th:action="@{/lod}" th:object="${squery}" method="post">
+                        <!-- Store list -->
+                        <div tripleStore id="tripleStore" onclick="updateRequest()">
+                            <label><input type="radio" th:field="*{triplestore}" name="tripleStore" id="Wikidata" checked value="https://query.wikidata.org/sparql"> Wikidata</label>
+                            <label><input type="radio" th:field="*{triplestore}" name="tripleStore" id="DBPedia" value="https://dbpedia.org/sparql"> DBPedia</label>
+                            <label><input type="radio" th:field="*{triplestore}" name="tripleStore" id="LinkedGeoData" value="https://linkedgeodata.org/sparql"> LinkedGeoData</label>
+                        </div>
+                        <!-- Text box -->
+                        <textarea id="sparqlText" rows="16" cols="60"
+                                  style="font-size: 1.6em; width: 100%; height: 100%; line-height: 150%">YOUR QUERY</textarea><br>
+                        <!-- Submit button -->
+                    </form>
+                    <button class="button" id="submitquery" type="button">Get the query results</button>
+                </div>
+
+            </section>
+            <!--End Query-->
+
+            <!--Map -->
+            <section class="main">
+                <header class="tm-feature-header">
+                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
+                    <h3 class="tm-feature-h" id="maptitle">Map</h3>
+                </header>
+                <!--Map -->
+                <div id=map >
+                    <!-- Leaflet script and stylesheet -->
+          
+                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+                          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+                          crossorigin=""/>
+                    <link href="../static/css/asideBox.css" type="text/css">
+                    <link href="../static/css/main.css" type="text/css"/>
+                    <link href="../static/css/testSPARQL.css" type="text/css">
+                    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+                    
+                    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+                    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+                    crossorigin=""></script>
+                    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js"
+                            integrity="sha512-WL3nAJlWFKoDShduxQRyY3wkBnQsINXdIfWIW48ZaPgYz1wYNnxIwFMMgigzSgjNBC2WWZ8Y8/sSyUU6abuF0g=="
+                            crossorigin=""
+                            referrerpolicy="no-referrer"></script>
+                            <script src="js/map.js"></script>
+                </div>
+            </section>
+            <!--End Map -->
+
+            <!--  -->
+             <!--Results -->
+            <section class="main">
+                <header class="tm-feature-header">
+                    <i class="fas fa-5x fa-atom tm-feature-icon"></i>
+                    <h3 class="tm-feature-h" >Results</h3>
+                </header>
+                <!-- Displaying the table of results -->
+                <div id="tableContentSPARQL">
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+</div>
+
+
+<footer class="tm-footer">
+    <div class="row tm-footer-row">
+        <p class="col-md-10 col-sm-12 mb-0">
+            <!--            Copyright &copy; 2022 Claire Ponciano:-->
+            <a rel="nofollow" href="https://i3mainz.hs-mainz.de/" class="tm-footer-link">i3mainz</a>
+        </p>
+        <div class="col-md-2 col-sm-12 scrolltop">
+            <div class="scroll icon"><i class="fa fa-4x fa-angle-up"></i></div>
+        </div>
+    </div>
+</footer>
+
+<script src="js/lod.js"></script>
+<script src="js/jquery-1.9.1.min.js"></script>
+<script src="js/jquery.singlePageNav.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/template.js"></script>
+<script src="js/boundingBox.js"/></script>
+<script src="js/moussePosition.js"/></script>
+<script src="js/miniMap.js"></script>
+
+
+</body>
+</html>
