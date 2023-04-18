@@ -1,5 +1,5 @@
 server:
-  port : 8080
+  port : 8081
 
 spring:
   security:
@@ -9,3 +9,6 @@ spring:
           github:
             clientId: f8053e8cdd6efd9d0698
             clientSecret: b7c2d2500ac97226ee3fd7118ae03ee3423a5903
+# application.properties
+triplestore.sparqlEndpoint: http://example.com/sparql
+
