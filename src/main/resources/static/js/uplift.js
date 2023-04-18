@@ -29,7 +29,7 @@
 
 //       // when the document is ready, ask if data are available
 //       $.ajax({
-//             url: "http://localhost:8080/dataluplift"//local URI that should be adapt to the SERVER URI
+//             url: "http://localhost:8081/dataluplift"//local URI that should be adapt to the SERVER URI
 //               }).then(function(data) {//retrieves the data provided by the server
 
 //               });
@@ -37,7 +37,7 @@ var sq = new Object();
 sq.query=$("#sparqlText").val();
 sq.triplestore= $('input[name="triplestore"]:checked').val();
 
-$.postJSON("http://localhost:8080/dataluplift", sq, $.update)
+$.postJSON("http://localhost:8081/dataluplift", sq, $.update)
 
 
 });
