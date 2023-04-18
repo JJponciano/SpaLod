@@ -66,16 +66,15 @@ public class KBmanagerLocal {
 
         dataset.commit();
         dataset.end();
-
-        try (FileOutputStream fos = new FileOutputStream(inputFileName)) {
-            dataset.getDefaultModel().write(fos, "TURTLE");
+        try{
+            KB.get().save();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public String executeSparqlQuery(String sparqlQuery, String triplestore) {
-        String queryString = KB.PREFIX + sparqlQuery;
+        String queryString = sparqlQuery;
         Query query = QueryFactory.create(queryString);
         Model model = dataset.getDefaultModel();
 
@@ -83,7 +82,8 @@ public class KBmanagerLocal {
         if (triplestore == null || triplestore.isBlank())
             qexec = QueryExecutionFactory.create(query, model);
         else
-            qexec = QueryExecutionFactory.sparqlService(triplestore, query);
+            //qexec = QueryExecutionFactory.sparqlService(triplestore, query);
+            qexec = QueryExecution.service(triplestore).query(query).build();
         if (query.isSelectType()) {
             ResultSet resultSet = qexec.execSelect();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
