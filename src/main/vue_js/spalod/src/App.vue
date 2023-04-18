@@ -22,15 +22,22 @@ import RDFData from './components/RDFData.vue';
       </div>
     </div>
   </div>
-  <NavBar></NavBar>
+  <div class="navbar">
+    <NavBar></NavBar>
+  </div>
 </template>
 
 <style scoped>
+
+.navbar{
+  z-index: 10;
+}
 
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  z-index: 1;
 }
 .main {
   display: flex;
@@ -43,6 +50,7 @@ import RDFData from './components/RDFData.vue';
 .user-actions-container {
   flex: 1;
   padding: 75px 25px 0 25px;
+  z-index: 3;
 }
 
 .right-container {
@@ -51,6 +59,7 @@ import RDFData from './components/RDFData.vue';
   flex: 2 0 auto;
   align-items: stretch;
   padding: 75px 25px 0 0;
+  z-index: 2;
 }
 
 .map-container {
@@ -61,14 +70,24 @@ import RDFData from './components/RDFData.vue';
 .rdf-data-container {
   flex: 1;
 }
-</style>
 
 @media (max-width: 768px) {
   .main {
     flex-direction: column;
+    display: flex;
   }
 
   .right-container {
     flex: 1;
+    padding: 10px 0px 10px;
+  }
+  .user-actions-container{
+    padding: 70px 125px 0px;
+    height: fit-content;
+    position: absolute;
+  }
+  .map-container{
+    margin-top: 120px;
   }
 }
+</style>

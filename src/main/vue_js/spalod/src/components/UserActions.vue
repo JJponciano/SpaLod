@@ -1,13 +1,36 @@
 <template>
     <div class="user-actions" :class="{dark: isDarkMode}">
-        <select v-model="selectedOption">
-            <option v-for="(option, index) in options" :key="index" :value="option.value">
+        <button class="navbar_button" @click="toggleNavBar">Menu</button>
+        <div class="side_pannel">
+            <select v-model="selectedOption">
+                <option v-for="(option, index) in options" :key="index" :value="option.value">
                 {{ option.label }}
-            </option>
-        </select>
-        <button @click="filterData">Filter</button>
-        <button @click="addData">Add Data</button>
-        <button @click="confirmRequest" class="confirm">Confirm Request</button>
+                </option>
+            </select>
+            <button @click="filterData">Filter</button>
+            <button @click="addData">Add Data</button>
+            <button @click="confirmRequest" class="confirm">Confirm Request</button>
+        </div>
+        <div class="navbar-menu" :class="{ active: menuOpen, dark: isDarkMode }">
+            <ul class="navbar-nav">
+                <li>
+                    <select v-model="selectedOption">
+                        <option v-for="(option, index) in options" :key="index" :value="option.value">
+                        {{ option.label }}
+                        </option>
+                    </select>
+                </li>
+                <li class="filterButton">
+                    <button @click="filterData">Filter</button>
+                </li>
+                <li class="adddataButton">
+                    <button @click="addData">Add Data</button>
+                </li>
+                <li class="confirmButton">
+                    <button @click="confirmRequest" class="confirm">Confirm Request</button>
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
@@ -16,6 +39,7 @@ export default {
     data() {
         return {
             isDarkMode: false,
+            menuOpen: false,
             selectedOption: "schools",
             options: [
                 { label: 'Schule (Q3914)', value: 'schools' },
@@ -46,13 +70,24 @@ export default {
     },
     mounted() {
         this.detectDarkMode();
+        window.addEventListener("resize", this.closeNavBar);
         window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
             this.isDarkMode = event.matches;
         });
     },
+    beforeDestroy(){
+        window.removeEventListener("resize", this.closeNavBar);
+    },
     methods: {
         search() {
             // TODO: Implement search
+        },
+        toggleNavBar(){
+            this.menuOpen = !this.menuOpen;
+        },
+        closeNavBar()
+        {
+            this.menuOpen=false;
         },
         filterData() {
             // TODO: Implement filter
@@ -81,7 +116,7 @@ export default {
     resize: horizontal;
     overflow: auto;
     width: 320px;
-    min-width: 200px;
+    min-width: 220px;
 }
 
 .user-actions.dark {
@@ -110,6 +145,14 @@ select {
     cursor: pointer;
 }
 
+.navbar_button{
+    display: none;
+}
+
+.navbar-menu{
+    display: none;
+}
+
 button {
     padding: 10px 20px;
     border-radius: 5px;
@@ -130,8 +173,57 @@ button {
     color: #fff;
 }
 
+.navbar_button:hover{
+    background-color: #81818a;
+    color: white;
+}
+
 button:hover {
     background-color: #4A5568;
     color: #fff;
+}
+@media screen and (max-width: 768px) {
+
+    .side_pannel{
+        display: none;
+    }
+    .user-actions{
+        width: fit-content;
+        min-width: fit-content;
+        height: fit-content;
+        min-height: fit-content;
+        resize: none;
+        padding: 0px;
+    }
+    .navbar_button{
+        display: block;
+        padding: 10px;
+        border-radius: 5px;
+        border: none;
+        background-color: rgba(194, 194, 194, 0.603);
+        color: inherit;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+        font-size: 18px;
+        font-weight:lighter;
+        margin-top: 0px;
+        width:fit-content;
+    }
+    .navbar-menu.active{
+        padding: 15px 20px 15px 0px;
+        border-radius: 15px;
+        flex-direction: column;
+        display: flex;
+        align-items: start;
+        height: fit-content;
+        resize: horizontal;
+        overflow: auto;
+        width: fit-content;
+        min-width: 220px;
+        background-color: white;
+    }
+    .navbar-menu.dark{
+        background-color: #1A202C;
+    }
 }
 </style>
