@@ -152,7 +152,6 @@ public class ResController {
     } catch (Exception ex) {
       return ex.getMessage();
     }
-
   }
 
   /**
