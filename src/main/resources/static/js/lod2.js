@@ -31,7 +31,7 @@
             sq.query=$("#sparqlText").val();
             sq.triplestore= $('input[name="triplestore"]:checked').val();
 
-            $.postJSON("http://localhost:8080/datalod", sq, $.update)
+            $.postJSON("http://localhost:8081/datalod", sq, $.update)
         });
 
 });
