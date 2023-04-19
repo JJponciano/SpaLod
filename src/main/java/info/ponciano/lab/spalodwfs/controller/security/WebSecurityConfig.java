@@ -179,7 +179,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 			.csrf()
 			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-	;
+
 	}
 	
 	@Bean
