@@ -29,6 +29,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
+import org.apache.jena.update.*;
+import org.apache.jena.query.Dataset;
 
 /**
  * Knowledge base singleton class to manage semantic access.
@@ -39,65 +41,69 @@ public class KB implements KnowledgeBaseInterface {
 
     public static final String STORAGE_DIR = "dynamic_storage";
     public static final String URI = "http://lab.ponciano.info/ont/spalod";
+    public static final String NS = URI+"#";
     private static KB kb = null;
-    public static final String NS = "http://lab.ponciano.info/ont/spalod#";
+  
     private static final String DEFAULT_ONTO_ISO = "src/main/resources/ontologies/iso-19115.owl";
-    private static final String DEFAULT_ONTO = "src/main/resources/ontologies/spalod.owl";
+    public static final String DEFAULT_ONTO = "src/main/resources/ontologies/spalod.owl";
     private static final String SCHEAMORD_PATH = "src/main/resources/ontologies/schemaorg.owl";
 
     public static final String OUT_ONTO = "SpalodOutput.owl";
-    public static final  String PREFIX = "PREFIX schema: <http://schema.org/>\n"
-    + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n"
-    + "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
-    + "PREFIX hist: <http://wikiba.se/history/ontology#>\n"
-    + "PREFIX wd: <http://www.wikidata.org/entity/>\n"
-    + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n"
-    + "PREFIX wikibase: <http://wikiba.se/ontology#>\n"
-    + "PREFIX dct: <http://purl.org/dc/terms/>\n"
-    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
-    + "PREFIX bd: <http://www.bigdata.com/rdf#>\n"
-    + "PREFIX wds: <http://www.wikidata.org/entity/statement/>\n"
-    + "PREFIX wdv: <http://www.wikidata.org/value/>\n"
-    + "PREFIX p: <http://www.wikidata.org/prop/>\n"
-    + "PREFIX ps: <http://www.wikidata.org/prop/statement/>\n"
-    + "PREFIX psv: <http://www.wikidata.org/prop/statement/value/>\n"
-    + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>\n"
-    + "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>\n"
-    + "PREFIX dp: <http://dbpedia.org/resource/>\n"
-    + "PREFIX dpp: <http://dbpedia.org/property/>\n"
-     +"PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>\n"
-    + "PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n";
+    public static final String PREFIX = "PREFIX schema: <http://schema.org/>\n"
+            + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n"
+            + "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+            + "PREFIX hist: <http://wikiba.se/history/ontology#>\n"
+            + "PREFIX wd: <http://www.wikidata.org/entity/>\n"
+            + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n"
+            + "PREFIX wikibase: <http://wikiba.se/ontology#>\n"
+            + "PREFIX dct: <http://purl.org/dc/terms/>\n"
+            + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+            + "PREFIX bd: <http://www.bigdata.com/rdf#>\n"
+            + "PREFIX wds: <http://www.wikidata.org/entity/statement/>\n"
+            + "PREFIX wdv: <http://www.wikidata.org/value/>\n"
+            + "PREFIX p: <http://www.wikidata.org/prop/>\n"
+            + "PREFIX ps: <http://www.wikidata.org/prop/statement/>\n"
+            + "PREFIX psv: <http://www.wikidata.org/prop/statement/value/>\n"
+            + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>\n"
+            + "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>\n"
+            + "PREFIX dp: <http://dbpedia.org/resource/>\n"
+            + "PREFIX dpp: <http://dbpedia.org/property/>\n"
+            + "PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>\n"
+            + "PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n";
     private OwlManagement model;
 
-    public static KB get()  {
+    public static KB get() {
         if (kb == null) {
             kb = new KB();
         }
         return kb;
     }
 
-    private KB()  { try {
-        File file = new File(OUT_ONTO);
-        if (file.exists()) {
-            try {
-                System.out.println("Load: "+OUT_ONTO);
-                this.model = new OwlManagement(OUT_ONTO);
-            } catch (Exception e) {
-                file.delete();
-                System.out.println("Reset from : "+DEFAULT_ONTO);
+    private KB() {
+        try {
+            File file = new File(OUT_ONTO);
+            if (file.exists()) {
+                try {
+                    System.out.println("Load: " + OUT_ONTO);
+                    this.model = new OwlManagement(OUT_ONTO);
+                } catch (Exception e) {
+                    file.delete();
+                    System.out.println("Reset from : " + DEFAULT_ONTO);
                     this.model = new OwlManagement(DEFAULT_ONTO);
 
-            }
+                }
 
-        } else {
-            System.out.println("Set from : "+DEFAULT_ONTO);
-            this.model = new OwlManagement(DEFAULT_ONTO);
+            } else {
+                System.out.println("Set from : " + DEFAULT_ONTO);
+                this.model = new OwlManagement(DEFAULT_ONTO);
+            }
+            this.model.ont.setNs(NS);
+        } catch (OntoManagementException ex) {
+            ex.printStackTrace();
         }
-        this.model.ont.setNs(NS);
-    } catch (OntoManagementException ex) {
-        ex.printStackTrace();
     }
-    }
+
+
     public static OntModel getSchemaOrg() {
         try {
             return new PiOnt(SCHEAMORD_PATH).getOnt();
@@ -179,16 +185,16 @@ public class KB implements KnowledgeBaseInterface {
     }
 
     public static void main(String[] args) {
-            KB.get();
+        KB.get();
     }
 
     public PiSparql getOntEmpty() throws OntoManagementException {
         PiSparql o = new OwlManagement(DEFAULT_ONTO).ont;
         o.setNs(NS);
-        return   o;
+        return o;
     }
 
-    public static ResultSet select(OntModel ont,String queryString) {
+    public static ResultSet select(OntModel ont, String queryString) {
         String prefix = "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n";
         prefix = prefix + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n";
         prefix = prefix + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
@@ -212,16 +218,16 @@ public class KB implements KnowledgeBaseInterface {
             return null;
         }
     }
+
     public void update(String[] statement) {
 
-            String query="INSERT DATA{"+statement[0]+" "+statement[1]+" "+statement[2]+"}";
+        String query = "INSERT DATA{" + statement[0] + " " + statement[1] + " " + statement[2] + "}";
         System.out.println("query = " + query);
         try {
-             this.getOnt().update(query);
+            this.getOnt().update(query);
         } catch (PiOntologyException e) {
             e.printStackTrace();
         }
-
 
     }
 }
