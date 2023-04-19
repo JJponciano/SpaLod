@@ -1,18 +1,28 @@
 package info.ponciano.lab.spalodwfs.controller;
 
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 import info.ponciano.lab.spalodwfs.model.FormData;
+import info.ponciano.lab.spalodwfs.model.JsonUtil;
 import info.ponciano.lab.spalodwfs.model.KBmanagerLocal;
 import info.ponciano.lab.spalodwfs.model.SparqlQuery;
+import info.ponciano.lab.spalodwfs.model.TripleData;
 import info.ponciano.lab.spalodwfs.model.TripleOperation;
+import info.ponciano.lab.spalodwfs.model.Triplestore;
 import info.ponciano.lab.spalodwfs.services.FormDataService;
 import info.ponciano.lab.spalodwfs.mvc.models.geojson.GeoJsonRDF;
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Set;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import info.ponciano.lab.spalodwfs.controller.storage.StorageProperties;
@@ -31,7 +41,6 @@ public class ResController {
   private FormDataService formDataService;
 
   private final StorageService storageService;
-  private KBmanagerLocal sem = new KBmanagerLocal();
 
   @Autowired
   public ResController(StorageService storageService) {
@@ -69,12 +78,15 @@ public class ResController {
    */
   @PostMapping("/sparql-select")
   public String sparqlQuery(@RequestBody SparqlQuery sq) {
-    System.out.println("Query received:");
+    System.out.println("Query:");
     System.out.println(sq);
     String query = sq.getResults();
     String triplestore = sq.getTriplestore();
-
-    String results = this.sem.executeSparqlQuery(query, triplestore);
+    String results;
+    if (triplestore == null || triplestore.isBlank())
+      results = Triplestore.get().executeSelectQuery(query);
+    else
+      results = Triplestore.executeSelectQuery(query, triplestore);
     return results;
   }
 
@@ -85,12 +97,22 @@ public class ResController {
    * @param tripleOp A JSON object representing the triple operation.
    * @return An HTTP response indicating the success of the operation.
    * 
-   * EXAMPLE:
-   * curl -X POST -H "Content-Type: application/json" -d '{"operation": "add", "tripleData": {"subject": "http://example.com/subject1", "predicate": "http://example.com/predicate1", "object": "http://example.com/object1"}}' http://localhost:8081/api/update
+   *         EXAMPLE:
+   *         curl -X POST -H "Content-Type: application/json" -d '{"operation":
+   *         "add", "tripleData": {"subject": "http://example.com/subject1",
+   *         "predicate": "http://example.com/predicate1", "object":
+   *         "http://example.com/object1"}}' http://localhost:8081/api/update
    */
   @PostMapping("/update")
-  public ResponseEntity<Void> update(@RequestBody TripleOperation tripleOp) {
-    this.sem.updateLocalFile(tripleOp);
+  public ResponseEntity<Void> update(@RequestBody TripleOperation tripleOperation) {
+    TripleData tripleData = tripleOperation.getTripleData();
+    if ("add".equalsIgnoreCase(tripleOperation.getOperation())) {
+      Triplestore.get().addTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
+    } else if ("remove".equalsIgnoreCase(tripleOperation.getOperation())) {
+      Triplestore.get().removeTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
+    } else {
+      throw new IllegalArgumentException("Invalid operation: " + tripleOperation.getOperation());
+    }
     return ResponseEntity.ok().build();
   }
 
@@ -100,8 +122,9 @@ public class ResController {
    * @param file The GeoJSON file to be uplifted.
    * @return The path to the updated ontology file.
    * 
-   * Example: curl -X POST -F "file=@/path/to/your/geojson-file.geojson" http://localhost:8081/api/uplift
-
+   *         Example: curl -X POST -F "file=@/path/to/your/geojson-file.geojson"
+   *         http://localhost:8081/api/uplift
+   * 
    */
   @PostMapping("/uplift")
   public String uplift(@RequestParam("file") MultipartFile file) {
@@ -133,8 +156,10 @@ public class ResController {
    *           downlifted.
    * @return The path to the generated GeoJSON file.
    * 
-   * Example: curl -X POST -H "Content-Type: application/json" -d '{"name": "http://example.com/your-uri"}' http://localhost:8081/api/downlift
-
+   *         Example: curl -X POST -H "Content-Type: application/json" -d
+   *         '{"name": "http://example.com/your-uri"}'
+   *         http://localhost:8081/api/downlift
+   * 
    */
   @PostMapping("/downlift")
   public String downlift(GeoJsonForm di) {
@@ -162,22 +187,44 @@ public class ResController {
    * @return A JSON string with either a success message or a list of unknown
    *         classes and properties.
    * 
-   * Example: curl -X POST -F "file=@/path/to/your/ontology-file.ttl" http://localhost:8081/api/enrich
-
+   *         Example: curl -X POST -F "file=@/path/to/your/ontology-file.ttl"
+   *         http://localhost:8081/api/enrich
+   * 
    */
   @PostMapping("/enrich")
-  public String enrich(@RequestParam("file") MultipartFile file) {
+  public  ResponseEntity<Void> enrich(@RequestParam("file") MultipartFile file) {
     // store file
     storageService.store(file);
     // File reading
     String filename = file.getOriginalFilename();
     String filepath = KB.STORAGE_DIR + "/" + filename;
+    OntModel newOntology = ModelFactory.createOntologyModel();
     try {
-      return this.sem.enrichOntology(filepath);
-    } catch (IOException e) {
+      newOntology.read(new FileInputStream(filepath), null);
+      Triplestore.get().addOntology(newOntology);
+    return ResponseEntity.ok().build();
+    } catch (FileNotFoundException e) {
       e.printStackTrace();
-      return e.getMessage();
+      return ResponseEntity.badRequest().build();
     }
+  }
+  @PostMapping("/check-ontology")
+  public String check(@RequestParam("file") MultipartFile file) { 
+    // store file
+    storageService.store(file);
+    // File reading
+    String filename = file.getOriginalFilename();
+    String filepath = KB.STORAGE_DIR + "/" + filename;
+    OntModel newOntology = ModelFactory.createOntologyModel();
+    Set<String> unknownPredicates=null;
+    try {
+      newOntology.read(new FileInputStream(filepath), null);
+      unknownPredicates = Triplestore.get().getUnknownPredicates(newOntology);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    String json = JsonUtil.setToJson(unknownPredicates);
+    return json;
   }
 
 }

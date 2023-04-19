@@ -51,8 +51,12 @@ public class ExtractFromLOD {
         QueryExecution qexec;
         if (triplestore == null || triplestore.isBlank())
             qexec = QueryExecutionFactory.create(query, KB.get().getOnt().getOnt());
-        else
+        else{
+            System.out.println(triplestore);
+            System.out.println(query);
             qexec = QueryExecutionFactory.sparqlService(triplestore, query);
+        }
+          
 
         //store results in ResultSet format
         ResultSet resultset = qexec.execSelect();

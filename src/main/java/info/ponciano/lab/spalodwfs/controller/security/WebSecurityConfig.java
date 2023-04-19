@@ -156,7 +156,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	
 	/* How to login as an admin : curl -X POST -i http://localhost:8081/login -d "username=admin&password=admin123" -v
-		The -i and -v are used to find the JSESSIONID which is how the session cookie and will be used to authenticate the session
+		The -i and -v are used to find the JSESSIONID which is how the we know which sessions is used, it will be used to authenticate the session later.
 		Now that we have the JSESSIONID value we can put it in the following command :
 		curl -b "JSESSIONID=value" http://localhost:8081/home
 		to access to the home page.
