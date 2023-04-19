@@ -8,7 +8,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.2.47"
+    "leaflet": "^1.9.3",
+    "vue": "^3.2.47",
+    "vue2-leaflet": "^2.7.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
