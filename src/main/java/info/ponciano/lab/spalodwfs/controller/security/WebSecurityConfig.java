@@ -177,8 +177,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 			.oauth2Login()
 			.and()
-			.csrf()
-			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+			.csrf().disable()
+			.cors();
+			//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 
 	}
 	
