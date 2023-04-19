@@ -188,22 +188,29 @@ button:hover {
         display: none;
     }
     .user-actions{
+        resize: none;
+        display:contents;
+        flex: none;
         width: fit-content;
-        min-width: fit-content;
+        min-width: 20px;
         height: fit-content;
         min-height: fit-content;
         resize: none;
         padding: 0px;
     }
+    .user-actions.dark{
+        width: fit-content;
+    }
     .navbar_button{
         display: block;
+        margin-left: -100px;
         padding: 10px;
         border-radius: 5px;
         border: none;
         background-color: rgba(194, 194, 194, 0.603);
         color: inherit;
         cursor: pointer;
-        transition: background-color 0.2s ease-in-out;
+        transition: background-color 0.3s ease-in-out;
         font-size: 18px;
         font-weight:lighter;
         margin-top: 0px;
@@ -211,6 +218,7 @@ button:hover {
     }
     .navbar-menu.active{
         padding: 15px 20px 15px 0px;
+        margin-left: -100px;
         border-radius: 15px;
         flex-direction: column;
         display: flex;
@@ -218,8 +226,6 @@ button:hover {
         height: fit-content;
         resize: horizontal;
         overflow: auto;
-        width: fit-content;
-        min-width: 220px;
         background-color: white;
     }
     .navbar-menu.dark{

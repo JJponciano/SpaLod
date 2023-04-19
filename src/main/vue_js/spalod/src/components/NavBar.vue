@@ -1,5 +1,10 @@
 <template>
     <div class="navbar" :class="{ dark: isDarkMode }">
+      <button class="hamburger-button" @click="togglemenu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
       <div class="navbar-links">
         <button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button>
         <button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button>
@@ -15,6 +20,7 @@
       return {
         activeTab: 'admin',
         isDarkMode: false,
+        menuOpen: false,
         isAdmin: true,
       };
     },
@@ -27,6 +33,12 @@
     methods: {
       detectDarkMode() {
         this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      },
+      togglemenu(){
+        this.menuOpen=!this.menuOpen
+      },
+      closeMenu(){
+        this.menuOpen=false
       },
       navigateTo(page) {
         this.activeTab = page;
