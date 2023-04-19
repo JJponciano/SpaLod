@@ -31,7 +31,7 @@ import info.ponciano.lab.spalodwfs.controller.storage.StorageProperties;
 import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 
 /**
- *public class of SpalodwfsApplication
+ * public class of SpalodwfsApplication
  * 
  */
 @SpringBootApplication
@@ -39,10 +39,10 @@ import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 @RestController
 public class SpalodwfsApplication {
 
-
     /**
-     *Public access point of SpalodwfsApplication
-     * @param args  Specicific args properties     
+     * Public access point of SpalodwfsApplication
+     * 
+     * @param args Specicific args properties
      */
     public static void main(String[] args) {
         SpringApplication.run(SpalodwfsApplication.class, args);
@@ -56,5 +56,4 @@ public class SpalodwfsApplication {
         };
     }
 
-    
 }
