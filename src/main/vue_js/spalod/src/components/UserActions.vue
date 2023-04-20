@@ -1,10 +1,10 @@
 <template>
-    <div class="user-actions" :class="{dark: isDarkMode}">
+    <div class="user-actions" :class="{ dark: isDarkMode }">
         <button class="navbar_button" @click="toggleNavBar">Menu</button>
         <div class="side_pannel">
             <select v-model="selectedOption">
                 <option v-for="(option, index) in options" :key="index" :value="option.value">
-                {{ option.label }}
+                    {{ option.label }}
                 </option>
             </select>
             <button @click="filterData">Filter</button>
@@ -12,9 +12,10 @@
                 <p>Add Data</p>
                 <div class="addfileButton" v-if="showAddMenu">
                     <button @click="addDataGeo">Add Geojson</button>
-                    <input type="file" ref="fileInputGeo" style="display: none;" accept="application/pdf" @change="handleFileInputGeo">
+                    <input type="file" ref="fileInputGeo" style="display: none;" accept="application/json"
+                        @change="handleFileInputGeo">
                     <button @click="addDataOwl">Add Owl</button>
-                    <input type="file" ref="fileInputOwl" style="display: none;" accept="application/pdf" @change="handleFileInputOwl">
+                    <input type="file" ref="fileInputOwl" style="display: none;" accept=".owl" @change="handleFileInputOwl">
                 </div>
             </div>
             <button @click="confirmRequest" class="confirm">Confirm Request</button>
@@ -24,7 +25,7 @@
                 <li>
                     <select v-model="selectedOption">
                         <option v-for="(option, index) in options" :key="index" :value="option.value">
-                        {{ option.label }}
+                            {{ option.label }}
                         </option>
                     </select>
                 </li>
@@ -33,7 +34,8 @@
                 </li>
                 <li class="adddataButton">
                     <button @click="addData">Add Data</button>
-                    <input type="file" ref="fileInput" style="display: none;" accept="application/geojson" @change="handleFileInput">
+                    <input type="file" ref="fileInput" style="display: none;" accept="application/geojson"
+                        @change="handleFileInput">
                 </li>
                 <li class="confirmButton">
                     <button @click="confirmRequest" class="confirm">Confirm Request</button>
@@ -102,7 +104,7 @@ export default {
                 port: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q44782} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 cities: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE {\n  VALUES ?category{ wd:Q515 }\n ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
             },
-            showAddMenu : false,
+            showAddMenu: false,
         };
     },
     mounted() {
@@ -112,19 +114,18 @@ export default {
             this.isDarkMode = event.matches;
         });
     },
-    beforeDestroy(){
+    beforeDestroy() {
         window.removeEventListener("resize", this.closeNavBar);
     },
     methods: {
         search() {
             // TODO: Implement search
         },
-        toggleNavBar(){
+        toggleNavBar() {
             this.menuOpen = !this.menuOpen;
         },
-        closeNavBar()
-        {
-            this.menuOpen=false;
+        closeNavBar() {
+            this.menuOpen = false;
         },
         filterData() {
             // TODO: Implement filter
@@ -135,13 +136,44 @@ export default {
         addDataOwl() {
             this.$refs.fileInputOwl.click();
         },
-        handleFileInputGeo()
-        {
-            const file=event.target.file[0];
+        handleFileInputGeo() {
+            const file = event.target.files[0];
+            let formData = new FormData();
+            formData.append('file', file);
+            $.ajax({
+                url: 'http://localhost:8081/api/uplift',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $.ajax({
+                        url: `http://localhost:8081/download/data/Spalod.owl`,
+                        method: 'GET',
+                        xhrFields: {
+                            responseType: 'blob',
+                        },
+                        success(response) {
+                            console.log(response);
+                            const url = window.URL.createObjectURL(new Blob([response]));
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.setAttribute('download', "Spalod.owl");
+                            document.body.appendChild(link);
+                            link.click();
+                        },
+                        error(xhr, status, error) {
+                            console.error(`Erreur lors du téléchargement du fichier : ${error}`);
+                        },
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
         },
-        handleFileInputOwl()
-        {
-            const file=event.target.file[0];
+        handleFileInputOwl() {
+            const file = event.target.files[0];
         },
         confirmRequest() {
             const url = 'http://localhost:8081/api/sparql-select';
@@ -156,15 +188,15 @@ export default {
         },
         postJSON(url, data, callback) {
             $.ajax({
-            headers: { 
-                'Accept': 'application/json',
-                'Content-Type': 'application/json' 
-            },
-            'type': 'POST',
-            'url': url,
-            'data': JSON.stringify(data),
-            'dataType': 'json',
-            'success': callback
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                'type': 'POST',
+                'url': url,
+                'data': JSON.stringify(data),
+                'dataType': 'json',
+                'success': callback
             });
         },
         handleResponse(response) {
@@ -214,11 +246,11 @@ select {
     cursor: pointer;
 }
 
-.navbar_button{
+.navbar_button {
     display: none;
 }
 
-.navbar-menu{
+.navbar-menu {
     display: none;
 }
 
@@ -236,13 +268,15 @@ button {
     width: 100%;
     text-align: left;
 }
-.addfile{
+
+.addfile {
     border-radius: 5px;
     border: none;
     background-color: none;
     margin-top: 5px;
 }
-.addfile p{
+
+.addfile p {
     padding: 6px 20px;
     border: none;
     background-color: none;
@@ -252,12 +286,16 @@ button {
     font-size: 18px;
     font-weight: bold;
 }
-.addfile:hover{
+
+.addfile:hover {
     background-color: #4A5568;
     color: #fff;
 }
-.addfileButton{
+
+.addfileButton {
     flex-direction: column;
+    display: flex;
+    align-items: center;
 }
 
 .confirm {
@@ -265,7 +303,7 @@ button {
     color: #fff;
 }
 
-.navbar_button:hover{
+.navbar_button:hover {
     background-color: #81818a;
     color: white;
 }
@@ -274,14 +312,26 @@ button:hover {
     background-color: #4A5568;
     color: #fff;
 }
+
+.addfileButton>button {
+    width: 95%;
+    margin-bottom: 10px;
+}
+
+.addfileButton>button:hover {
+    background-color: #1A202C;
+    color: #fff;
+}
+
 @media screen and (max-width: 768px) {
 
-    .side_pannel{
+    .side_pannel {
         display: none;
     }
-    .user-actions{
+
+    .user-actions {
         resize: none;
-        display:contents;
+        display: contents;
         flex: none;
         width: fit-content;
         min-width: 20px;
@@ -290,10 +340,12 @@ button:hover {
         resize: none;
         padding: 0px;
     }
-    .user-actions.dark{
+
+    .user-actions.dark {
         width: fit-content;
     }
-    .navbar_button{
+
+    .navbar_button {
         display: block;
         margin-left: -100px;
         padding: 10px;
@@ -304,11 +356,12 @@ button:hover {
         cursor: pointer;
         transition: background-color 0.3s ease-in-out;
         font-size: 18px;
-        font-weight:lighter;
+        font-weight: lighter;
         margin-top: 0px;
-        width:fit-content;
+        width: fit-content;
     }
-    .navbar-menu.active{
+
+    .navbar-menu.active {
         padding: 15px 20px 15px 0px;
         margin-left: -100px;
         border-radius: 15px;
@@ -320,8 +373,8 @@ button:hover {
         overflow: auto;
         background-color: white;
     }
-    .navbar-menu.dark{
+
+    .navbar-menu.dark {
         background-color: #1A202C;
     }
-}
-</style>
+}</style>
