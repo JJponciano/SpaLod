@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import $ from "jquery";
 
 export default {
     data() {
@@ -69,8 +69,8 @@ export default {
                 { label: 'Städte (Q515)', value: 'cities' },
             ],
             queries: {
-                schools: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q3914} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
-                twentyBiggestCities: 'SELECT DISTINCT ?city ?cityLabel ?latitude ?longitude ?instanceOfCity ?population WHERE {\n SERVICE wikibase:label { bd:serviceParam wikibase:language "de". } \n VALUES ?instanceOfCity { \n wd:Q515 \n  } \n  ?city (wdt:P31/(wdt:P279*)) ?instanceOfCity; \n wdt:P17 wd:Q183;\n  p:P625 ?statement. \n ?statement psv:P625 ?coordinate_node. \n ?coordinate_node wikibase:geoLatitude ?latitude; \n wikibase:geoLongitude ?longitude.\nOPTIONAL { ?city wdt:P1082 ?population. } \n } \nORDER BY DESC (?population) \nLIMIT 20',
+                schools: 'SELECT ?item ?itemLabel WHERE { ?item wdt:P31 wd:Q146. SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". } }',
+                twentyBiggestCities: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { VALUES ?category { wd:Q3914 } ?item wdt:P17 wd:Q183 ; wdt:P31 ?category ; p:P625 ?statement . ?statement psv:P625 ?coordinate_node . ?coordinate_node wikibase:geoLatitude ?latitude ; wikibase:geoLongitude ?longitude SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de" } FILTER ( ?latitude <= 86.42397134276521 ) FILTER ( ?latitude >= -63.39152174400882 ) FILTER ( ?longitude <= 219.02343750000003 ) FILTER ( ?longitude >= -202.85156250000003 ) } LIMIT 100',
                 tenBiggestStadiums: 'SELECT ?item ?itemLabel ?latitude ?longitude ?category ?capacity WHERE {\n?item wdt:P31 wd:Q1154710;\nwdt:P17 wd:Q183;\n  p:P625 ?statement.\n  ?statement psv:P625 ?coordinate_node.\n?coordinate_node wikibase:geoLatitude ?latitude;\nwikibase:geoLongitude ?longitude.\n  ?item wdt:P31 ?category .\nSERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de". }\n OPTIONAL { ?item wdt:P1083 ?capacity. }\n}\nORDER BY DESC (?capacity)\nLIMIT 10',
                 hospitals: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q16917} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 policeStations: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q861951} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
@@ -93,10 +93,6 @@ export default {
                 port: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q44782} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 cities: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE {\n  VALUES ?category{ wd:Q515 }\n ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
             },
-            latNorthEast: 86.42397134276521,
-            latSouthWest: -63.39152174400882,
-            lngNorthEast: 219.02343750000003,
-            lngSouthWest: -202.85156250000003,
         };
     },
     mounted() {
@@ -127,21 +123,34 @@ export default {
             // TODO: Implement add data
         },
         confirmRequest() {
-            var query = "http://localhost:8081/api/sparql-select -H 'Content-type:application/json' -d '{\"query\":\"" + this.queries[this.selectedOption] + "500\", \"triplestore\": \"http://query.wikidata.org/sparql\"}'";
-            console.log(query);
-            // axios.post(query).then(response => {
-            //     console.log(response);
-            // }).catch(error => {
-            //     console.log(error);
-            // });
-            axios.post("Content-type:application/json' -d '{\"query\":\"SELECT ?item ?itemLabel ?latitude ?longitude ?category ?capacity WHERE {?item wdt:P31 wd:Q1154710;wdt:P17 wd:Q183;p:P625 ?statement.?statement psv:P625 ?coordinate_node.?coordinate_node wikibase:geoLatitude ?latitude;wikibase:geoLongitude ?longitude.?item wdt:P31 ?category .SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],de\". }OPTIONAL { ?item wdt:P1083 ?capacity. }}ORDER BY DESC (?capacity)LIMIT 10\",\"triplestore\": \"http://query.wikidata.org/sparql%22%7D\"").then(response => {
-                console.log(response);
-            }).catch(error => {
-                console.log(error);
-            });
+            const url = 'http://localhost:8081/api/sparql-select';
+            const data = {
+                query: this.queries[this.selectedOption],
+                triplestore: 'http://query.wikidata.org/sparql'
+            };
+            this.postJSON(url, data, this.handleResponse);
         },
         detectDarkMode() {
             this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        },
+        executeQuery() {
+            
+        },
+        postJSON(url, data, callback) {
+            $.ajax({
+            headers: { 
+                'Accept': 'application/json',
+                'Content-Type': 'application/json' 
+            },
+            'type': 'POST',
+            'url': url,
+            'data': JSON.stringify(data),
+            'dataType': 'json',
+            'success': callback
+            });
+        },
+        handleResponse(response) {
+            console.log(response);
         },
     },
 };
