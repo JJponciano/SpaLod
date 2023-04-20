@@ -22,7 +22,6 @@ import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jena.geosparql.spatial.property_functions.cardinal.SouthGeomPF;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,18 +31,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController
 
 {
-   @RolesAllowed({"USER","ADMIN"})
-   @RequestMapping("/*")
-   public String getUser()
-   {
-      	return "Welcome User";
-   }
+      @RolesAllowed({"USER","ADMIN"})
+      @RequestMapping("/*")
+      public String getUser()
+      {
+                  return "Welcome User";
+      }
 
-   @RolesAllowed("ADMIN")
-   @RequestMapping("/admin")
-   public String getAdmin()
-   {
-         System.out.println("curl successful");
-         return "Welcome Admin";
-   }
+      @RolesAllowed("ADMIN")
+      @RequestMapping("/admin")
+      public String getAdmin()
+      {
+            System.out.println("curl successful");
+            return "Welcome Admin";
+      }
+
+      
+      
+
 }

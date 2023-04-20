@@ -1,0 +1,2 @@
+user,$2a$10$FjQuXKIpByIRUq/kl9RzD.7D8v8l9vQIneu8eaOqLSD5LzeIqKQda,USER
+admin,$2a$10$rYs9kly8fjlT2s./t0N6f.bAfqyT9Q.cbCYZSfwRddu84Wn4IZd1S,ADMIN;USER

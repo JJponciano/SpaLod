@@ -131,28 +131,51 @@
 //}
 package info.ponciano.lab.spalodwfs.controller.security;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+	@Autowired
+    private UserService userDetailsService;
+
+	@Autowired
+    private PasswordEncoder passwordEncoder;
+
+	@Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+		authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
+    }
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication()
-			.withUser("user").password(passwordEncoder().encode("user123"))
-			.roles("USER")
-			.and()
-			.withUser("admin").password(passwordEncoder().encode("admin123"))
-			.roles("ADMIN", "USER");
+		auth.authenticationProvider(authenticationProvider());
+		// auth.inMemoryAuthentication()
+		// 	.withUser("user").password(passwordEncoder().encode("user123"))
+		// 	.roles("USER")
+		// 	.and()
+		// 	.withUser("admin").password(passwordEncoder().encode("admin123"))
+		// 	.roles("ADMIN", "USER");
 	}
 	
 	/* How to login as an admin : curl -X POST -i http://localhost:8081/login -d "username=admin&password=admin123" -v
@@ -173,18 +196,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.formLogin()
 				.usernameParameter("username")
 				.passwordParameter("password")
+				.successHandler((request, response, authentication) -> {
+					String message = "Welcome " + authentication.getName() + "!";
+					Map<String, String> responseBody = new HashMap<>();
+					responseBody.put("status", "success");
+					responseBody.put("message", message);
+					response.setContentType("application/json");
+					response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
+				})
 				.permitAll()
 			.and()
 			.oauth2Login()
 			.and()
-			.csrf().disable()
-			.cors();
+			.csrf().disable();
 			//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 
 	}
-	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+		return new BCryptPasswordEncoder(10);
 	}
 }
