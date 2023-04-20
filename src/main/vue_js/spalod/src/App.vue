@@ -1,18 +1,27 @@
-<script setup>
+<script>
 import NavBar from './components/NavBar.vue';
 import UserActions from './components/UserActions.vue';
 import MapView from './components/MapView.vue';
 import RDFData from './components/RDFData.vue';
+
+export default {
+  components: {
+    NavBar,
+    UserActions,
+    MapView,
+    RDFData
+  }
+}
 
 </script>
 
 <template>
   <div class="app">
     <div class="main">
-      <div class="user-actions-container">
+      <div class="user-actions-container" v-if="$route.path !== '/login'">
         <UserActions></UserActions>
       </div>
-      <div class="right-container">
+      <div class="right-container" v-if="$route.path !== '/login'">
         <div class="map-container">
           <MapView></MapView>
         </div>
@@ -20,12 +29,14 @@ import RDFData from './components/RDFData.vue';
           <RDFData></RDFData>
         </div>
       </div>
+      <div class="navbar">
+        <NavBar></NavBar>
+      </div>
+      <router-view></router-view>
     </div>
   </div>
-  <div class="navbar">
-    <NavBar></NavBar>
-  </div>
 </template>
+
 
 <style scoped>
 

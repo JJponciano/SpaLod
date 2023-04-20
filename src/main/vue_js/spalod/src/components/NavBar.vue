@@ -6,6 +6,7 @@
         <span></span>
       </button>
       <ul :class="['menuopen',menuAnimationClass]">
+        <li><router-link to="/login" :class="{ active: activeTab === 'login' }">Login</router-link> </li>
         <li><button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button></li>
         <li><button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button></li>
         <li><button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button></li>
@@ -15,6 +16,7 @@
   </template>
   
   <script>
+  import  router  from '../router/router'
   export default {
     data() {
       return {
@@ -44,6 +46,7 @@
       },
       navigateTo(page) {
         this.activeTab = page;
+        router.push('/${page}')
       },
     },
   };

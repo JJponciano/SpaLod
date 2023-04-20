@@ -11,7 +11,7 @@
     "jquery": "^3.6.4",
     "leaflet": "^1.9.3",
     "vue": "^3.2.47",
-    "vue2-leaflet": "^2.7.1"
+    "vue-router": "^4.1.6"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
