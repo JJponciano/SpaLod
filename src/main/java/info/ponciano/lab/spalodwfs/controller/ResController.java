@@ -141,11 +141,11 @@ public class ResController {
       // execute the uplift
       GeoJsonRDF.upliftGeoJSON(geojsonfilepath, KB.get().getOnt());
       KB.get().save();
-      String out = "Spalod.owl";
+      String out = filename.substring(0, filename.lastIndexOf(".")) + ".owl";
       String res = new StorageProperties().getLocation() + "/" + out;
       System.out.println(res);
       new PiFile(KB.OUT_ONTO).copy(res);
-      return "/files/" + out;
+      return out;
     } catch (Exception ex) {
       return ex.getMessage();
     }

@@ -10,6 +10,7 @@
   "dependencies": {
     "jquery": "^3.6.4",
     "leaflet": "^1.9.3",
+    "papaparse": "^5.4.1",
     "vue": "^3.2.47",
     "vue2-leaflet": "^2.7.1"
   },

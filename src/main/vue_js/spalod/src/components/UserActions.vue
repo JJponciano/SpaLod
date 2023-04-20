@@ -11,7 +11,12 @@
             <div class="addfile" @mouseover="showAddMenu = true" @mouseleave="showAddMenu = false">
                 <p>Add Data</p>
                 <div class="addfileButton" v-if="showAddMenu">
-                    <button @click="addDataGeo">Add Geojson</button>
+                    <button @click="addDataCSV">CSV to GeoJSON</button>
+                    <input type="file" ref="fileInputCSV" style="display: none;" accept="application/csv"
+                        @change="handleFileInputCSV">
+                    <button @click="addDataJSON">JSON to GeoJSON</button>
+                    <input type="file" ref="fileInputJSON" style="display: none;" accept="application/json" @change="handleFileInputJSON">
+                    <button @click="addDataGeo">GeoJSON to Owl</button>
                     <input type="file" ref="fileInputGeo" style="display: none;" accept="application/json"
                         @change="handleFileInputGeo">
                     <button @click="addDataOwl">Add Owl</button>
@@ -47,6 +52,7 @@
 
 <script>
 import $ from "jquery";
+import Papa from "papaparse";
 
 export default {
     data() {
@@ -130,11 +136,95 @@ export default {
         filterData() {
             // TODO: Implement filter
         },
+        addDataCSV() {
+            this.$refs.fileInputCSV.click();
+        },
+        addDataJSON() {
+            this.$refs.fileInputJSON.click();
+        },
         addDataGeo() {
             this.$refs.fileInputGeo.click();
         },
         addDataOwl() {
             this.$refs.fileInputOwl.click();
+        },
+        handleFileInputCSV() {
+            const file = event.target.files[0];
+            const fileReader = new FileReader();
+            fileReader.readAsText(file);
+
+            fileReader.onload = () => {
+                const csv = fileReader.result;
+                const jsonArray = Papa.parse(csv, { header: true }).data;
+                const featureCollection = {
+                    "type": "FeatureCollection",
+                    "name": "HS", // TODO: Change name dynamically
+                    "features": []
+                };
+
+                for (let i = 0; i < jsonArray.length; i++) {
+                    const obj = jsonArray[i];
+                    const feature = {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [parseFloat(obj.longitude), parseFloat(obj.latitude)]
+                        },
+                        "properties": {
+                            "category": obj.category,
+                            "itemLabel": obj.itemLabel,
+                            "item": obj.item
+                        }
+                    };
+                    featureCollection.features.push(feature);
+                }
+
+                const geoJSON = JSON.stringify(featureCollection);
+                const url = window.URL.createObjectURL(new Blob([geoJSON]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', "geodata.json");
+                document.body.appendChild(link);
+                link.click();
+            }
+        },
+        handleFileInputJSON() {
+            const file = event.target.files[0];
+            const fileReader = new FileReader();
+            fileReader.readAsText(file);
+
+            fileReader.onload = () => {
+                const jsonArray = JSON.parse(fileReader.result);
+                const featureCollection = {
+                    "type": "FeatureCollection",
+                    "name": "HS", // TODO: Change name dynamically
+                    "features": []
+                };
+
+                for (let i = 0; i < jsonArray.length; i++) {
+                    const obj = jsonArray[i];
+                    const feature = {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [parseFloat(obj.longitude), parseFloat(obj.latitude)]
+                        },
+                        "properties": {
+                            "category": obj.category,
+                            "itemLabel": obj.itemLabel,
+                            "item": obj.item
+                        }
+                    };
+                    featureCollection.features.push(feature);
+                }
+                const geoJSON = JSON.stringify(featureCollection);
+                const url = window.URL.createObjectURL(new Blob([geoJSON]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', "geodata.json");
+                document.body.appendChild(link);
+                link.click();
+            };
         },
         handleFileInputGeo() {
             const file = event.target.files[0];
@@ -148,7 +238,7 @@ export default {
                 contentType: false,
                 success: function (response) {
                     $.ajax({
-                        url: `http://localhost:8081/download/data/Spalod.owl`,
+                        url: `http://localhost:8081/download/data/${response}`,
                         method: 'GET',
                         xhrFields: {
                             responseType: 'blob',
@@ -174,6 +264,37 @@ export default {
         },
         handleFileInputOwl() {
             const file = event.target.files[0];
+            let formData = new FormData();
+            formData.append('file', file);
+            $.ajax({
+                url: 'http://localhost:8081/api/check-ontology',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if(response == '[]') {
+                        $.ajax({
+                            url: 'http://localhost:8081/api/enrich',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                console.log(response);
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        });
+                    } else {
+                        console.log(response);
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
         },
         confirmRequest() {
             const url = 'http://localhost:8081/api/sparql-select';
