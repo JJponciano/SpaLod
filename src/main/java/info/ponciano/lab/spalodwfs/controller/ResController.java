@@ -31,6 +31,7 @@ import info.ponciano.lab.pitools.files.PiFile;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api")
 @RestController
 public class ResController {
@@ -76,6 +77,7 @@ public class ResController {
    *         219.02343750000003).FILTER(?longitude >= -202.85156250000003)}LIMIT
    *         500", "triplestore": "https://query.wikidata.org/sparql"}'
    */
+  
   @PostMapping("/sparql-select")
   public String sparqlQuery(@RequestBody SparqlQuery sq) {
     System.out.println("Query:");
