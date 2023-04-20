@@ -5,11 +5,11 @@
         <span></span>
         <span></span>
       </button>
-      <div class="navbar-links">
-        <button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button>
-        <button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button>
-        <button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button>
-      </div>
+      <ul :class="['menuopen',menuAnimationClass]">
+        <li><button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button></li>
+        <li><button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button></li>
+        <li><button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button></li>
+      </ul>
       <button v-if="isAdmin" @click="navigateTo('admin')" class="navbar-title">Admin</button>
     </div>
   </template>
@@ -22,6 +22,7 @@
         isDarkMode: false,
         menuOpen: false,
         isAdmin: true,
+        menuAnimationClass: ""
       };
     },
     mounted() {
@@ -35,10 +36,11 @@
         this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
       },
       togglemenu(){
-        this.menuOpen=!this.menuOpen
+        this.menuOpen=!this.menuOpen;
+        this.menuAnimationClass = this.menuOpen ? 'slide-in-left' : 'slide-out-left';
       },
       closeMenu(){
-        this.menuOpen=false
+        this.menuOpen=false;
       },
       navigateTo(page) {
         this.activeTab = page;
@@ -97,5 +99,98 @@
     padding: 5px 10px;
     border-radius: 5px;
   }
+
+  .hamburger-button {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  padding: 30px 42px 10px 10px;
+  background-color: transparent;
+  border: 1px solid #000;
+  border-radius: 5px;
+  transition: background-color 0.2s ease-in-out;
+}
+.navbar.dark .hamburger-button{
+  background-color: transparent;
+  border: 1px solid white;
+}
+.hamburger-button:hover{
+  background-color: #91949a;
+}
+
+.navbar.dark .hamburger-button:hover{
+  background-color: grey;
+}
+.hamburger-button span {
+  position: absolute;
+  display: block;
+  width: 31px;
+  height: 3px;
+  background-color: #000;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+}
+.navbar.dark .hamburger-button span{
+  background-color: whitesmoke;
+}
+
+.hamburger-button span:nth-child(1) {
+  top: 25%;
+  transform: translateY(-50%);
+}
+
+.hamburger-button span:nth-child(2) {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.hamburger-button span:nth-child(3) {
+  top: 75%;
+  transform: translateY(-50%);
+}
+.slide-in-left {
+  animation: slide-in-left 0.8s forwards;
+}
+
+.slide-out-left {
+  animation: slide-out-left 0.8s forwards;
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+ul {
+  position: absolute;
+  top: 100%;
+  left: 0%;
+  display: none;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
+}
+.menuopen{
+  display: block;
+}
+
+ul li {
+  margin: 20px 20px 0px 20px;
+}
   </style>
   

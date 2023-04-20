@@ -8,7 +8,15 @@
                 </option>
             </select>
             <button @click="filterData">Filter</button>
-            <button @click="addData">Add Data</button>
+            <div class="addfile" @mouseover="showAddMenu = true" @mouseleave="showAddMenu = false">
+                <p>Add Data</p>
+                <div class="addfileButton" v-if="showAddMenu">
+                    <button @click="addDataGeo">Add Geojson</button>
+                    <input type="file" ref="fileInputGeo" style="display: none;" accept="application/pdf" @change="handleFileInputGeo">
+                    <button @click="addDataOwl">Add Owl</button>
+                    <input type="file" ref="fileInputOwl" style="display: none;" accept="application/pdf" @change="handleFileInputOwl">
+                </div>
+            </div>
             <button @click="confirmRequest" class="confirm">Confirm Request</button>
         </div>
         <div class="navbar-menu" :class="{ active: menuOpen, dark: isDarkMode }">
@@ -25,6 +33,7 @@
                 </li>
                 <li class="adddataButton">
                     <button @click="addData">Add Data</button>
+                    <input type="file" ref="fileInput" style="display: none;" accept="application/geojson" @change="handleFileInput">
                 </li>
                 <li class="confirmButton">
                     <button @click="confirmRequest" class="confirm">Confirm Request</button>
@@ -93,10 +102,7 @@ export default {
                 port: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q44782} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 cities: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE {\n  VALUES ?category{ wd:Q515 }\n ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
             },
-            latNorthEast: 86.42397134276521,
-            latSouthWest: -63.39152174400882,
-            lngNorthEast: 219.02343750000003,
-            lngSouthWest: -202.85156250000003,
+            showAddMenu : false,
         };
     },
     mounted() {
@@ -123,8 +129,19 @@ export default {
         filterData() {
             // TODO: Implement filter
         },
-        addData() {
-            // TODO: Implement add data
+        addDataGeo() {
+            this.$refs.fileInputGeo.click();
+        },
+        addDataOwl() {
+            this.$refs.fileInputOwl.click();
+        },
+        handleFileInputGeo()
+        {
+            const file=event.target.file[0];
+        },
+        handleFileInputOwl()
+        {
+            const file=event.target.file[0];
         },
         confirmRequest() {
             var query = "http://localhost:8081/api/sparql-select -H 'Content-type:application/json' -d '{\"query\":\"" + this.queries[this.selectedOption] + "500\", \"triplestore\": \"http://query.wikidata.org/sparql\"}'";
@@ -208,6 +225,29 @@ button {
     margin-top: 10px;
     width: 100%;
     text-align: left;
+}
+.addfile{
+    border-radius: 5px;
+    border: none;
+    background-color: none;
+    margin-top: 5px;
+}
+.addfile p{
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    font-size: 18px;
+    font-weight: bold;
+}
+.addfile:hover{
+    background-color: #4A5568;
+    color: #fff;
+}
+.addfileButton{
+    flex-direction: column;
 }
 
 .confirm {
