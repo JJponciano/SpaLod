@@ -18,14 +18,32 @@
  */
 package info.ponciano.lab.spalodwfs.controller.security;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 
-@Controller
-public class LoginController {
-	@GetMapping("/login")
-	public String login() {
-		return "login";
-	}
+import org.apache.jena.geosparql.spatial.property_functions.cardinal.SouthGeomPF;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.server.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+public class LoginController
+
+{
+   @RolesAllowed({"USER","ADMIN"})
+   @RequestMapping("/*")
+   public String getUser()
+   {
+      	return "Welcome User";
+   }
+
+   @RolesAllowed("ADMIN")
+   @RequestMapping("/admin")
+   public String getAdmin()
+   {
+         System.out.println("curl successful");
+         return "Welcome Admin";
+   }
 }

@@ -1,4 +1,3 @@
-package info.ponciano.lab.spalodwfs.controller.security;
 ///*
 // * Copyright (C)  2021 Dr Claire Prudhomme <claire@prudhomme.info).
 // *
@@ -130,3 +129,62 @@ package info.ponciano.lab.spalodwfs.controller.security;
 //        return new InMemoryUserDetailsManager(user);
 //    }
 //}
+package info.ponciano.lab.spalodwfs.controller.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.inMemoryAuthentication()
+			.withUser("user").password(passwordEncoder().encode("user123"))
+			.roles("USER")
+			.and()
+			.withUser("admin").password(passwordEncoder().encode("admin123"))
+			.roles("ADMIN", "USER");
+	}
+	
+	/* How to login as an admin : curl -X POST -i http://localhost:8081/login -d "username=admin&password=admin123" -v
+		The -i and -v are used to find the JSESSIONID which is how the we know which sessions is used, it will be used to authenticate the session later.
+		Now that we have the JSESSIONID value we can put it in the following command :
+		curl -b "JSESSIONID=value" http://localhost:8081/home
+		to access to the home page.
+		*/
+
+
+	@Override 
+	public void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+			.antMatchers("/admin").hasRole("ADMIN")
+			.antMatchers("/user").hasRole("USER")
+			//.anyRequest().authenticated()
+			.and()
+			.formLogin()
+				.usernameParameter("username")
+				.passwordParameter("password")
+				.permitAll()
+			.and()
+			.oauth2Login()
+			.and()
+			.csrf().disable()
+			.cors();
+			//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+
+	}
+	
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+}
