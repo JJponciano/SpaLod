@@ -42,14 +42,14 @@ public class UserService implements UserDetailsService {
         return null;
     }
 
-    // public void save(User user) {
-    //     try (PrintWriter pw = new PrintWriter(new FileWriter(DB_FILE, true))) {
-    //         String roles = String.join(";", user.getRoles());
-    //         pw.println(user.getUsername() + "," + user.getPassword() + "," + roles);
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+    public void save(User user) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(DB_FILE, true))) {
+            String roles = String.join(";", user.getRoles());
+            pw.println(user.getUsername() + "," + user.getPassword() + "," + roles);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -66,7 +66,7 @@ public class UserService implements UserDetailsService {
             authorities     
             );
         }
-        return null;
+        throw new UsernameNotFoundException("User not found: " + username);
     }
 
     

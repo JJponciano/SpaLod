@@ -134,6 +134,8 @@ package info.ponciano.lab.spalodwfs.controller.security;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -197,18 +199,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.usernameParameter("username")
 				.passwordParameter("password")
 				.successHandler((request, response, authentication) -> {
-					String message = "Welcome " + authentication.getName() + "!";
-					Map<String, String> responseBody = new HashMap<>();
-					responseBody.put("status", "success");
-					responseBody.put("message", message);
-					response.setContentType("application/json");
-					response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
+					String message = "Successfully authenticated as " + authentication.getName() + ".";
+					response.setStatus(HttpServletResponse.SC_OK);
+					response.setContentType("text/plain");
+					response.setCharacterEncoding("UTF-8");
+					response.getWriter().write(message);
 				})
+				.failureHandler((request, response, exception) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write("{\"message\": \"Authentication failed.\"}");
+                })
 				.permitAll()
 			.and()
 			.oauth2Login()
 			.and()
-			.csrf().disable();
+			.csrf().disable()
+			.cors();
 			//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 
 	}

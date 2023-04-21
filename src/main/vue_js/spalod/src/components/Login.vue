@@ -16,6 +16,7 @@
 </template>
   
 <script>
+  import axios from 'axios';
   export default {
     name:'Login',
     data() {
@@ -25,11 +26,25 @@
       };
     },
     methods: {
-      submitForm() {
-        const enteredUser=this.username;
-        const enteredPassword=this.password;
-        console.log(enteredUser+enteredPassword);
-      },
+        async submitForm() {
+            try {
+            const response = await axios.post(`http://localhost:8081/login`, null, { params: {
+                username:this.username,
+                password:this.password
+            }}).then((response) => {
+                if(response.status==200)
+                {
+                    console.log("Successful authentication");
+                    this.$router.push('/');
+                }
+            });
+            
+            
+
+            } catch (error) {
+            console.error(error);
+            }
+        },
     },
   };
 </script>
