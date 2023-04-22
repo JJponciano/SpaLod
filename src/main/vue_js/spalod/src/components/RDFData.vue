@@ -3,8 +3,8 @@
         <h2>RDF Data</h2>
         <p v-for="(triplet, index) in rdfData" :key="triplet.id">
             {{ triplet.subject }}, <span class="predicate">{{ triplet.predicate }}</span>, {{ triplet.object }}
-            <br v-if="(index + 1) % 3 === 0">
-            <br v-if="(index + 1) % 3 === 0">
+            <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
+            <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
         </p>
     </div>
 </template>
@@ -22,7 +22,7 @@ export default {
     data() {
         return {
             isDarkMode: false,
-            rdfData: [],
+            rdfData: null,
         };
     },
     mounted() {
@@ -36,33 +36,29 @@ export default {
             this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         },
         processContent(file) {
+            this.rdfData = null;
+            this.rdfData = [];
             const fileReader = new FileReader();
             fileReader.readAsText(file);
             fileReader.onload = () => {
                 const geoJson = JSON.parse(fileReader.result);
                 geoJson.features.forEach(feature => {
                     const properties = feature.properties;
-
                     const subject = properties['item'];
-                    var predicate = 'hasLabel';
-                    var object = properties['itemLabel'];
-                    this.rdfData.push({
-                        subject,
-                        predicate,
-                        object,
-                    });
+                    for(const key in properties) {
+                        if(key === 'item') continue;
+                        const predicate = key;
+                        const object = properties[key];
+                        this.rdfData.push({
+                            subject,
+                            predicate,
+                            object,
+                        });
+                    }
 
-                    predicate = 'hasCategory';
-                    object = properties['category'];
-                    this.rdfData.push({
-                        subject,
-                        predicate,
-                        object,
-                    });
-
-                    predicate = 'hasCoordinates';
+                    const predicate = 'hasCoordinates';
                     const coordinates = feature.geometry.coordinates;
-                    object = coordinates[0] + ', ' + coordinates[1];
+                    const object = coordinates[0] + ', ' + coordinates[1];
                     this.rdfData.push({
                         subject,
                         predicate,
