@@ -1,14 +1,20 @@
 <template>
     <div class="rdf-data" :class="{dark: isDarkMode}">
         <h2>RDF Data</h2>
-        <!-- TODO -->
-        <p>C3 hasCity Mainz</p>
-        <p>C3.2 hasCoordinates 3424234.234243, 4242342.2342344</p>
+        <p>{{ file }}</p>
     </div>
 </template>
 
 <script>
 export default {
+    props: {
+        file: File
+    },
+    watch: {
+        file(newFile) {
+            this.processContent(newFile);
+        }
+    },
     data() {
         return {
             isDarkMode: false,
@@ -24,6 +30,9 @@ export default {
       detectDarkMode() {
         this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
       },
+      processContent(content) {
+        console.log(content);
+      },
     },
 };
 </script>
@@ -36,6 +45,7 @@ export default {
     overflow: auto;
     min-width: 500px;
     min-height: 150px;
+    max-width: calc(100vw - 380px);
 }
 
 .rdf-data.dark {

@@ -1,23 +1,41 @@
-<script setup>
+<script>
 import NavBar from './components/NavBar.vue';
 import UserActions from './components/UserActions.vue';
 import MapView from './components/MapView.vue';
 import RDFData from './components/RDFData.vue';
 
+export default {
+  components: {
+    NavBar,
+    UserActions,
+    MapView,
+    RDFData,
+  },
+  data() {
+    return {
+      file: null,
+    };
+  },
+  methods: {
+    onFileSelected(file) {
+      this.file = file;
+    }
+  }
+};
 </script>
 
 <template>
   <div class="app">
     <div class="main">
       <div class="user-actions-container">
-        <UserActions></UserActions>
+        <UserActions @file-selected="onFileSelected"></UserActions>
       </div>
       <div class="right-container">
         <div class="map-container">
           <MapView></MapView>
         </div>
         <div class="rdf-data-container">
-          <RDFData></RDFData>
+          <RDFData :file="file"></RDFData>
         </div>
       </div>
     </div>

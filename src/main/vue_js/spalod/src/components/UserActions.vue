@@ -16,7 +16,7 @@
                         @change="handleFileInputCSV">
                     <button @click="addDataJSON">JSON to GeoJSON</button>
                     <input type="file" ref="fileInputJSON" style="display: none;" accept="application/json" @change="handleFileInputJSON">
-                    <button @click="addDataGeo">GeoJSON to Owl</button>
+                    <button @click="addDataGeo">Add GeoJSON</button>
                     <input type="file" ref="fileInputGeo" style="display: none;" accept="application/json"
                         @change="handleFileInputGeo">
                     <button @click="addDataOwl">Add Owl</button>
@@ -228,39 +228,48 @@ export default {
         },
         handleFileInputGeo() {
             const file = event.target.files[0];
-            let formData = new FormData();
-            formData.append('file', file);
-            $.ajax({
-                url: 'http://localhost:8081/api/uplift',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    $.ajax({
-                        url: `http://localhost:8081/download/data/${response}`,
-                        method: 'GET',
-                        xhrFields: {
-                            responseType: 'blob',
-                        },
-                        success(response) {
-                            console.log(response);
-                            const url = window.URL.createObjectURL(new Blob([response]));
-                            const link = document.createElement('a');
-                            link.href = url;
-                            link.setAttribute('download', "Spalod.owl");
-                            document.body.appendChild(link);
-                            link.click();
-                        },
-                        error(xhr, status, error) {
-                            console.error(`Erreur lors du téléchargement du fichier : ${error}`);
-                        },
-                    });
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            });
+            // const fileReader = new FileReader();
+            // fileReader.readAsText(file);
+
+            // fileReader.onload = () => {
+            //     const content = fileReader.result;
+            //     this.$emit('file-selected', content);
+            // };
+            this.$emit('file-selected', file);
+            
+            // let formData = new FormData();
+            // formData.append('file', file);
+            // $.ajax({
+            //     url: 'http://localhost:8081/api/uplift',
+            //     type: 'POST',
+            //     data: formData,
+            //     processData: false,
+            //     contentType: false,
+            //     success: function (response) {
+            //         $.ajax({
+            //             url: `http://localhost:8081/download/data/${response}`,
+            //             method: 'GET',
+            //             xhrFields: {
+            //                 responseType: 'blob',
+            //             },
+            //             success(response) {
+            //                 console.log(response);
+            //                 const url = window.URL.createObjectURL(new Blob([response]));
+            //                 const link = document.createElement('a');
+            //                 link.href = url;
+            //                 link.setAttribute('download', "Spalod.owl");
+            //                 document.body.appendChild(link);
+            //                 link.click();
+            //             },
+            //             error(xhr, status, error) {
+            //                 console.error(`Erreur lors du téléchargement du fichier : ${error}`);
+            //             },
+            //         });
+            //     },
+            //     error: function (error) {
+            //         console.log(error);
+            //     }
+            // });
         },
         handleFileInputOwl() {
             const file = event.target.files[0];
