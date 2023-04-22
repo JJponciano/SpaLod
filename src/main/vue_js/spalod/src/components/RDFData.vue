@@ -41,7 +41,6 @@ export default {
             this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         },
         processContent(file) {
-            this.rdfData = null;
             this.rdfData = [];
             const fileReader = new FileReader();
             fileReader.readAsText(file);

@@ -32,7 +32,7 @@ export default {
       </div>
       <div class="right-container">
         <div class="map-container">
-          <MapView></MapView>
+          <MapView :file="file"></MapView>
         </div>
         <div class="rdf-data-container">
           <RDFData :file="file"></RDFData>
