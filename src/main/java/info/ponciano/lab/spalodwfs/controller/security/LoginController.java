@@ -36,18 +36,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController
 
 {
-      private final RsaKeys rsaKeys;
-
-      public LoginController(RsaKeys rsaKeys) {
-            this.rsaKeys = rsaKeys;
-        }
-    
-      @GetMapping("/getKey")
-      public ResponseEntity<String> getPublicKey() {
-            PublicKey publicKey = rsaKeys.getPublicKey();
-            String publicKeyString = Base64.getEncoder().encodeToString(publicKey.getEncoded());
-            return ResponseEntity.ok(publicKeyString);
-      }
 
       @RolesAllowed({"USER","ADMIN"})
       @RequestMapping("/*")

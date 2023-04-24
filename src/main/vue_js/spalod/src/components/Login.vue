@@ -28,7 +28,7 @@
     methods: {
         async submitForm() {
             try {
-            const response = await axios.post(`http://localhost:8081/login`, null, { params: {
+            const response = await axios.post(`https://localhost:8081/login`, null, { params: {
                 username:this.username,
                 password:this.password
             }}).then((response) => {
