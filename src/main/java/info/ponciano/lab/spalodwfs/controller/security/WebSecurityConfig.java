@@ -132,9 +132,7 @@
 package info.ponciano.lab.spalodwfs.controller.security;
 
 
-import java.security.*;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -146,9 +144,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
@@ -196,6 +192,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 			.antMatchers("/admin").hasRole("ADMIN")
 			.antMatchers("/user").hasRole("USER")
+			.antMatchers("/register").permitAll()
 			.anyRequest().authenticated()
 			.and()
 			.formLogin()

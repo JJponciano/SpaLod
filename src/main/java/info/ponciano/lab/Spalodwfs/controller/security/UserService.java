@@ -5,19 +5,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Component;
 public class UserService implements UserDetailsService {
     private final String DB_FILE = "./src/main/java/info/ponciano/lab/spalodwfs/controller/security/users.txt";
 
-
     public User findByUsername(String username) {
         try (BufferedReader br = new BufferedReader(new FileReader(DB_FILE))) {
             String line;
@@ -34,8 +32,8 @@ public class UserService implements UserDetailsService {
                 String[] parts = line.split(",");
                 if (parts[0].equals(username)) {
                     String password = parts[1];
-                    List<String> roles = Arrays.asList(parts[2].split(";"));
-                    return new User(username, password, roles);
+                    ArrayList<String> roles = new ArrayList<>(Arrays.asList(parts[2].split(";")));
+                    return new User(username, password,roles);
                 }
             }
         } catch (IOException e) {
@@ -47,7 +45,7 @@ public class UserService implements UserDetailsService {
     public void save(User user) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(DB_FILE, true))) {
             String roles = String.join(";", user.getRoles());
-            pw.println(user.getUsername() + "," + user.getPassword() + "," + roles);
+            pw.println("\n"+user.getUsername() + "," + new BCryptPasswordEncoder(10).encode(user.getPassword()) + "," + roles+"\n");
         } catch (IOException e) {
             e.printStackTrace();
         }

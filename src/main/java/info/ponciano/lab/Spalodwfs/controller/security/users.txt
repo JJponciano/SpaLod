@@ -1,2 +1,2 @@
 user,$2y$10$jWGIBtmn0zt5s36h2ePrCO16EdV5I7/tr.UNIx6FZtcKuMGlXZ.z.,USER
-admin,$2y$10$uN6xnfmJNufB8n9vZkcJi.HfSwFDQTwav9SGCkPSksXy1PTcHQBSG,ADMIN;USER
+admin,$2y$10$uN6xnfmJNufB8n9vZkcJi.HfSwFDQTwav9SGCkPSksXy1PTcHQBSG,ADMIN;user

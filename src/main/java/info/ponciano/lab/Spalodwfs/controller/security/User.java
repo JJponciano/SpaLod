@@ -1,16 +1,24 @@
 package info.ponciano.lab.spalodwfs.controller.security;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class User {
     private String username;
     private String password;
-    private List<String> roles;
+    private ArrayList<String> roles;
 
-    public User(String username, String password, List<String> roles2) {
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.roles = roles2;
+        this.roles = new ArrayList<String>();
+        this.roles.add("USER");
+    }
+
+
+    public User(String _username, String _password, ArrayList<String> _roles) {
+        this.username = _username;
+        this.password = _password;
+        this.roles = _roles;
     }
 
     // Getters and setters
@@ -24,7 +32,7 @@ public class User {
         return password;
     }
 
-    public List<String> getRoles()
+    public ArrayList<String> getRoles()
     {
         return roles;
     }
