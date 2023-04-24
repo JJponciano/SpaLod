@@ -18,12 +18,17 @@
  */
 package info.ponciano.lab.spalodwfs.controller.security;
 
+import java.security.PublicKey;
+import java.util.Base64;
+
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jena.geosparql.spatial.property_functions.cardinal.SouthGeomPF;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.server.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +36,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController
 
 {
+      private final RsaKeys rsaKeys;
+
+      public LoginController(RsaKeys rsaKeys) {
+            this.rsaKeys = rsaKeys;
+        }
+    
+      @GetMapping("/getKey")
+      public ResponseEntity<String> getPublicKey() {
+            PublicKey publicKey = rsaKeys.getPublicKey();
+            String publicKeyString = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+            return ResponseEntity.ok(publicKeyString);
+      }
+
       @RolesAllowed({"USER","ADMIN"})
       @RequestMapping("/*")
       public String getUser()

@@ -131,6 +131,8 @@
 //}
 package info.ponciano.lab.spalodwfs.controller.security;
 
+
+import java.security.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -146,14 +148,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
 
 	@Autowired
     private UserService userDetailsService;
@@ -220,6 +223,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 
 	}
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(10);
