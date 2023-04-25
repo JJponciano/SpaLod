@@ -18,6 +18,7 @@
  */
 package info.ponciano.lab.spalodwfs.controller.security;
 
+import java.io.IOException;
 import java.security.PublicKey;
 import java.util.Base64;
 
@@ -25,20 +26,23 @@ import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jena.geosparql.spatial.property_functions.cardinal.SouthGeomPF;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LoginController
-
 {
+      @Autowired
+      private UserService userService;
 
       @RolesAllowed({"USER","ADMIN"})
-      @RequestMapping("/*")
+      @RequestMapping("/user")
       public String getUser()
       {
                   return "Welcome User";
@@ -52,9 +56,18 @@ public class LoginController
             return "Welcome Admin";
       }
 
-      
+      @RolesAllowed("ADMIN")
+      @RequestMapping("/addAdmin")
+      public ResponseEntity<String> addAdmin(@RequestParam("username") String username)
+      {
+            try {
+                  userService.promoteUserToAdmin(username);
+            } catch (IOException e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+            }
+            return ResponseEntity.ok("Admin added successfully");
+      }
 
-
-      
 
 }

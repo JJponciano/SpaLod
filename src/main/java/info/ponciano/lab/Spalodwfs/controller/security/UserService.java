@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 public class UserService implements UserDetailsService {
     private final String DB_FILE = "./src/main/java/info/ponciano/lab/spalodwfs/controller/security/users.txt";
 
+    // Finds a user by their username
     public User findByUsername(String username) {
         try (BufferedReader br = new BufferedReader(new FileReader(DB_FILE))) {
             String line;
@@ -42,6 +43,7 @@ public class UserService implements UserDetailsService {
         return null;
     }
 
+    // Saves a new user to the user.txt file
     public void save(User user) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(DB_FILE, true))) {
             String roles = String.join(";", user.getRoles());
@@ -51,6 +53,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    // Loads a user by their username
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = findByUsername(username);
@@ -69,6 +72,32 @@ public class UserService implements UserDetailsService {
         throw new UsernameNotFoundException("User not found: " + username);
     }
 
+    // Promotes a user to admin by updating their role in the user.txt file
+    public void promoteUserToAdmin(String username) throws IOException {
+        List<String> lines = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(DB_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts[0].equals(username) && (!parts[2].contains("ADMIN")) ) {
+                    parts[2] += ";ADMIN"; // Update the role to ADMIN
+                    line = String.join(",", parts); // Join the parts back into a line
+                }
+                lines.add(line); // Add the line to the list
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    
+        // Rewrite the file with the updated information
+        try (PrintWriter pw = new PrintWriter(new FileWriter(DB_FILE))) {
+            for (String line : lines) {
+                pw.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
 
 }
