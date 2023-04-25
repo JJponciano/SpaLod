@@ -45,7 +45,7 @@ public class UserService implements UserDetailsService {
     public void save(User user) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(DB_FILE, true))) {
             String roles = String.join(";", user.getRoles());
-            pw.println("\n"+user.getUsername() + "," + new BCryptPasswordEncoder(10).encode(user.getPassword()) + "," + roles+"\n");
+            pw.println(user.getUsername() + "," + new BCryptPasswordEncoder(10).encode(user.getPassword()) + "," + roles);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,5 +69,6 @@ public class UserService implements UserDetailsService {
         throw new UsernameNotFoundException("User not found: " + username);
     }
 
+    
 
 }

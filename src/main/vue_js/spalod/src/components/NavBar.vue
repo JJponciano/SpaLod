@@ -7,6 +7,7 @@
       </button>
       <ul :class="['menuopen',menuAnimationClass]">
         <li><router-link to="/login" :class="{ active: activeTab === 'login' }">Login</router-link> </li>
+        <li><router-link to="/register" :class="{ active: activeTab === 'register' }">Register</router-link> </li>
         <li><button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button></li>
         <li><button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button></li>
         <li><button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button></li>

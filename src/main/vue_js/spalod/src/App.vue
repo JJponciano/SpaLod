@@ -10,6 +10,11 @@ export default {
     UserActions,
     MapView,
     RDFData
+  },
+  computed: {
+    showComponents() {
+      return this.$route.path !== '/login' && this.$route.path !== '/register'
+    }
   }
 }
 
@@ -18,10 +23,10 @@ export default {
 <template>
   <div class="app">
     <div class="main">
-      <div class="user-actions-container" v-if="$route.path !== '/login'">
+      <div class="user-actions-container" v-if="showComponents">
         <UserActions></UserActions>
       </div>
-      <div class="right-container" v-if="$route.path !== '/login'">
+      <div class="right-container" v-if="showComponents">
         <div class="map-container">
           <MapView></MapView>
         </div>
