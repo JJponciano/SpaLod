@@ -12,9 +12,9 @@
                     {{ result.split('#')[1] }}
                 </li>
             </ul>
-            <input type="text" v-model="triplet.object" class="object" />
+            <input type="text" v-model="triplet.object" class="object"/>
             <button class="delete-button" @click="deleteTriplet(index)">Delete</button>
-            <button class="add-button" @click="addTriplet(triplet)">Add</button>
+            <button :id="'btn' + index" class="add-button" @click="addTriplet(triplet, index)">Add</button>
             <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
             <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
         </p>
@@ -151,7 +151,7 @@ export default {
                 this.rdfData.splice(index, 1);
             }
         },
-        addTriplet(triplet) {
+        addTriplet(triplet, index) {
             const tripleData = {
                 subject: triplet.subject,
                 predicate: triplet.predicate,
@@ -177,13 +177,16 @@ export default {
                         data: JSON.stringify(addOperation),
                         contentType: 'application/json',
                         success: function (response) {
-                            console.log(response);
+                            $('#btn' + index).text('Added').addClass('added');
                         },
                         error: function (error) {
                             console.log(error);
                         }
                     });
                 },
+                error: function (error) {
+                    console.log(error);
+                }
             });
         },
         filterResults(predicate, index) {
@@ -323,6 +326,13 @@ p {
 .autocomplete-results li:hover {
     background-color: #0baaa7;
     transition: background-color 0.5s ease;
+}
+
+.added {
+    transition: all 0.5s ease-in-out;
+    background-color: transparent;
+    pointer-events: none;
+    cursor: default;
 }
 
 </style>
