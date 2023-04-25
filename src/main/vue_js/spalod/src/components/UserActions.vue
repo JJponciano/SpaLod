@@ -248,19 +248,19 @@ export default {
                             data: formData,
                             processData: false,
                             contentType: false,
-                            success: function (response) {
-                                console.log(response);
+                            success: function () {
+                                alert('Ontology enriched successfully!');
                             },
-                            error: function (error) {
-                                console.log(error);
+                            error: function () {
+                                alert('Error while enriching ontology!');
                             }
                         });
                     } else {
                         console.log(response);
                     }
                 },
-                error: function (error) {
-                    console.log(error);
+                error: function () {
+                    alert('Error while checking ontology!');
                 }
             });
         },
@@ -268,7 +268,7 @@ export default {
             const url = 'http://localhost:8081/api/sparql-select';
             const data = {
                 query: this.queries[this.selectedOption],
-                triplestore: 'http://query.wikidata.org/sparql'
+                triplestore: ''
             };
             this.postJSON(url, data, this.handleResponse);
         },
