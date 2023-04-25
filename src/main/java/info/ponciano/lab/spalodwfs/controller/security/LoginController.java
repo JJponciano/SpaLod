@@ -32,12 +32,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController
 
 {
-   @RolesAllowed({"USER","ADMIN"})
-   @RequestMapping("/*")
-   public String getUser()
-   {
-      	return "Welcome User";
-   }
+//    @RolesAllowed({"USER","ADMIN"})
+//    @RequestMapping("/*")
+//    public String getUser()
+//    {
+//       	return "Welcome User";
+//    }
 
    @RolesAllowed("ADMIN")
    @RequestMapping("/admin")

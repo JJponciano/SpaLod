@@ -18,7 +18,7 @@
             <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
             <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
         </p>
-        <div class="download">
+        <div v-if="rdfData && rdfData.length > 0" class="download">
             <button class="download-button" @click="download">Download Owl</button>
         </div>
     </div>
@@ -166,13 +166,13 @@ export default {
                 tripleData: tripleData,
             };
             $.ajax({
-                url: 'http://localhost:8081/update',
+                url: 'http://localhost:8081/api/update',
                 type: 'POST',
                 data: JSON.stringify(removeOperation),
                 contentType: 'application/json',
                 success: function (response) {
                     $.ajax({
-                        url: 'http://localhost:8081/update',
+                        url: 'http://localhost:8081/api/update',
                         type: 'POST',
                         data: JSON.stringify(addOperation),
                         contentType: 'application/json',
