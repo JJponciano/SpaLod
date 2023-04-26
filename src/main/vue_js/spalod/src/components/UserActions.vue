@@ -144,7 +144,7 @@ export default {
             const file=event.target.file[0];
         },
         confirmRequest() {
-            const url = 'http://localhost:8081/api/sparql-select';
+            const url = 'https://localhost:8081/api/sparql-select';
             const data = {
                 query: this.queries[this.selectedOption],
                 triplestore: 'http://query.wikidata.org/sparql'

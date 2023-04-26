@@ -31,7 +31,7 @@
             sq.query=$("#sparqlText").val();
             sq.triplestore= $('input[name="triplestore"]:checked').val();
 
-            $.postJSON("http://localhost:8081/datalod", sq, $.update)
+            $.postJSON("https://localhost:8081/datalod", sq, $.update)
         });
 
       $.postInference=function(data){
@@ -40,7 +40,7 @@
         $( "#infer" ).click(function() {
             var inf = new Object();
             inf.message="rules";
-            $.postJSON("http://localhost:8081/infer", inf,$.postInference)
+            $.postJSON("https://localhost:8081/infer", inf,$.postInference)
         });
 
 });

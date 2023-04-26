@@ -31,7 +31,6 @@ import info.ponciano.lab.pitools.files.PiFile;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api")
 @RestController
 public class ResController {
