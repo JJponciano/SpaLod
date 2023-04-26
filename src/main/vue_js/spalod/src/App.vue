@@ -3,6 +3,7 @@ import NavBar from './components/NavBar.vue';
 import UserActions from './components/UserActions.vue';
 import MapView from './components/MapView.vue';
 import RDFData from './components/RDFData.vue';
+import PopUp from './components/PopUp.vue';
 
 export default {
   components: {
@@ -10,16 +11,38 @@ export default {
     UserActions,
     MapView,
     RDFData,
+    PopUp,
   },
   data() {
     return {
       file: null,
+      chooseCSV:false,
+      chooseJson:false,
+      popup:false,
     };
   },
   methods: {
     onFileSelected(file) {
       this.file = file;
-    }
+    },
+    onChooseCSV(){
+      this.chooseCSV=true;
+    },
+    onChooseJson(){
+      this.chooseJson=true;
+    },
+    onUnselectCSV(){
+      this.chooseCSV=false;
+    },
+    onUnselectJson(){
+      this.chooseJson=false;
+    },
+    onShowpopup(){
+      this.popup=true;
+    },
+    onClosepopUp(){
+      this.popup=false;
+    },
   }
 };
 </script>
@@ -28,7 +51,7 @@ export default {
   <div class="app">
     <div class="main">
       <div class="user-actions-container">
-        <UserActions @file-selected="onFileSelected"></UserActions>
+        <UserActions @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup"></UserActions>
       </div>
       <div class="right-container">
         <div class="map-container">
@@ -42,6 +65,9 @@ export default {
   </div>
   <div class="navbar">
     <NavBar></NavBar>
+  </div>
+  <div class="popup">
+    <PopUp :chooseCSV="chooseCSV" :chooseJson="chooseJson" :popup="popup" @CSVBack="onUnselectCSV" @JsonBack="onUnselectJson" @popupBack="onClosepopUp"></PopUp>
   </div>
 </template>
 
@@ -88,6 +114,13 @@ export default {
 .rdf-data-container {
   flex: 1;
 }
+.popup{
+  position: fixed;
+  top: 30vh;
+  left: 50vh;
+  width: fit-content;
+  z-index: 999;
+}
 
 @media (max-width: 768px) {
   .main {
@@ -106,6 +139,11 @@ export default {
   }
   .map-container{
     margin-top: 120px;
+  }
+  .popup{
+    top:30vh;
+    left:auto;
+    right:5vh;
   }
 }
 </style>
