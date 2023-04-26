@@ -1,4 +1,3 @@
-package info.ponciano.lab.spalodwfs.controller.security;
 ///*
 // * Copyright (C)  2021 Dr Claire Prudhomme <claire@prudhomme.info).
 // *
@@ -130,3 +129,100 @@ package info.ponciano.lab.spalodwfs.controller.security;
 //        return new InMemoryUserDetailsManager(user);
 //    }
 //}
+package info.ponciano.lab.spalodwfs.controller.security;
+
+
+
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
+
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+
+	@Autowired
+    private UserService userDetailsService;
+
+	@Autowired
+    private PasswordEncoder passwordEncoder;
+
+	@Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+		authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
+    }
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(authenticationProvider());
+		// auth.inMemoryAuthentication()
+		// 	.withUser("user").password(passwordEncoder().encode("user123"))
+		// 	.roles("USER")
+		// 	.and()
+		// 	.withUser("admin").password(passwordEncoder().encode("admin123"))
+		// 	.roles("ADMIN", "USER");
+	}
+	
+	/* How to login as an admin : curl -X POST -i http://localhost:8081/login -d "username=admin&password=admin123" -v
+		The -i and -v are used to find the JSESSIONID which is how the we know which sessions is used, it will be used to authenticate the session later.
+		Now that we have the JSESSIONID value we can put it in the following command :
+		curl -b "JSESSIONID=value" http://localhost:8081/home
+		to access to the home page.
+		*/
+
+
+	@Override 
+	public void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+			.antMatchers("/admin").hasRole("ADMIN")
+			.antMatchers("/user").hasRole("USER")
+			.antMatchers("/register").permitAll()
+			.anyRequest().authenticated()
+			.and()
+			.formLogin()
+				.usernameParameter("username")
+				.passwordParameter("password")
+				.successHandler((request, response, authentication) -> {
+					String message = "Successfully authenticated as " + authentication.getName() + ".";
+					response.setStatus(HttpServletResponse.SC_OK);
+					response.setContentType("text/plain");
+					response.setCharacterEncoding("UTF-8");
+					response.getWriter().write(message);
+				})
+				.failureHandler((request, response, exception) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write("{\"message\": \"Authentication failed.\"}");
+                })
+				.permitAll()
+			.and()
+			.oauth2Login()
+			.and()
+			.csrf().disable()
+			.cors();
+			//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(10);
+	}
+}
