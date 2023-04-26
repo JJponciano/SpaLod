@@ -34,7 +34,7 @@
         </p>
         <div v-if="rdfData && rdfData.length > 0" class="download">
             <button @click="downloadGeoJSON">Download GeoJSON</button>
-            <button class="download-button" @click="download">Download Owl</button>
+            <button class="download-button" @click="downloadOwl">Download Owl</button>
         </div>
     </div>
 </template>
@@ -53,6 +53,7 @@ export default {
     },
     data() {
         return {
+            name: "",
             isDarkMode: false,
             rdfData: null,
             predicateOptions: [],
@@ -87,7 +88,6 @@ export default {
                 'dataType': 'json',
                 success: (data) => {
                     this.predicateOptions = data.results.bindings.map(binding => binding.property.value);
-                    console.log(this.predicateOptions);
                 }
             });
         },
@@ -100,6 +100,7 @@ export default {
             fileReader.readAsText(file);
             fileReader.onload = () => {
                 const geoJson = JSON.parse(fileReader.result);
+                this.name = geoJson.name;
                 geoJson.features.forEach(feature => {
                     const properties = feature.properties;
                     const subject = properties['item'];
@@ -125,43 +126,6 @@ export default {
                     });
                 });
             };
-        },
-        download() {
-            if (this.file !== null) {
-                let formData = new FormData();
-                formData.append('file', this.file);
-                $.ajax({
-                    url: 'http://localhost:8081/api/uplift',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        $.ajax({
-                            url: `http://localhost:8081/download/data/${response}`,
-                            method: 'GET',
-                            xhrFields: {
-                                responseType: 'blob',
-                            },
-                            success(response) {
-                                console.log(response);
-                                const url = window.URL.createObjectURL(new Blob([response]));
-                                const link = document.createElement('a');
-                                link.href = url;
-                                link.setAttribute('download', "Spalod.owl");
-                                document.body.appendChild(link);
-                                link.click();
-                            },
-                            error(xhr, status, error) {
-                                console.error(`Erreur lors du téléchargement du fichier : ${error}`);
-                            },
-                        });
-                    },
-                    error: function (error) {
-                        console.log(error);
-                    }
-                });
-            }
         },
         deleteTriplet(index) {
             if (confirm("Are you sure you want to delete this triplet?")) {
@@ -275,6 +239,92 @@ export default {
                 this.rdfData.splice(index, 1);
             });
             this.selectedTriplets = [];
+        },
+        getGeoJSON() {
+            const geoJSON = {
+                type: "FeatureCollection",
+                name: this.name,
+                features: [],
+            };
+
+            const subjects = [...new Set(this.rdfData.map((triplet) => triplet.subject))];
+
+            subjects.forEach(subject => {
+                const feature = {
+                    type: "Feature",
+                    geometry: {
+                        type: "Point",
+                        coordinates: [],
+                    },
+                    properties: {},
+                };
+
+                this.rdfData.forEach(triplet => {
+                    if (triplet.subject === subject) {
+                        if (triplet.predicate === "coordinates") {
+                            const [longitude, latitude] = triplet.object.split(',');
+                            feature.geometry.coordinates = [parseFloat(longitude), parseFloat(latitude)];
+                        } else {
+                            feature.properties[triplet.predicate] = triplet.object;
+                        }
+                        feature.properties["item"] = subject;
+                    }
+                });
+
+                if (feature.geometry.coordinates.length > 0) {
+                    geoJSON.features.push(feature);
+                }
+            });
+            return geoJSON;
+        },
+        downloadGeoJSON() {
+            const geoJSON = JSON.stringify(this.getGeoJSON());
+            const url = window.URL.createObjectURL(new Blob([geoJSON]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', "geodata.json");
+            document.body.appendChild(link);
+            link.click();
+        },
+        downloadOwl() {
+            const geoJSON = this.getGeoJSON();
+            const blob = new Blob([JSON.stringify(geoJSON)], {type: "application/json"});
+            const file = new File([blob], "geodata.json", {type: "application/json"});
+            if (file) {
+                let formData = new FormData();
+                formData.append('file', file);
+                $.ajax({
+                    url: 'http://localhost:8081/api/uplift',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        $.ajax({
+                            url: `http://localhost:8081/download/data/${response}`,
+                            method: 'GET',
+                            xhrFields: {
+                                responseType: 'blob',
+                            },
+                            success(response) {
+                                console.log(response);
+                                const url = window.URL.createObjectURL(new Blob([response]));
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', "Spalod.owl");
+                                document.body.appendChild(link);
+                                link.click();
+                            },
+                            error(xhr, status, error) {
+                                console.error(`Erreur lors du téléchargement du fichier : ${error}`);
+                            },
+                        });
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
         },
     },
 };
