@@ -58,9 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/admin").hasRole("ADMIN")
 			.antMatchers("/user").hasRole("USER")
 			.antMatchers("/register").permitAll()
-			//.anyRequest().authenticated()
-			.and()
-			.cors()
+			.anyRequest().authenticated()
 			.and()
 			.formLogin()
 				.usernameParameter("username")
@@ -82,7 +80,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 			.oauth2Login()
 			.and()
-			.csrf().disable();
+			.csrf().disable()
+			.cors();
 
 			//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 	}
