@@ -1,24 +1,39 @@
 <template>
-    <div class="rdf-data" :class="{ dark: isDarkMode }">
-        <h2>RDF Data</h2>
+    <div class="rdf-data" :class="{ dark: isDarkMode }" @click="() => showResults = false">
+        <div class="header">
+            <h2>RDF Data</h2>
+            <div v-if="selectedTriplets.length > 0">
+                <button @click="removeSelected">Remove Selected</button>
+                <button @click="addSelected" class="add-selected">Add Selected</button>
+            </div>
+        </div>
         <p v-for="(triplet, index) in rdfData" :key="triplet.id">
+            <input type="checkbox" v-model="selectedTriplets" :value="triplet" />
             <input type="text" v-model="triplet.subject" class="subject" />
-            <!-- <select v-model="triplet.predicate" class="predicate">
-                <option v-for="option in predicateOptions" :value="option">{{ option.split('#')[1] }}</option>
-            </select> -->
-            <input type="text" v-model="triplet.predicate" class="predicate" @input="filterResults(triplet.predicate, index)"/>
-            <ul v-if="showResults && activeInput === index" class="autocomplete-results">
-                <li v-for="(result, i) in filteredResults" :key="i" @click="selectResult(result, index)">
-                    {{ result.split('#')[1] }}
-                </li>
-            </ul>
-            <input type="text" v-model="triplet.object" class="object"/>
-            <button class="delete-button" @click="deleteTriplet(index)">Delete</button>
-            <button :id="'btn' + index" class="add-button" @click="addTriplet(triplet, index)">Add</button>
-            <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
-            <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
+            <input type="text" v-model="triplet.predicate" class="predicate"
+                @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" />
+        <ul v-if="showResults && activeInput === index" class="autocomplete-results">
+            <div class="custom-predicate">
+                <h2>Custom predicate</h2>
+                <input type="radio" id="datatype-property" value="DatatypeProperty" v-model="picked">
+                <label for="datatype-property">DatatypeProperty</label>
+                <input type="radio" id="object-property" value="ObjectProperty" v-model="picked">
+                <label for="object-property">ObjectProperty</label>
+                <br>
+            </div>
+            <h2 v-if="filteredResults.length > 0">Predicate Options</h2>
+            <li v-for="(result, i) in filteredResults" :key="i" @click="selectResult(result, index)">
+                {{ result.split('#')[1] }}
+            </li>
+        </ul>
+        <input type="text" v-model="triplet.object" class="object" />
+        <button class="delete-button" @click="deleteTriplet(index)">Delete</button>
+        <button :id="'btn' + index" class="add-button" @click="addTriplet(triplet, index)">Add</button>
+        <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
+        <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
         </p>
         <div v-if="rdfData && rdfData.length > 0" class="download">
+            <button @click="downloadGeoJSON">Download GeoJSON</button>
             <button class="download-button" @click="download">Download Owl</button>
         </div>
     </div>
@@ -42,8 +57,10 @@ export default {
             rdfData: null,
             predicateOptions: [],
             filteredResults: [],
+            selectedTriplets: [],
             showResults: false,
             activeInput: null,
+            picked: "DatatypeProperty"
         };
     },
     mounted() {
@@ -152,10 +169,11 @@ export default {
             }
         },
         addTriplet(triplet, index) {
-            const tripleData = {
+            const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
+            var tripleData = {
                 subject: triplet.subject,
-                predicate: triplet.predicate,
-                object: triplet.object,
+                predicate: predicate,
+                object: encodeURIComponent(triplet.object),
             };
             const removeOperation = {
                 operation: "remove",
@@ -188,6 +206,45 @@ export default {
                     console.log(error);
                 }
             });
+            this.loadPredicates();
+            if (!this.predicateOptions.includes(predicate)) {
+                tripleData = {
+                    subject: predicate,
+                    predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                    object: "http://www.w3.org/2002/07/owl#" + this.picked,
+                };
+                const removeOperation = {
+                    operation: "remove",
+                    tripleData: tripleData,
+                };
+                const addOperation = {
+                    operation: "add",
+                    tripleData: tripleData,
+                };
+                $.ajax({
+                    url: 'http://localhost:8081/api/update',
+                    type: 'POST',
+                    data: JSON.stringify(removeOperation),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        $.ajax({
+                            url: 'http://localhost:8081/api/update',
+                            type: 'POST',
+                            data: JSON.stringify(addOperation),
+                            contentType: 'application/json',
+                            success: function (response) {
+                                $('#btn' + index).text('Added').addClass('added');
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        });
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
         },
         filterResults(predicate, index) {
             this.activeInput = index;
@@ -198,11 +255,40 @@ export default {
             this.rdfData[index].predicate = result.split('#')[1];
             this.showResults = false;
         },
+        addSelected() {
+            if(confirm("If there are custom predicates, they will be added to the ontology as " + this.picked + ". Are you sure you want to continue?")) {
+                this.selectedTriplets.forEach((triplet) => {
+                const index = this.rdfData.findIndex((rdfTriplet) => {
+                    return rdfTriplet === triplet;
+                });
+                console.log(index);
+                this.addTriplet(triplet, index);
+            });
+            this.selectedTriplets = [];
+            }
+        },
+        removeSelected() {
+            this.selectedTriplets.forEach((triplet) => {
+                const index = this.rdfData.findIndex((rdfTriplet) => {
+                    return rdfTriplet === triplet;
+                });
+                this.rdfData.splice(index, 1);
+            });
+            this.selectedTriplets = [];
+        },
     },
 };
 </script>
 
 <style>
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    padding: 0 0 40px 0;
+}
+
 .rdf-data {
     padding: 20px;
     border-radius: 5px;
@@ -243,6 +329,27 @@ p {
     text-align: center;
 }
 
+.add-selected {
+    background-color: #0baaa7;
+    margin-left: 10px;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    background-color: #EF4444;
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #4A5568;
+    transition: background-color 0.5s ease;
+}
+
 .download {
     text-align: right;
 }
@@ -256,13 +363,7 @@ p {
     font-weight: bold;
     padding: 5px 10px;
     border-radius: 5px;
-    margin-top: 10px;
-    margin-right: 10px;
-}
-
-.download-button:hover {
-    background-color: #4A5568;
-    transition: background-color 0.5s ease;
+    margin: 10px 0 10px 10px;
 }
 
 .subject,
@@ -294,12 +395,6 @@ p {
 
 .add-button {
     background-color: #0baaa7;
-}
-
-.delete-button:hover,
-.add-button:hover {
-    background-color: #4A5568;
-    transition: background-color 0.5s ease;
 }
 
 .autocomplete-results {
@@ -335,4 +430,15 @@ p {
     cursor: default;
 }
 
+.custom-predicate {
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+}
+
+label {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px;
+}
 </style>

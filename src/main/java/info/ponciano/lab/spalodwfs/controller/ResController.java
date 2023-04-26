@@ -2,6 +2,7 @@ package info.ponciano.lab.spalodwfs.controller;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.function.library.print;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -107,6 +108,7 @@ public class ResController {
    */
   @PostMapping("/update")
   public ResponseEntity<Void> update(@RequestBody TripleOperation tripleOperation) {
+    System.out.print(tripleOperation);
     TripleData tripleData = tripleOperation.getTripleData();
     if ("add".equalsIgnoreCase(tripleOperation.getOperation())) {
       Triplestore.get().addTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
