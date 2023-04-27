@@ -131,7 +131,7 @@ export default {
     },
     watch:{
         selectedOption(){
-            this.inputAdvanced=this.queries[this.selectedOption];
+            this.inputAdvanced = this.queries[this.selectedOption] + this.rangeValue;
         }
     },
     mounted() {
@@ -140,7 +140,7 @@ export default {
         window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
             this.isDarkMode = event.matches;
         });
-        this.inputAdvanced=this.queries[this.selectedOption];
+        this.inputAdvanced=this.queries[this.selectedOption] + this.rangeValue;
     },
     beforeDestroy() {
         window.removeEventListener("resize", this.closeNavBar);
@@ -157,6 +157,7 @@ export default {
         },
         updateRange(event){
             this.rangeValue=parseInt(event.target.value);
+            this.inputAdvanced = this.queries[this.selectedOption] + this.rangeValue;
         },
         addDataCSV() {
             this.$emit('CSVSelected');
@@ -172,12 +173,6 @@ export default {
         },
         addDataOwl() {
             this.$refs.fileInputOwl.click();
-        },
-        handleFileInputCSV() {
-            
-        },
-        handleFileInputJSON() {
-
         },
         handleFileInputGeo() {
             const file = event.target.files[0];
@@ -220,7 +215,7 @@ export default {
         confirmRequest() {
             const url = 'http://localhost:8081/api/sparql-select';
             const data = {
-                query: this.inputAdvanced + this.rangeValue,
+                query: this.inputAdvanced,
                 triplestore: ''
             };
             this.postJSON(url, data, this.handleResponse);
