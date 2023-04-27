@@ -7,9 +7,16 @@
                     {{ option.label }}
                 </option>
             </select>
-            <button @click="filterData">Filter</button>
-            <div class="addfile" @mouseover="showAddMenu = true" @mouseleave="showAddMenu = false">
-                <p>Add Data</p>
+            <div class="filter" :class="{active:showFilter}">
+                <p @click="showFilter = !showFilter">Filter</p>
+                <div class="filtercontainer" v-if="showFilter">
+                    <p>Max items number</p>
+                    <input type="range" :min="min" :max="max" :step="step" v-model="rangeValue" @input="updateRange" />
+                    <p>{{ rangeValue }}</p>
+                </div>
+            </div>
+            <div class="addfile" :class="{active: showAddMenu}">
+                <p @click="showAddMenu = !showAddMenu">Add Data</p>
                 <div class="addfileButton" v-if="showAddMenu">
                     <button @click="addDataCSV">CSV to GeoJSON</button>
                     <button @click="addDataJSON">JSON to GeoJSON</button>
@@ -18,6 +25,12 @@
                         @change="handleFileInputGeo">
                     <button @click="addDataOwl">Add Owl</button>
                     <input type="file" ref="fileInputOwl" style="display: none;" accept=".owl" @change="handleFileInputOwl">
+                </div>
+            </div>
+            <div class="advancedMenu" :class="{active: advancedMenuOpen}">
+                <p @click="advancedMenuOpen = !advancedMenuOpen">Advanced Mode</p>
+                <div class="textcontainer" v-if="advancedMenuOpen">
+                    <textarea v-model="inputAdvanced" :placeholder="placeholders" spellcheck="false"></textarea>
                 </div>
             </div>
             <button @click="confirmRequest" class="confirm">Confirm Request</button>
@@ -55,6 +68,15 @@ export default {
         return {
             isDarkMode: false,
             menuOpen: false,
+            showAddMenu: false,
+            showFilter: false,
+            min:100,
+            max:1000,
+            rangeValue:150,
+            step:50,
+            inputAdvanced:"",
+            advancedMenuOpen:false,
+            placeholders:"Write your custom request here",
             selectedOption: "schools",
             options: [
                 { label: 'Schule (Q3914)', value: 'schools' },
@@ -82,9 +104,8 @@ export default {
                 { label: 'Städte (Q515)', value: 'cities' },
             ],
             queries: {
-                schools: 'SELECT ?item ?itemLabel WHERE { ?item wdt:P31 wd:Q146. SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". } }',
-                twentyBiggestCities: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { VALUES ?category { wd:Q3914 } ?item wdt:P17 wd:Q183 ; wdt:P31 ?category ; p:P625 ?statement . ?statement psv:P625 ?coordinate_node . ?coordinate_node wikibase:geoLatitude ?latitude ; wikibase:geoLongitude ?longitude SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de" } FILTER ( ?latitude <= 86.42397134276521 ) FILTER ( ?latitude >= -63.39152174400882 ) FILTER ( ?longitude <= 219.02343750000003 ) FILTER ( ?longitude >= -202.85156250000003 ) } LIMIT 100',
-                tenBiggestStadiums: 'SELECT ?item ?itemLabel ?latitude ?longitude ?category ?capacity WHERE {\n?item wdt:P31 wd:Q1154710;\nwdt:P17 wd:Q183;\n  p:P625 ?statement.\n  ?statement psv:P625 ?coordinate_node.\n?coordinate_node wikibase:geoLatitude ?latitude;\nwikibase:geoLongitude ?longitude.\n  ?item wdt:P31 ?category .\nSERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de". }\n OPTIONAL { ?item wdt:P1083 ?capacity. }\n}\nORDER BY DESC (?capacity)\nLIMIT 10',
+                schools: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q3914} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
+                twentyBiggestCities: 'SELECT DISTINCT ?city ?cityLabel ?latitude ?longitude ?instanceOfCity ?population WHERE {\n SERVICE wikibase:label { bd:serviceParam wikibase:language "de". } \n VALUES ?instanceOfCity { \n wd:Q515 \n  } \n  ?city (wdt:P31/(wdt:P279*)) ?instanceOfCity; \n wdt:P17 wd:Q183;\n  p:P625 ?statement. \n ?statement psv:P625 ?coordinate_node. \n ?coordinate_node wikibase:geoLatitude ?latitude; \n wikibase:geoLongitude ?longitude.\nOPTIONAL { ?city wdt:P1082 ?population. } \n } \nORDER BY DESC (?population) \nLIMIT 20',
                 hospitals: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q16917} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 policeStations: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q861951} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 fireStations: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q1195942 } \n   ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
@@ -106,8 +127,12 @@ export default {
                 port: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q44782} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 cities: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE {\n  VALUES ?category{ wd:Q515 }\n ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
             },
-            showAddMenu: false,
         };
+    },
+    watch:{
+        selectedOption(){
+            this.inputAdvanced=this.queries[this.selectedOption];
+        }
     },
     mounted() {
         this.detectDarkMode();
@@ -115,6 +140,7 @@ export default {
         window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
             this.isDarkMode = event.matches;
         });
+        this.inputAdvanced=this.queries[this.selectedOption];
     },
     beforeDestroy() {
         window.removeEventListener("resize", this.closeNavBar);
@@ -129,8 +155,8 @@ export default {
         closeNavBar() {
             this.menuOpen = false;
         },
-        filterData() {
-            // TODO: Implement filter
+        updateRange(event){
+            this.rangeValue=parseInt(event.target.value);
         },
         addDataCSV() {
             this.$emit('CSVSelected');
@@ -194,8 +220,8 @@ export default {
         confirmRequest() {
             const url = 'http://localhost:8081/api/sparql-select';
             const data = {
-                query: this.queries[this.selectedOption],
-                triplestore: 'http://query.wikidata.org/sparql'
+                query: this.inputAdvanced + this.rangeValue,
+                triplestore: ''
             };
             this.postJSON(url, data, this.handleResponse);
         },
@@ -203,6 +229,7 @@ export default {
             this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         },
         postJSON(url, data, callback) {
+            console.log(JSON.stringify(data));
             $.ajax({
                 headers: {
                     'Accept': 'application/json',
@@ -284,14 +311,54 @@ button {
     width: 100%;
     text-align: left;
 }
-
+.filter{
+    border-radius: 5px;
+    border: none;
+    background-color: none;
+    margin-top: 5px;
+}
+.filter p{
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    font-size: 18px;
+    font-weight: bold;
+}
+.filter:hover{
+    background-color: #4A5568;
+    color: white;
+}
+.filter.active{
+    background-color: #4A5568;
+    color: white;
+}
+.filtercontainer{
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+}
+.filtercontainer :nth-child(1){
+    font-weight:normal;
+    cursor: default;
+}
+.filtercontainer p{
+    text-align: center;
+    padding: 10px;
+    cursor: default;
+}
 .addfile {
     border-radius: 5px;
     border: none;
     background-color: none;
     margin-top: 5px;
 }
-
+.addfile.active{
+    background-color: #4A5568;
+    color: white;
+}
 .addfile p {
     padding: 6px 20px;
     border: none;
@@ -305,7 +372,7 @@ button {
 
 .addfile:hover {
     background-color: #4A5568;
-    color: #fff;
+    color: white;
 }
 
 .addfileButton {
@@ -313,7 +380,41 @@ button {
     display: flex;
     align-items: center;
 }
-
+.advancedMenu{
+    border-radius: 5px;
+    border: none;
+    background-color: none;
+    margin-top: 5px;
+}
+.advancedMenu p{
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    font-size: 18px;
+    font-weight: bold;
+}
+.advancedMenu:hover{
+    background-color: #4A5568;
+    color: white;
+}
+.advancedMenu.active{
+    background-color: #4A5568;
+    color: white;
+}
+.textcontainer{
+    width: 100%;
+}
+.advancedMenu textarea{
+    margin-top: 8px;
+    border-radius: 5px;
+    width: 100%;
+    min-height: 200px;
+    font-size: 15px;
+    resize: vertical;
+}
 .confirm {
     background-color: #EF4444;
     color: #fff;

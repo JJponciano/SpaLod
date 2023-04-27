@@ -119,7 +119,7 @@ export default {
   top: 30vh;
   left: 50vh;
   width: fit-content;
-  z-index: 999;
+  z-index: 100;
 }
 
 @media (max-width: 768px) {

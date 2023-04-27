@@ -1,4 +1,5 @@
 <template>
+    <div class="popup-overlay" v-if="isPopupVisible" @click="closePopup"></div>
     <div v-bind:class="{ 'popup':true, 'visible': isPopupVisible}" :class="{dark:isDarkMode}">
         <div class="Title">
             <p>Please select the desired icon for this file</p>
@@ -44,11 +45,10 @@
         </div>
         <div class="ButtonSelect">
             <button @click="closePopup">Close</button>
-            <button @click="onValid">Choose</button>
+            <button @click="onValid" class="choose">Choose</button>
             <input type="file" ref="fileInput" style="display: none;" :accept="fileType" @change="handleFile">
         </div>
-    </div>
-
+        </div>
 </template>
 
 <script>
@@ -202,6 +202,14 @@ export default{
 </script>
 
 <style scoped>
+.popup-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+}
 .popup{
     background-color: white;
     padding: 30px;
@@ -209,8 +217,8 @@ export default{
     border-style:solid;
     border-radius: 8px;
     border-width: 1px;
-    z-index: 999;
-    display:none;
+    z-index: 900;
+    display: none;
 }
 .popup.dark{
     background-color: #1A202C;
@@ -218,5 +226,47 @@ export default{
 }
 .popup.visible{
     display: block;
+}
+.SelectAction{
+    display: flex;
+    justify-content: center;
+    padding:10px;
+}
+.SelectAction select{
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 9px;
+    width: 100%;
+    border: 2px solid #1A202C;
+    border-radius: 5px;
+    background-color: #4A5568;
+    color: white;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+button{
+    padding: 5px 10px 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #EF4444;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 10px 15px 0 15px;
+    width: 40%;
+    text-align: center;
+    color: white;
+}
+.choose{
+    background-color: #0baaa7;
+}
+button:hover{
+    background-color: #4A5568;
 }
 </style>
