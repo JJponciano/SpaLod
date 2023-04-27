@@ -201,19 +201,19 @@ export default {
                             data: formData,
                             processData: false,
                             contentType: false,
-                            success: function (response) {
-                                console.log(response);
+                            success: function () {
+                                alert('Ontology enriched successfully!');
                             },
-                            error: function (error) {
-                                console.log(error);
+                            error: function () {
+                                alert('Error while enriching ontology!');
                             }
                         });
                     } else {
                         console.log(response);
                     }
                 },
-                error: function (error) {
-                    console.log(error);
+                error: function () {
+                    alert('Error while checking ontology!');
                 }
             });
         },
