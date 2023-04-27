@@ -1,5 +1,5 @@
 <template>
-    <div class="rdf-data" :class="{ dark: isDarkMode }" @click="() => showResults = false">
+    <div class="rdf-data" :class="{ dark: isDarkMode }">
         <div class="header">
             <h2>RDF Data</h2>
             <div v-if="selectedTriplets.length > 0">
@@ -13,6 +13,7 @@
             <input type="text" v-model="triplet.predicate" class="predicate"
                 @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" />
         <ul v-if="showResults && activeInput === index" class="autocomplete-results">
+            <button @click="() => showResults = false">Close</button>
             <div class="custom-predicate">
                 <h2>Custom predicate</h2>
                 <input type="radio" id="datatype-property" value="DatatypeProperty" v-model="picked">
@@ -225,7 +226,6 @@ export default {
                 const index = this.rdfData.findIndex((rdfTriplet) => {
                     return rdfTriplet === triplet;
                 });
-                console.log(index);
                 this.addTriplet(triplet, index);
             });
             this.selectedTriplets = [];
