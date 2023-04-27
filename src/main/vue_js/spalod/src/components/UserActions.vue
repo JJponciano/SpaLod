@@ -127,6 +127,30 @@ export default {
                 port: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q44782} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 cities: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE {\n  VALUES ?category{ wd:Q515 }\n ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
             },
+            icons: {
+                schools: 'HS',
+                twentyBiggestCities: 'BotKon',
+                hospitals: 'KHV',
+                policeStations: 'BFW',
+                fireStations: 'Feuerwehr',
+                supermarkets: 'Supermarkt',
+                museums: 'Museen',
+                libraries: 'Bibliothek',
+                trainStations: 'Bahnhof',
+                banks: 'Bank',
+                restaurants: 'Restaurant',
+                cinemas: 'Kino',
+                monuments: 'Denkmal',
+                hotels: 'Hotel',
+                airports: 'Flughafen',
+                stadiums: 'Stadium',
+                swimmingPools: 'Schwimmbad',
+                serviceStation: 'Tankstellen',
+                weatherStation: 'Wetterstation',
+                researchLaboratory: 'Laboratorium',
+                port: 'Seehaefen',
+                cities: 'BotKon',
+            },
         };
     },
     watch:{
@@ -146,9 +170,6 @@ export default {
         window.removeEventListener("resize", this.closeNavBar);
     },
     methods: {
-        search() {
-            // TODO: Implement search
-        },
         toggleNavBar() {
             this.menuOpen = !this.menuOpen;
         },
@@ -237,7 +258,6 @@ export default {
             this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         },
         postJSON(url, data, callback) {
-            console.log(JSON.stringify(data));
             $.ajax({
                 headers: {
                     'Accept': 'application/json',
@@ -251,7 +271,40 @@ export default {
             });
         },
         handleResponse(response) {
-            console.log(response);
+            const geoJSON = {
+                type: 'FeatureCollection',
+                name: this.icons[this.selectedOption],
+                features: [],
+            };
+            const header = response['head']['vars'];
+            response['results']['bindings'].forEach(item => {
+                const feature = {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: []
+                    },
+                    properties: {}
+                };
+
+                header.forEach(predicate => {
+                    if (predicate === 'latitude') {
+                        feature.geometry.coordinates.push(parseFloat(item[predicate]['value']));
+                    } else if (predicate === 'longitude') {
+                        feature.geometry.coordinates.push(parseFloat(item[predicate]['value']));
+                    } else {
+                        feature.properties[predicate] = item[predicate]['value'];
+                    }
+                });
+
+                geoJSON.features.push(feature);
+            });
+
+            console.log(JSON.stringify(geoJSON));
+            // console.log(geoJSON);
+            const blob = new Blob([JSON.stringify(geoJSON)], { type: 'application/json' });
+            const file = new File([blob], 'data.json', { type: 'application/json' });
+            this.$emit('file-selected', file);
         },
     },
 };
