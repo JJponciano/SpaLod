@@ -64,6 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.usernameParameter("username")
 				.passwordParameter("password")
 				.successHandler((request, response, authentication) -> {
+					
 					String message = "Successfully authenticated as " + authentication.getName() + ".";
 					response.setStatus(HttpServletResponse.SC_OK);
 					response.setContentType("text/plain");

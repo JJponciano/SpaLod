@@ -160,6 +160,9 @@ export default {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json' 
             },
+            xhrFields: {
+              withCredentials: true
+            },
             'type': 'POST',
             'url': url,
             'data': JSON.stringify(data),

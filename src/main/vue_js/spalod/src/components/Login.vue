@@ -17,6 +17,7 @@
   
 <script>
   import axios from 'axios';
+  import $ from "jquery";
   export default {
     name:'Login',
     data() {
@@ -27,23 +28,27 @@
     },
     methods: {
         async submitForm() {
-            try {
-            const response = await axios.post(`https://localhost:8081/login`, null, { params: {
-                username:this.username,
-                password:this.password
-            }}).then((response) => {
-                if(response.status==200)
-                {
-                    console.log("Successful authentication");
-                    this.$router.push('/');
-                }
-            });
-            
-
-            } 
-            catch (error) {
+          $.ajax({
+            url: 'https://localhost:8081/login',
+            method: 'POST',
+            data: {
+              username: this.username,
+              password: this.password
+            },
+            xhrFields: {
+              withCredentials: true
+            },
+            success: (response) => {
+              console.log(response.cookie)
+              if (response.status === 200) {
+                console.log('Successful authentication');
+                this.$router.push('/');
+              }
+            },
+            error: (error) => {
               console.error(error);
             }
+            })
       },
     },
   };
