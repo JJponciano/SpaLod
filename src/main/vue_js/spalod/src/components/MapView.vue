@@ -91,6 +91,8 @@ export default {
                 layers: [streets, this.query]
             });
 
+            map.attributionControl.setPrefix(false);
+
             // Definition of layers
             var baseLayers = {
                 "Grayscale": grayscale,

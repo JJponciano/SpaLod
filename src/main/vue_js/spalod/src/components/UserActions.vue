@@ -179,7 +179,7 @@ export default {
         updateRange(event){
             this.rangeValue=parseInt(event.target.value);
             //check si ecrit LIMIT a la fin pour rajouter this.rangeValue a inputAdvanced
-            const match = this.inputAdvanced.match(/LIMIT\s(\d+)$/);
+            const match = this.inputAdvanced.match(/LIMIT\s+(\d+)$/);
             if(this.inputAdvanced.endsWith('LIMIT ')){
                 this.inputAdvanced += this.rangeValue;
             }
@@ -189,7 +189,7 @@ export default {
             }
             else if (match) {
                 const number = parseInt(match[1]);
-                const newInput = this.inputAdvanced.replace(number, this.rangeValue);
+                const newInput = this.inputAdvanced.replace(`LIMIT ${number}`, `LIMIT ${this.rangeValue}`);
                 this.inputAdvanced = newInput;
             }
         },
