@@ -1,20 +1,36 @@
 <template>
-    <div class="user-actions" :class="{dark: isDarkMode}">
+    <div class="user-actions" :class="{ dark: isDarkMode }">
         <button class="navbar_button" @click="toggleNavBar">Menu</button>
         <div class="side_pannel">
             <select v-model="selectedOption">
                 <option v-for="(option, index) in options" :key="index" :value="option.value">
-                {{ option.label }}
+                    {{ option.label }}
                 </option>
             </select>
-            <button @click="filterData">Filter</button>
-            <div class="addfile" @mouseover="showAddMenu = true" @mouseleave="showAddMenu = false">
-                <p>Add Data</p>
+            <div class="filter" :class="{active:showFilter}">
+                <p @click="showFilter = !showFilter">Filter</p>
+                <div class="filtercontainer" v-if="showFilter">
+                    <p>Max items number</p>
+                    <input type="range" :min="min" :max="max" :step="step" v-model="rangeValue" @input="updateRange" />
+                    <p>{{ rangeValue }}</p>
+                </div>
+            </div>
+            <div class="addfile" :class="{active: showAddMenu}">
+                <p @click="showAddMenu = !showAddMenu">Add Data</p>
                 <div class="addfileButton" v-if="showAddMenu">
-                    <button @click="addDataGeo">Add Geojson</button>
-                    <input type="file" ref="fileInputGeo" style="display: none;" accept="application/pdf" @change="handleFileInputGeo">
+                    <button @click="addDataCSV">CSV to GeoJSON</button>
+                    <button @click="addDataJSON">JSON to GeoJSON</button>
+                    <button @click="addDataGeo">Add GeoJSON</button>
+                    <input type="file" ref="fileInputGeo" style="display: none;" accept="application/json"
+                        @change="handleFileInputGeo">
                     <button @click="addDataOwl">Add Owl</button>
-                    <input type="file" ref="fileInputOwl" style="display: none;" accept="application/pdf" @change="handleFileInputOwl">
+                    <input type="file" ref="fileInputOwl" style="display: none;" accept=".owl" @change="handleFileInputOwl">
+                </div>
+            </div>
+            <div class="advancedMenu" :class="{active: advancedMenuOpen}">
+                <p @click="advancedMenuOpen = !advancedMenuOpen">Advanced Mode</p>
+                <div class="textcontainer" v-if="advancedMenuOpen">
+                    <textarea v-model="inputAdvanced" :placeholder="placeholders" spellcheck="false"></textarea>
                 </div>
             </div>
             <button @click="confirmRequest" class="confirm">Confirm Request</button>
@@ -24,7 +40,7 @@
                 <li>
                     <select v-model="selectedOption">
                         <option v-for="(option, index) in options" :key="index" :value="option.value">
-                        {{ option.label }}
+                            {{ option.label }}
                         </option>
                     </select>
                 </li>
@@ -33,7 +49,8 @@
                 </li>
                 <li class="adddataButton">
                     <button @click="addData">Add Data</button>
-                    <input type="file" ref="fileInput" style="display: none;" accept="application/geojson" @change="handleFileInput">
+                    <input type="file" ref="fileInput" style="display: none;" accept="application/geojson"
+                        @change="handleFileInput">
                 </li>
                 <li class="confirmButton">
                     <button @click="confirmRequest" class="confirm">Confirm Request</button>
@@ -51,6 +68,15 @@ export default {
         return {
             isDarkMode: false,
             menuOpen: false,
+            showAddMenu: false,
+            showFilter: false,
+            min:100,
+            max:1000,
+            rangeValue:150,
+            step:50,
+            inputAdvanced:"",
+            advancedMenuOpen:false,
+            placeholders:"Write your custom request here",
             selectedOption: "schools",
             options: [
                 { label: 'Schule (Q3914)', value: 'schools' },
@@ -78,9 +104,8 @@ export default {
                 { label: 'Städte (Q515)', value: 'cities' },
             ],
             queries: {
-                schools: 'SELECT ?item ?itemLabel WHERE { ?item wdt:P31 wd:Q146. SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". } }',
-                twentyBiggestCities: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { VALUES ?category { wd:Q3914 } ?item wdt:P17 wd:Q183 ; wdt:P31 ?category ; p:P625 ?statement . ?statement psv:P625 ?coordinate_node . ?coordinate_node wikibase:geoLatitude ?latitude ; wikibase:geoLongitude ?longitude SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de" } FILTER ( ?latitude <= 86.42397134276521 ) FILTER ( ?latitude >= -63.39152174400882 ) FILTER ( ?longitude <= 219.02343750000003 ) FILTER ( ?longitude >= -202.85156250000003 ) } LIMIT 100',
-                tenBiggestStadiums: 'SELECT ?item ?itemLabel ?latitude ?longitude ?category ?capacity WHERE {\n?item wdt:P31 wd:Q1154710;\nwdt:P17 wd:Q183;\n  p:P625 ?statement.\n  ?statement psv:P625 ?coordinate_node.\n?coordinate_node wikibase:geoLatitude ?latitude;\nwikibase:geoLongitude ?longitude.\n  ?item wdt:P31 ?category .\nSERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de". }\n OPTIONAL { ?item wdt:P1083 ?capacity. }\n}\nORDER BY DESC (?capacity)\nLIMIT 10',
+                schools: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q3914} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
+                twentyBiggestCities: 'SELECT DISTINCT ?city ?cityLabel ?latitude ?longitude ?instanceOfCity ?population WHERE {\n SERVICE wikibase:label { bd:serviceParam wikibase:language "de". } \n VALUES ?instanceOfCity { \n wd:Q515 \n  } \n  ?city (wdt:P31/(wdt:P279*)) ?instanceOfCity; \n wdt:P17 wd:Q183;\n  p:P625 ?statement. \n ?statement psv:P625 ?coordinate_node. \n ?coordinate_node wikibase:geoLatitude ?latitude; \n wikibase:geoLongitude ?longitude.\nOPTIONAL { ?city wdt:P1082 ?population. } \n } \nORDER BY DESC (?population) \nLIMIT 20',
                 hospitals: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q16917} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 policeStations: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q861951} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 fireStations: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q1195942 } \n   ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
@@ -102,8 +127,36 @@ export default {
                 port: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE { \n  VALUES ?category{ wd:Q44782} \n  ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement .\n   ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\nSERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
                 cities: 'SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE {\n  VALUES ?category{ wd:Q515 }\n ?item wdt:P17 wd:Q183.\n  ?item wdt:P31 ?category .\n  ?item p:P625 ?statement . \n  ?statement psv:P625 ?coordinate_node .\n  ?coordinate_node wikibase:geoLatitude ?latitude .\n  ?coordinate_node wikibase:geoLongitude ?longitude .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de".\n  }\nFILTER(?latitude <= 86.42397134276521).\nFILTER(?latitude >= -63.39152174400882).\nFILTER(?longitude <= 219.02343750000003).\nFILTER(?longitude >= -202.85156250000003)\n}\nLIMIT ',
             },
-            showAddMenu : false,
+            icons: {
+                schools: 'HS',
+                twentyBiggestCities: 'BotKon',
+                hospitals: 'KHV',
+                policeStations: 'BFW',
+                fireStations: 'Feuerwehr',
+                supermarkets: 'Supermarkt',
+                museums: 'Museen',
+                libraries: 'Bibliothek',
+                trainStations: 'Bahnhof',
+                banks: 'Bank',
+                restaurants: 'Restaurant',
+                cinemas: 'Kino',
+                monuments: 'Denkmal',
+                hotels: 'Hotel',
+                airports: 'Flughafen',
+                stadiums: 'Stadium',
+                swimmingPools: 'Schwimmbad',
+                serviceStation: 'Tankstellen',
+                weatherStation: 'Wetterstation',
+                researchLaboratory: 'Laboratorium',
+                port: 'Seehaefen',
+                cities: 'BotKon',
+            },
         };
+    },
+    watch:{
+        selectedOption(){
+            this.inputAdvanced = this.queries[this.selectedOption] + this.rangeValue;
+        }
     },
     mounted() {
         this.detectDarkMode();
@@ -111,23 +164,43 @@ export default {
         window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
             this.isDarkMode = event.matches;
         });
+        this.inputAdvanced=this.queries[this.selectedOption] + this.rangeValue;
     },
-    beforeDestroy(){
+    beforeDestroy() {
         window.removeEventListener("resize", this.closeNavBar);
     },
     methods: {
-        search() {
-            // TODO: Implement search
-        },
-        toggleNavBar(){
+        toggleNavBar() {
             this.menuOpen = !this.menuOpen;
         },
-        closeNavBar()
-        {
-            this.menuOpen=false;
+        closeNavBar() {
+            this.menuOpen = false;
         },
-        filterData() {
-            // TODO: Implement filter
+        updateRange(event){
+            this.rangeValue=parseInt(event.target.value);
+            //check si ecrit LIMIT a la fin pour rajouter this.rangeValue a inputAdvanced
+            const match = this.inputAdvanced.match(/LIMIT\s+(\d+)$/);
+            if(this.inputAdvanced.endsWith('LIMIT ')){
+                this.inputAdvanced += this.rangeValue;
+            }
+            else if(this.inputAdvanced.endsWith('LIMIT')){
+                this.inputAdvanced += " ";
+                this.inputAdvanced += this.rangeValue;
+            }
+            else if (match) {
+                const number = parseInt(match[1]);
+                const newInput = this.inputAdvanced.replace(`LIMIT ${number}`, `LIMIT ${this.rangeValue}`);
+                this.inputAdvanced = newInput;
+            }
+        },
+        addDataCSV() {
+            this.$emit('CSVSelected');
+            this.$emit('popupShow');
+            //this.$refs.fileInputCSV.click();
+        },
+        addDataJSON() {
+            this.$emit('JsonSelected');
+            this.$emit('popupShow');
         },
         addDataGeo() {
             this.$refs.fileInputGeo.click();
@@ -135,19 +208,49 @@ export default {
         addDataOwl() {
             this.$refs.fileInputOwl.click();
         },
-        handleFileInputGeo()
-        {
-            const file=event.target.file[0];
+        handleFileInputGeo() {
+            const file = event.target.files[0];
+            this.$emit('file-selected', file);
         },
-        handleFileInputOwl()
-        {
-            const file=event.target.file[0];
+        handleFileInputOwl() {
+            const file = event.target.files[0];
+            let formData = new FormData();
+            formData.append('file', file);
+            $.ajax({
+                url: 'http://localhost:8081/api/check-ontology',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if(response == '[]') {
+                        $.ajax({
+                            url: 'http://localhost:8081/api/enrich',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function () {
+                                alert('Ontology enriched successfully!');
+                            },
+                            error: function () {
+                                alert('Error while enriching ontology!');
+                            }
+                        });
+                    } else {
+                        console.log(response);
+                    }
+                },
+                error: function () {
+                    alert('Error while checking ontology!');
+                }
+            });
         },
         confirmRequest() {
             const url = 'https://localhost:8081/api/sparql-select';
             const data = {
-                query: this.queries[this.selectedOption],
-                triplestore: 'http://query.wikidata.org/sparql'
+                query: this.inputAdvanced,
+                triplestore: ''
             };
             this.postJSON(url, data, this.handleResponse);
         },
@@ -171,7 +274,40 @@ export default {
             });
         },
         handleResponse(response) {
-            console.log(response);
+            const geoJSON = {
+                type: 'FeatureCollection',
+                name: this.icons[this.selectedOption],
+                features: [],
+            };
+            const header = response['head']['vars'];
+            response['results']['bindings'].forEach(item => {
+                const feature = {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: []
+                    },
+                    properties: {}
+                };
+
+                header.forEach(predicate => {
+                    if (predicate === 'latitude') {
+                        feature.geometry.coordinates.push(parseFloat(item[predicate]['value']));
+                    } else if (predicate === 'longitude') {
+                        feature.geometry.coordinates.push(parseFloat(item[predicate]['value']));
+                    } else {
+                        feature.properties[predicate] = item[predicate]['value'];
+                    }
+                });
+
+                geoJSON.features.push(feature);
+            });
+
+            console.log(JSON.stringify(geoJSON));
+            // console.log(geoJSON);
+            const blob = new Blob([JSON.stringify(geoJSON)], { type: 'application/json' });
+            const file = new File([blob], 'data.json', { type: 'application/json' });
+            this.$emit('file-selected', file);
         },
     },
 };
@@ -217,11 +353,11 @@ select {
     cursor: pointer;
 }
 
-.navbar_button{
+.navbar_button {
     display: none;
 }
 
-.navbar-menu{
+.navbar-menu {
     display: none;
 }
 
@@ -239,13 +375,13 @@ button {
     width: 100%;
     text-align: left;
 }
-.addfile{
+.filter{
     border-radius: 5px;
     border: none;
     background-color: none;
     margin-top: 5px;
 }
-.addfile p{
+.filter p{
     padding: 6px 20px;
     border: none;
     background-color: none;
@@ -255,20 +391,100 @@ button {
     font-size: 18px;
     font-weight: bold;
 }
-.addfile:hover{
+.filter:hover{
     background-color: #4A5568;
-    color: #fff;
+    color: white;
 }
-.addfileButton{
+.filter.active{
+    background-color: #4A5568;
+    color: white;
+}
+.filtercontainer{
+    display: flex;
     flex-direction: column;
+    cursor: default;
+}
+.filtercontainer :nth-child(1){
+    font-weight:normal;
+    cursor: default;
+}
+.filtercontainer p{
+    text-align: center;
+    padding: 10px;
+    cursor: default;
+}
+.addfile {
+    border-radius: 5px;
+    border: none;
+    background-color: none;
+    margin-top: 5px;
+}
+.addfile.active{
+    background-color: #4A5568;
+    color: white;
+}
+.addfile p {
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    font-size: 18px;
+    font-weight: bold;
 }
 
+.addfile:hover {
+    background-color: #4A5568;
+    color: white;
+}
+
+.addfileButton {
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+}
+.advancedMenu{
+    border-radius: 5px;
+    border: none;
+    background-color: none;
+    margin-top: 5px;
+}
+.advancedMenu p{
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    font-size: 18px;
+    font-weight: bold;
+}
+.advancedMenu:hover{
+    background-color: #4A5568;
+    color: white;
+}
+.advancedMenu.active{
+    background-color: #4A5568;
+    color: white;
+}
+.textcontainer{
+    width: 100%;
+}
+.advancedMenu textarea{
+    margin-top: 8px;
+    border-radius: 5px;
+    width: 100%;
+    min-height: 200px;
+    font-size: 15px;
+    resize: vertical;
+}
 .confirm {
     background-color: #EF4444;
     color: #fff;
 }
 
-.navbar_button:hover{
+.navbar_button:hover {
     background-color: #81818a;
     color: white;
 }
@@ -277,14 +493,26 @@ button:hover {
     background-color: #4A5568;
     color: #fff;
 }
+
+.addfileButton>button {
+    width: 95%;
+    margin-bottom: 10px;
+}
+
+.addfileButton>button:hover {
+    background-color: #1A202C;
+    color: #fff;
+}
+
 @media screen and (max-width: 768px) {
 
-    .side_pannel{
+    .side_pannel {
         display: none;
     }
-    .user-actions{
+
+    .user-actions {
         resize: none;
-        display:contents;
+        display: contents;
         flex: none;
         width: fit-content;
         min-width: 20px;
@@ -293,10 +521,12 @@ button:hover {
         resize: none;
         padding: 0px;
     }
-    .user-actions.dark{
+
+    .user-actions.dark {
         width: fit-content;
     }
-    .navbar_button{
+
+    .navbar_button {
         display: block;
         margin-left: -100px;
         padding: 10px;
@@ -307,11 +537,12 @@ button:hover {
         cursor: pointer;
         transition: background-color 0.3s ease-in-out;
         font-size: 18px;
-        font-weight:lighter;
+        font-weight: lighter;
         margin-top: 0px;
-        width:fit-content;
+        width: fit-content;
     }
-    .navbar-menu.active{
+
+    .navbar-menu.active {
         padding: 15px 20px 15px 0px;
         margin-left: -100px;
         border-radius: 15px;
@@ -323,8 +554,8 @@ button:hover {
         overflow: auto;
         background-color: white;
     }
-    .navbar-menu.dark{
+
+    .navbar-menu.dark {
         background-color: #1A202C;
     }
-}
-</style>
+}</style>

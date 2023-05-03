@@ -1,1 +1,75 @@
-{"features":[{"geometry":{"coordinates":[7.6435043046,51.8989428278],"type":"Point"},"type":"Feature","properties":{"Mitglied_H":0,"RS":"055150000000","Anzahl_Stu":421,"Regierungs":"Münster","Bundesland":"Nordrhein-Westfalen","HS_Nr":"X910","Hn":"18-24","Traegersch":"öffentlich-rechtlich","HS_Typ":"Universitäten","Name":"Deutsche Hochschule der Polizei, Münster (U)","Ort":"Münster","Gemeinde":"Münster","Gruendungs":0,"Kurzname":"Münster U","Verwaltung":"Münster","Quelle":"StaBA","Kreis":"Münster","Strasse":"Zum Roten Berge","PLZ":"48165"}},{"geometry":{"coordinates":[6.0779364934,50.7776408005],"type":"Point"},"type":"Feature","properties":{"Mitglied_H":1,"RS":"053340002002","Regierungs":"Köln","Bundesland":"Nordrhein-Westfalen","HS_Nr":"1","Traegersch":"öffentlich-rechtlich","Promotion":"Ja","Name":"Rheinisch-Westfälische Technische Hochschule Aachen","PLZ_Postfa":"52056","Ort":"Aachen","Telefax":"0241\/80-92312","Gruendungs":1870,"Ort_Postfa":"Aachen","Verwaltung":"Aachen","Strasse":"Templergraben","PLZ":"52062","Homepage":"www.rwth-aachen.de","Anzahl_Stu":45945,"Hn":"55","HS_Typ":"Universitäten","Gemeinde":"Aachen","Kurzname":"Aachen TH","Quelle":"HRK","Telefon":"0241\/80-1","Kreis":"Städteregion Aachen","Habilitati":"Ja"}}],"name":"HS","type":"FeatureCollection"}
+{
+    "features": [
+        {
+            "geometry": {
+                "coordinates": [
+                    7.6435043046,
+                    51.8989428278
+                ],
+                "type": "Point"
+            },
+            "type": "Feature",
+            "properties": {
+                "Mitglied_H": 0,
+                "RS": "055150000000",
+                "Anzahl_Stu": 421,
+                "Regierungs": "Münster",
+                "Bundesland": "Nordrhein-Westfalen",
+                "HS_Nr": "X910",
+                "Hn": "18-24",
+                "Traegersch": "öffentlich-rechtlich",
+                "HS_Typ": "Universitäten",
+                "Name": "Deutsche Hochschule der Polizei, Münster (U)",
+                "Ort": "Münster",
+                "Gemeinde": "Münster",
+                "Gruendungs": 0,
+                "Kurzname": "Münster U",
+                "Verwaltung": "Münster",
+                "Quelle": "StaBA",
+                "Kreis": "Münster",
+                "Strasse": "Zum Roten Berge",
+                "PLZ": "48165"
+            }
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    6.0779364934,
+                    50.7776408005
+                ],
+                "type": "Point"
+            },
+            "type": "Feature",
+            "properties": {
+                "Mitglied_H": 1,
+                "RS": "053340002002",
+                "Regierungs": "Köln",
+                "Bundesland": "Nordrhein-Westfalen",
+                "HS_Nr": "1",
+                "Traegersch": "öffentlich-rechtlich",
+                "Promotion": "Ja",
+                "Name": "Rheinisch-Westfälische Technische Hochschule Aachen",
+                "PLZ_Postfa": "52056",
+                "Ort": "Aachen",
+                "Telefax": "0241\/80-92312",
+                "Gruendungs": 1870,
+                "Ort_Postfa": "Aachen",
+                "Verwaltung": "Aachen",
+                "Strasse": "Templergraben",
+                "PLZ": "52062",
+                "Homepage": "www.rwth-aachen.de",
+                "Anzahl_Stu": 45945,
+                "Hn": "55",
+                "HS_Typ": "Universitäten",
+                "Gemeinde": "Aachen",
+                "Kurzname": "Aachen TH",
+                "Quelle": "HRK",
+                "Telefon": "0241\/80-1",
+                "Kreis": "Städteregion Aachen",
+                "Habilitati": "Ja"
+            }
+        }
+    ],
+    "name": "HS",
+    "type": "FeatureCollection"
+}
