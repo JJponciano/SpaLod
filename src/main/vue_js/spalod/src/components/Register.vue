@@ -41,7 +41,7 @@ methods: {
                 if(response.status==200)
                 {
                     console.log("User successfully registered");
-                    this.$router.push('/');
+                    window.location.href='/';
                 }
             });
             

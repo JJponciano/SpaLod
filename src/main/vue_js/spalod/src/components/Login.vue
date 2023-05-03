@@ -16,7 +16,6 @@
 </template>
   
 <script>
-  import axios from 'axios';
   import $ from "jquery";
   export default {
     name:'Login',
@@ -39,11 +38,9 @@
               withCredentials: true
             },
             success: (response) => {
-              console.log(response.cookie)
-              if (response.status === 200) {
-                console.log('Successful authentication');
-                this.$router.push('/');
-              }
+              console.log(response)
+              window.location.href='/';
+              
             },
             error: (error) => {
               console.error(error);

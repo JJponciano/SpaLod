@@ -3,30 +3,62 @@ import NavBar from './components/NavBar.vue';
 import UserActions from './components/UserActions.vue';
 import MapView from './components/MapView.vue';
 import RDFData from './components/RDFData.vue';
+import Login from './components/Login.vue';
+import Register from './components/Register.vue';
+
+const routes={
+  '/': { component: NavBar, name: 'NavBar' },
+  '/login': { component: Login, name: 'Login' },
+  '/register': { component: Register, name: 'Register' }
+  }
 
 export default {
   components: {
     NavBar,
     UserActions,
     MapView,
-    RDFData
+    RDFData,
+    Login,
+    Register
+  },
+  data() {
+    return {
+      currentPath: window.location.pathname
+    };
   },
   computed: {
-    showComponents() {
-      return this.$route.path !== '/login' && this.$route.path !== '/register'
+    currentView() {
+      if (this.currentPath === '/') {
+        return 'main';
+      } 
+      else if (this.currentPath === '/login') {
+        return 'login';
+      } 
+      else if (this.currentPath === '/register') {
+        return 'register';
+      } 
+      else {
+        return 'NavBar';
+      }
     }
+  },
+  mounted() {
+    window.addEventListener('popstate', () => {
+      this.currentPath = window.location.pathname;
+    });
   }
 }
+
 
 </script>
 
 <template>
   <div class="app">
-    <div class="main">
-      <div class="user-actions-container" v-if="showComponents">
+    <div class="main" v-if="currentView === 'main'">
+      <div class="user-actions-container" >
         <UserActions></UserActions>
       </div>
-      <div class="right-container" v-if="showComponents">
+      <div class="right-container" >
         <div class="map-container">
           <MapView></MapView>
         </div>
@@ -34,10 +66,15 @@ export default {
           <RDFData></RDFData>
         </div>
       </div>
-      <div class="navbar">
+    </div>
+    <div class="main" v-if="currentView === 'login'">
+      <Login></Login>
+    </div>
+    <div class="main" v-if="currentView === 'register'">
+      <Register></Register>
+    </div>
+    <div class="navbar">
         <NavBar></NavBar>
-      </div>
-      <router-view></router-view>
     </div>
   </div>
 </template>
