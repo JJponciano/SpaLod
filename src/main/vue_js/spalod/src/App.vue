@@ -30,6 +30,7 @@ export default {
       chooseCSV:false,
       chooseJson:false,
       popup:false,
+      currentPath: window.location.pathname
     };
   },computed: {
     currentView() {
@@ -80,15 +81,9 @@ export default {
 
 <template>
   <div class="app">
-<<<<<<< HEAD
     <div class="main" v-if="currentView === 'main'">
-      <div class="user-actions-container" >
-        <UserActions></UserActions>
-=======
-    <div class="main">
       <div class="user-actions-container">
         <UserActions @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup"></UserActions>
->>>>>>> origin/Federdispi
       </div>
       <div class="right-container" >
         <div class="map-container">

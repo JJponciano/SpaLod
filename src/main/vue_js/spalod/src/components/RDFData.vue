@@ -42,6 +42,12 @@
 
 <script>
 import $ from 'jquery';
+$.ajaxSetup({
+  xhrFields: {
+    withCredentials: true
+  }
+});
+
 
 export default {
     props: {
@@ -84,7 +90,7 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 'type': 'POST',
-                'url': 'http://localhost:8081/api/sparql-select',
+                'url': 'https://localhost:8081/api/sparql-select',
                 'data': JSON.stringify(data),
                 'dataType': 'json',
                 success: (data) => {
@@ -149,13 +155,13 @@ export default {
                 tripleData: tripleData,
             };
             $.ajax({
-                url: 'http://localhost:8081/api/update',
+                url: 'https://localhost:8081/api/update',
                 type: 'POST',
                 data: JSON.stringify(removeOperation),
                 contentType: 'application/json',
                 success: function (response) {
                     $.ajax({
-                        url: 'http://localhost:8081/api/update',
+                        url: 'https://localhost:8081/api/update',
                         type: 'POST',
                         data: JSON.stringify(addOperation),
                         contentType: 'application/json',
@@ -187,13 +193,13 @@ export default {
                     tripleData: tripleData,
                 };
                 $.ajax({
-                    url: 'http://localhost:8081/api/update',
+                    url: 'https://localhost:8081/api/update',
                     type: 'POST',
                     data: JSON.stringify(removeOperation),
                     contentType: 'application/json',
                     success: function (response) {
                         $.ajax({
-                            url: 'http://localhost:8081/api/update',
+                            url: 'https://localhost:8081/api/update',
                             type: 'POST',
                             data: JSON.stringify(addOperation),
                             contentType: 'application/json',
@@ -294,14 +300,14 @@ export default {
                 let formData = new FormData();
                 formData.append('file', file);
                 $.ajax({
-                    url: 'http://localhost:8081/api/uplift',
+                    url: 'https://localhost:8081/api/uplift',
                     type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
                     success: function (response) {
                         $.ajax({
-                            url: `http://localhost:8081/download/data/${response}`,
+                            url: `https://localhost:8081/download/data/${response}`,
                             method: 'GET',
                             xhrFields: {
                                 responseType: 'blob',
