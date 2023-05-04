@@ -288,10 +288,14 @@ export default {
                 };
 
                 header.forEach(predicate => {
-                    if (predicate === 'latitude') {
-                        feature.geometry.coordinates.push(parseFloat(item[predicate]['value']));
-                    } else if (predicate === 'longitude') {
-                        feature.geometry.coordinates.push(parseFloat(item[predicate]['value']));
+                    if (predicate === 'coordinates') {
+                        var coords = String(item[predicate]['value']).split('/');
+                        coords = coords[coords.length - 1];
+                        coords = coords.split(',_');
+                        if (coords) {
+                            console.log(coords)
+                            feature.geometry.coordinates = [parseFloat(coords[0]), parseFloat(coords[1])];
+                        }
                     } else {
                         feature.properties[predicate] = item[predicate]['value'];
                     }

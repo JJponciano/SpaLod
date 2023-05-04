@@ -138,8 +138,9 @@ export default {
             var tripleData = {
                 subject: triplet.subject,
                 predicate: predicate,
-                object: encodeURIComponent(triplet.object),
+                object: triplet.object.replace(/ /g, '_'),
             };
+            console.log(tripleData);
             const removeOperation = {
                 operation: "remove",
                 tripleData: tripleData,
