@@ -25,7 +25,7 @@ export default {
     },
     data() {
         return {
-            dataArray: [["Arzt", "C3", 50.000, 8.000], ["Bibliothek", "C3.2", 50.001, 8.001]],
+            dataArray: [],
             sizeOfArray: 0,
             path: null,
             query:null,
