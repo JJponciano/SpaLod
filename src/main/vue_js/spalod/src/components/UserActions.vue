@@ -293,9 +293,13 @@ export default {
                         coords = coords[coords.length - 1];
                         coords = coords.split(',_');
                         if (coords) {
-                            console.log(coords)
                             feature.geometry.coordinates = [parseFloat(coords[0]), parseFloat(coords[1])];
                         }
+                    } else if (predicate === 'itemLabel') {
+                        var label = String(item[predicate]['value']).split('/');
+                        label = label[label.length - 1];
+                        label = label.replace(/_/g, ' ');
+                        feature.properties[predicate] = label;
                     } else {
                         feature.properties[predicate] = item[predicate]['value'];
                     }
