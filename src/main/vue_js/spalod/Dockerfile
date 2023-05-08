@@ -20,10 +20,12 @@ FROM nginx:latest
 # Copy the built files from the previous stage to the NGINX web root directory
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY ./default.conf /etc/nginx/conf.d/default.conf
+COPY ./new-server.key /etc/nginx/new-server.key
+COPY ./server.crt /etc/nginx/server.crt
 
-
-# Expose the default NGINX port
+# Expose ports 80 and 443
 EXPOSE 80
+EXPOSE 443
 
 # Start NGINX
 CMD ["nginx", "-g", "daemon off;"]
