@@ -10,7 +10,7 @@ import PopUp from './components/PopUp.vue';
 const routes={
   '/': { component: NavBar, name: 'NavBar' },
   '/login': { component: Login, name: 'Login' },
-  '/register': { component: Register, name: 'Register' }
+  '/register': { component: Register, name: 'Register' },
   }
 
 
@@ -34,7 +34,7 @@ export default {
     };
   },computed: {
     currentView() {
-      if (this.currentPath === '/') {
+      if (this.currentPath === '/' || this.currentPath === '/admin' ) {
         return 'main';
       } 
       else if (this.currentPath === '/login') {

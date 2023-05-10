@@ -40,7 +40,8 @@
             success: (response) => {
               console.log(response)
               window.location.href='/';
-              
+
+              localStorage.setItem('username', this.username);
             },
             error: (error) => {
               console.error(error);

@@ -53,7 +53,6 @@ public class LoginController
       @RequestMapping("/admin")
       public String getAdmin()
       {
-            System.out.println("curl successful");
             return "Welcome Admin";
       }
 

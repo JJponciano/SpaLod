@@ -13,7 +13,6 @@
         <li><button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button></li>
       </ul>
       <button v-if="isAdmin" @click="navigateTo('admin')" class="navbar-title">Admin</button>
-      <button v-if="!isAdmin && isLoggedIn" class="navbar-title">User</button>
       <button v-if="!isLoggedIn" @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button>
     </div>
   </template>
@@ -29,6 +28,7 @@
         isAdmin: false,
         menuAnimationClass: "",
         isLoggedIn: false,
+        username: "",
       };
     },
     mounted() {
@@ -37,6 +37,7 @@
         this.isDarkMode = event.matches;
       });
       this.checkLoggedIn();
+      this.checkRole();
     },
     methods: {
       detectDarkMode() {
@@ -55,7 +56,22 @@
         this.currentPath = window.location.pathname;
         window.location.reload();
       },
-      checkLoggedIn() { // Add this method
+      checkRole(){
+        $.ajax({
+          url: 'https://localhost:8081/admin',
+          method: 'GET',
+          xhrFields: {
+            withCredentials: true
+          },
+          success: (response) => {
+            this.isAdmin = true;
+          },
+          error: (error) => {
+            console.error(error);
+          }
+        })
+      },
+      checkLoggedIn() { 
         $.ajax({
           url: 'https://localhost:8081/status',
           method: 'GET',
@@ -63,10 +79,8 @@
             withCredentials: true
           },
           success: (response) => {
-            console.log(response);
-            console.log("Logged in");
             this.isLoggedIn = true;
-            
+            this.username=localStorage.getItem('username');
           },
           error: (error) => {
             console.error(error);
