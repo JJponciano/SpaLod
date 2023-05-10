@@ -113,6 +113,7 @@
   padding: 30px 42px 10px 10px;
   border: 1px solid #000;
   border-radius: 5px;
+  background-color: transparent;
   transition: background-color 0.2s ease-in-out;
 }
 .navbar.dark .hamburger-button{

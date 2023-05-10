@@ -10,10 +10,10 @@
         <p v-for="(triplet, index) in rdfData" :key="triplet.id">
             <input type="checkbox" v-model="selectedTriplets" :value="triplet" />
             <input type="text" v-model="triplet.subject" class="subject" />
-            <input type="text" v-model="triplet.predicate" class="predicate"
+            <input type="text" v-model="triplet.predicate" class="predicate" :class="{ unknown: unkownPredicates.includes(triplet.predicate) }"
                 @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" />
-        <ul v-if="showResults && activeInput === index" class="autocomplete-results">
-            <button @click="() => showResults = false">Close</button>
+        <ul v-if="activeInput === index" class="autocomplete-results">
+            <button @click="() => activeInput = null">Close</button>
             <div class="custom-predicate">
                 <h2>Custom predicate</h2>
                 <input type="radio" id="datatype-property" value="DatatypeProperty" v-model="picked">
@@ -22,10 +22,12 @@
                 <label for="object-property">ObjectProperty</label>
                 <br>
             </div>
-            <h2 v-if="filteredResults.length > 0">Predicate Options</h2>
-            <li v-for="(result, i) in filteredResults" :key="i" @click="selectResult(result, index)">
-                {{ result.split('#')[1] }}
-            </li>
+            <div v-if="showResults">
+                <h2 v-if="filteredResults.length > 0">Predicate Options</h2>
+                <li v-for="(result, i) in filteredResults" :key="i" @click="selectResult(result, index)">
+                    {{ result.split('#')[1] }}
+                </li>
+            </div>
         </ul>
         <input type="text" v-model="triplet.object" class="object" />
         <button class="delete-button" @click="deleteTriplet(index)">Delete</button>
@@ -62,10 +64,11 @@ export default {
         return {
             name: "",
             isDarkMode: false,
-            rdfData: null,
+            rdfData: [],
             predicateOptions: [],
             filteredResults: [],
             selectedTriplets: [],
+            unkownPredicates: [],
             showResults: false,
             activeInput: null,
             picked: "DatatypeProperty"
@@ -79,6 +82,16 @@ export default {
         this.loadPredicates();
     },
     methods: {
+        areAllPredicatesKnown() {
+            this.unkownPredicates = [];
+            this.rdfData.forEach((triplet) => {
+                const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
+                if (!this.predicateOptions.includes(predicate)) {
+                    this.unkownPredicates.push(triplet.predicate);
+                }
+            });
+            return this.unkownPredicates.length === 0;
+        },
         loadPredicates() {
             const data = {
                 query: 'SELECT ?property ?propertyType WHERE{{?property a owl:ObjectProperty . BIND("Object Property" AS ?propertyType)} UNION {?property a owl:DatatypeProperty . BIND("Data Property" AS ?propertyType)}} ORDER BY ?property',
@@ -97,6 +110,7 @@ export default {
                     this.predicateOptions = data.results.bindings.map(binding => binding.property.value);
                 }
             });
+            this.areAllPredicatesKnown();
         },
         detectDarkMode() {
             this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -144,8 +158,9 @@ export default {
             var tripleData = {
                 subject: triplet.subject,
                 predicate: predicate,
-                object: encodeURIComponent(triplet.object),
+                object: triplet.object.replace(/ /g, '_'),
             };
+            console.log(tripleData);
             const removeOperation = {
                 operation: "remove",
                 tripleData: tripleData,
@@ -221,20 +236,24 @@ export default {
             this.activeInput = index;
             this.filteredResults = this.predicateOptions.filter((result) => result.toLowerCase().includes(predicate.toLowerCase()));
             this.showResults = true;
+            this.areAllPredicatesKnown();
         },
         selectResult(result, index) {
             this.rdfData[index].predicate = result.split('#')[1];
             this.showResults = false;
         },
         addSelected() {
-            if(confirm("If there are custom predicates, they will be added to the ontology as " + this.picked + ". Are you sure you want to continue?")) {
+            this.loadPredicates();
+            if (this.areAllPredicatesKnown()) {
                 this.selectedTriplets.forEach((triplet) => {
-                const index = this.rdfData.findIndex((rdfTriplet) => {
-                    return rdfTriplet === triplet;
+                    const index = this.rdfData.findIndex((rdfTriplet) => {
+                        return rdfTriplet === triplet;
+                    });
+                    this.addTriplet(triplet, index);
                 });
-                this.addTriplet(triplet, index);
-            });
-            this.selectedTriplets = [];
+                this.selectedTriplets = [];
+            } else {
+                alert("Some predicates are not known :\n" + this.unkownPredicates + "\nPlease add them to the ontology first.");
             }
         },
         removeSelected() {
@@ -383,6 +402,11 @@ p {
     padding: 10px;
     border: none;
     text-align: center;
+}
+
+.predicate.unknown {
+    background-color: #EF4444;
+    color: white;
 }
 
 .add-selected {
