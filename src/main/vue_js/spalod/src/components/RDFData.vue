@@ -15,8 +15,12 @@
             <input type="checkbox" v-model="selectedTriplets" :value="triplet" />
             <input type="text" v-model="triplet.subject" class="subject" />
             <input type="text" v-model="triplet.predicate" class="predicate"
-                :class="{ unknown: unkownPredicates.includes(triplet.predicate) }"
-                @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" />
+                    :class="{ unknown: unkownPredicates.includes(triplet.predicate) }"
+                    @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" 
+                    :title="unkownPredicates.includes(triplet.predicate)
+                            ? 'Unknown predicate: Please add it manually by specifying the type'
+                            : null"
+                            />
         <ul v-if="activeInput === index" class="autocomplete-results">
             <button @click="() => activeInput = null">Close</button>
             <div class="custom-predicate">
@@ -45,6 +49,7 @@
 
 <script>
 import $ from 'jquery';
+
 $.ajaxSetup({
     xhrFields: {
         withCredentials: true
@@ -411,8 +416,9 @@ p {
 }
 
 .predicate.unknown {
-    background-color: #EF4444;
+    background-color: #fb7171;
     color: white;
+    border: 3px solid #EF4444;
 }
 
 .add-selected {
