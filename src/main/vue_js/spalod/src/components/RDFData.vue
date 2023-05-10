@@ -1,18 +1,33 @@
 <template>
-    <div class="rdf-data" :class="{ dark: isDarkMode }">
+    <div class="rdf-data" :class="{ dark: isDarkMode }" v-if="rdfView">
         <div class="header">
-            <h2>RDF Data</h2>
+            <div class="title">
+                <h2 :class="{ selected: rdfView }" @click="rdfView = true">RDF Data</h2>
+                <h2> | </h2>
+                <h2 :class="{ selected: !rdfView }" @click="rdfView = false">Query Result</h2>
+            </div>
             <div v-if="selectedTriplets.length > 0">
                 <button @click="removeSelected">Remove Selected</button>
                 <button @click="addSelected" class="add-selected">Add Selected</button>
             </div>
+            <div v-if="rdfData && rdfData.length > 0" class="download">
+                <button @click="downloadGeoJSON">Download GeoJSON</button>
+                <button class="download-button" @click="downloadOwl">Download Owl</button>
+            </div>
+        </div>
+        <div class="select-all" v-if="rdfData && rdfData.length > 0">
+            <input type="checkbox" v-model="areAllSelected" @change="selectAll(areAllSelected)"/>
+            <h3>Select all</h3>
         </div>
         <button @click="refreshMap" class="refresh">Refresh Map</button>
         <p v-for="(triplet, index) in rdfData" :key="triplet.id">
             <input type="checkbox" v-model="selectedTriplets" :value="triplet" />
             <input type="text" v-model="triplet.subject" class="subject" />
-            <input type="text" v-model="triplet.predicate" class="predicate" :class="{ unknown: unkownPredicates.includes(triplet.predicate) }"
-                @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" />
+            <input type="text" v-model="triplet.predicate" class="predicate"
+                :class="{ unknown: unkownPredicates.includes(triplet.predicate) }"
+                @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" :title="unkownPredicates.includes(triplet.predicate)
+                        ? 'Unknown predicate: Please add it manually by specifying the type'
+                        : null" />
         <ul v-if="activeInput === index" class="autocomplete-results">
             <button @click="() => activeInput = null">Close</button>
             <div class="custom-predicate">
@@ -36,19 +51,37 @@
         <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
         <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
         </p>
-        <div v-if="rdfData && rdfData.length > 0" class="download">
-            <button @click="downloadGeoJSON">Download GeoJSON</button>
-            <button class="download-button" @click="downloadOwl">Download Owl</button>
+    </div>
+    <div class="rdf-data" :class="{ dark: isDarkMode }" v-else>
+        <div class="header">
+            <div class="title">
+                <h2 :class="{ selected: rdfView }" @click="rdfView = true">RDF Data</h2>
+                <h2> | </h2>
+                <h2 :class="{ selected: !rdfView }" @click="rdfView = false">Query Result</h2>
+            </div>
         </div>
+        <table>
+          <thead>
+            <tr>
+              <th v-for="key in keys">{{ key }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(result, index) in queryResult" :key="index">
+              <td v-for="key in keys">{{ result[key] }}</td>
+            </tr>
+          </tbody>
+        </table>
     </div>
 </template>
 
 <script>
 import $ from 'jquery';
+
 $.ajaxSetup({
-  xhrFields: {
-    withCredentials: true
-  }
+    xhrFields: {
+        withCredentials: true
+    }
 });
 
 
@@ -70,9 +103,11 @@ export default {
             filteredResults: [],
             selectedTriplets: [],
             unkownPredicates: [],
+            queryResult: [],
             showResults: false,
             activeInput: null,
-            picked: "DatatypeProperty"
+            picked: "DatatypeProperty",
+            rdfView: true,
         };
     },
     mounted() {
@@ -82,13 +117,21 @@ export default {
         });
         this.loadPredicates();
     },
+    computed: {
+        keys() {
+            if (this.queryResult.length > 0)
+                return Object.keys(this.queryResult[0])
+        }
+    },
     methods: {
         areAllPredicatesKnown() {
             this.unkownPredicates = [];
             this.rdfData.forEach((triplet) => {
                 const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
                 if (!this.predicateOptions.includes(predicate)) {
-                    this.unkownPredicates.push(triplet.predicate);
+                    if (!this.unkownPredicates.includes(triplet.predicate)) {
+                        this.unkownPredicates.push(triplet.predicate);
+                    }
                 }
             });
             return this.unkownPredicates.length === 0;
@@ -126,7 +169,6 @@ export default {
                 geoJson.features.forEach(feature => {
                     const properties = feature.properties;
                     const subject = properties['item'];
-                    if (!subject) return;
                     for (const key in properties) {
                         if (key === 'item') continue;
                         const predicate = key;
@@ -138,15 +180,18 @@ export default {
                         });
                     }
 
-                    const predicate = 'coordinates';
                     const coordinates = feature.geometry.coordinates;
-                    const object = coordinates[0] + ', ' + coordinates[1];
-                    this.rdfData.push({
-                        subject,
-                        predicate,
-                        object,
-                    });
+                    if (coordinates.length > 0) {
+                        const predicate = 'coordinates';
+                        const object = coordinates[0] + ', ' + coordinates[1];
+                        this.rdfData.push({
+                            subject,
+                            predicate,
+                            object,
+                        });
+                    }
                 });
+                this.processQueryResult(geoJson);
                 this.areAllPredicatesKnown();
             };
         },
@@ -156,6 +201,18 @@ export default {
             const updatefile = new File([blob], "geodata.json", {type: "application/json"});
             this.$emit('update', updatefile);
         },
+        processQueryResult(geoJson) {
+            this.queryResult = [];
+            geoJson.features.forEach(feature => {
+                if (feature.geometry.coordinates.length === 0) {
+                    this.queryResult.push(feature.properties);
+                } else {
+                    var newJson = feature.properties;
+                    newJson.coordinates = feature.geometry.coordinates;
+                    this.queryResult.push(newJson);
+                }
+            })
+        },
         deleteTriplet(index) {
             if (confirm("Are you sure you want to delete this triplet?")) {
                 this.rdfData.splice(index, 1);
@@ -163,16 +220,59 @@ export default {
         },
         addTriplet(triplet, index) {
             const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
+
+            // Delete the old triplet
+            const data = {
+                query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + triplet.subject + '>)}',
+                triplestore: ''
+            };
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                'type': 'POST',
+                'url': 'https://localhost:8081/api/sparql-select',
+                'data': JSON.stringify(data),
+                'dataType': 'json',
+                success: (data) => {
+                    if (data.results.bindings.length > 0) {
+                        const object = data.results.bindings[0].o.value
+                        const tripleData = {
+                            subject: triplet.subject,
+                            predicate: predicate,
+                            object: object,
+                        };
+                        const removeOperation = {
+                            operation: "remove",
+                            tripleData: tripleData,
+                        };
+                        $.ajax({
+                            url: 'https://localhost:8081/api/update',
+                            type: 'POST',
+                            data: JSON.stringify(removeOperation),
+                            contentType: 'application/json',
+                            success: function (response) {
+                                console.log('Triple removed');
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
+            // Add the new triplet
             var tripleData = {
                 subject: triplet.subject,
                 predicate: predicate,
                 object: triplet.object.replace(/ /g, '_'),
             };
             console.log(tripleData);
-            const removeOperation = {
-                operation: "remove",
-                tripleData: tripleData,
-            };
             const addOperation = {
                 operation: "add",
                 tripleData: tripleData,
@@ -180,30 +280,18 @@ export default {
             $.ajax({
                 url: 'https://localhost:8081/api/update',
                 type: 'POST',
-                data: JSON.stringify(removeOperation),
+                data: JSON.stringify(addOperation),
                 contentType: 'application/json',
                 success: function (response) {
-                    console.log("REMOVE");
-                    console.log(response);
-                    $.ajax({
-                        url: 'https://localhost:8081/api/update',
-                        type: 'POST',
-                        data: JSON.stringify(addOperation),
-                        contentType: 'application/json',
-                        success: function (response) {
-                            console.log("ADD");
-                            console.log(response);
-                            $('#btn' + index).text('Added').addClass('added');
-                        },
-                        error: function (error) {
-                            console.log(error);
-                        }
-                    });
+                    $('#btn' + index).text('Added').addClass('added');
+                    console.log('Triple added');
                 },
                 error: function (error) {
                     console.log(error);
                 }
             });
+
+            // Add the new predicate
             this.loadPredicates();
             if (!this.predicateOptions.includes(predicate)) {
                 tripleData = {
@@ -257,6 +345,13 @@ export default {
         selectResult(result, index) {
             this.rdfData[index].predicate = result.split('#')[1];
             this.showResults = false;
+        },
+        selectAll(areAllSelected) {
+            if (areAllSelected) {
+                this.selectedTriplets = this.rdfData;
+            } else {
+                this.selectedTriplets = [];
+            }
         },
         addSelected() {
             this.loadPredicates();
@@ -329,8 +424,8 @@ export default {
         },
         downloadOwl() {
             const geoJSON = this.getGeoJSON();
-            const blob = new Blob([JSON.stringify(geoJSON)], {type: "application/json"});
-            const file = new File([blob], "geodata.json", {type: "application/json"});
+            const blob = new Blob([JSON.stringify(geoJSON)], { type: "application/json" });
+            const file = new File([blob], "geodata.json", { type: "application/json" });
             if (file) {
                 let formData = new FormData();
                 formData.append('file', file);
@@ -372,12 +467,37 @@ export default {
 </script>
 
 <style>
+.select-all {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+}
+
+.select-all > input {
+    margin: 0 10px 0 0;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
     padding: 0 0 10px 0;
+}
+
+.title {
+    display: flex;
+    flex-direction: row;
+}
+
+.title > h2 {
+    margin: 10px;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.title > h2.selected {
+    font-weight: bold;
 }
 
 .rdf-data {
@@ -421,8 +541,9 @@ p {
 }
 
 .predicate.unknown {
-    background-color: #EF4444;
+    background-color: #fb7171;
     color: white;
+    border: 3px solid #EF4444;
 }
 
 .add-selected {
@@ -450,7 +571,7 @@ button {
     cursor: pointer;
     background-color: #EF4444;
     color: #fff;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: bold;
     padding: 5px 10px;
     border-radius: 5px;
@@ -470,7 +591,7 @@ button:hover {
     cursor: pointer;
     background-color: #EF4444;
     color: #fff;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: bold;
     padding: 5px 10px;
     border-radius: 5px;
@@ -553,4 +674,22 @@ label {
     font-weight: bold;
     margin: 10px;
 }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #4A5568;
+  font-weight: bold;
+}
+
 </style>
