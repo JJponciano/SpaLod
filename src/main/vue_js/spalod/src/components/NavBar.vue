@@ -13,18 +13,22 @@
         <li><button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button></li>
       </ul>
       <button v-if="isAdmin" @click="navigateTo('admin')" class="navbar-title">Admin</button>
+      <button v-if="!isAdmin && isLoggedIn" class="navbar-title">User</button>
+      <button v-if="!isLoggedIn" @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button>
     </div>
   </template>
   
   <script>
+  import $ from "jquery";
   export default {
     data() {
       return {
         activeTab: 'admin',
         isDarkMode: false,
         menuOpen: "menu-closed",
-        isAdmin: true,
-        menuAnimationClass: ""
+        isAdmin: false,
+        menuAnimationClass: "",
+        isLoggedIn: false,
       };
     },
     mounted() {
@@ -32,6 +36,7 @@
       window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
         this.isDarkMode = event.matches;
       });
+      this.checkLoggedIn();
     },
     methods: {
       detectDarkMode() {
@@ -50,7 +55,25 @@
         this.currentPath = window.location.pathname;
         window.location.reload();
       },
-    },
+      checkLoggedIn() { // Add this method
+        $.ajax({
+          url: 'https://localhost:8081/status',
+          method: 'GET',
+          xhrFields: {
+            withCredentials: true
+          },
+          success: (response) => {
+            console.log(response);
+            console.log("Logged in");
+            this.isLoggedIn = true;
+            
+          },
+          error: (error) => {
+            console.error(error);
+          }
+        })
+      },
+    }
   };
   </script>
   
@@ -113,6 +136,7 @@
   padding: 30px 42px 10px 10px;
   border: 1px solid #000;
   border-radius: 5px;
+  background-color: transparent;
   transition: background-color 0.2s ease-in-out;
 }
 .navbar.dark .hamburger-button{
