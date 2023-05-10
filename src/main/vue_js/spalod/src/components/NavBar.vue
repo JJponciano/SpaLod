@@ -54,6 +54,9 @@
       },
       navigateTo(page) {
         this.activeTab = page;
+        window.history.pushState({}, '', `/${page}`);
+        this.currentPath = window.location.pathname;
+        window.location.reload();
       },
     },
   };

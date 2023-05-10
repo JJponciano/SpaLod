@@ -63,6 +63,13 @@
 <script>
 import $ from "jquery";
 
+$.ajaxSetup({
+  xhrFields: {
+    withCredentials: true
+  }
+});
+
+
 export default {
     data() {
         return {
@@ -217,7 +224,7 @@ export default {
             let formData = new FormData();
             formData.append('file', file);
             $.ajax({
-                url: 'http://localhost:8081/api/check-ontology',
+                url: 'https://localhost:8081/api/check-ontology',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -225,7 +232,7 @@ export default {
                 success: function (response) {
                     if(response == '[]') {
                         $.ajax({
-                            url: 'http://localhost:8081/api/enrich',
+                            url: 'https://localhost:8081/api/enrich',
                             type: 'POST',
                             data: formData,
                             processData: false,
@@ -247,7 +254,7 @@ export default {
             });
         },
         confirmRequest() {
-            const url = 'http://localhost:8081/api/sparql-select';
+            const url = 'https://localhost:8081/api/sparql-select';
             const data = {
                 query: this.inputAdvanced,
                 triplestore: ''
@@ -259,15 +266,15 @@ export default {
         },
         postJSON(url, data, callback) {
             $.ajax({
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                'type': 'POST',
-                'url': url,
-                'data': JSON.stringify(data),
-                'dataType': 'json',
-                'success': callback
+            headers: { 
+                'Accept': 'application/json',
+                'Content-Type': 'application/json' 
+            },
+            'type': 'POST',
+            'url': url,
+            'data': JSON.stringify(data),
+            'dataType': 'json',
+            'success': callback
             });
         },
         handleResponse(response) {

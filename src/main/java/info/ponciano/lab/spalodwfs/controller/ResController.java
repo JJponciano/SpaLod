@@ -2,7 +2,6 @@ package info.ponciano.lab.spalodwfs.controller;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.sparql.function.library.print;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 import info.ponciano.lab.spalodwfs.model.FormData;
 import info.ponciano.lab.spalodwfs.model.JsonUtil;
-import info.ponciano.lab.spalodwfs.model.KBmanagerLocal;
 import info.ponciano.lab.spalodwfs.model.SparqlQuery;
 import info.ponciano.lab.spalodwfs.model.TripleData;
 import info.ponciano.lab.spalodwfs.model.TripleOperation;
@@ -21,7 +19,6 @@ import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Set;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +29,6 @@ import info.ponciano.lab.pitools.files.PiFile;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api")
 @RestController
 public class ResController {
@@ -51,6 +47,7 @@ public class ResController {
 
   @PostMapping("/sign-in")
   public ResponseEntity<Void> signIn(@RequestBody FormData formData) {
+    System.out.println("***********" + "/sign-in" + "***********");
     System.out.println(formData);
     formDataService.saveFormData(formData);
     return ResponseEntity.ok().build();
@@ -78,9 +75,10 @@ public class ResController {
    *         219.02343750000003).FILTER(?longitude >= -202.85156250000003)}LIMIT
    *         500", "triplestore": "https://query.wikidata.org/sparql"}'
    */
-  
+
   @PostMapping("/sparql-select")
   public String sparqlQuery(@RequestBody SparqlQuery sq) {
+    System.out.println("***********" + "/sparql-select" + "***********");
     System.out.println("Query:");
     System.out.println(sq);
     String query = sq.getResults();
@@ -90,6 +88,7 @@ public class ResController {
       results = Triplestore.get().executeSelectQuery(query);
     else
       results = Triplestore.executeSelectQuery(query, triplestore);
+      System.out.println(results);
     return results;
   }
 
@@ -108,12 +107,15 @@ public class ResController {
    */
   @PostMapping("/update")
   public ResponseEntity<Void> update(@RequestBody TripleOperation tripleOperation) {
+    System.out.println("***********" + "/update" + "***********");
     System.out.print(tripleOperation);
     TripleData tripleData = tripleOperation.getTripleData();
     if ("add".equalsIgnoreCase(tripleOperation.getOperation())) {
       Triplestore.get().addTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
+      System.out.println("-> added!");
     } else if ("remove".equalsIgnoreCase(tripleOperation.getOperation())) {
       Triplestore.get().removeTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
+      System.out.println("-> removed!");
     } else {
       throw new IllegalArgumentException("Invalid operation: " + tripleOperation.getOperation());
     }
@@ -132,6 +134,7 @@ public class ResController {
    */
   @PostMapping("/uplift")
   public String uplift(@RequestParam("file") MultipartFile file) {
+    System.out.println("***********" + "/uplift" + "***********");
     try {
       // store file
       storageService.store(file);
@@ -143,7 +146,11 @@ public class ResController {
       // execute the uplift
       GeoJsonRDF.upliftGeoJSON(geojsonfilepath, KB.get().getOnt());
       KB.get().save();
-      String out = filename.substring(0, filename.lastIndexOf(".")) + ".owl";
+      String out;
+      if (filename != null)
+        out = filename.substring(0, filename.lastIndexOf(".")) + ".owl";
+      else
+        out = "out.owl";
       String res = new StorageProperties().getLocation() + "/" + out;
       System.out.println(res);
       new PiFile(KB.OUT_ONTO).copy(res);
@@ -167,7 +174,7 @@ public class ResController {
    */
   @PostMapping("/downlift")
   public String downlift(GeoJsonForm di) {
-
+    System.out.println("***********" + "/downlift" + "***********");
     String uri = di.getName();
     try {
       // downlift
@@ -196,7 +203,9 @@ public class ResController {
    * 
    */
   @PostMapping("/enrich")
-  public  ResponseEntity<Void> enrich(@RequestParam("file") MultipartFile file) {
+  public ResponseEntity<Void> enrich(@RequestParam("file") MultipartFile file) {
+    System.out.println("***********" + "/enrich" + "***********");
+
     // store file
     storageService.store(file);
     // File reading
@@ -206,21 +215,24 @@ public class ResController {
     try {
       newOntology.read(new FileInputStream(filepath), null);
       Triplestore.get().addOntology(newOntology);
-    return ResponseEntity.ok().build();
+      return ResponseEntity.ok().build();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
       return ResponseEntity.badRequest().build();
     }
   }
+
   @PostMapping("/check-ontology")
-  public String check(@RequestParam("file") MultipartFile file) { 
+  public String check(@RequestParam("file") MultipartFile file) {
+    System.out.println("***********" + "/check-ontology" + "***********");
+
     // store file
     storageService.store(file);
     // File reading
     String filename = file.getOriginalFilename();
     String filepath = KB.STORAGE_DIR + "/" + filename;
     OntModel newOntology = ModelFactory.createOntologyModel();
-    Set<String> unknownPredicates=null;
+    Set<String> unknownPredicates = null;
     try {
       newOntology.read(new FileInputStream(filepath), null);
       unknownPredicates = Triplestore.get().getUnknownPredicates(newOntology);

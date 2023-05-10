@@ -3,7 +3,16 @@ import NavBar from './components/NavBar.vue';
 import UserActions from './components/UserActions.vue';
 import MapView from './components/MapView.vue';
 import RDFData from './components/RDFData.vue';
+import Login from './components/Login.vue';
+import Register from './components/Register.vue';
 import PopUp from './components/PopUp.vue';
+
+const routes={
+  '/': { component: NavBar, name: 'NavBar' },
+  '/login': { component: Login, name: 'Login' },
+  '/register': { component: Register, name: 'Register' }
+  }
+
 
 export default {
   components: {
@@ -12,6 +21,8 @@ export default {
     MapView,
     RDFData,
     PopUp,
+    Login,
+    Register
   },
   data() {
     return {
@@ -19,7 +30,28 @@ export default {
       chooseCSV:false,
       chooseJson:false,
       popup:false,
+      currentPath: window.location.pathname
     };
+  },computed: {
+    currentView() {
+      if (this.currentPath === '/') {
+        return 'main';
+      } 
+      else if (this.currentPath === '/login') {
+        return 'login';
+      } 
+      else if (this.currentPath === '/register') {
+        return 'register';
+      } 
+      else {
+        return 'NavBar';
+      }
+    }
+  },
+  mounted() {
+    window.addEventListener('popstate', () => {
+      this.currentPath = window.location.pathname;
+    });
   },
   methods: {
     onFileSelected(file) {
@@ -49,11 +81,11 @@ export default {
 
 <template>
   <div class="app">
-    <div class="main">
+    <div class="main" v-if="currentView === 'main'">
       <div class="user-actions-container">
         <UserActions @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup"></UserActions>
       </div>
-      <div class="right-container">
+      <div class="right-container" >
         <div class="map-container">
           <MapView :file="file"></MapView>
         </div>
@@ -62,14 +94,21 @@ export default {
         </div>
       </div>
     </div>
-  </div>
-  <div class="navbar">
-    <NavBar></NavBar>
+    <div class="main" v-if="currentView === 'login'">
+      <Login></Login>
+    </div>
+    <div class="main" v-if="currentView === 'register'">
+      <Register></Register>
+    </div>
+    <div class="navbar">
+        <NavBar></NavBar>
+    </div>
   </div>
   <div class="popup">
     <PopUp :chooseCSV="chooseCSV" :chooseJson="chooseJson" :popup="popup" @CSVBack="onUnselectCSV" @JsonBack="onUnselectJson" @popupBack="onClosepopUp"></PopUp>
   </div>
 </template>
+
 
 <style scoped>
 

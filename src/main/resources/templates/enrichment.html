@@ -184,7 +184,7 @@ MA 02110-1301  USA
                           } else {
                                      console.log(width);
                                      $.ajax({
-                                            url: "http://localhost:8081/progress"
+                                            url: "https://localhost:8081/progress"
                                              }).then(function(data) {
                                                     $('#progressBar').css('width', data.value + '%');
                                                     document.getElementById("label").innerHTML = data.value * 1 + '%';

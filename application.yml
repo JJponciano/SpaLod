@@ -1,6 +1,12 @@
 server:
   port : 8081
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store: classpath:keystore.p12
+    key-store-password: spalod
 
+    
 spring:
   security:
     oauth2:
@@ -9,6 +15,7 @@ spring:
           github:
             clientId: f8053e8cdd6efd9d0698
             clientSecret: b7c2d2500ac97226ee3fd7118ae03ee3423a5903
+
 # application.properties
 triplestore.sparqlEndpoint: http://example.com/sparql
 
