@@ -1,9 +1,5 @@
 <template>
     <div class="rdf-data" :class="{ dark: isDarkMode }" v-if="rdfView">
-        <div class="select-all" v-if="rdfData && rdfData.length > 0">
-            <input type="checkbox" v-model="areAllSelected" @change="selectAll(areAllSelected)"/>
-            <h3>Select all</h3>
-        </div>
         <div class="header">
             <div class="title">
                 <h2 :class="{ selected: rdfView }" @click="rdfView = true">RDF Data</h2>
@@ -18,6 +14,10 @@
                 <button @click="downloadGeoJSON">Download GeoJSON</button>
                 <button class="download-button" @click="downloadOwl">Download Owl</button>
             </div>
+        </div>
+        <div class="select-all" v-if="rdfData && rdfData.length > 0">
+            <input type="checkbox" v-model="areAllSelected" @change="selectAll(areAllSelected)"/>
+            <h3>Select all</h3>
         </div>
         <p v-for="(triplet, index) in rdfData" :key="triplet.id">
             <input type="checkbox" v-model="selectedTriplets" :value="triplet" />
