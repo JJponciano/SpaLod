@@ -203,8 +203,8 @@
 ul {
   position: absolute;
   bottom:-90vh;
-  top: 100%;
-  left: -220px;
+  top: 125%;
+  left: -225px;
   padding: 10px;
   background-color: #fff;
   border: 1px solid #000;
