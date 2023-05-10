@@ -58,7 +58,7 @@ export default {
           <MapView :file="file"></MapView>
         </div>
         <div class="rdf-data-container">
-          <RDFData :file="file"></RDFData>
+          <RDFData @update="onFileSelected" :file="file"></RDFData>
         </div>
       </div>
     </div>

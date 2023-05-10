@@ -7,6 +7,7 @@
                 <button @click="addSelected" class="add-selected">Add Selected</button>
             </div>
         </div>
+        <button @click="refreshMap" class="refresh">Refresh Map</button>
         <p v-for="(triplet, index) in rdfData" :key="triplet.id">
             <input type="checkbox" v-model="selectedTriplets" :value="triplet" />
             <input type="text" v-model="triplet.subject" class="subject" />
@@ -29,7 +30,7 @@
                 </li>
             </div>
         </ul>
-        <input type="text" v-model="triplet.object" class="object" />
+        <input type="text" v-model="triplet.object" class="object" /> <!-- TODO: ajouter un listener pour actualiser la carte en temps réel -->
         <button class="delete-button" @click="deleteTriplet(index)">Delete</button>
         <button :id="'btn' + index" class="add-button" @click="addTriplet(triplet, index)">Add</button>
         <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
@@ -141,6 +142,12 @@ export default {
                     });
                 });
             };
+        },
+        refreshMap(){
+            var geojones=this.getGeoJSON();
+            const blob = new Blob([JSON.stringify(geojones)], {type: "application/json"});
+            const updatefile = new File([blob], "geodata.json", {type: "application/json"});
+            this.$emit('update', updatefile);
         },
         deleteTriplet(index) {
             if (confirm("Are you sure you want to delete this triplet?")) {
@@ -355,7 +362,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
-    padding: 0 0 40px 0;
+    padding: 0 0 10px 0;
 }
 
 .rdf-data {
@@ -406,6 +413,21 @@ p {
 .add-selected {
     background-color: #0baaa7;
     margin-left: 10px;
+}
+.refresh{
+    font-weight:bold;
+    font-size: medium;
+    background-color:#1A202C;
+    margin-bottom: 30px;
+}
+
+.rdf-data.dark .refresh{
+    background-color:#4A5568;
+    transition: background-color 0.3s ease;
+}
+
+.rdf-data.dark .refresh:hover{
+    background-color: #1A202C;
 }
 
 button {
