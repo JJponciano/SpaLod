@@ -105,7 +105,6 @@ export default{
         },
         showPopup(){
             this.isPopupVisible=true;
-            //TODO faire en sorte que le reste de la page ne réponde plus tant que le popup est ouvert
         },
         closePopup(){
             this.json=false;
