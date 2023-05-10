@@ -6,11 +6,16 @@
                 <button @click="removeSelected">Remove Selected</button>
                 <button @click="addSelected" class="add-selected">Add Selected</button>
             </div>
+            <div v-if="rdfData && rdfData.length > 0" class="download">
+                <button @click="downloadGeoJSON">Download GeoJSON</button>
+                <button class="download-button" @click="downloadOwl">Download Owl</button>
+            </div>
         </div>
         <p v-for="(triplet, index) in rdfData" :key="triplet.id">
             <input type="checkbox" v-model="selectedTriplets" :value="triplet" />
             <input type="text" v-model="triplet.subject" class="subject" />
-            <input type="text" v-model="triplet.predicate" class="predicate" :class="{ unknown: unkownPredicates.includes(triplet.predicate) }"
+            <input type="text" v-model="triplet.predicate" class="predicate"
+                :class="{ unknown: unkownPredicates.includes(triplet.predicate) }"
                 @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" />
         <ul v-if="activeInput === index" class="autocomplete-results">
             <button @click="() => activeInput = null">Close</button>
@@ -35,19 +40,15 @@
         <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
         <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
         </p>
-        <div v-if="rdfData && rdfData.length > 0" class="download">
-            <button @click="downloadGeoJSON">Download GeoJSON</button>
-            <button class="download-button" @click="downloadOwl">Download Owl</button>
-        </div>
     </div>
 </template>
 
 <script>
 import $ from 'jquery';
 $.ajaxSetup({
-  xhrFields: {
-    withCredentials: true
-  }
+    xhrFields: {
+        withCredentials: true
+    }
 });
 
 
@@ -318,8 +319,8 @@ export default {
         },
         downloadOwl() {
             const geoJSON = this.getGeoJSON();
-            const blob = new Blob([JSON.stringify(geoJSON)], {type: "application/json"});
-            const file = new File([blob], "geodata.json", {type: "application/json"});
+            const blob = new Blob([JSON.stringify(geoJSON)], { type: "application/json" });
+            const file = new File([blob], "geodata.json", { type: "application/json" });
             if (file) {
                 let formData = new FormData();
                 formData.append('file', file);
