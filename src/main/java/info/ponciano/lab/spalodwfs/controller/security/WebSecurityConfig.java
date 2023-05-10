@@ -31,6 +31,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
     private PasswordEncoder passwordEncoder;
 
+	@Autowired
+    private EntryPoint authenticationEntryPoint;
+
 	@Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -59,6 +62,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/user").hasRole("USER")
 			.antMatchers("/register").permitAll()
 			.anyRequest().authenticated()
+			.and()
+			.exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
 			.and()
 			.formLogin()
 				.usernameParameter("username")

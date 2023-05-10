@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jena.geosparql.spatial.property_functions.cardinal.SouthGeomPF;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.server.csrf.CsrfToken;
@@ -69,5 +70,9 @@ public class LoginController
             return ResponseEntity.ok("Admin added successfully");
       }
 
-
+      @GetMapping("/status")
+      public ResponseEntity<String> getStatus()
+      {
+            return new ResponseEntity<>("Logged In",HttpStatus.OK);
+      }
 }
