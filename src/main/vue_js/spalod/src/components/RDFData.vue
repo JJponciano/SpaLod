@@ -176,12 +176,16 @@ export default {
                 data: JSON.stringify(removeOperation),
                 contentType: 'application/json',
                 success: function (response) {
+                    console.log("REMOVE");
+                    console.log(response);
                     $.ajax({
                         url: 'https://localhost:8081/api/update',
                         type: 'POST',
                         data: JSON.stringify(addOperation),
                         contentType: 'application/json',
                         success: function (response) {
+                            console.log("ADD");
+                            console.log(response);
                             $('#btn' + index).text('Added').addClass('added');
                         },
                         error: function (error) {
