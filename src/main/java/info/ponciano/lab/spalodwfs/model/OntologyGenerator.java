@@ -1,5 +1,4 @@
 package info.ponciano.lab.spalodwfs.model;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.vocabulary.XSD;

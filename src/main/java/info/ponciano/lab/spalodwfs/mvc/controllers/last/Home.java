@@ -35,6 +35,7 @@ import java.io.File;
 public class Home {
        @GetMapping("/")
     public String thematicMaps(Model model) throws OntoManagementException  {
+        System.out.println("***********" + "HOME" + "***********");
         String rtn="home";
            init();
            return rtn;
