@@ -15,12 +15,10 @@
             <input type="checkbox" v-model="selectedTriplets" :value="triplet" />
             <input type="text" v-model="triplet.subject" class="subject" />
             <input type="text" v-model="triplet.predicate" class="predicate"
-                    :class="{ unknown: unkownPredicates.includes(triplet.predicate) }"
-                    @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" 
-                    :title="unkownPredicates.includes(triplet.predicate)
-                            ? 'Unknown predicate: Please add it manually by specifying the type'
-                            : null"
-                            />
+                :class="{ unknown: unkownPredicates.includes(triplet.predicate) }"
+                @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" :title="unkownPredicates.includes(triplet.predicate)
+                        ? 'Unknown predicate: Please add it manually by specifying the type'
+                        : null" />
         <ul v-if="activeInput === index" class="autocomplete-results">
             <button @click="() => activeInput = null">Close</button>
             <div class="custom-predicate">
@@ -162,16 +160,59 @@ export default {
         },
         addTriplet(triplet, index) {
             const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
+
+            // Delete the old triplet
+            const data = {
+                query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + triplet.subject + '>)}',
+                triplestore: ''
+            };
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                'type': 'POST',
+                'url': 'https://localhost:8081/api/sparql-select',
+                'data': JSON.stringify(data),
+                'dataType': 'json',
+                success: (data) => {
+                    if (data.results.bindings.length > 0) {
+                        const object = data.results.bindings[0].o.value
+                        const tripleData = {
+                            subject: triplet.subject,
+                            predicate: predicate,
+                            object: object,
+                        };
+                        const removeOperation = {
+                            operation: "remove",
+                            tripleData: tripleData,
+                        };
+                        $.ajax({
+                            url: 'https://localhost:8081/api/update',
+                            type: 'POST',
+                            data: JSON.stringify(removeOperation),
+                            contentType: 'application/json',
+                            success: function (response) {
+                                console.log('Triple removed');
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
+            // Add the new triplet
             var tripleData = {
                 subject: triplet.subject,
                 predicate: predicate,
                 object: triplet.object.replace(/ /g, '_'),
             };
             console.log(tripleData);
-            const removeOperation = {
-                operation: "remove",
-                tripleData: tripleData,
-            };
             const addOperation = {
                 operation: "add",
                 tripleData: tripleData,
@@ -179,26 +220,18 @@ export default {
             $.ajax({
                 url: 'https://localhost:8081/api/update',
                 type: 'POST',
-                data: JSON.stringify(removeOperation),
+                data: JSON.stringify(addOperation),
                 contentType: 'application/json',
                 success: function (response) {
-                    $.ajax({
-                        url: 'https://localhost:8081/api/update',
-                        type: 'POST',
-                        data: JSON.stringify(addOperation),
-                        contentType: 'application/json',
-                        success: function (response) {
-                            $('#btn' + index).text('Added').addClass('added');
-                        },
-                        error: function (error) {
-                            console.log(error);
-                        }
-                    });
+                    $('#btn' + index).text('Added').addClass('added');
+                    console.log('Triple added');
                 },
                 error: function (error) {
                     console.log(error);
                 }
             });
+
+            // Add the new predicate
             this.loadPredicates();
             if (!this.predicateOptions.includes(predicate)) {
                 tripleData = {
