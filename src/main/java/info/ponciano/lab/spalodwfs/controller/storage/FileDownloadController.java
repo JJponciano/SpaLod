@@ -6,6 +6,7 @@
 package info.ponciano.lab.spalodwfs.controller.storage;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -20,11 +21,12 @@ import java.nio.file.Paths;
  *
  * @author Claire #Ponciano
  */
+@CrossOrigin(origins = "http://localhost:8080")
 @Controller
 @RequestMapping("/download")
 public class FileDownloadController {
 
-    public static final String DIR = "tmp/";
+    public static final String DIR = "dynamic_storage/";
     public static final String DOWNLOAD_DATA = "/download/data/";
 
     @RequestMapping("/data/{fileName:.+}")
@@ -45,7 +47,7 @@ public class FileDownloadController {
                 System.err.println(ex.getMessage());
             }
         } else {
-            System.out.println(file + " not exits");
+            System.out.println(file + " not exists");
         }
     }
 

@@ -1,6 +1,5 @@
 package info.ponciano.lab.spalodwfs.model;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Date;
 import java.util.*;
@@ -13,7 +12,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.update.*;
 import org.apache.jena.datatypes.*;
-import org.apache.jena.ontology.*;
 
 public class Triplestore {
     private static Triplestore triplestore = null;

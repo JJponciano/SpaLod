@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.OntoManagementException;
 
-
 @Controller
 public class SemController {
 

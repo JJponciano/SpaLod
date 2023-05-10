@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import $ from "jquery";
 export default {
 data() {
     return {
@@ -33,22 +33,25 @@ methods: {
     async submitForm() {
         if(this.password==this.confirmPassword)
         {
-            try {
-            const response = await axios.post(`https://localhost:8081/register`, null, { params: {
-                username:this.username,
-                password:this.password
-              }}).then((response) => {
-                if(response.status==200)
-                {
-                    console.log("User successfully registered");
-                    this.$router.push('/');
-                }
-            });
-            
-            } 
-            catch (error) {
+          $.ajax({
+            url: 'https://localhost:8081/register',
+            method: 'POST',
+            data: {
+              username: this.username,
+              password: this.password
+            },
+            xhrFields: {
+              withCredentials: true
+            },
+            success: (response) => {
+              console.log("User successfully registered");
+              console.log(response)
+              window.location.href='/';
+            },
+            error: (error) => {
               console.error(error);
             }
+            })
         } 
     },
 },

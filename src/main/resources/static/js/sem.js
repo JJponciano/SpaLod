@@ -33,7 +33,7 @@
             sq.query=$("#sparqlText").val();
             sq.triplestore= ""
             console.log(sq);
-            $.postJSON("http://localhost:8081/ressem", sq, $.update)
+            $.postJSON("https://localhost:8081/ressem", sq, $.update)
         });
       
 
@@ -55,7 +55,7 @@ function createsTable(dataArray) {
             const item = row[j];
             var td = document.createElement('td');
             console.log(item)
-            if(item.startsWith("http")){
+            if(item && item.startsWith("https")){
                 var a = document.createElement('a');
                 var linkText = document.createTextNode(item);
                 a.appendChild(linkText);
