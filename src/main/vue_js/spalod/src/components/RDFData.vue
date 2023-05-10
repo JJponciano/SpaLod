@@ -124,7 +124,9 @@ export default {
             this.rdfData.forEach((triplet) => {
                 const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
                 if (!this.predicateOptions.includes(predicate)) {
-                    this.unkownPredicates.push(triplet.predicate);
+                    if (!this.unkownPredicates.includes(triplet.predicate)) {
+                        this.unkownPredicates.push(triplet.predicate);
+                    }
                 }
             });
             return this.unkownPredicates.length === 0;
@@ -162,7 +164,6 @@ export default {
                 geoJson.features.forEach(feature => {
                     const properties = feature.properties;
                     const subject = properties['item'];
-                    this.processQueryResult(geoJson);
                     for (const key in properties) {
                         if (key === 'item') continue;
                         const predicate = key;
@@ -185,6 +186,7 @@ export default {
                         });
                     }
                 });
+                this.processQueryResult(geoJson);
                 this.areAllPredicatesKnown();
             };
         },
