@@ -1,7 +1,11 @@
 <template>
-    <div class="rdf-data" :class="{ dark: isDarkMode }">
+    <div class="rdf-data" :class="{ dark: isDarkMode }" v-if="rdfView">
         <div class="header">
-            <h2>RDF Data</h2>
+            <div class="title">
+                <h2 :class="{ selected: rdfView }" @click="rdfView = true">RDF Data</h2>
+                <h2> | </h2>
+                <h2 :class="{ selected: !rdfView }" @click="rdfView = false">Query Result</h2>
+            </div>
             <div v-if="selectedTriplets.length > 0">
                 <button @click="removeSelected">Remove Selected</button>
                 <button @click="addSelected" class="add-selected">Add Selected</button>
@@ -43,6 +47,27 @@
         <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
         </p>
     </div>
+    <div class="rdf-data" :class="{ dark: isDarkMode }" v-else>
+        <div class="header">
+            <div class="title">
+                <h2 :class="{ selected: rdfView }" @click="rdfView = true">RDF Data</h2>
+                <h2> | </h2>
+                <h2 :class="{ selected: !rdfView }" @click="rdfView = false">Query Result</h2>
+            </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th v-for="key in keys">{{ key }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(result, index) in queryResult" :key="index">
+              <td v-for="key in keys">{{ result[key] }}</td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
 </template>
 
 <script>
@@ -73,9 +98,11 @@ export default {
             filteredResults: [],
             selectedTriplets: [],
             unkownPredicates: [],
+            queryResult: [],
             showResults: false,
             activeInput: null,
-            picked: "DatatypeProperty"
+            picked: "DatatypeProperty",
+            rdfView: true,
         };
     },
     mounted() {
@@ -84,6 +111,12 @@ export default {
             this.isDarkMode = event.matches;
         });
         this.loadPredicates();
+    },
+    computed: {
+        keys() {
+            if (this.queryResult.length > 0)
+                return Object.keys(this.queryResult[0])
+        }
     },
     methods: {
         areAllPredicatesKnown() {
@@ -129,7 +162,7 @@ export default {
                 geoJson.features.forEach(feature => {
                     const properties = feature.properties;
                     const subject = properties['item'];
-                    if (!subject) return;
+                    this.processQueryResult(geoJson);
                     for (const key in properties) {
                         if (key === 'item') continue;
                         const predicate = key;
@@ -141,17 +174,31 @@ export default {
                         });
                     }
 
-                    const predicate = 'coordinates';
                     const coordinates = feature.geometry.coordinates;
-                    const object = coordinates[0] + ', ' + coordinates[1];
-                    this.rdfData.push({
-                        subject,
-                        predicate,
-                        object,
-                    });
+                    if (coordinates.length > 0) {
+                        const predicate = 'coordinates';
+                        const object = coordinates[0] + ', ' + coordinates[1];
+                        this.rdfData.push({
+                            subject,
+                            predicate,
+                            object,
+                        });
+                    }
                 });
                 this.areAllPredicatesKnown();
             };
+        },
+        processQueryResult(geoJson) {
+            this.queryResult = [];
+            geoJson.features.forEach(feature => {
+                if (feature.geometry.coordinates.length === 0) {
+                    this.queryResult.push(feature.properties);
+                } else {
+                    var newJson = feature.properties;
+                    newJson.coordinates = feature.geometry.coordinates;
+                    this.queryResult.push(newJson);
+                }
+            })
         },
         deleteTriplet(index) {
             if (confirm("Are you sure you want to delete this triplet?")) {
@@ -408,6 +455,21 @@ export default {
     padding: 0 0 40px 0;
 }
 
+.title {
+    display: flex;
+    flex-direction: row;
+}
+
+.title > h2 {
+    margin: 10px;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.title > h2.selected {
+    font-weight: bold;
+}
+
 .rdf-data {
     padding: 20px;
     border-radius: 5px;
@@ -464,7 +526,7 @@ button {
     cursor: pointer;
     background-color: #EF4444;
     color: #fff;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: bold;
     padding: 5px 10px;
     border-radius: 5px;
@@ -484,7 +546,7 @@ button:hover {
     cursor: pointer;
     background-color: #EF4444;
     color: #fff;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: bold;
     padding: 5px 10px;
     border-radius: 5px;
@@ -566,4 +628,22 @@ label {
     font-weight: bold;
     margin: 10px;
 }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #4A5568;
+  font-weight: bold;
+}
+
 </style>
