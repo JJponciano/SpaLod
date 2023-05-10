@@ -102,9 +102,7 @@
   .computer{
     display: block;
     width: 100%;
-  }
-  .computer button:nth-child(1){
-    margin-left: 30%;
+    text-align: center;
   }
   .computer button{
     border: none;

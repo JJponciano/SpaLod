@@ -545,6 +545,7 @@ button:hover {
     font-weight: bold;
     font-size: 16px;
     text-align: center;
+    color: white;
 }
 
 label {
