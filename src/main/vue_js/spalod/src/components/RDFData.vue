@@ -1,5 +1,9 @@
 <template>
     <div class="rdf-data" :class="{ dark: isDarkMode }" v-if="rdfView">
+        <div class="select-all" v-if="rdfData && rdfData.length > 0">
+            <input type="checkbox" v-model="areAllSelected" @change="selectAll(areAllSelected)"/>
+            <h3>Select all</h3>
+        </div>
         <div class="header">
             <div class="title">
                 <h2 :class="{ selected: rdfView }" @click="rdfView = true">RDF Data</h2>
@@ -335,6 +339,13 @@ export default {
             this.rdfData[index].predicate = result.split('#')[1];
             this.showResults = false;
         },
+        selectAll(areAllSelected) {
+            if (areAllSelected) {
+                this.selectedTriplets = this.rdfData;
+            } else {
+                this.selectedTriplets = [];
+            }
+        },
         addSelected() {
             this.loadPredicates();
             if (this.areAllPredicatesKnown()) {
@@ -449,6 +460,16 @@ export default {
 </script>
 
 <style>
+.select-all {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+}
+
+.select-all > input {
+    margin: 0 10px 0 0;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
