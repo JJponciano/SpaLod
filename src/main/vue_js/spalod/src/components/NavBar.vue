@@ -7,12 +7,16 @@
           <span></span>
         </button>
         <ul :class="['menuopen',menuAnimationClass]" @transitionend="onTransitionend">
+          <li><button @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button> </li>
+          <li><button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button> </li>
           <li><button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button></li>
           <li><button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button></li>
           <li><button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button></li>
         </ul>
       </div>
       <div class="computer">
+        <button @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button>
+        <button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button>
         <button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button>
         <button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button>
         <button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button>
@@ -100,18 +104,26 @@
     width: 100%;
   }
   .computer button:nth-child(1){
-    margin-left: 40%;
+    margin-left: 30%;
   }
   .computer button{
     border: none;
     cursor: pointer;
-    background-color:#4A5568;
-    color: #fff;
+    background-color:transparent;
     font-size: 18px;
-    font-weight: bold;
+    color: #1A202C;
+    font-weight:750;
     padding: 5px 10px;
     border-radius: 5px;
     margin-left: 20px;
+    transition: background-color 0.3s ease-in-out;
+  }
+  .navbar.dark .computer button{
+    color: white;
+  }
+  .computer button:hover{
+    background-color: #4A5568;
+    color: white;
   }
   .telefon{
     display: none;
