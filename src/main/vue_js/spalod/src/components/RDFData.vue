@@ -202,6 +202,7 @@ export default {
                     operation: "add",
                     tripleData: tripleData,
                 };
+                var self = this;
                 $.ajax({
                     url: 'http://localhost:8081/api/update',
                     type: 'POST',
@@ -214,7 +215,10 @@ export default {
                             data: JSON.stringify(addOperation),
                             contentType: 'application/json',
                             success: function (response) {
-                                $('#btn' + index).text('Added').addClass('added');
+                                // console.log(response);
+                                self.predicateOptions.push(predicate);
+                                // console.log(self.predicateOptions);
+                                self.areAllPredicatesKnown();
                             },
                             error: function (error) {
                                 console.log(error);
