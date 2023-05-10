@@ -140,6 +140,7 @@ export default {
                         object,
                     });
                 });
+                this.areAllPredicatesKnown();
             };
         },
         deleteTriplet(index) {
