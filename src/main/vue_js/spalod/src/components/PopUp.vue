@@ -131,18 +131,27 @@ export default{
 
                     for (let i = 0; i < jsonArray.length; i++) {
                         const obj = jsonArray[i];
-                        const feature = {
+                        var feature = {
                             "type": "Feature",
                             "geometry": {
                                 "type": "Point",
-                                "coordinates": [parseFloat(obj.longitude), parseFloat(obj.latitude)]
+                                "coordinates": []
                             },
-                            "properties": {
-                                "category": obj.category,
-                                "itemLabel": obj.itemLabel,
-                                "item": obj.item
-                            }
+                            "properties": {}
                         };
+                        if (obj.geo === undefined) {
+                            feature.geometry.coordinates = [parseFloat(obj.longitude), parseFloat(obj.latitude)];
+                        } else {
+                            var coordinates = String(obj.geo).split("(")[1];
+                            if (coordinates === undefined) continue;
+                            coordinates = coordinates.split(")")[0].split(" ");
+                            feature.geometry.coordinates = [parseFloat(coordinates[0]), parseFloat(coordinates[1])];
+                        }
+                        Object.keys(obj).forEach(key => {
+                            if (key !== "geo" && key !== "latitude" && key !== "longitude") {
+                                feature.properties[key] = obj[key];
+                            }
+                        });
                         featureCollection.features.push(feature);
                     }
                     const geoJSON = JSON.stringify(featureCollection);
@@ -170,18 +179,27 @@ export default{
 
                     for (let i = 0; i < jsonArray.length; i++) {
                         const obj = jsonArray[i];
-                        const feature = {
+                        var feature = {
                             "type": "Feature",
                             "geometry": {
                                 "type": "Point",
-                                "coordinates": [parseFloat(obj.longitude), parseFloat(obj.latitude)]
+                                "coordinates": []
                             },
-                            "properties": {
-                                "category": obj.category,
-                                "itemLabel": obj.itemLabel,
-                                "item": obj.item
-                            }
+                            "properties": {}
                         };
+                        if (obj.geo === undefined) {
+                            feature.geometry.coordinates = [parseFloat(obj.longitude), parseFloat(obj.latitude)];
+                        } else {
+                            var coordinates = String(obj.geo).split("(")[1];
+                            if (coordinates === undefined) continue;
+                            coordinates = coordinates.split(")")[0].split(" ");
+                            feature.geometry.coordinates = [parseFloat(coordinates[0]), parseFloat(coordinates[1])];
+                        }
+                        Object.keys(obj).forEach(key => {
+                            if (key !== "geo" && key !== "latitude" && key !== "longitude") {
+                                feature.properties[key] = obj[key];
+                            }
+                        });
                         featureCollection.features.push(feature);
                     }
 
