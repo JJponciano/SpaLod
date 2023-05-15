@@ -48,7 +48,7 @@
         this.isDarkMode = event.matches;
       });
       this.checkLoggedIn();
-      this.checkRole();
+      //this.checkRole(); Used to check if user is an admin or not
     },
     methods: {
       detectDarkMode() {
@@ -91,6 +91,7 @@
           },
           success: (response) => {
             this.isLoggedIn = true;
+            this.isAdmin =true; // Line to delete if we want to block normal users access
             this.username=localStorage.getItem('username');
           },
           error: (error) => {
