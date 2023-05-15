@@ -44,7 +44,7 @@
                 text: 'You have successfully logged in! Click here to go back to default page.',
                 type: 'success',
                 group: 'login-success',
-                duration: 10000, // notification will disappear after 5 seconds
+                duration: 50000, // notification will disappear after 5 seconds
               });
               
               localStorage.setItem('username', this.username);

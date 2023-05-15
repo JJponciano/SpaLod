@@ -117,6 +117,7 @@ export default {
   <notifications/>
   <notifications group="login-success" @click="goHome()" />
   <notifications group="register-success" @click="goToLogin()" />
+  <notifications group="notLoggedIn" @click="goToLogin()"/>
 </template>
 
 
