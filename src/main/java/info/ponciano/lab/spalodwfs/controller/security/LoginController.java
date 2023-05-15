@@ -60,7 +60,8 @@ public class LoginController
             }
             return ResponseEntity.ok("Admin added successfully");
       }
-
+      
+      @RolesAllowed({"USER","ADMIN"})
       @GetMapping("/status")
       public ResponseEntity<String> getStatus()
       {

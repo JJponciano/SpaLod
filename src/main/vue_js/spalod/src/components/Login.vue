@@ -12,6 +12,8 @@
         </div>
         <button type="submit">Login</button>
       </form>
+      <p> Login with OAuth 2.0</p>
+      <button @click="oauthLogin()">Github</button>
     </div>
 </template>
   
@@ -60,6 +62,9 @@
             }
             })
       },
+      oauthLogin(){
+        window.location.href="https://localhost:8081/oauth2/authorization/github";
+      }
     },
   };
 </script>
