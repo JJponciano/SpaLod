@@ -30,7 +30,7 @@ data() {
     };
 },
 methods: {
-    async submitForm() {
+    async submitForm() { //https://www.npmjs.com/package/vue-notification
         if(this.password==this.confirmPassword)
         {
           $.ajax({
