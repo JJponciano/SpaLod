@@ -32,7 +32,8 @@ export default {
       popup:false,
       currentPath: window.location.pathname
     };
-  },computed: {
+  }
+  ,computed: {
     currentView() {
       if (this.currentPath === '/' || this.currentPath === '/admin' ) {
         return 'main';
@@ -75,6 +76,12 @@ export default {
     onClosepopUp(){
       this.popup=false;
     },
+    goHome(){
+      window.location.href="/";
+    },
+    goToLogin(){
+      window.location.href="/login";
+    }
   }
 };
 </script>
@@ -107,6 +114,10 @@ export default {
   <div class="popup">
     <PopUp :chooseCSV="chooseCSV" :chooseJson="chooseJson" :popup="popup" @CSVBack="onUnselectCSV" @JsonBack="onUnselectJson" @popupBack="onClosepopUp"></PopUp>
   </div>
+  <notifications/>
+  <notifications group="login-success" @click="goHome()" />
+  <notifications group="register-success" @click="goToLogin()" />
+  <notifications group="notLoggedIn" @click="goToLogin()"/>
 </template>
 
 
