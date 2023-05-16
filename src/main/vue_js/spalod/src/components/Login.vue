@@ -12,6 +12,8 @@
         </div>
         <button type="submit">Login</button>
       </form>
+      <p> Login with OAuth 2.0</p>
+      <button @click="oauthLogin()">Github</button>
     </div>
 </template>
   
@@ -38,16 +40,31 @@
               withCredentials: true
             },
             success: (response) => {
-              console.log(response)
-              window.location.href='/';
-
+              console.log(response);
+              this.$notify({
+                title: 'Login successful',
+                text: 'You have successfully logged in! Click here to go back to default page.',
+                type: 'success',
+                group: 'login-success',
+                duration: 50000, // notification will disappear after 5 seconds
+              });
+              
               localStorage.setItem('username', this.username);
             },
             error: (error) => {
+              this.$notify({
+                title: 'Login failed',
+                text: 'Please check your credentials and try again.',
+                type: 'error',
+                duration: 5000 // notification will disappear after 5 seconds
+              });
               console.error(error);
             }
             })
       },
+      oauthLogin(){
+        window.location.href="https://localhost:8081/oauth2/authorization/github";
+      }
     },
   };
 </script>

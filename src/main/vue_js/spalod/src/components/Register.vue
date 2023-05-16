@@ -46,12 +46,25 @@ methods: {
             success: (response) => {
               console.log("User successfully registered");
               console.log(response)
-              window.location.href='/';
+              this.$notify({
+                title: 'User registered successfully !',
+                text: 'Click here to login',
+                type: 'success',
+                group: 'register-success',
+                duration: 10000, // notification will disappear after 5 seconds
+              });
             },
             error: (error) => {
               console.error(error);
             }
             })
+        }
+        else{
+          this.$notify({
+                title: 'Please make sure your passwords match. ',
+                type: 'error',
+                duration: 10000, // notification will disappear after 5 seconds
+              });
         } 
     },
 },

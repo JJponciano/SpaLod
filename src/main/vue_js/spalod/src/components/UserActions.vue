@@ -64,9 +64,9 @@
 import $ from "jquery";
 
 $.ajaxSetup({
-  xhrFields: {
-    withCredentials: true
-  }
+    xhrFields: {
+        withCredentials: true
+    }
 });
 
 
@@ -274,7 +274,17 @@ export default {
             'url': url,
             'data': JSON.stringify(data),
             'dataType': 'json',
-            'success': callback
+            'success': callback,
+            error: (error) => {
+                this.$notify({
+                title: 'Unauthorized access.',
+                group:"notLoggedIn",
+                text: 'You need to login to continue. Click here to go to the login page.',
+                type: 'error',
+                duration: 5000
+            });
+              console.error(error);
+            }
             });
         },
         handleResponse(response) {
