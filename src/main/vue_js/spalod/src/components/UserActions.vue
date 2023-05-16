@@ -415,7 +415,6 @@ button {
     background-color: none;
     color: inherit;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
     font-size: 18px;
     font-weight: bold;
 }
@@ -431,6 +430,7 @@ button {
 .user-actions.dark .filter.active{
     background-color: #4A5568;
     color: white;
+    transition: background-color 0.2s ease-in-out;
 }
 .inputbar{
     margin-left: 10px;
@@ -480,6 +480,7 @@ button {
 .user-actions.dark .addfile:hover{
     background-color: #4A5568;
     color: white;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .addfileButton {
@@ -509,6 +510,7 @@ button {
 .user-actions.dark .advancedMenu:hover{
     background-color: #4A5568;
     color: white;
+    transition: background-color 0.2s ease-in-out;
 }
 .advancedMenu.active{
     background-color: #dee1e6;
