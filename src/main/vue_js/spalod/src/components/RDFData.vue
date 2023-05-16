@@ -15,11 +15,29 @@
                 <button class="download-button" @click="downloadOwl">Download Owl</button>
             </div>
         </div>
+        <button @click="refreshMap" class="refresh" v-if="rdfData && rdfData.length > 0">Refresh Map</button>
+        <div class="dataset" v-if="rdfData && rdfData.length > 0">
+            <h2>Dataset:</h2>
+            <input type="text" v-model="metadata['title']" class="dataset-title" placeholder="Dataset title" @focus="$event.target.select()" spellcheck="false"/>
+            <button id="title" class="validate" @click="validateMetadata('title')">Validate</button>
+        </div>
+        <div class="metadata" :class="{ active: showMetadata }" v-if="rdfData && rdfData.length > 0">
+            <p @click="showMetadata = !showMetadata">Show Metadata</p>
+            <div class="metadata-container" v-if="showMetadata">
+                <div v-for="(queryable, index) in queryables " :key="index" class="metadata-element">
+                    <h3 v-if="queryable.required">{{ queryable.q }}: *</h3>
+                    <h3 v-else>{{ queryable.q }}:</h3>
+                    <div class="metadata-input">
+                        <input type="text" v-model="metadata[queryable.q]" class="metadata-textbox" :placeholder="queryable.d" @focus="$event.target.select()" spellcheck="false">
+                        <button :id="queryable.q" class="validate" @click="validateMetadata(queryable.q)">Validate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="select-all" v-if="rdfData && rdfData.length > 0">
             <input type="checkbox" v-model="areAllSelected" @change="selectAll(areAllSelected)"/>
             <h3>Select all</h3>
         </div>
-        <button @click="refreshMap" class="refresh">Refresh Map</button>
         <p v-for="(triplet, index) in rdfData" :key="triplet.id">
             <input type="checkbox" v-model="selectedTriplets" :value="triplet" />
             <input type="text" v-model="triplet.subject" class="subject" />
@@ -45,7 +63,7 @@
                 </li>
             </div>
         </ul>
-        <input type="text" v-model="triplet.object" class="object" /> <!-- TODO: ajouter un listener pour actualiser la carte en temps réel -->
+        <input type="text" v-model="triplet.object" class="object" />
         <button class="delete-button" @click="deleteTriplet(index)">Delete</button>
         <button :id="'btn' + index" class="add-button" @click="addTriplet(triplet, index)">Add</button>
         <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
@@ -104,10 +122,30 @@ export default {
             selectedTriplets: [],
             unkownPredicates: [],
             queryResult: [],
+            metadata: [],
+            queryables: [
+                {q: 'recordId', required: true, d: 'The unique identifier of the dataset'},
+                {q: 'type', required: true, d: 'The nature or genre of the resource'},
+                {q: 'publisher', required: false, d: 'Entity making the resource available'},
+                {q: 'created', required: false, d: 'The date the dataset was created'},
+                {q: 'updated', required: false, d: 'The date the dataset was updated'},
+                {q: 'description', required: false, d: 'Description of the resource'},
+                {q: 'keywords', required: false, d: 'Keywords or tags'},
+                {q: 'language', required: false, d: 'Language of the resource'},
+                {q: 'externalId', required: false, d: 'External identifier'},
+                {q: 'themes', required: false, d: 'Main category'},
+                {q: 'formats', required: false, d: 'List of available distributions'},
+                {q: 'contactPoint', required: false, d: 'An entity to contact'},
+                {q: 'license', required: false, d: 'License of the resource'},
+                {q: 'rights', required: false, d: 'Rights not addressed by the license'},
+                {q: 'extent', required: false, d: 'Spatio-temporal coverage'},
+                {q: 'links', required: false, d: 'Links to other resources'},
+            ],
             showResults: false,
             activeInput: null,
             picked: "DatatypeProperty",
             rdfView: true,
+            showMetadata: false,
         };
     },
     mounted() {
@@ -116,6 +154,14 @@ export default {
             this.isDarkMode = event.matches;
         });
         this.loadPredicates();
+        this.metadata['recordId'] = this.uuidv4();
+        this.metadata['publisher'] = localStorage.getItem('username') || "";
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var yyyy = today.getFullYear();
+        this.metadata['created'] = dd + '/' + mm + '/' + yyyy;
+        this.metadata['updated'] = dd + '/' + mm + '/' + yyyy;
     },
     computed: {
         keys() {
@@ -124,6 +170,11 @@ export default {
         }
     },
     methods: {
+        uuidv4() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        },
         areAllPredicatesKnown() {
             this.unkownPredicates = [];
             this.rdfData.forEach((triplet) => {
@@ -219,6 +270,11 @@ export default {
             }
         },
         addTriplet(triplet, index) {
+            if (!this.validateForm()) {
+                alert('Please validate the Dataset title and the metadata before adding new triplets');
+                return;
+            }
+
             const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
 
             // Delete the old triplet
@@ -462,6 +518,18 @@ export default {
                 });
             }
         },
+        validateForm() {
+            return $('#title').text() === 'Validated'
+                && $('#recordId').text() === 'Validated'
+                && $('#type').text() === 'Validated';
+        },
+        validateMetadata(data) {
+            if (this.metadata[data] !== '' && this.metadata[data] !== undefined) {
+                $('#' + data).text('Validated').addClass('added');
+            } else {
+                alert('Please enter a ' + data);
+            }
+        }
     },
 };
 </script>
@@ -508,6 +576,7 @@ export default {
     min-width: 500px;
     min-height: 150px;
     max-width: calc(100vw - 380px);
+    align-items: center;
 }
 
 .rdf-data.dark {
@@ -528,6 +597,65 @@ h2 {
 p {
     font-size: 16px;
     font-weight: bold;
+}
+
+.metadata {
+    border-radius: 5px;
+    border: none;
+    background-color: none;
+    margin: 10px;
+}
+
+.metadata p {
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+}
+
+.metadata:hover {
+    background-color: #4A5568;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.metadata.active {
+    background-color: #4A5568;
+    color: white;
+}
+
+.metadata-container {
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+}
+
+.metadata-element {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    margin: 10px 0;
+    width: 50%;
+}
+
+.metadata-element h3 {
+    font-weight: bold;
+    margin: 5px 0 0 10px;
+}
+
+.metadata-input {
+    display: flex;
+    flex-direction: row;
+}
+
+.metadata-input > button:hover {
+    background-color: #1A202C;
+    color: white;
+    transition: background-color 0.3s ease;
 }
 
 .predicate {
@@ -555,6 +683,7 @@ p {
     font-size: medium;
     background-color:#1A202C;
     margin-bottom: 30px;
+    margin-left: 10px;
 }
 
 .rdf-data.dark .refresh{
@@ -599,13 +728,25 @@ button:hover {
 }
 
 .subject,
-.object {
+.object,
+.dataset-title,
+.metadata-textbox {
     border: none;
     border-radius: 5px;
     padding: 11px;
     margin: 10px 5px;
     width: 250px;
     font-size: 14px;
+}
+
+.dataset-title {
+    margin: 0px 15px;
+    width: 300px;
+    text-align: center;
+}
+
+.metadata-textbox {
+    margin: 0px 15px;
 }
 
 .delete-button,
@@ -655,6 +796,10 @@ button:hover {
     transition: background-color 0.5s ease;
 }
 
+.validate {
+    background-color: #0baaa7;
+}
+
 .added {
     transition: all 0.5s ease-in-out;
     background-color: transparent;
@@ -690,6 +835,12 @@ th, td {
 th {
   background-color: #4A5568;
   font-weight: bold;
+}
+
+.dataset {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
 }
 
 </style>
