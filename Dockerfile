@@ -1,5 +1,5 @@
 # This could also be another Ubuntu or Debian based distribution
-FROM ubuntu:latest
+FROM ubuntu:22.04 AS backend-builder
 
 # Install maven
 RUN apt update && apt upgrade -y
@@ -35,3 +35,5 @@ ARG CACHEBUST=1
 RUN git -C  /home/spalod/ pull
 RUN mvn -f /home/spalod/pom.xml package
 RUN chmod 755 /home/spalod/spalod.sh
+
+ENTRYPOINT ["/home/spalod/spalod.sh"]
