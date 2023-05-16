@@ -515,8 +515,8 @@ export default {
     color: #fff;
 }
 
-.rdf-data.light {
-    background-color: #fff;
+.rdf-data {
+    background-color: rgb(241, 241, 241);
     color: #1A202C;
 }
 
@@ -635,11 +635,14 @@ button:hover {
     width: 100%;
     max-height: 200px;
     overflow-y: auto;
-    background-color: #4A5568;
+    background-color: #dee1e6;
     border-radius: 5px;
     padding: 10px;
     margin: 0px;
     list-style: none;
+}
+.rdf-data.dark .autocomplete-results{
+    background-color: #4A5568;
 }
 
 .autocomplete-results li {
@@ -663,9 +666,11 @@ button:hover {
 }
 
 .custom-predicate {
-    font-weight: bold;
     font-size: 16px;
     text-align: center;
+    color: #1A202C;
+}
+.rdf-data.dark .custom-predicate{
     color: white;
 }
 

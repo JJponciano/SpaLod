@@ -11,7 +11,7 @@
                 <p @click="showFilter = !showFilter">Filter</p>
                 <div class="filtercontainer" v-if="showFilter">
                     <p>Max items number</p>
-                    <input type="range" :min="min" :max="max" :step="step" v-model="rangeValue" @input="updateRange" />
+                    <input class="inputbar" type="range" :min="min" :max="max" :step="step" v-model="rangeValue" @input="updateRange" />
                     <p>{{ rangeValue }}</p>
                 </div>
             </div>
@@ -199,6 +199,9 @@ export default {
                 const newInput = this.inputAdvanced.replace(`LIMIT ${number}`, `LIMIT ${this.rangeValue}`);
                 this.inputAdvanced = newInput;
             }
+            else{
+                this.inputAdvanced=this.inputAdvanced.concat('\n LIMIT ', this.rangeValue);
+            }
         },
         addDataCSV() {
             this.$emit('CSVSelected');
@@ -348,14 +351,17 @@ export default {
     width: 320px;
     min-width: 220px;
 }
-
+.user-actions{
+    background-color: rgb(241, 241, 241);
+    border-radius: 10px;
+}
 .user-actions.dark {
     background-color: #1A202C;
     color: #fff;
 }
 
 .user-actions.light {
-    background-color: #fff;
+    background-color: #ffffff;
     color: #1A202C;
 }
 
@@ -414,12 +420,21 @@ button {
     font-weight: bold;
 }
 .filter:hover{
+    background-color: #dee1e6;
+}
+.user-actions.dark .filter:hover{
+    background-color: #4A5568;
+}
+.filter.active{
+    background-color: #dee1e6;
+}
+.user-actions.dark .filter.active{
     background-color: #4A5568;
     color: white;
 }
-.filter.active{
-    background-color: #4A5568;
-    color: white;
+.inputbar{
+    margin-left: 10px;
+    margin-right: 10px;
 }
 .filtercontainer{
     display: flex;
@@ -442,6 +457,9 @@ button {
     margin-top: 5px;
 }
 .addfile.active{
+    background-color:#dee1e6;
+}
+.user-actions.dark .filter.active{
     background-color: #4A5568;
     color: white;
 }
@@ -457,6 +475,9 @@ button {
 }
 
 .addfile:hover {
+    background-color: #dee1e6;
+}
+.user-actions.dark .addfile:hover{
     background-color: #4A5568;
     color: white;
 }
@@ -483,10 +504,16 @@ button {
     font-weight: bold;
 }
 .advancedMenu:hover{
+    background-color: #dee1e6;
+}
+.user-actions.dark .advancedMenu:hover{
     background-color: #4A5568;
     color: white;
 }
 .advancedMenu.active{
+    background-color: #dee1e6;
+}
+.user-actions.dark .advancedMenu.active{
     background-color: #4A5568;
     color: white;
 }
@@ -505,6 +532,9 @@ button {
     background-color: #EF4444;
     color: #fff;
 }
+.confirm:hover{
+    background-color: #4A5568;
+}
 
 .navbar_button:hover {
     background-color: #81818a;
@@ -512,16 +542,21 @@ button {
 }
 
 button:hover {
+    background-color: #dee1e6;
+}
+.user-actions.dark button:hover{
     background-color: #4A5568;
-    color: #fff;
+    color: white;
 }
 
 .addfileButton>button {
     width: 95%;
     margin-bottom: 10px;
 }
-
-.addfileButton>button:hover {
+.addfileButton>button:hover{
+    background-color: rgb(241, 241, 241);
+}
+.user-actions.dark .addfileButton>button:hover {
     background-color: #1A202C;
     color: #fff;
 }
