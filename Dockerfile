@@ -8,11 +8,10 @@ RUN apt install openjdk-17-jdk -y && apt install maven -y
 # Clone the repository
 RUN apt install git -y
 
-RUN git clone https://github.com/JJponciano/SpaLod.git /home/spalod
+RUN git clone --branch youneskamli https://github.com/JJponciano/SpaLod.git /home/spalod
 
 # Add a step to checkout the desired branch
 WORKDIR /home/spalod
-RUN git checkout youneskamli
 
 RUN mvn install:install-file \
 -Dfile=/home/spalod/libs/pisemantic-1.0-SNAPSHOT.jar \
