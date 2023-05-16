@@ -617,14 +617,19 @@ p {
     width: 100%;
     text-align: center;
 }
-
-.metadata:hover {
+.metadata:hover{
+    background-color: #dee1e6;
+    transition: background-color 0.3s ease;
+}
+.rdf-data.dark .metadata:hover {
     background-color: #4A5568;
     color: white;
     transition: background-color 0.3s ease;
 }
-
-.metadata.active {
+.metadata.metadata.active{
+    background-color: #dee1e6;
+}
+.rdf-data.dark .metadata.active {
     background-color: #4A5568;
     color: white;
 }
