@@ -281,7 +281,7 @@ export default {
 
             // Delete the old triplet
             const data = {
-                query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + triplet.subject + '>)}',
+                query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + triplet.subject.replace(/ /g, '_') + '>)}',
                 triplestore: ''
             };
             $.ajax({
@@ -297,7 +297,7 @@ export default {
                     if (data.results.bindings.length > 0) {
                         const object = data.results.bindings[0].o.value
                         const tripleData = {
-                            subject: triplet.subject,
+                            subject: triplet.subject.replace(/ /g, '_'),
                             predicate: predicate,
                             object: object,
                         };
@@ -313,13 +313,22 @@ export default {
 
             // Add the new triplet
             var tripleData = {
-                subject: triplet.subject,
+                subject: triplet.subject.replace(/ /g, '_'),
                 predicate: predicate,
                 object: 'http://lab.ponciano.info/ont/spalod#' + triplet.object.replace(/ /g, '_'),
             };
             this.updateTripleData(tripleData, 'add', () => {
                 $('#btn' + index).text('Added').addClass('added');
                 console.log('Triple added');
+            });
+
+            tripleData = {
+                subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                predicate: 'http://lab.ponciano.info/ont/spalod#hasItem',
+                object: 'http://lab.ponciano.info/ont/spalod#' + triplet.subject.replace(/ /g, '_')
+            };
+            this.updateTripleData(tripleData, 'add', () => {
+                console.log('Triple linked to the dataset');
             });
 
             // Add the new predicate
