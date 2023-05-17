@@ -29,7 +29,7 @@
                     <h3 v-else>{{ queryable.q }}:</h3>
                     <div class="metadata-input">
                         <input type="text" v-model="metadata[queryable.q]" class="metadata-textbox" :placeholder="queryable.d" @focus="$event.target.select()" @input="queryable.v = false" spellcheck="false">
-                        <button :id="queryable.q" class="validate" @click="validateMetadata(queryable.q)" :class="{ added: queryable.v }">{{ queryable.v ? 'Validated' : 'Validate' }}</button>
+                        <button :id="queryable.q" class="validate" @click="validateMetadata(queryable.q)" :class="{ added: queryable.v }" :disabled="queryable.q !== 'recordId' && !queryables[0].v" v-show="queryable.q === 'recordId' || queryables[0].v">{{ queryable.v ? 'Validated' : 'Validate' }}</button>
                     </div>
                 </div>
             </div>
@@ -124,23 +124,24 @@ export default {
             queryResult: [],
             metadata: [],
             queryables: [
-                {q: 'title', required: true, d: 'The name given to the resource', v: false},
-                {q: 'recordId', required: true, d: 'The unique identifier of the dataset', v: false},
-                {q: 'type', required: true, d: 'The nature or genre of the resource', v: false},
-                {q: 'publisher', required: false, d: 'Entity making the resource available', v: false},
-                {q: 'created', required: false, d: 'The date the dataset was created', v: false},
-                {q: 'updated', required: false, d: 'The date the dataset was updated', v: false},
-                {q: 'description', required: false, d: 'Description of the resource', v: false},
-                {q: 'keywords', required: false, d: 'Keywords or tags', v: false},
-                {q: 'language', required: false, d: 'Language of the resource', v: false},
-                {q: 'externalId', required: false, d: 'External identifier', v: false},
-                {q: 'themes', required: false, d: 'Main category', v: false},
-                {q: 'formats', required: false, d: 'List of available distributions', v: false},
-                {q: 'contactPoint', required: false, d: 'An entity to contact', v: false},
-                {q: 'license', required: false, d: 'License of the resource', v: false},
-                {q: 'rights', required: false, d: 'Rights not addressed by the license', v: false},
-                {q: 'extent', required: false, d: 'Spatio-temporal coverage', v: false},
-                {q: 'links', required: false, d: 'Links to other resources', v: false},
+                {q: 'recordId', required: true, d: 'The unique identifier of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#dataset'},
+                {q: 'title', required: true, d: 'The name given to the resource', v: false, p: 'http://purl.org/dc/terms/title'},
+                {q: 'description', required: true, d: 'Description of the resource', v: false, p: 'http://purl.org/dc/terms/description'},
+                {q: 'distribution', required: true, d: 'The distribution of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#distribution'},
+                {q: 'publisher', required: true, d: 'Entity making the resource available', v: false, p: 'http://purl.org/dc/terms/publisher'},
+                {q: 'keywords', required: false, d: "Tags separated by ','", v: false, p: 'http://www.w3.org/ns/dcat#keyword'},
+                {q: 'theme', required: false, d: 'Main category', v: false, p: 'http://www.w3.org/ns/dcat#theme'},
+                {q: 'type', required: false, d: 'The nature or genre of the resource', v: false, p: 'http://purl.org/dc/terms/type'},
+                {q: 'contactPoint', required: false, d: 'An entity to contact', v: false, p: 'http://www.w3.org/ns/dcat#contactPoint'},
+                {q: 'spatial', required: false, d: 'Spatial area or designed place', v: false, p: 'http://www.w3.org/ns/dcat#spatial'},
+                {q: 'temporal', required: false, d: 'Time interval', v: false, p: 'http://purl.org/dc/terms/temporal'},
+                {q: 'issued', required: false, d: 'The date the dataset was created', v: false, p: 'http://purl.org/dc/terms/issued'},
+                {q: 'modified', required: false, d: 'The date the dataset was updated', v: false, p: 'http://purl.org/dc/terms/modified'},
+                {q: 'language', required: false, d: 'Language of the resource', v: false, p: 'http://purl.org/dc/terms/language'},
+                {q: 'formats', required: false, d: 'List of available distributions', v: false, p: 'http://www.w3.org/ns/dcat#distribution'},
+                {q: 'license', required: false, d: 'License of the resource', v: false, p: 'http://purl.org/dc/terms/license'},
+                {q: 'rights', required: false, d: 'Rights not addressed by the license', v: false, p: 'http://purl.org/dc/terms/rights'},
+                {q: 'landingPage', required: false, d: 'Links to other resources', v: false, p: 'http://www.w3.org/ns/dcat#landingPage'},
             ],
             showResults: false,
             activeInput: null,
@@ -280,7 +281,7 @@ export default {
 
             // Delete the old triplet
             const data = {
-                query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + triplet.subject + '>)}',
+                query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + triplet.subject.replace(/ /g, '_') + '>)}',
                 triplestore: ''
             };
             $.ajax({
@@ -296,25 +297,12 @@ export default {
                     if (data.results.bindings.length > 0) {
                         const object = data.results.bindings[0].o.value
                         const tripleData = {
-                            subject: triplet.subject,
+                            subject: triplet.subject.replace(/ /g, '_'),
                             predicate: predicate,
                             object: object,
                         };
-                        const removeOperation = {
-                            operation: "remove",
-                            tripleData: tripleData,
-                        };
-                        $.ajax({
-                            url: 'https://localhost:8081/api/update',
-                            type: 'POST',
-                            data: JSON.stringify(removeOperation),
-                            contentType: 'application/json',
-                            success: function (response) {
-                                console.log('Triple removed');
-                            },
-                            error: function (error) {
-                                console.log(error);
-                            }
+                        this.updateTripleData(tripleData, 'remove', () => {
+                            console.log('Triple removed');
                         });
                     }
                 },
@@ -325,27 +313,22 @@ export default {
 
             // Add the new triplet
             var tripleData = {
-                subject: triplet.subject,
+                subject: triplet.subject.replace(/ /g, '_'),
                 predicate: predicate,
-                object: triplet.object.replace(/ /g, '_'),
+                object: 'http://lab.ponciano.info/ont/spalod#' + triplet.object.replace(/ /g, '_'),
             };
-            console.log(tripleData);
-            const addOperation = {
-                operation: "add",
-                tripleData: tripleData,
+            this.updateTripleData(tripleData, 'add', () => {
+                $('#btn' + index).text('Added').addClass('added');
+                console.log('Triple added');
+            });
+
+            tripleData = {
+                subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                predicate: 'http://lab.ponciano.info/ont/spalod#hasItem',
+                object: 'http://lab.ponciano.info/ont/spalod#' + triplet.subject.replace(/ /g, '_')
             };
-            $.ajax({
-                url: 'https://localhost:8081/api/update',
-                type: 'POST',
-                data: JSON.stringify(addOperation),
-                contentType: 'application/json',
-                success: function (response) {
-                    $('#btn' + index).text('Added').addClass('added');
-                    console.log('Triple added');
-                },
-                error: function (error) {
-                    console.log(error);
-                }
+            this.updateTripleData(tripleData, 'add', () => {
+                console.log('Triple linked to the dataset');
             });
 
             // Add the new predicate
@@ -356,41 +339,11 @@ export default {
                     predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                     object: "http://www.w3.org/2002/07/owl#" + this.picked,
                 };
-                const removeOperation = {
-                    operation: "remove",
-                    tripleData: tripleData,
-                };
-                const addOperation = {
-                    operation: "add",
-                    tripleData: tripleData,
-                };
                 var self = this;
-                $.ajax({
-                    url: 'https://localhost:8081/api/update',
-                    type: 'POST',
-                    data: JSON.stringify(removeOperation),
-                    contentType: 'application/json',
-                    success: function (response) {
-                        $.ajax({
-                            url: 'https://localhost:8081/api/update',
-                            type: 'POST',
-                            data: JSON.stringify(addOperation),
-                            contentType: 'application/json',
-                            success: function (response) {
-                                // console.log(response);
-                                self.predicateOptions.push(predicate);
-                                // console.log(self.predicateOptions);
-                                self.areAllPredicatesKnown();
-                            },
-                            error: function (error) {
-                                console.log(error);
-                            }
-                        });
-                    },
-                    error: function (error) {
-                        console.log(error);
-                    }
-                });
+                this.updateTripleData(tripleData, 'remove', this.updateTripleData(tripleData, 'add', () => {
+                    self.predicateOptions.push(predicate);
+                    self.areAllPredicatesKnown();
+                }));
             }
         },
         filterResults(predicate, index) {
@@ -519,18 +472,6 @@ export default {
                 });
             }
         },
-        // validateForm() {
-        //     return $('#title').text() === 'Validated'
-        //         && $('#recordId').text() === 'Validated'
-        //         && $('#type').text() === 'Validated';
-        // },
-        // validateMetadata(data) {
-        //     if (this.metadata[data] !== '' && this.metadata[data] !== undefined) {
-        //         $('#' + data).text('Validated').addClass('added');
-        //     } else {
-        //         alert('Please enter a ' + data);
-        //     }
-        // }
         validateForm() {
             const requiredQueryables = this.queryables.filter(queryable => queryable.required);
             const invalidQueryables = requiredQueryables.filter(queryable => queryable.v === false);
@@ -538,17 +479,159 @@ export default {
             return invalidQueryables.length === 0;
         },
         validateMetadata(data) {
-            this.queryables.forEach(queryable => {
-                if (queryable.q === data) {
-                    console.log(data);
-                    if(this.metadata[data] !== '' && this.metadata[data] !== undefined) {
-                        queryable.v = true;
-                    } else {
-                        alert('Please enter a ' + data);
+            var queryable = this.queryables.find(queryable => queryable.q === data);
+            if(this.metadata[queryable.q] !== '' && this.metadata[queryable.q] !== undefined) {
+                if ( queryable.q === 'recordId') {
+                    queryable.v = true;
+                } else if (queryable.q === 'publisher') {
+                    // Delete the old triplets
+                    var data = {
+                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId + '>)}',
+                        triplestore: ''
+                    };
+                    $.ajax({
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        'type': 'POST',
+                        'url': 'https://localhost:8081/api/sparql-select',
+                        'data': JSON.stringify(data),
+                        'dataType': 'json',
+                        success: (data) => {
+                            if (data.results.bindings.length > 0) {
+                                const object = data.results.bindings[0].o.value
+                                const tripleData = {
+                                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                                    predicate: queryable.p,
+                                    object: object,
+                                };
+                                this.updateTripleData(tripleData, 'remove', () => {
+                                    console.log('Triple removed');
+                                });
+                            }
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+
+                    data = {
+                        query: 'SELECT ?o WHERE{?s <http://xlmns.com/foaf/0.1/name> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_') + '>)}',
+                        triplestore: ''
+                    };
+                    $.ajax({
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        'type': 'POST',
+                        'url': 'https://localhost:8081/api/sparql-select',
+                        'data': JSON.stringify(data),
+                        'dataType': 'json',
+                        success: (data) => {
+                            if (data.results.bindings.length > 0) {
+                                const object = data.results.bindings[0].o.value
+                                const tripleData = {
+                                    subject: 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'),
+                                    predicate: 'http://xlmns.com/foaf/0.1/name',
+                                    object: object,
+                                };
+                                this.updateTripleData(tripleData, 'remove', () => {
+                                    console.log('Triple removed');
+                                });
+                            }
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+
+                    // Add the new triplets
+                    var tripleData = {
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                        predicate: queryable.p,
+                        object: 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'), // TODO: UID of the publisher
+                    };
+                    this.updateTripleData(tripleData, 'add', () => queryable.v = true);
+
+                    tripleData = {
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'), // TODO: UID of the publisher
+                        predicate: 'http://xlmns.com/foaf/0.1/name',
+                        object: 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'),
                     }
+                    this.updateTripleData(tripleData, 'add', () => queryable.v = true);
+                } else if (queryable.q === 'keywords') {
+                    String(this.metadata.keywords).split(',').forEach(keyword => {
+                        // Add the new triplets
+                        var tripleData = {
+                            subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                            predicate: queryable.p,
+                            object: 'http://lab.ponciano.info/ont/spalod#' + keyword,
+                        };
+                        this.updateTripleData(tripleData, 'add', () => queryable.v = true);
+                    });
+                } else {
+                    // Delete the old triplet
+                    var data = {
+                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId + '>)}',
+                        triplestore: ''
+                    };
+                    $.ajax({
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        'type': 'POST',
+                        'url': 'https://localhost:8081/api/sparql-select',
+                        'data': JSON.stringify(data),
+                        'dataType': 'json',
+                        success: (data) => {
+                            if (data.results.bindings.length > 0) {
+                                const object = data.results.bindings[0].o.value
+                                const tripleData = {
+                                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                                    predicate: queryable.p,
+                                    object: object,
+                                };
+                                this.updateTripleData(tripleData, 'remove', () => {
+                                    console.log('Triple removed');
+                                });
+                            }
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+
+                    // Add the new triplet
+                    var tripleData = {
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                        predicate: queryable.p,
+                        object: 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'),
+                    };
+                    this.updateTripleData(tripleData, 'add', () => queryable.v = true);
+                }
+            } else {
+                alert('Please enter a ' + queryable.q);
+            }
+        },
+        updateTripleData(tripleData, operation, callback) {
+            const addOperation = {
+                operation: operation,
+                tripleData: tripleData,
+            };
+            $.ajax({
+                url: 'https://localhost:8081/api/update',
+                type: 'POST',
+                data: JSON.stringify(addOperation),
+                contentType: 'application/json',
+                success: callback,
+                error: function (error) {
+                    console.log(error);
                 }
             });
-        },
+        }
     },
 };
 </script>
