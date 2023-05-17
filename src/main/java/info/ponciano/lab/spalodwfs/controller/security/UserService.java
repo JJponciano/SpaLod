@@ -5,9 +5,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -30,9 +32,9 @@ public class UserService implements UserDetailsService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts[0].equals(username)) {
-                    String password = parts[1];
-                    ArrayList<String> roles = new ArrayList<>(Arrays.asList(parts[2].split(";")));
+                if (parts[1].equals(username)) {
+                    String password = parts[2];
+                    ArrayList<String> roles = new ArrayList<>(Arrays.asList(parts[3].split(";")));
                     return new User(username, password,roles);
                 }
             }
@@ -45,8 +47,9 @@ public class UserService implements UserDetailsService {
     // Saves a new user to the user.txt file
     public void save(User user) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(DB_FILE, true))) {
+            String uuid = generateUUID();
             String roles = String.join(";", user.getRoles());
-            pw.println(user.getUsername() + "," + new BCryptPasswordEncoder(10).encode(user.getPassword()) + "," + roles);
+            pw.println(uuid+","+user.getUsername() + "," + new BCryptPasswordEncoder(10).encode(user.getPassword()) + "," + roles);
         } catch (IOException e) {
             e.printStackTrace();
         }       
@@ -78,8 +81,8 @@ public class UserService implements UserDetailsService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts[0].equals(username) && (!parts[2].contains("ADMIN")) ) {
-                    parts[2] += ";ADMIN"; // Update the role to ADMIN
+                if (parts[1].equals(username) && (!parts[3].contains("ADMIN")) ) {
+                    parts[3] += ";ADMIN"; // Update the role to ADMIN
                     line = String.join(",", parts); // Join the parts back into a line
                 }
                 lines.add(line); // Add the line to the list
@@ -98,5 +101,18 @@ public class UserService implements UserDetailsService {
         }
     }
     
+    public static String generateUUID() {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] randomBytes = new byte[16];
+        secureRandom.nextBytes(randomBytes);
+
+        // Set version (4) and variant (2) bits
+        randomBytes[6] &= 0x0f;  // Version (4) bits
+        randomBytes[6] |= 0x40;
+        randomBytes[8] &= 0x3f;  // Variant (2) bits
+        randomBytes[8] |= 0x80;
+
+        return UUID.nameUUIDFromBytes(randomBytes).toString();
+    }
 
 }
