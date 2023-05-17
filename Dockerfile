@@ -5,9 +5,9 @@ FROM ubuntu:22.04
 RUN apt update && apt upgrade -y
 RUN apt install openjdk-17-jdk -y && apt install maven -y
 RUN apt install curl -y
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x 
+RUN apt install sudo
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 RUN apt-get install nodejs -y
-RUN apt install npm -y
 
 # # Clone the repository
 RUN apt install git -y
