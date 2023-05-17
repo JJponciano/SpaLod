@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
             pw.println(user.getUsername() + "," + new BCryptPasswordEncoder(10).encode(user.getPassword()) + "," + roles);
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }       
     }
 
     // Loads a user by their username

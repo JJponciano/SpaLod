@@ -55,6 +55,12 @@ methods: {
               });
             },
             error: (error) => {
+              this.$notify({
+                title: 'User already registered',
+                text: 'Please chose an other username.',
+                type: 'error',
+                duration: 5000, // notification will disappear after 5 seconds
+              });
               console.error(error);
             }
             })
