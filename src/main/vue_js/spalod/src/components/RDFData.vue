@@ -190,7 +190,7 @@ export default {
         loadPredicates() {
             const data = {
                 query: 'SELECT ?property ?propertyType WHERE{{?property a owl:ObjectProperty . BIND("Object Property" AS ?propertyType)} UNION {?property a owl:DatatypeProperty . BIND("Data Property" AS ?propertyType)}} ORDER BY ?property',
-                triplestore: ''
+                triplestore: '' //intégrer graph DB ici
             };
             $.ajax({
                 headers: {
