@@ -16,11 +16,11 @@
             </div>
         </div>
         <button @click="refreshMap" class="refresh" v-if="rdfData && rdfData.length > 0">Refresh Map</button>
-        <div class="dataset" v-if="rdfData && rdfData.length > 0">
+        <!-- <div class="dataset" v-if="rdfData && rdfData.length > 0">
             <h2>Dataset:</h2>
             <input type="text" v-model="metadata['title']" class="dataset-title" placeholder="Dataset title" @focus="$event.target.select()" spellcheck="false"/>
             <button id="title" class="validate" @click="validateMetadata('title')">Validate</button>
-        </div>
+        </div> -->
         <div class="metadata" :class="{ active: showMetadata }" v-if="rdfData && rdfData.length > 0">
             <p @click="showMetadata = !showMetadata">Show Metadata</p>
             <div class="metadata-container" v-if="showMetadata">
@@ -28,8 +28,8 @@
                     <h3 v-if="queryable.required">{{ queryable.q }}: *</h3>
                     <h3 v-else>{{ queryable.q }}:</h3>
                     <div class="metadata-input">
-                        <input type="text" v-model="metadata[queryable.q]" class="metadata-textbox" :placeholder="queryable.d" @focus="$event.target.select()" spellcheck="false">
-                        <button :id="queryable.q" class="validate" @click="validateMetadata(queryable.q)">Validate</button>
+                        <input type="text" v-model="metadata[queryable.q]" class="metadata-textbox" :placeholder="queryable.d" @focus="$event.target.select()" @input="queryable.v = false" spellcheck="false">
+                        <button :id="queryable.q" class="validate" @click="validateMetadata(queryable.q)" :class="{ added: queryable.v }">{{ queryable.v ? 'Validated' : 'Validate' }}</button>
                     </div>
                 </div>
             </div>
@@ -124,22 +124,23 @@ export default {
             queryResult: [],
             metadata: [],
             queryables: [
-                {q: 'recordId', required: true, d: 'The unique identifier of the dataset'},
-                {q: 'type', required: true, d: 'The nature or genre of the resource'},
-                {q: 'publisher', required: false, d: 'Entity making the resource available'},
-                {q: 'created', required: false, d: 'The date the dataset was created'},
-                {q: 'updated', required: false, d: 'The date the dataset was updated'},
-                {q: 'description', required: false, d: 'Description of the resource'},
-                {q: 'keywords', required: false, d: 'Keywords or tags'},
-                {q: 'language', required: false, d: 'Language of the resource'},
-                {q: 'externalId', required: false, d: 'External identifier'},
-                {q: 'themes', required: false, d: 'Main category'},
-                {q: 'formats', required: false, d: 'List of available distributions'},
-                {q: 'contactPoint', required: false, d: 'An entity to contact'},
-                {q: 'license', required: false, d: 'License of the resource'},
-                {q: 'rights', required: false, d: 'Rights not addressed by the license'},
-                {q: 'extent', required: false, d: 'Spatio-temporal coverage'},
-                {q: 'links', required: false, d: 'Links to other resources'},
+                {q: 'title', required: true, d: 'The name given to the resource', v: false},
+                {q: 'recordId', required: true, d: 'The unique identifier of the dataset', v: false},
+                {q: 'type', required: true, d: 'The nature or genre of the resource', v: false},
+                {q: 'publisher', required: false, d: 'Entity making the resource available', v: false},
+                {q: 'created', required: false, d: 'The date the dataset was created', v: false},
+                {q: 'updated', required: false, d: 'The date the dataset was updated', v: false},
+                {q: 'description', required: false, d: 'Description of the resource', v: false},
+                {q: 'keywords', required: false, d: 'Keywords or tags', v: false},
+                {q: 'language', required: false, d: 'Language of the resource', v: false},
+                {q: 'externalId', required: false, d: 'External identifier', v: false},
+                {q: 'themes', required: false, d: 'Main category', v: false},
+                {q: 'formats', required: false, d: 'List of available distributions', v: false},
+                {q: 'contactPoint', required: false, d: 'An entity to contact', v: false},
+                {q: 'license', required: false, d: 'License of the resource', v: false},
+                {q: 'rights', required: false, d: 'Rights not addressed by the license', v: false},
+                {q: 'extent', required: false, d: 'Spatio-temporal coverage', v: false},
+                {q: 'links', required: false, d: 'Links to other resources', v: false},
             ],
             showResults: false,
             activeInput: null,
@@ -271,7 +272,7 @@ export default {
         },
         addTriplet(triplet, index) {
             if (!this.validateForm()) {
-                alert('Please validate the Dataset title and the metadata before adding new triplets');
+                alert('Please validate the metadata before adding new triplets');
                 return;
             }
 
@@ -518,18 +519,36 @@ export default {
                 });
             }
         },
+        // validateForm() {
+        //     return $('#title').text() === 'Validated'
+        //         && $('#recordId').text() === 'Validated'
+        //         && $('#type').text() === 'Validated';
+        // },
+        // validateMetadata(data) {
+        //     if (this.metadata[data] !== '' && this.metadata[data] !== undefined) {
+        //         $('#' + data).text('Validated').addClass('added');
+        //     } else {
+        //         alert('Please enter a ' + data);
+        //     }
+        // }
         validateForm() {
-            return $('#title').text() === 'Validated'
-                && $('#recordId').text() === 'Validated'
-                && $('#type').text() === 'Validated';
+            const requiredQueryables = this.queryables.filter(queryable => queryable.required);
+            const invalidQueryables = requiredQueryables.filter(queryable => queryable.v === false);
+
+            return invalidQueryables.length === 0;
         },
         validateMetadata(data) {
-            if (this.metadata[data] !== '' && this.metadata[data] !== undefined) {
-                $('#' + data).text('Validated').addClass('added');
-            } else {
-                alert('Please enter a ' + data);
-            }
-        }
+            this.queryables.forEach(queryable => {
+                if (queryable.q === data) {
+                    console.log(data);
+                    if(this.metadata[data] !== '' && this.metadata[data] !== undefined) {
+                        queryable.v = true;
+                    } else {
+                        alert('Please enter a ' + data);
+                    }
+                }
+            });
+        },
     },
 };
 </script>
@@ -734,7 +753,7 @@ button:hover {
 
 .subject,
 .object,
-.dataset-title,
+/* .dataset-title, */
 .metadata-textbox {
     border: none;
     border-radius: 5px;
@@ -744,11 +763,11 @@ button:hover {
     font-size: 14px;
 }
 
-.dataset-title {
+/* .dataset-title {
     margin: 0px 15px;
     width: 300px;
     text-align: center;
-}
+} */
 
 .metadata-textbox {
     margin: 0px 15px;
@@ -847,10 +866,10 @@ th {
   font-weight: bold;
 }
 
-.dataset {
+/* .dataset {
     display: flex;
     flex-direction: row;
     margin: 10px;
-}
+} */
 
 </style>
