@@ -86,8 +86,6 @@ public class ResController {
     String results;
     if (triplestore == null || triplestore.isBlank())
       results = Triplestore.get().executeSelectQuery(query);
-    /*else if (triplestore == "graphDB")
-      results="";*/
     else
       results = Triplestore.executeSelectQuery(query, triplestore);
       System.out.println(results);
