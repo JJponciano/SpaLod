@@ -60,6 +60,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
 			.and()
+			.csrf().disable()
+			.cors()
+			.and()
 			.formLogin()
 				.usernameParameter("username")
 				.passwordParameter("password")
@@ -80,10 +83,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll()
 			.and()
 			.oauth2Login()
-			.and()
-			.csrf().disable()
-			.cors();
-
+				.defaultSuccessUrl("https://localhost:8080",true);
 			//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 	}
 
