@@ -67,4 +67,11 @@ public class LoginController
       {
             return new ResponseEntity<>("Logged In",HttpStatus.OK);
       }
+
+      @RolesAllowed({"USER","ADMIN"})
+      @GetMapping("/uuid")
+      public ResponseEntity<String> getUserId(@RequestParam("username") String username)
+      {
+            return new ResponseEntity<>(userService.getUUID(username),HttpStatus.OK);
+      }
 }

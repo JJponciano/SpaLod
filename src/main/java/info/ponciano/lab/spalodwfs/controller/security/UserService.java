@@ -115,4 +115,20 @@ public class UserService implements UserDetailsService {
         return UUID.nameUUIDFromBytes(randomBytes).toString();
     }
 
+    public String getUUID(String username)
+    {   
+        try (BufferedReader br = new BufferedReader(new FileReader(DB_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts[1].equals(username)) {
+                    return parts[0];
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
