@@ -315,6 +315,8 @@ export default {
                     } else if (predicate === 'itemLabel') {
                         var label = String(item[predicate]['value']).split('/');
                         label = label[label.length - 1];
+                        label = label.split('#');
+                        label = label[label.length - 1];
                         label = label.replace(/_/g, ' ');
                         feature.properties[predicate] = label;
                     } else {
@@ -324,9 +326,7 @@ export default {
 
                 geoJSON.features.push(feature);
             });
-
-            console.log(JSON.stringify(geoJSON));
-            // console.log(geoJSON);
+            
             const blob = new Blob([JSON.stringify(geoJSON)], { type: 'application/json' });
             const file = new File([blob], 'data.json', { type: 'application/json' });
             this.$emit('file-selected', file);
