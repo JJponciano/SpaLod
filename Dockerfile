@@ -9,10 +9,11 @@ RUN apt install sudo
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 RUN apt-get install nodejs -y
 
+
 # # Clone the repository
 RUN apt install git -y
 
-RUN git clone --branch youneskamli https://github.com/JJponciano/SpaLod.git /home/spalod
+RUN git clone https://github.com/JJponciano/SpaLod.git /home/spalod
 
 
 # Add a step to checkout the desired branch
@@ -40,3 +41,7 @@ ARG CACHEBUST=1
 RUN git -C  /home/spalod/ pull
 RUN mvn -f /home/spalod/pom.xml package -DskipTests
 RUN chmod 755 /home/spalod/spalod.sh
+
+#docker build -t spalod .
+#docker run -p 8080:8080 -p 8081:8081 -d -i --name spalod-container spalod
+#docker exec spalod-container /home/spalod/spalod.sh

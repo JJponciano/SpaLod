@@ -17,5 +17,5 @@ spring:
             clientSecret: 7c521fa36a579e48d95b0bb58ba68c78aef454bb
 
 # application.properties
-triplestore.sparqlEndpoint: http://example.com/sparql
+triplestore.sparqlEndpoint: http://87185f19b3c7:7200/repositories/graphDB_spalod
 

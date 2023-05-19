@@ -7,6 +7,18 @@
                     {{ option.label }}
                 </option>
             </select>
+            <div class="catalog" :class="{active:showCatalog}">
+                <p @click="showCatalog =! showCatalog">Catalog List</p>
+                <div v-if="showCatalog">
+                    <div class="catalogLabel" v-for="item in Catalog" :key="item">
+                    <p>{{ item }}</p>
+                    </div>
+                    <div class="addCatalog">
+                        <textarea v-model="inputCatalog" :placeholder="placeholdersC" spellcheck="false"></textarea>
+                        <button @click="addNewCatalog">+</button>
+                    </div>
+                </div>
+            </div>
             <div class="filter" :class="{active:showFilter}">
                 <p @click="showFilter = !showFilter">Filter</p>
                 <div class="filtercontainer" v-if="showFilter">
@@ -77,14 +89,18 @@ export default {
             menuOpen: false,
             showAddMenu: false,
             showFilter: false,
+            showCatalog: false,
             min:100,
             max:1000,
             rangeValue:150,
             step:50,
             inputAdvanced:"",
+            inputCatalog:"",
             advancedMenuOpen:false,
             placeholders:"Write your custom request here",
+            placeholdersC:"New Catalog",
             selectedOption: "schools",
+            selectedCatalog: "catalog1",
             options: [
                 { label: 'Schule (Q3914)', value: 'schools' },
                 { label: '20 biggest cities in Germany', value: 'twentyBiggestCities' },
@@ -110,6 +126,7 @@ export default {
                 { label: 'Häfen (Q44782)', value: 'port' },
                 { label: 'Städte (Q515)', value: 'cities' },
             ],
+            Catalog: ['catalog1', 'catalog2'],
             queries: {
                 schools: 'SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <http://lab.ponciano.info/ont/spalod#category> <http://www.wikidata.org/entity/Q3914> .\n  ?item <http://lab.ponciano.info/ont/spalod#itemLabel> ?itemLabel .\n  ?item <http://lab.ponciano.info/ont/spalod#coordinates> ?coordinates .\n ?item <http://lab.ponciano.info/ont/spalod#category> ?category .} LIMIT ',
                 twentyBiggestCities: 'SELECT DISTINCT ?city ?cityLabel ?latitude ?longitude ?instanceOfCity ?population WHERE {\n SERVICE wikibase:label { bd:serviceParam wikibase:language "de". } \n VALUES ?instanceOfCity { \n wd:Q515 \n  } \n  ?city (wdt:P31/(wdt:P279*)) ?instanceOfCity; \n wdt:P17 wd:Q183;\n  p:P625 ?statement. \n ?statement psv:P625 ?coordinate_node. \n ?coordinate_node wikibase:geoLatitude ?latitude; \n wikibase:geoLongitude ?longitude.\nOPTIONAL { ?city wdt:P1082 ?population. } \n } \nORDER BY DESC (?population) \nLIMIT 20',
@@ -172,6 +189,7 @@ export default {
             this.isDarkMode = event.matches;
         });
         this.inputAdvanced=this.queries[this.selectedOption] + this.rangeValue;
+        this.loadCatalog();
     },
     beforeDestroy() {
         window.removeEventListener("resize", this.closeNavBar);
@@ -202,6 +220,66 @@ export default {
             else{
                 this.inputAdvanced=this.inputAdvanced.concat('\n LIMIT ', this.rangeValue);
             }
+        },
+        loadCatalog(){
+            var data = {
+                query: 'SELECT ?s WHERE{?o . FILTER(?o = <' + 'http://lab.ponciano.info/ont/spalod#Catalog' + '>)}',
+                triplestore: ''
+            };
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                'type': 'POST',
+                'url': 'https://localhost:8081/api/sparql-select',
+                'data': JSON.stringify(data),
+                'dataType': 'json',
+                success: (data) => {
+                    if (data.results.bindings.length > 0) {
+                        console.log(data.results.bindings[0].o.value);
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        },
+        addNewCatalog(){
+            if(this.inputCatalog){
+                const tripleData1={
+                    subject: 'http://lab.ponciano.info/ont/spalod#' + String(this.inputCatalog).replace(/ /g, '_'),
+                    predicate: 'http://lab.ponciano.info/ont/spalod#category',
+                    object: 'Catalog',
+                };
+                this.updateTripleData(tripleData1, 'add', () => {});
+                const tripleData={
+                    subject: 'http://lab.ponciano.info/ont/spalod#' + String(this.inputCatalog).replace(/ /g, '_'),
+                    predicate: 'http://lab.ponciano.info/ont/spalod#hasID',
+                    object: ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)),
+                };
+                this.updateTripleData(tripleData, 'add', () => {
+                    this.Catalog.push(this.inputCatalog);
+                    this.inputCatalog='';
+                });
+            }
+        },
+        updateTripleData(tripleData, operation, callback) {
+            const addOperation = {
+                operation: operation,
+                tripleData: tripleData,
+            };
+            $.ajax({
+                url: 'https://localhost:8081/api/update',
+                type: 'POST',
+                data: JSON.stringify(addOperation),
+                contentType: 'application/json',
+                success: callback,
+                error: function (error) {
+                    console.log(error);
+                }
+            });
         },
         addDataCSV() {
             this.$emit('CSVSelected');
@@ -403,6 +481,70 @@ button {
     width: 100%;
     text-align: left;
 }
+.addCatalog{
+    display: inline-flex;
+    align-items: center;
+}
+.catalog{
+    border-radius: 5px;
+    border: none;
+    background-color: none;
+    margin-top: 5px;
+}
+.catalog textarea{
+    font-size:13px;
+    font-weight: normal;
+    height: 30px;
+    resize: none;
+    margin-top: 0px;
+    margin-right: 0;
+    margin-left: 25px;
+    border-radius: 5px;
+    line-height: 22px;
+    width: 190px;
+}
+.catalog button{
+    background-color: #0baaa7;
+    text-align: center;
+    color: white;
+    font-size:medium;
+    width: 10px;
+    margin-left: 10px;
+    padding: 10px 25px 10px 18px;
+    bottom: 5px;
+}
+.catalog button:hover{
+    background-color: #1A202C;
+}
+.catalog p{
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+}
+.catalog:hover{
+    background-color: #dee1e6;
+}
+.user-actions.dark .catalog:hover{
+    background-color: #4A5568;
+}
+.catalog.active{
+    background-color: #dee1e6;
+}
+.user-actions.dark .catalog.active{
+    background-color: #4A5568;
+}
+.catalogLabel p{
+    font-weight: normal;
+    font-size: medium;
+    margin-left: 30px;
+    padding: 0;
+    cursor: default;
+    font-size: 15px;
+}
 .filter{
     border-radius: 5px;
     border: none;
@@ -458,6 +600,9 @@ button {
 }
 .addfile.active{
     background-color:#dee1e6;
+}
+.user-actions.dark .addfile.active{
+    background-color: #4A5568;
 }
 .user-actions.dark .filter.active{
     background-color: #4A5568;
