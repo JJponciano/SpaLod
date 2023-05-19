@@ -13,7 +13,7 @@ RUN apt-get install nodejs -y
 # # Clone the repository
 RUN apt install git -y
 
-RUN git clone --branch Pierre https://github.com/JJponciano/SpaLod.git /home/spalod
+RUN git clone https://github.com/JJponciano/SpaLod.git /home/spalod
 
 
 # Add a step to checkout the desired branch
