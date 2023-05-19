@@ -13,9 +13,9 @@ spring:
       client:
         registration:
           github:
-            clientId: f8053e8cdd6efd9d0698
-            clientSecret: b7c2d2500ac97226ee3fd7118ae03ee3423a5903
+            clientId: 46d5da3810de3587035b
+            clientSecret: 7c521fa36a579e48d95b0bb58ba68c78aef454bb
 
 # application.properties
-triplestore.sparqlEndpoint: http://example.com/sparql
+triplestore.sparqlEndpoint: http://87185f19b3c7:7200/repositories/graphDB_spalod
 

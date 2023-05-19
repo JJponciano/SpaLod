@@ -25,6 +25,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
     private PasswordEncoder passwordEncoder;
 
+	@Autowired
+    private EntryPoint authenticationEntryPoint;
+
 	@Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -54,6 +57,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/register").permitAll()
 			.anyRequest().authenticated()
 			.and()
+			.exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+			.and()
+			.csrf().disable()
+			.cors()
+			.and()
 			.formLogin()
 				.usernameParameter("username")
 				.passwordParameter("password")
@@ -74,10 +83,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll()
 			.and()
 			.oauth2Login()
-			.and()
-			.csrf().disable()
-			.cors();
-
+				.defaultSuccessUrl("https://localhost:8080",true);
 			//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 	}
 

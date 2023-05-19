@@ -10,7 +10,7 @@ import PopUp from './components/PopUp.vue';
 const routes={
   '/': { component: NavBar, name: 'NavBar' },
   '/login': { component: Login, name: 'Login' },
-  '/register': { component: Register, name: 'Register' }
+  '/register': { component: Register, name: 'Register' },
   }
 
 
@@ -32,9 +32,10 @@ export default {
       popup:false,
       currentPath: window.location.pathname
     };
-  },computed: {
+  }
+  ,computed: {
     currentView() {
-      if (this.currentPath === '/') {
+      if (this.currentPath === '/' || this.currentPath === '/admin' ) {
         return 'main';
       } 
       else if (this.currentPath === '/login') {
@@ -75,6 +76,12 @@ export default {
     onClosepopUp(){
       this.popup=false;
     },
+    goHome(){
+      window.location.href="/";
+    },
+    goToLogin(){
+      window.location.href="/login";
+    }
   }
 };
 </script>
@@ -90,7 +97,7 @@ export default {
           <MapView :file="file"></MapView>
         </div>
         <div class="rdf-data-container">
-          <RDFData :file="file"></RDFData>
+          <RDFData @update="onFileSelected" :file="file"></RDFData>
         </div>
       </div>
     </div>
@@ -107,6 +114,10 @@ export default {
   <div class="popup">
     <PopUp :chooseCSV="chooseCSV" :chooseJson="chooseJson" :popup="popup" @CSVBack="onUnselectCSV" @JsonBack="onUnselectJson" @popupBack="onClosepopUp"></PopUp>
   </div>
+  <notifications/>
+  <notifications group="login-success" @click="goHome()" />
+  <notifications group="register-success" @click="goToLogin()" />
+  <notifications group="notLoggedIn" @click="goToLogin()"/>
 </template>
 
 

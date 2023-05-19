@@ -21,7 +21,9 @@ package info.ponciano.lab.spalodwfs.controller.security;
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +45,6 @@ public class LoginController
       @RequestMapping("/admin")
       public String getAdmin()
       {
-            System.out.println("curl successful");
             return "Welcome Admin";
       }
 
@@ -59,6 +60,11 @@ public class LoginController
             }
             return ResponseEntity.ok("Admin added successfully");
       }
-
-
+      
+      @RolesAllowed({"USER","ADMIN"})
+      @GetMapping("/status")
+      public ResponseEntity<String> getStatus()
+      {
+            return new ResponseEntity<>("Logged In",HttpStatus.OK);
+      }
 }
