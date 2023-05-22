@@ -191,7 +191,7 @@ export default {
         loadPredicates() {
             const data = {
                 query: 'SELECT ?property ?propertyType WHERE{{?property a owl:ObjectProperty . BIND("Object Property" AS ?propertyType)} UNION {?property a owl:DatatypeProperty . BIND("Data Property" AS ?propertyType)}} ORDER BY ?property',
-                triplestore: ''
+                triplestore: '' //intégrer graph DB ici
             };
             $.ajax({
                 headers: {
@@ -685,8 +685,8 @@ export default {
     color: #fff;
 }
 
-.rdf-data.light {
-    background-color: #fff;
+.rdf-data {
+    background-color: rgb(241, 241, 241);
     color: #1A202C;
 }
 
@@ -718,14 +718,19 @@ p {
     width: 100%;
     text-align: center;
 }
-
-.metadata:hover {
+.metadata:hover{
+    background-color: #dee1e6;
+    transition: background-color 0.3s ease;
+}
+.rdf-data.dark .metadata:hover {
     background-color: #4A5568;
     color: white;
     transition: background-color 0.3s ease;
 }
-
-.metadata.active {
+.metadata.metadata.active{
+    background-color: #dee1e6;
+}
+.rdf-data.dark .metadata.active {
     background-color: #4A5568;
     color: white;
 }
@@ -877,11 +882,14 @@ button:hover {
     width: 100%;
     max-height: 200px;
     overflow-y: auto;
-    background-color: #4A5568;
+    background-color: #dee1e6;
     border-radius: 5px;
     padding: 10px;
     margin: 0px;
     list-style: none;
+}
+.rdf-data.dark .autocomplete-results{
+    background-color: #4A5568;
 }
 
 .autocomplete-results li {
@@ -909,9 +917,11 @@ button:hover {
 }
 
 .custom-predicate {
-    font-weight: bold;
     font-size: 16px;
     text-align: center;
+    color: #1A202C;
+}
+.rdf-data.dark .custom-predicate{
     color: white;
 }
 

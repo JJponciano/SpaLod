@@ -106,7 +106,7 @@
   <style scoped>
   .navbar {
     display: flex;
-    background-color:#fff;
+    background-color: rgb(241, 241, 241);
     justify-content: space-between;
     align-items: center;
     padding: 10px;
@@ -114,6 +114,8 @@
     top: 0;
     left: 0;
     right: 0;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
   }
   
   .navbar.dark {
@@ -157,6 +159,9 @@
     color: white;
   }
   .computer button:hover{
+    background-color: #dee1e6;
+  }
+  .navbar.dark .computer button:hover{
     background-color: #4A5568;
     color: white;
   }
@@ -165,6 +170,9 @@
   }
 
 @media screen and (max-width: 768px){
+  .navbar{
+    position: fixed;
+  }
   .telefon{
     display: block;
   }
