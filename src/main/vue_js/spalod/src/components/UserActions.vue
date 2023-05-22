@@ -221,7 +221,7 @@ export default {
                 this.inputAdvanced=this.inputAdvanced.concat('\n LIMIT ', this.rangeValue);
             }
         },
-        loadCatalog(){
+        loadCatalog(){ //TODO
             var data = {
                 query: 'SELECT ?s WHERE{?o . FILTER(?o = <' + 'http://lab.ponciano.info/ont/spalod#Catalog' + '>)}',
                 triplestore: ''
@@ -247,17 +247,11 @@ export default {
         },
         addNewCatalog(){
             if(this.inputCatalog){
-                const tripleData1={
-                    subject: 'http://lab.ponciano.info/ont/spalod#' + String(this.inputCatalog).replace(/ /g, '_'),
-                    predicate: 'http://lab.ponciano.info/ont/spalod#category',
-                    object: 'Catalog',
-                };
-                this.updateTripleData(tripleData1, 'add', () => {});
                 const tripleData={
-                    subject: 'http://lab.ponciano.info/ont/spalod#' + String(this.inputCatalog).replace(/ /g, '_'),
-                    predicate: 'http://lab.ponciano.info/ont/spalod#hasID',
-                    object: ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                    subject: ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
                             (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)),
+                    predicate: 'http://purl.org/dc/terms/title',
+                    object: 'http://lab.ponciano.info/ont/spalod#' + String(this.inputCatalog).replace(/ /g, '_') + '_C', //_C pour spécifier ue c'est un catalog
                 };
                 this.updateTripleData(tripleData, 'add', () => {
                     this.Catalog.push(this.inputCatalog);
