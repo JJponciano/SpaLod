@@ -325,7 +325,7 @@ export default {
             tripleData = {
                 subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
                 predicate: 'http://lab.ponciano.info/ont/spalod#hasItem',
-                object: 'http://lab.ponciano.info/ont/spalod#' + triplet.subject.replace(/ /g, '_')
+                object: triplet.subject.replace(/ /g, '_')
             };
             this.updateTripleData(tripleData, 'add', () => {
                 console.log('Triple linked to the dataset');
