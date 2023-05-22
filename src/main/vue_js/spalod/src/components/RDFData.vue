@@ -29,7 +29,7 @@
                     <h3 v-else>{{ queryable.q }}:</h3>
                     <div class="metadata-input">
                         <input type="text" v-model="metadata[queryable.q]" class="metadata-textbox" :placeholder="queryable.d" @focus="$event.target.select()" @input="queryable.v = false" spellcheck="false">
-                        <button :id="queryable.q" class="validate" @click="validateMetadata(queryable.q)" :class="{ added: queryable.v }" :disabled="queryable.q !== 'recordId' && !queryables[0].v" v-show="queryable.q === 'recordId' || queryables[0].v">{{ queryable.v ? 'Validated' : 'Validate' }}</button>
+                        <button :id="queryable.q" class="validate" @click="validateMetadata(queryable.q)" :class="{ added: queryable.v }" :disabled="queryable.q !== 'identifier' && !queryables[0].v" v-show="queryable.q === 'identifier' || queryables[0].v">{{ queryable.v ? 'Validated' : 'Validate' }}</button>
                     </div>
                 </div>
             </div>
@@ -124,7 +124,7 @@ export default {
             queryResult: [],
             metadata: [],
             queryables: [
-                {q: 'recordId', required: true, d: 'The unique identifier of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#dataset', literal: false},
+                {q: 'identifier', required: true, d: 'The unique identifier of the dataset', v: false, p: 'http://purl.org/dc/terms/identifier', literal: true},
                 {q: 'title', required: true, d: 'The name given to the resource', v: false, p: 'http://purl.org/dc/terms/title', literal: true},
                 {q: 'description', required: true, d: 'Description of the resource', v: false, p: 'http://purl.org/dc/terms/description', literal: true},
                 {q: 'distribution', required: true, d: 'The distribution of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#distribution', literal: false},
@@ -139,6 +139,36 @@ export default {
                 {q: 'modified', required: false, d: 'The date the dataset was updated', v: false, p: 'http://purl.org/dc/terms/modified', literal: true},
                 {q: 'language', required: false, d: 'Language of the resource', v: false, p: 'http://purl.org/dc/terms/language', literal: false},
                 {q: 'landingPage', required: false, d: 'Links to other resources', v: false, p: 'http://www.w3.org/ns/dcat#landingPage', literal: true},
+                {q: 'politicalGeocodingLevelURI', required: false, d: 'Geopolitical coverage of the dataset', v: false, p: 'http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI', literal: false},
+                {q: 'politicalGeocodingURI', required: false, d: 'URI of the administrative area', v: false, p: 'http://dcat-ap.de/def/dcatde/politicalGeocodingURI', literal: false},
+                {q: 'availability', required: false, d: 'Planned availability of the dataset', v: false, p: 'http://data.europa.eu/r5r/availability', literal: false},
+                {q: 'contributorID', required: false, d: 'The identifier of the contributor', v: false, p: 'http://dcat-ap.de/def/dcatde/contributorID', literal: false},
+                {q: 'geocodingDescription', required: false, d: 'Description of the geocoding', v: false, p: 'http://dcat-ap.de/def/dcatde/geocodingDescription', literal: true},
+                {q: 'versionInfo', required: false, d: 'Version number of the dataset', v: false, p: 'http://www.w3.org/2002/07/owl#versionInfo', literal: true},
+                {q: 'versionNotes', required: false, d: 'Notes on the version of the dataset', v: false, p: 'http://www.w3.org/ns/adms#versionNotes', literal: true},
+                {q: 'legalBasis', required: false, d: 'Legal basis for the dataset', v: false, p: 'http://dcat-ap.de/def/dcatde/legalBasis', literal: true},
+                {q: 'relation', required: false, d: 'Related resource', v: false, p: 'http://purl.org/dc/terms/relation', literal: false},
+                {q: 'page', required: false, d: 'Page reference', v: false, p: 'http://xmlns.com/foaf/0.1/page', literal: false},
+                {q: 'conformsTo', required: false, d: 'Standard the dataset conforms to', v: false, p: 'http://purl.org/dc/terms/conformsTo', literal: false},
+                {q: 'accessRights', required: false, d: 'Information about who can access the dataset', v: false, p: 'http://purl.org/dc/terms/accessRights', literal: false},
+                {q: 'provenance', required: false, d: 'Development history of the dataset', v: false, p: 'http://purl.org/dc/terms/provenance', literal: false},
+                {q: 'accrualPeriodicity', required: false, d: 'Frequency of dataset updates', v: false, p: 'http://purl.org/dc/terms/accrualPeriodicity', literal: false},
+                {q: 'qualityProcessURI', required: false, d: 'URI of the quality process', v: false, p: 'http://dcat-ap.de/def/dcatde/qualityProcessURI', literal: true},
+                {q: 'wasGeneratedBy', required: false, d: 'Process that generated the dataset', v: false, p: 'http://www.w3.org/ns/prov#wasGeneratedBy', literal: false},
+                {q: 'spatialResolutionInMeters', required: false, d: 'Spatial resolution of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#spatialResolutionInMeters', literal: true},
+                {q: 'temporalResolution', required: false, d: 'Temporal resolution of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#temporalResolution', literal: true},
+                {q: 'granularity', required: false, d: 'Granularity of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#granularity', literal: false},
+                {q: 'qualifiedAttribution', required: false, d: 'Attribution of the dataset', v: false, p: 'http://www.w3.org/ns/prov#qualifiedAttribution', literal: false},
+                {q: 'qualifiedRelation', required: false, d: 'Relation of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#qualifiedRelation', literal: false},
+                {q: 'isReferencedBy', required: false, d: 'Resource that references the dataset', v: false, p: 'http://purl.org/dc/terms/isReferencedBy', literal: false},
+                {q: 'references', required: false, d: 'Resource referenced by the dataset', v: false, p: 'http://purl.org/dc/terms/references', literal: false},
+                {q: 'source', required: false, d: 'Source of the dataset', v: false, p: 'http://purl.org/dc/terms/source', literal: false},
+                {q: 'isVersionOf', required: false, d: 'Resource that is a version of the dataset', v: false, p: 'http://purl.org/dc/terms/isVersionOf', literal: false},
+                {q: 'sample', required: false, d: 'Sample of the dataset', v: false, p: 'http://www.w3.org/ns/adms#sample', literal: false},
+                {q: 'creator', required: false, d: 'Creator of the dataset', v: false, p: 'http://purl.org/dc/terms/creator', literal: false},
+                {q: 'contributor', required: false, d: 'Contributor to the dataset', v: false, p: 'http://purl.org/dc/terms/contributor', literal: false},
+                {q: 'originator', required: false, d: 'People who own the copyright to the record', v: false, p: 'http://dcat-ap.de/def/dcatde/originator', literal: false},
+                {q: 'maintainer', required: false, d: 'People who maintain the dataset', v: false, p: 'http://dcat-ap.de/def/dcatde/maintainer', literal: false},
             ],
             showResults: false,
             activeInput: null,
@@ -154,7 +184,7 @@ export default {
             this.isDarkMode = event.matches;
         });
         this.loadPredicates();
-        this.metadata['recordId'] = this.uuidv4();
+        this.metadata['identifier'] = this.uuidv4();
         this.uid = localStorage.getItem('uuid');
         this.metadata['publisher'] = localStorage.getItem('username') || "";
         var today = new Date();
@@ -322,7 +352,7 @@ export default {
             });
 
             tripleData = {
-                subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
                 predicate: 'http://lab.ponciano.info/ont/spalod#hasItem',
                 object: triplet.subject.replace(/ /g, '_')
             };
@@ -480,12 +510,12 @@ export default {
         validateMetadata(data) {
             var queryable = this.queryables.find(queryable => queryable.q === data);
             if(this.metadata[queryable.q] !== '' && this.metadata[queryable.q] !== undefined) {
-                if ( queryable.q === 'recordId') {
+                if ( queryable.q === 'identifier') {
                     queryable.v = true;
                 } else if (queryable.q === 'publisher') {
                     // Delete the old triplets
                     var data = {
-                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId + '>)}',
+                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier + '>)}',
                         triplestore: ''
                     };
                     $.ajax({
@@ -501,7 +531,7 @@ export default {
                             if (data.results.bindings.length > 0) {
                                 const object = data.results.bindings[0].o.value
                                 const tripleData = {
-                                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
                                     predicate: queryable.p,
                                     object: object,
                                 };
@@ -548,7 +578,7 @@ export default {
 
                     // Add the new triplets
                     var tripleData = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
                         predicate: queryable.p,
                         object: 'http://lab.ponciano.info/ont/spalod#' + this.uid,
                     };
@@ -564,7 +594,7 @@ export default {
                     String(this.metadata.keywords).split(',').forEach(keyword => {
                         // Add the new triplets
                         var tripleData = {
-                            subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                            subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
                             predicate: queryable.p,
                             object: keyword,
                         };
@@ -573,7 +603,7 @@ export default {
                 } else {
                     // Delete the old triplet
                     var data = {
-                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId + '>)}',
+                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier + '>)}',
                         triplestore: ''
                     };
                     $.ajax({
@@ -589,7 +619,7 @@ export default {
                             if (data.results.bindings.length > 0) {
                                 const object = data.results.bindings[0].o.value
                                 const tripleData = {
-                                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
                                     predicate: queryable.p,
                                     object: object,
                                 };
@@ -605,7 +635,7 @@ export default {
 
                     // Add the new triplet
                     var tripleData = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
                         predicate: queryable.p,
                         object: queryable.literal ? String(this.metadata[queryable.q]).replace(/ /g, '_') : 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'),
                     };
