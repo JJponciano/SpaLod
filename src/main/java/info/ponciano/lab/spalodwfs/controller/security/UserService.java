@@ -163,7 +163,7 @@ public class UserService implements UserDetailsService {
                     TripleData tripleData = new TripleData(
                         "http://lab.ponciano.info/ont/spalod#"+uuid, //subject
                         "https://xmlns.com/foaf/0.1/:name", //predicate
-                        user.getUsername()   //object
+                        "http://lab.ponciano.info/ont/spalod#"+user.getUsername()   //object
                     );
 
                     //ADD IN ONTOLOGY
