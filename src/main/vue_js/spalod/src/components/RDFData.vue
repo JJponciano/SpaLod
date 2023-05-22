@@ -510,9 +510,7 @@ export default {
         validateMetadata(data) {
             var queryable = this.queryables.find(queryable => queryable.q === data);
             if(this.metadata[queryable.q] !== '' && this.metadata[queryable.q] !== undefined) {
-                if ( queryable.q === 'identifier') {
-                    queryable.v = true;
-                } else if (queryable.q === 'publisher') {
+                if (queryable.q === 'publisher') {
                     // Delete the old triplets
                     var data = {
                         query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier + '>)}',
@@ -773,9 +771,9 @@ p {
 
 .metadata-element {
     display: grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 1fr 1fr;
     margin: 10px 0;
-    width: 50%;
+    width: 75%;
 }
 
 .metadata-element h3 {
