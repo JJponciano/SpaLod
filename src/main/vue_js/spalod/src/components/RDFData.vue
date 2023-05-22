@@ -124,30 +124,28 @@ export default {
             queryResult: [],
             metadata: [],
             queryables: [
-                {q: 'recordId', required: true, d: 'The unique identifier of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#dataset'},
-                {q: 'title', required: true, d: 'The name given to the resource', v: false, p: 'http://purl.org/dc/terms/title'},
-                {q: 'description', required: true, d: 'Description of the resource', v: false, p: 'http://purl.org/dc/terms/description'},
-                {q: 'distribution', required: true, d: 'The distribution of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#distribution'},
-                {q: 'publisher', required: true, d: 'Entity making the resource available', v: false, p: 'http://purl.org/dc/terms/publisher'},
-                {q: 'keywords', required: false, d: "Tags separated by ','", v: false, p: 'http://www.w3.org/ns/dcat#keyword'},
-                {q: 'theme', required: false, d: 'Main category', v: false, p: 'http://www.w3.org/ns/dcat#theme'},
-                {q: 'type', required: false, d: 'The nature or genre of the resource', v: false, p: 'http://purl.org/dc/terms/type'},
-                {q: 'contactPoint', required: false, d: 'An entity to contact', v: false, p: 'http://www.w3.org/ns/dcat#contactPoint'},
-                {q: 'spatial', required: false, d: 'Spatial area or designed place', v: false, p: 'http://www.w3.org/ns/dcat#spatial'},
-                {q: 'temporal', required: false, d: 'Time interval', v: false, p: 'http://purl.org/dc/terms/temporal'},
-                {q: 'issued', required: false, d: 'The date the dataset was created', v: false, p: 'http://purl.org/dc/terms/issued'},
-                {q: 'modified', required: false, d: 'The date the dataset was updated', v: false, p: 'http://purl.org/dc/terms/modified'},
-                {q: 'language', required: false, d: 'Language of the resource', v: false, p: 'http://purl.org/dc/terms/language'},
-                {q: 'formats', required: false, d: 'List of available distributions', v: false, p: 'http://www.w3.org/ns/dcat#distribution'},
-                {q: 'license', required: false, d: 'License of the resource', v: false, p: 'http://purl.org/dc/terms/license'},
-                {q: 'rights', required: false, d: 'Rights not addressed by the license', v: false, p: 'http://purl.org/dc/terms/rights'},
-                {q: 'landingPage', required: false, d: 'Links to other resources', v: false, p: 'http://www.w3.org/ns/dcat#landingPage'},
+                {q: 'recordId', required: true, d: 'The unique identifier of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#dataset', literal: false},
+                {q: 'title', required: true, d: 'The name given to the resource', v: false, p: 'http://purl.org/dc/terms/title', literal: true},
+                {q: 'description', required: true, d: 'Description of the resource', v: false, p: 'http://purl.org/dc/terms/description', literal: true},
+                {q: 'distribution', required: true, d: 'The distribution of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#distribution', literal: false},
+                {q: 'publisher', required: true, d: 'Entity making the resource available', v: false, p: 'http://purl.org/dc/terms/publisher', literal: false},
+                {q: 'keywords', required: false, d: "Tags separated by ','", v: false, p: 'http://www.w3.org/ns/dcat#keyword', literal: true},
+                {q: 'theme', required: false, d: 'Main category', v: false, p: 'http://www.w3.org/ns/dcat#theme', literal: false},
+                {q: 'type', required: false, d: 'The nature or genre of the resource', v: false, p: 'http://purl.org/dc/terms/type', literal: false},
+                {q: 'contactPoint', required: false, d: 'An entity to contact', v: false, p: 'http://www.w3.org/ns/dcat#contactPoint', literal: false},
+                {q: 'spatial', required: false, d: 'Spatial area or designed place', v: false, p: 'http://www.w3.org/ns/dcat#spatial', literal: false},
+                {q: 'temporal', required: false, d: 'Time interval', v: false, p: 'http://purl.org/dc/terms/temporal', literal: false},
+                {q: 'issued', required: false, d: 'The date the dataset was created', v: false, p: 'http://purl.org/dc/terms/issued', literal: true},
+                {q: 'modified', required: false, d: 'The date the dataset was updated', v: false, p: 'http://purl.org/dc/terms/modified', literal: true},
+                {q: 'language', required: false, d: 'Language of the resource', v: false, p: 'http://purl.org/dc/terms/language', literal: false},
+                {q: 'landingPage', required: false, d: 'Links to other resources', v: false, p: 'http://www.w3.org/ns/dcat#landingPage', literal: true},
             ],
             showResults: false,
             activeInput: null,
             picked: "DatatypeProperty",
             rdfView: true,
             showMetadata: false,
+            uid: null,
         };
     },
     mounted() {
@@ -157,6 +155,7 @@ export default {
         });
         this.loadPredicates();
         this.metadata['recordId'] = this.uuidv4();
+        this.uid = localStorage.getItem('uuid');
         this.metadata['publisher'] = localStorage.getItem('username') || "";
         var today = new Date();
         var dd = String(today.getDate()).padStart(2, '0');
@@ -325,7 +324,7 @@ export default {
             tripleData = {
                 subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
                 predicate: 'http://lab.ponciano.info/ont/spalod#hasItem',
-                object: 'http://lab.ponciano.info/ont/spalod#' + triplet.subject.replace(/ /g, '_')
+                object: triplet.subject.replace(/ /g, '_')
             };
             this.updateTripleData(tripleData, 'add', () => {
                 console.log('Triple linked to the dataset');
@@ -551,14 +550,14 @@ export default {
                     var tripleData = {
                         subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
                         predicate: queryable.p,
-                        object: 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'), // TODO: UID of the publisher
+                        object: 'http://lab.ponciano.info/ont/spalod#' + this.uid,
                     };
                     this.updateTripleData(tripleData, 'add', () => queryable.v = true);
 
                     tripleData = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'), // TODO: UID of the publisher
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.uid,
                         predicate: 'http://xlmns.com/foaf/0.1/name',
-                        object: 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'),
+                        object: String(this.metadata[queryable.q]).replace(/ /g, '_'),
                     }
                     this.updateTripleData(tripleData, 'add', () => queryable.v = true);
                 } else if (queryable.q === 'keywords') {
@@ -567,7 +566,7 @@ export default {
                         var tripleData = {
                             subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
                             predicate: queryable.p,
-                            object: 'http://lab.ponciano.info/ont/spalod#' + keyword,
+                            object: keyword,
                         };
                         this.updateTripleData(tripleData, 'add', () => queryable.v = true);
                     });
@@ -608,7 +607,7 @@ export default {
                     var tripleData = {
                         subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.recordId,
                         predicate: queryable.p,
-                        object: 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'),
+                        object: queryable.literal ? String(this.metadata[queryable.q]).replace(/ /g, '_') : 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'),
                     };
                     this.updateTripleData(tripleData, 'add', () => queryable.v = true);
                 }
