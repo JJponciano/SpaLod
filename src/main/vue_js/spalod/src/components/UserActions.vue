@@ -45,7 +45,7 @@
                     <textarea v-model="inputAdvanced" :placeholder="placeholders" spellcheck="false"></textarea>
                 </div>
             </div>
-            <button @click="confirmRequest" class="confirm">Confirm Request</button>
+            <button ref="confirmRequest" @click="confirmRequest" class="confirm">Confirm Request</button>
         </div>
         <div class="navbar-menu" :class="{ active: menuOpen, dark: isDarkMode }">
             <ul class="navbar-nav">
@@ -189,7 +189,14 @@ export default {
             this.isDarkMode = event.matches;
         });
         this.inputAdvanced=this.queries[this.selectedOption] + this.rangeValue;
-        this.loadCatalog();
+        // this.loadCatalog();
+
+        const url = new URL(window.location.href);
+        const queryString = url.search.substring(1);
+        if (queryString && queryString != '') {
+            this.inputAdvanced = 'SELECT ?item ?itemLabel ?category ?coordinates WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#' + queryString + '>)\n?item <http://lab.ponciano.info/ont/spalod#itemLabel> ?itemLabel .\n?item <http://lab.ponciano.info/ont/spalod#category> ?category .\n?item <http://lab.ponciano.info/ont/spalod#coordinates> ?coordinates\n}';
+            this.$refs.confirmRequest.click();
+        }
     },
     beforeDestroy() {
         window.removeEventListener("resize", this.closeNavBar);
@@ -384,6 +391,8 @@ export default {
                     if (predicate === 'coordinates') {
                         var coords = String(item[predicate]['value']).split('/');
                         coords = coords[coords.length - 1];
+                        coords = coords.split('#');
+                        coords = coords[coords.length - 1];
                         coords = coords.split(',_');
                         if (coords) {
                             feature.geometry.coordinates = [parseFloat(coords[0]), parseFloat(coords[1])];
@@ -391,8 +400,8 @@ export default {
                     } else if (predicate === 'itemLabel') {
                         var label = String(item[predicate]['value']).split('/');
                         label = label[label.length - 1];
-                        label = label.split('#');
-                        label = label[label.length - 1];
+                        // label = label.split('#');
+                        // label = label[label.length - 1];
                         label = label.replace(/_/g, ' ');
                         feature.properties[predicate] = label;
                     } else {
