@@ -331,7 +331,7 @@ export default {
                             object: object,
                         };
                         this.updateTripleData(tripleData, 'remove', () => {
-                            console.log('Triple removed');
+                            console.log(JSON.stringify(tripleData) + ' removed');
                         });
                     }
                 },
@@ -344,11 +344,11 @@ export default {
             var tripleData = {
                 subject: triplet.subject.replace(/ /g, '_'),
                 predicate: predicate,
-                object: 'http://lab.ponciano.info/ont/spalod#' + triplet.object.replace(/ /g, '_'),
+                object: triplet.object.replace(/ /g, '_'),
             };
             this.updateTripleData(tripleData, 'add', () => {
                 $('#btn' + index).text('Added').addClass('added');
-                console.log('Triple added');
+                console.log(JSON.stringify(tripleData) + ' added');
             });
 
             tripleData = {
@@ -357,7 +357,7 @@ export default {
                 object: triplet.subject.replace(/ /g, '_')
             };
             this.updateTripleData(tripleData, 'add', () => {
-                console.log('Triple linked to the dataset');
+                console.log(JSON.stringify(tripleData) + ' linked to the dataset');
             });
 
             // Add the new predicate
@@ -369,10 +369,10 @@ export default {
                     object: "http://www.w3.org/2002/07/owl#" + this.picked,
                 };
                 var self = this;
-                this.updateTripleData(tripleData, 'remove', this.updateTripleData(tripleData, 'add', () => {
+                this.updateTripleData(tripleData, 'add', () => {
                     self.predicateOptions.push(predicate);
                     self.areAllPredicatesKnown();
-                }));
+                });
             }
         },
         filterResults(predicate, index) {

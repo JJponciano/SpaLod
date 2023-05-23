@@ -189,7 +189,7 @@ export default {
             this.isDarkMode = event.matches;
         });
         this.inputAdvanced=this.queries[this.selectedOption] + this.rangeValue;
-        this.loadCatalog();
+        // this.loadCatalog();
 
         const url = new URL(window.location.href);
         const queryString = url.search.substring(1);
@@ -396,6 +396,8 @@ export default {
                     if (predicate === 'coordinates') {
                         var coords = String(item[predicate]['value']).split('/');
                         coords = coords[coords.length - 1];
+                        coords = coords.split('#');
+                        coords = coords[coords.length - 1];
                         coords = coords.split(',_');
                         if (coords) {
                             feature.geometry.coordinates = [parseFloat(coords[0]), parseFloat(coords[1])];
@@ -403,8 +405,8 @@ export default {
                     } else if (predicate === 'itemLabel') {
                         var label = String(item[predicate]['value']).split('/');
                         label = label[label.length - 1];
-                        label = label.split('#');
-                        label = label[label.length - 1];
+                        // label = label.split('#');
+                        // label = label[label.length - 1];
                         label = label.replace(/_/g, ' ');
                         feature.properties[predicate] = label;
                     } else {
