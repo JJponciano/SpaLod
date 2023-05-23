@@ -24,6 +24,10 @@
         <div class="metadata" :class="{ active: showMetadata }" v-if="rdfData && rdfData.length > 0">
             <p @click="showMetadata = !showMetadata">Show Metadata</p>
             <div class="metadata-container" v-if="showMetadata">
+                <div class="metadata-Catalog">
+                    <textarea v-model="inputCatalog" :placeholder="placeholdersC" spellcheck="false"></textarea>
+                    <button @click="addNewCatalog">+</button>
+                </div>
                 <div v-for="(queryable, index) in queryables " :key="index" class="metadata-element">
                     <h3 v-if="queryable.required">{{ queryable.q }}: *</h3>
                     <h3 v-else>{{ queryable.q }}:</h3>
@@ -146,6 +150,8 @@ export default {
             rdfView: true,
             showMetadata: false,
             uid: null,
+            inputCatalog: '',
+            placeholdersC: 'New Catalog',
         };
     },
     mounted() {
@@ -252,6 +258,9 @@ export default {
             const blob = new Blob([JSON.stringify(geojones)], {type: "application/json"});
             const updatefile = new File([blob], "geodata.json", {type: "application/json"});
             this.$emit('update', updatefile);
+        },
+        addNewCatalog(){
+            this.$emit('popupCShow', String(this.inputCatalog));
         },
         processQueryResult(geoJson) {
             this.queryResult = [];

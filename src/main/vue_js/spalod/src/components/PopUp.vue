@@ -94,7 +94,6 @@ export default{
     },
     mounted(){
         this.detectDarkMode();
-        window.addEventListener("resize", this.closeNavBar);
         window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
             this.isDarkMode = event.matches;
         });

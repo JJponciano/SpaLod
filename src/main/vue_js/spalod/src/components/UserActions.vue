@@ -10,12 +10,12 @@
             <div class="catalog" :class="{active:showCatalog}">
                 <p @click="showCatalog =! showCatalog">Catalog List</p>
                 <div v-if="showCatalog">
-                    <div class="catalogLabel" v-for="item in Catalog" :key="item">
-                    <p>{{ item }}</p>
-                    </div>
                     <div class="addCatalog">
                         <textarea v-model="inputCatalog" :placeholder="placeholdersC" spellcheck="false"></textarea>
                         <button @click="addNewCatalog">+</button>
+                    </div>
+                    <div class="catalogLabel" v-for="item in Catalog" :key="item">
+                    <p>{{ item }}</p>
                     </div>
                 </div>
             </div>
@@ -257,6 +257,7 @@ export default {
                     this.Catalog.push(this.inputCatalog);
                     this.inputCatalog='';
                 });
+                this.$emit('popupCShow', String(this.inputCatalog));
             }
         },
         updateTripleData(tripleData, operation, callback) {

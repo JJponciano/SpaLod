@@ -6,6 +6,7 @@ import RDFData from './components/RDFData.vue';
 import Login from './components/Login.vue';
 import Register from './components/Register.vue';
 import PopUp from './components/PopUp.vue';
+import PopUpC from './components/PopUpC.vue';
 
 const routes={
   '/': { component: NavBar, name: 'NavBar' },
@@ -21,6 +22,7 @@ export default {
     MapView,
     RDFData,
     PopUp,
+    PopUpC,
     Login,
     Register
   },
@@ -30,7 +32,9 @@ export default {
       chooseCSV:false,
       chooseJson:false,
       popup:false,
-      currentPath: window.location.pathname
+      popupC:false,
+      currentPath: window.location.pathname,
+      name: '',
     };
   }
   ,computed: {
@@ -73,8 +77,15 @@ export default {
     onShowpopup(){
       this.popup=true;
     },
+    onShowpopupC(name){
+      this.popupC=true;
+      this.name=name;
+    },
     onClosepopUp(){
       this.popup=false;
+    },
+    onClosepopUpC(){
+      this.popupC=false;
     },
     goHome(){
       window.location.href="/";
@@ -90,7 +101,7 @@ export default {
   <div class="app">
     <div class="main" v-if="currentView === 'main'">
       <div class="user-actions-container">
-        <UserActions @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup"></UserActions>
+        <UserActions @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup" @popupCShow="onShowpopupC"></UserActions>
       </div>
       <div class="right-container" >
         <div class="map-container">
@@ -113,6 +124,9 @@ export default {
   </div>
   <div class="popup">
     <PopUp :chooseCSV="chooseCSV" :chooseJson="chooseJson" :popup="popup" @CSVBack="onUnselectCSV" @JsonBack="onUnselectJson" @popupBack="onClosepopUp"></PopUp>
+  </div>
+  <div class="popupC">
+    <PopUpC :popupC="popupC" :name="name" @popupCBack="onClosepopUpC"></PopUpC>
   </div>
   <notifications/>
   <notifications group="login-success" @click="goHome()" />
@@ -166,8 +180,15 @@ export default {
 }
 .popup{
   position: fixed;
-  top: 30vh;
-  left: 50vh;
+  top: 35%;
+  left: 40%;
+  width: fit-content;
+  z-index: 100;
+}
+.popupC{
+  position: fixed;
+  top: 35%;
+  left: 40%;
   width: fit-content;
   z-index: 100;
 }
@@ -194,6 +215,11 @@ export default {
     top:30vh;
     left:auto;
     right:5vh;
+  }
+  .popupC{
+    top: 30vh;
+    left: auto;
+    right: 5vh;
   }
 }
 </style>
