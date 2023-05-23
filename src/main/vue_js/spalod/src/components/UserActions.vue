@@ -346,6 +346,7 @@ export default {
             this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         },
         postJSON(url, data, callback) {
+            const vueInstance = this; // Store the Vue instance reference
             $.ajax({
             headers: { 
                 'Accept': 'application/json',
@@ -356,17 +357,29 @@ export default {
             'data': JSON.stringify(data),
             'dataType': 'json',
             'success': callback,
+            statusCode: {
+                401: function() {
+                    vueInstance.$notify({
+                        title: 'Unauthorized access.',
+                        group:"notLoggedIn",
+                        text: 'You need to login to continue. Click here to go to the login page.',
+                        type: 'error',
+                        duration: 5000
+                    });
+                },
+                500: function() {
+                    vueInstance.$notify({
+                        title: 'Bad Request',
+                        text: 'Please check the syntax of your request.',
+                        type: 'error',
+                        duration: 5000
+                    });
+                }
+            },
             error: (error) => {
-                this.$notify({
-                title: 'Unauthorized access.',
-                group:"notLoggedIn",
-                text: 'You need to login to continue. Click here to go to the login page.',
-                type: 'error',
-                duration: 5000
-            });
-              console.error(error);
+                console.log(error)
             }
-            });
+        })
         },
         handleResponse(response) {
             const geoJSON = {
