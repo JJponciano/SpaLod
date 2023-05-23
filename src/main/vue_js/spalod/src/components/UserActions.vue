@@ -45,7 +45,7 @@
                     <textarea v-model="inputAdvanced" :placeholder="placeholders" spellcheck="false"></textarea>
                 </div>
             </div>
-            <button @click="confirmRequest" class="confirm">Confirm Request</button>
+            <button ref="confirmRequest" @click="confirmRequest" class="confirm">Confirm Request</button>
         </div>
         <div class="navbar-menu" :class="{ active: menuOpen, dark: isDarkMode }">
             <ul class="navbar-nav">
@@ -190,6 +190,13 @@ export default {
         });
         this.inputAdvanced=this.queries[this.selectedOption] + this.rangeValue;
         this.loadCatalog();
+
+        const url = new URL(window.location.href);
+        const queryString = url.search.substring(1);
+        if (queryString && queryString != '') {
+            this.inputAdvanced = 'SELECT ?item ?itemLabel ?category ?coordinates WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#' + queryString + '>)\n?item <http://lab.ponciano.info/ont/spalod#itemLabel> ?itemLabel .\n?item <http://lab.ponciano.info/ont/spalod#category> ?category .\n?item <http://lab.ponciano.info/ont/spalod#coordinates> ?coordinates\n}';
+            this.$refs.confirmRequest.click();
+        }
     },
     beforeDestroy() {
         window.removeEventListener("resize", this.closeNavBar);
