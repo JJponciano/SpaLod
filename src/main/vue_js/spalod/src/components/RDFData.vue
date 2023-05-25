@@ -854,6 +854,9 @@ p {
     appearance: none;
     cursor: pointer;
 }
+th{
+    color: white;
+}
 .metadata-Catalog button{
     background-color: #0baaa7;
     margin-right: 40px;
