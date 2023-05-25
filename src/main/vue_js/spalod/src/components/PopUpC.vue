@@ -5,15 +5,16 @@
             <p>Add a new Catalog</p>
         </div>
         <div class="Name">
-            <p>Title</p>
+            <p>Name</p>
             <textarea v-model="inputName" :placeholder="placeholders" spellcheck="false"></textarea>
         </div>
         <div class="Description">
             <p>Description</p>
             <textarea v-model="inputDesc" :placeholder="placeholdersDesc" spellcheck="false"></textarea>
         </div>
-        <div class="Dataset">
-            <p>Dataset</p>
+        <div class="buttons">
+            <button @click="closePopup">Close</button>
+            <button class="confirm" @click="addCatalog">Add</button>
         </div>
     </div>
 </template>
@@ -22,17 +23,11 @@
 export default{
     props:{
         popupC: Boolean,
-        name: String,
     },
     watch:{
         popupC(newValue){
             if(newValue){
                 this.showPopup();
-            }
-        },
-        name(newValue){
-            if(newValue){
-                this.inputName=newValue;
             }
         },
     },
@@ -63,6 +58,14 @@ export default{
             this.isPopupVisible=false;
             this.$emit('popupCBack')
         },
+        addCatalog(){
+            var data = {
+                name: this.inputName,
+                desc: this.inputDesc,
+            };
+            this.$emit('Catalog-data', data);
+            this.closePopup();
+        },
     },
 }
 </script>
@@ -85,8 +88,40 @@ export default{
     border-width: 1px;
     cursor: default;
     z-index: 900;
+    padding: 10px;
+}
+.popup.dark{
+    background-color: #1A202C;
+    color: white;
 }
 .popup.visible{
     display: block;
+    width: 100%;
+}
+.Title p{
+    font-size: large;
+    text-align: center;
+}
+.Name textarea{
+    resize: none;
+    width: 100%;
+    height: 25px;
+}
+.Description textarea{
+    resize: none;
+    height: 11vh;
+}
+.buttons{
+    text-align: center;
+}
+.buttons button{
+    font-size: 15px;
+    margin: 0 10px;
+}
+.confirm{
+    background-color: #0baaa7;
+}
+.confirm:hover{
+    background-color: #4A5568;
 }
 </style>

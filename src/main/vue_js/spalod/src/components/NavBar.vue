@@ -78,7 +78,8 @@
             this.isAdmin = true;
           },
           error: (error) => {
-            console.error(error);
+            //console.error(error);
+            console.log(error);
           }
         })
       },
@@ -95,7 +96,8 @@
             this.username=localStorage.getItem('username');
           },
           error: (error) => {
-            console.error(error);
+            //console.error(error);
+            console.log(error);
           }
         })
       },

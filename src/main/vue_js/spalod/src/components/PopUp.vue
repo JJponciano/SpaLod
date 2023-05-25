@@ -264,6 +264,10 @@ export default{
     -moz-appearance: none;
     cursor: pointer;
 }
+.ButtonSelect{
+    display: flex;
+    flex-direction: row;
+}
 button{
     padding: 5px 10px 5px 10px;
     border: none;

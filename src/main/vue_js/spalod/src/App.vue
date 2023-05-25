@@ -34,7 +34,7 @@ export default {
       popup:false,
       popupC:false,
       currentPath: window.location.pathname,
-      name: '',
+      receivedData: null,
     };
   }
   ,computed: {
@@ -77,9 +77,8 @@ export default {
     onShowpopup(){
       this.popup=true;
     },
-    onShowpopupC(name){
+    onShowpopupC(){
       this.popupC=true;
-      this.name=name;
     },
     onClosepopUp(){
       this.popup=false;
@@ -92,7 +91,10 @@ export default {
     },
     goToLogin(){
       window.location.href="/login";
-    }
+    },
+    handleCatalogUpdate(data){
+      this.receivedData=data;
+    },
   }
 };
 </script>
@@ -108,7 +110,7 @@ export default {
           <MapView :file="file"></MapView>
         </div>
         <div class="rdf-data-container">
-          <RDFData @update="onFileSelected" :file="file"></RDFData>
+          <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData"></RDFData>
         </div>
       </div>
     </div>
@@ -126,7 +128,7 @@ export default {
     <PopUp :chooseCSV="chooseCSV" :chooseJson="chooseJson" :popup="popup" @CSVBack="onUnselectCSV" @JsonBack="onUnselectJson" @popupBack="onClosepopUp"></PopUp>
   </div>
   <div class="popupC">
-    <PopUpC :popupC="popupC" :name="name" @popupCBack="onClosepopUpC"></PopUpC>
+    <PopUpC :popupC="popupC" @popupCBack="onClosepopUpC" @Catalog-data="handleCatalogUpdate"></PopUpC>
   </div>
   <notifications/>
   <notifications group="login-success" @click="goHome()" />

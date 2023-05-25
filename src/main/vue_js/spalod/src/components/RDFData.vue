@@ -25,8 +25,14 @@
             <p @click="showMetadata = !showMetadata">Show Metadata</p>
             <div class="metadata-container" v-if="showMetadata">
                 <div class="metadata-Catalog">
-                    <textarea v-model="inputCatalog" :placeholder="placeholdersC" spellcheck="false"></textarea>
+                    <p>Catalog: *</p>
                     <button @click="addNewCatalog">+</button>
+                    <select v-model="selectedOption">
+                        <option value="" disabled selected hidden>Choose a Catalog</option>
+                        <option v-for="(option) in options">
+                            {{ option }}
+                        </option>
+                    </select>
                 </div>
                 <div v-for="(queryable, index) in queryables " :key="index" class="metadata-element">
                     <h3 v-if="queryable.required">{{ queryable.q }}: *</h3>
@@ -109,12 +115,19 @@ $.ajaxSetup({
 
 export default {
     props: {
-        file: File
+        file: File,
+        receivedData: {
+            type: Object,
+            default: null,
+        },
     },
     watch: {
         file(newFile) {
             this.processContent(newFile);
-        }
+        },
+        receivedData(newCatalog){
+            this.options.push(newCatalog.name);
+        },
     },
     data() {
         return {
@@ -127,6 +140,15 @@ export default {
             unkownPredicates: [],
             queryResult: [],
             metadata: [],
+            selectedOption :'',
+            options: [
+                "test1",
+                "test2",
+                "test3",
+                "test4",
+                "test5",
+                "test6"
+            ],
             queryables: [
                 {q: 'identifier', required: true, d: 'The unique identifier of the dataset', v: false, p: 'http://purl.org/dc/terms/identifier', literal: true},
                 {q: 'title', required: true, d: 'The name given to the resource', v: false, p: 'http://purl.org/dc/terms/title', literal: true},
@@ -319,7 +341,7 @@ export default {
             this.$emit('update', updatefile);
         },
         addNewCatalog(){
-            this.$emit('popupCShow', String(this.inputCatalog));
+            this.$emit('popupCShow');
         },
         processQueryResult(geoJson) {
             this.queryResult = [];
@@ -547,7 +569,7 @@ export default {
         },
         validateMetadata(data) {
             var queryable = this.queryables.find(queryable => queryable.q === data);
-            if(this.metadata[queryable.q] !== '' && this.metadata[queryable.q] !== undefined) {
+            if(this.metadata[queryable.q] !== '' && this.metadata[queryable.q] !== undefined && this.selectedOption !== '') {
                 if (queryable.q === 'publisher') {
                     // Delete the old triplets
                     var data = {
@@ -678,7 +700,12 @@ export default {
                     this.updateTripleData(tripleData, 'add', () => queryable.v = true);
                 }
             } else {
-                alert('Please enter a ' + queryable.q);
+                if(this.selectedOption === ''){
+                    alert('Please select a Catalog for this Dataset');
+                }
+                else{
+                    alert('Please enter a ' + queryable.q);
+                }
             }
         },
         updateTripleData(tripleData, operation, callback) {
@@ -800,7 +827,37 @@ p {
     background-color: #4A5568;
     color: white;
 }
-
+.metadata-Catalog{
+    display:flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+.metadata-Catalog p{
+    font-size: 1.17em;
+    cursor: default;
+    text-align:start;
+    width: fit-content;
+    padding: 0 5px 0 10px;
+}
+.metadata-Catalog select{
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 9px;
+    width: 250px;
+    margin-left: 248px;
+    border: 0px solid #1A202C;
+    border-radius: 5px;
+    background-color: rgb(241, 241, 241);
+    color: black;
+    appearance: none;
+    cursor: pointer;
+}
+.metadata-Catalog button{
+    background-color: #0baaa7;
+    margin-right: 40px;
+}
 .metadata-container {
     display: flex;
     flex-direction: column;
