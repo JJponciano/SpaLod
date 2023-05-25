@@ -127,10 +127,10 @@ export default {
                 {q: 'identifier', required: true, d: 'The unique identifier of the dataset', v: false, p: 'http://purl.org/dc/terms/identifier', literal: true},
                 {q: 'title', required: true, d: 'The name given to the resource', v: false, p: 'http://purl.org/dc/terms/title', literal: true},
                 {q: 'description', required: true, d: 'Description of the resource', v: false, p: 'http://purl.org/dc/terms/description', literal: true},
-                {q: 'distribution', required: true, d: 'The distribution of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#distribution', literal: false},
+                {q: 'distribution', required: true, d: 'The url of the distribution', v: false, p: 'http://www.w3.org/ns/dcat#distribution', literal: false},
                 {q: 'publisher', required: true, d: 'Entity making the resource available', v: false, p: 'http://purl.org/dc/terms/publisher', literal: false},
                 {q: 'keywords', required: false, d: "Tags separated by ','", v: false, p: 'http://www.w3.org/ns/dcat#keyword', literal: true},
-                {q: 'theme', required: false, d: 'Main category', v: false, p: 'http://www.w3.org/ns/dcat#theme', literal: false},
+                {q: 'theme', required: false, d: "Categories separated by ','", v: false, p: 'http://www.w3.org/ns/dcat#theme', literal: false},
                 {q: 'type', required: false, d: 'The nature or genre of the resource', v: false, p: 'http://purl.org/dc/terms/type', literal: false},
                 {q: 'contactPoint', required: false, d: 'An entity to contact', v: false, p: 'http://www.w3.org/ns/dcat#contactPoint', literal: false},
                 {q: 'spatial', required: false, d: 'Spatial area or designed place', v: false, p: 'http://www.w3.org/ns/dcat#spatial', literal: false},
@@ -139,8 +139,8 @@ export default {
                 {q: 'modified', required: false, d: 'The date the dataset was updated', v: false, p: 'http://purl.org/dc/terms/modified', literal: true},
                 {q: 'language', required: false, d: 'Language of the resource', v: false, p: 'http://purl.org/dc/terms/language', literal: false},
                 {q: 'landingPage', required: false, d: 'Links to other resources', v: false, p: 'http://www.w3.org/ns/dcat#landingPage', literal: true},
-                {q: 'politicalGeocodingLevelURI', required: false, d: 'Geopolitical coverage of the dataset', v: false, p: 'http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI', literal: false},
-                {q: 'politicalGeocodingURI', required: false, d: 'URI of the administrative area', v: false, p: 'http://dcat-ap.de/def/dcatde/politicalGeocodingURI', literal: false},
+                {q: 'politicalGeocodingLevelURI', required: false, d: 'Geopolitical coverage of the dataset', v: false, p: 'http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI', literal: true},
+                {q: 'politicalGeocodingURI', required: false, d: 'URI of the administrative area', v: false, p: 'http://dcat-ap.de/def/dcatde/politicalGeocodingURI', literal: true},
                 {q: 'availability', required: false, d: 'Planned availability of the dataset', v: false, p: 'http://data.europa.eu/r5r/availability', literal: false},
                 {q: 'contributorID', required: false, d: 'The identifier of the contributor', v: false, p: 'http://dcat-ap.de/def/dcatde/contributorID', literal: false},
                 {q: 'geocodingDescription', required: false, d: 'Description of the geocoding', v: false, p: 'http://dcat-ap.de/def/dcatde/geocodingDescription', literal: true},
@@ -150,7 +150,7 @@ export default {
                 {q: 'relation', required: false, d: 'Related resource', v: false, p: 'http://purl.org/dc/terms/relation', literal: false},
                 {q: 'page', required: false, d: 'Page reference', v: false, p: 'http://xmlns.com/foaf/0.1/page', literal: false},
                 {q: 'conformsTo', required: false, d: 'Standard the dataset conforms to', v: false, p: 'http://purl.org/dc/terms/conformsTo', literal: false},
-                {q: 'accessRights', required: false, d: 'Information about who can access the dataset', v: false, p: 'http://purl.org/dc/terms/accessRights', literal: false},
+                {q: 'accessRights', required: false, d: 'Who can access the dataset', v: false, p: 'http://purl.org/dc/terms/accessRights', literal: false},
                 {q: 'provenance', required: false, d: 'Development history of the dataset', v: false, p: 'http://purl.org/dc/terms/provenance', literal: false},
                 {q: 'accrualPeriodicity', required: false, d: 'Frequency of dataset updates', v: false, p: 'http://purl.org/dc/terms/accrualPeriodicity', literal: false},
                 {q: 'qualityProcessURI', required: false, d: 'URI of the quality process', v: false, p: 'http://dcat-ap.de/def/dcatde/qualityProcessURI', literal: true},
@@ -160,14 +160,14 @@ export default {
                 {q: 'granularity', required: false, d: 'Granularity of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#granularity', literal: false},
                 {q: 'qualifiedAttribution', required: false, d: 'Attribution of the dataset', v: false, p: 'http://www.w3.org/ns/prov#qualifiedAttribution', literal: false},
                 {q: 'qualifiedRelation', required: false, d: 'Relation of the dataset', v: false, p: 'http://www.w3.org/ns/dcat#qualifiedRelation', literal: false},
-                {q: 'isReferencedBy', required: false, d: 'Resource that references the dataset', v: false, p: 'http://purl.org/dc/terms/isReferencedBy', literal: false},
-                {q: 'references', required: false, d: 'Resource referenced by the dataset', v: false, p: 'http://purl.org/dc/terms/references', literal: false},
+                {q: 'isReferencedBy', required: false, d: 'What references the dataset', v: false, p: 'http://purl.org/dc/terms/isReferencedBy', literal: false},
+                {q: 'references', required: false, d: 'What is referenced by the dataset', v: false, p: 'http://purl.org/dc/terms/references', literal: false},
                 {q: 'source', required: false, d: 'Source of the dataset', v: false, p: 'http://purl.org/dc/terms/source', literal: false},
-                {q: 'isVersionOf', required: false, d: 'Resource that is a version of the dataset', v: false, p: 'http://purl.org/dc/terms/isVersionOf', literal: false},
+                {q: 'isVersionOf', required: false, d: 'Resource derivated by the dataset', v: false, p: 'http://purl.org/dc/terms/isVersionOf', literal: false},
                 {q: 'sample', required: false, d: 'Sample of the dataset', v: false, p: 'http://www.w3.org/ns/adms#sample', literal: false},
                 {q: 'creator', required: false, d: 'Creator of the dataset', v: false, p: 'http://purl.org/dc/terms/creator', literal: false},
                 {q: 'contributor', required: false, d: 'Contributor to the dataset', v: false, p: 'http://purl.org/dc/terms/contributor', literal: false},
-                {q: 'originator', required: false, d: 'People who own the copyright to the record', v: false, p: 'http://dcat-ap.de/def/dcatde/originator', literal: false},
+                {q: 'originator', required: false, d: 'People who own the copyright', v: false, p: 'http://dcat-ap.de/def/dcatde/originator', literal: false},
                 {q: 'maintainer', required: false, d: 'People who maintain the dataset', v: false, p: 'http://dcat-ap.de/def/dcatde/maintainer', literal: false},
             ],
             showResults: false,
@@ -617,8 +617,8 @@ export default {
                         object: String(this.metadata[queryable.q]).replace(/ /g, '_'),
                     }
                     this.updateTripleData(tripleData, 'add', () => queryable.v = true);
-                } else if (queryable.q === 'keywords') {
-                    String(this.metadata.keywords).split(',').forEach(keyword => {
+                } else if (queryable.q === 'keywords' || queryable.q === 'theme') {
+                    String(this.metadata[queryable.q]).split(',').forEach(keyword => {
                         // Add the new triplets
                         var tripleData = {
                             subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
