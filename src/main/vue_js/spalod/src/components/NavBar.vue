@@ -93,7 +93,7 @@
           success: (response) => {
             this.isLoggedIn = true;
             this.isAdmin =true; // Line to delete if we want to block normal users access
-            this.username=localStorage.getItem('username');
+            this.getAccessToken();
           },
           error: (error) => {
             //console.error(error);
@@ -101,6 +101,21 @@
           }
         })
       },
+      getAccessToken() {
+        $.ajax({
+          url: 'https://localhost:8081/getGitUser',
+          method: 'GET',
+          xhrFields: {
+            withCredentials: true
+          },
+          success: (response) => {
+            localStorage.setItem("username",response);
+          },
+          error: (error) => {
+            console.error(error);
+          }
+        })
+      }
     },
   };
   </script>
