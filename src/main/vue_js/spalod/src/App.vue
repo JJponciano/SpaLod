@@ -45,7 +45,7 @@ export default {
         return 'register';
       } 
       else {
-        return 'NavBar';
+        return 'main';
       }
     }
   },

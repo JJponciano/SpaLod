@@ -189,13 +189,23 @@ export default {
             this.isDarkMode = event.matches;
         });
         this.inputAdvanced=this.queries[this.selectedOption] + this.rangeValue;
-        // this.loadCatalog();
-
+        
+        // Implementing OGC API - Features
         const url = new URL(window.location.href);
-        const queryString = url.search.substring(1);
-        if (queryString && queryString != '') {
-            this.inputAdvanced = 'SELECT ?item ?itemLabel ?category ?coordinates WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#' + queryString + '>)\n?item <http://lab.ponciano.info/ont/spalod#itemLabel> ?itemLabel .\n?item <http://lab.ponciano.info/ont/spalod#category> ?category .\n?item <http://lab.ponciano.info/ont/spalod#coordinates> ?coordinates\n}';
-            this.$refs.confirmRequest.click();
+        const queryString = url.pathname;
+        if(queryString.includes('conformance') || queryString.includes('collections')) {
+            $.ajax({
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                url: 'https://localhost:8081' + queryString,
+                type: 'POST',
+                dataType: 'json',
+                success: (response) => {
+                    console.log(response);
+                    this.handleResponse(response);
+                }
+            });
         }
     },
     beforeDestroy() {
