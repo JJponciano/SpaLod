@@ -1,7 +1,17 @@
 package info.ponciano.lab.spalodwfs.controller;
 
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.update.UpdateExecutionFactory;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateProcessor;
+import org.apache.jena.update.UpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +49,9 @@ public class ResController {
   private FormDataService formDataService;
 
   private final StorageService storageService;
+
+  private static final String GRAPHDB_QUERY_ENDPOINT = "http://localhost:7200/repositories/test";
+  private static final String GRAPHDB_UPDATE_ENDPOINT = "http://localhost:7200/repositories/test/statements";
 
   @Autowired
   public ResController(StorageService storageService) {
@@ -112,9 +125,36 @@ public class ResController {
     TripleData tripleData = tripleOperation.getTripleData();
     if ("add".equalsIgnoreCase(tripleOperation.getOperation())) {
       Triplestore.get().addTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
+      
+      // Insert a triple in graphdb
+      String subject = "<" + tripleData.getSubject() + ">";
+      String predicate = "<" + tripleData.getPredicate() + ">";
+      String object = "<" + tripleData.getObject() + ">";
+      System.out.println("--------------------------");
+      System.out.println(subject+" "+predicate+" "+ object);
+      ParameterizedSparqlString insertCommand = new ParameterizedSparqlString();
+      insertCommand.setCommandText("INSERT DATA { "+subject+" "+predicate+" "+object+" }");
+      UpdateRequest insertRequest = UpdateFactory.create(insertCommand.toString());
+      UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest, GRAPHDB_UPDATE_ENDPOINT);
+      insertProcessor.execute();
+
       System.out.println("-> added!");
     } else if ("remove".equalsIgnoreCase(tripleOperation.getOperation())) {
       Triplestore.get().removeTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
+
+      // Remove a triple in graphdb
+      String subject = "<" + tripleData.getSubject() + ">";
+      String predicate = "<" + tripleData.getPredicate() + ">";
+      String object = "<" + tripleData.getObject() + ">";
+      System.out.println("--------------------------");
+      System.out.println(subject+" "+predicate+" "+ object);
+      ParameterizedSparqlString removeCommand = new ParameterizedSparqlString();
+      removeCommand.setCommandText("DELETE { "+subject+" "+predicate+" "+object+" }"+
+      "WHERE  { "+subject+" "+predicate+" "+object+" }");
+      UpdateRequest removeRequest = UpdateFactory.create(removeCommand.toString());
+      UpdateProcessor removeProcessor = UpdateExecutionFactory.createRemoteForm(removeRequest, GRAPHDB_UPDATE_ENDPOINT);
+      removeProcessor.execute();
+
       System.out.println("-> removed!");
     } else {
       throw new IllegalArgumentException("Invalid operation: " + tripleOperation.getOperation());

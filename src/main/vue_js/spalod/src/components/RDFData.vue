@@ -120,6 +120,7 @@ export default {
             type: Object,
             default: null,
         },
+        username:String
     },
     watch: {
         file(newFile) {
@@ -128,6 +129,9 @@ export default {
         receivedData(newCatalog){
             this.options.push(newCatalog.name);
         },
+        username(newUsername){
+            this.metadata["publisher"]=newUsername;
+        }
     },
     data() {
         return {
@@ -214,7 +218,7 @@ export default {
         this.loadPredicates();
         this.metadata['identifier'] = this.uuidv4();
         this.uid = localStorage.getItem('uuid');
-        this.metadata['publisher'] = localStorage.getItem('username') || "";
+        this.metadata['publisher'] = localStorage.getItem("username") || "";
         var today = new Date();
         var dd = String(today.getDate()).padStart(2, '0');
         var mm = String(today.getMonth() + 1).padStart(2, '0');

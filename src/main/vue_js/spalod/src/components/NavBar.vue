@@ -113,6 +113,7 @@
           },
           success: (response) => {
             localStorage.setItem("username",response);
+            this.$emit('username-updated',response)
           },
           error: (error) => {
             this.$notify({
