@@ -50,8 +50,8 @@ public class ResController {
 
   private final StorageService storageService;
 
-  private static final String GRAPHDB_QUERY_ENDPOINT = "http://localhost:7200/repositories/test";
-  private static final String GRAPHDB_UPDATE_ENDPOINT = "http://localhost:7200/repositories/test/statements";
+  private static final String GRAPHDB_QUERY_ENDPOINT = "http://localhost:7200/repositories/graphDB_spalod";
+  private static final String GRAPHDB_UPDATE_ENDPOINT = "http://localhost:7200/repositories/graphDB_spalod/statements";
 
   @Autowired
   public ResController(StorageService storageService) {
