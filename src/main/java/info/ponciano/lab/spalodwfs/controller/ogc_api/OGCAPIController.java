@@ -75,14 +75,17 @@ public class OGCAPIController {
 
     /**
      * Return the conformance
-     * @return String corresponding to the conformance
+     * @return String[][] corresponding to the conformance
      */
     @PostMapping("/conformance")
     public String conformance() {
-        String results = "https://localhost:8081/collection\n";
-        results += "https://localhost:8081/collection/{collectionId}\n";
-        results += "https://localhost:8081/collection/{collectionId}/items\n";
-        results += "https://localhost:8081/collection/{collectionId}/items/{datasetId}\n";
+        String results = "{\"head\":{\"vars\":\n";
+        results += "[\"conformance\"]},\"results\":{\"bindings\":[\n";
+        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collection\"}},\n";
+        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collection/{collectionId}\"}},\n";
+        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collection/{collectionId}/items\"}},\n";
+        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collection/{collectionId}/items/{datasetId}\"}}\n";
+        results += "]}}";
         return results;
     }
 }

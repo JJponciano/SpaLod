@@ -193,7 +193,7 @@ export default {
         // Implementing OGC API - Features
         const url = new URL(window.location.href);
         const queryString = url.pathname;
-        if(queryString.includes('conformance') || queryString.includes('collections')) {
+        if(queryString.includes('collections') || queryString.includes('conformance')) {
             $.ajax({
                 headers: {
                     'Content-Type': 'application/json'
@@ -202,8 +202,11 @@ export default {
                 type: 'POST',
                 dataType: 'json',
                 success: (response) => {
-                    console.log(response);
+                    console.log(JSON.stringify(response));
                     this.handleResponse(response);
+                },
+                error: (error) => {
+                    console.log(error);
                 }
             });
         }
