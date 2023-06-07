@@ -245,33 +245,37 @@ export default {
                     }
                 });
 
+        // Implementing OGC API - Features
         const url = new URL(window.location.href);
-        const queryString = url.search.substring(1);
-        if (queryString && queryString != '') {
-            this.queryables.forEach((queryable) => {
-                const data = {
-                    query: 'SELECT ?' + queryable.q + ' WHERE { <http://lab.ponciano.info/ont/spalod#' + queryString + '> <' + queryable.p + '> ?' + queryable.q + ' }',
-                    triplestore: '', // TODO: graph DB
-                };
-                $.ajax({
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    'type': 'POST',
-                    'url': 'https://localhost:8081/api/sparql-select',
-                    'data': JSON.stringify(data),
-                    'dataType': 'json',
-                    success: (data) => {
-                        if (data.results.bindings.length > 0) {
-                            var result = data.results.bindings[0][queryable.q].value;
-                            result = result.split('/')[result.split('/').length - 1];
-                            result = result.split('#')[result.split('#').length - 1];
-                            this.metadata[queryable.q] = result;
+        var queryString = url.pathname;
+        if (queryString && queryString.includes('/items/')) {
+            queryString = queryString.split('/items/')[1]
+            if (queryString && queryString.length > 0) {
+                this.queryables.forEach((queryable) => {
+                    const data = {
+                        query: 'SELECT ?' + queryable.q + ' WHERE { <http://lab.ponciano.info/ont/spalod#' + queryString + '> <' + queryable.p + '> ?' + queryable.q + ' }',
+                        triplestore: '', // TODO: graph DB
+                    };
+                    $.ajax({
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        'type': 'POST',
+                        'url': 'https://localhost:8081/api/sparql-select',
+                        'data': JSON.stringify(data),
+                        'dataType': 'json',
+                        success: (data) => {
+                            if (data.results.bindings.length > 0) {
+                                var result = data.results.bindings[0][queryable.q].value;
+                                result = result.split('/')[result.split('/').length - 1];
+                                result = result.split('#')[result.split('#').length - 1];
+                                this.metadata[queryable.q] = result;
+                            }
                         }
-                    }
+                    });
                 });
-            });
+            }
         }
     },
     computed: {
@@ -393,7 +397,7 @@ export default {
 
             // Delete the old triplet
             const data = {
-                query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + triplet.subject.replace(/ /g, '_') + '>)}',
+                query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + String(triplet.subject).replace(/ /g, '_') + '>)}',
                 triplestore: ''
             };
             $.ajax({
