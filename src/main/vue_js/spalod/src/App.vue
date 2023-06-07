@@ -35,6 +35,7 @@ export default {
       popupC:false,
       currentPath: window.location.pathname,
       receivedData: null,
+      username:""
     };
   }
   ,computed: {
@@ -95,12 +96,18 @@ export default {
     handleCatalogUpdate(data){
       this.receivedData=data;
     },
+    logUsername(data){
+      this.username=data;
+    }
   }
 };
 </script>
 
 <template>
   <div class="app">
+    <div class="navbar">
+        <NavBar @username-updated="logUsername"></NavBar>
+    </div>
     <div class="main" v-if="currentView === 'main'">
       <div class="user-actions-container">
         <UserActions @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup" @popupCShow="onShowpopupC"></UserActions>
@@ -110,7 +117,7 @@ export default {
           <MapView :file="file"></MapView>
         </div>
         <div class="rdf-data-container">
-          <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData"></RDFData>
+          <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData" :username="username"></RDFData>
         </div>
       </div>
     </div>
@@ -119,9 +126,6 @@ export default {
     </div>
     <div class="main" v-if="currentView === 'register'">
       <Register></Register>
-    </div>
-    <div class="navbar">
-        <NavBar></NavBar>
     </div>
   </div>
   <div class="popup">

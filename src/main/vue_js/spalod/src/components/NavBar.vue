@@ -93,7 +93,10 @@
           success: (response) => {
             this.isLoggedIn = true;
             this.isAdmin =true; // Line to delete if we want to block normal users access
-            this.getAccessToken();
+            if(localStorage.getItem("githubLog")==null)
+            {
+              this.getAccessToken();
+            }
           },
           error: (error) => {
             //console.error(error);
@@ -110,8 +113,16 @@
           },
           success: (response) => {
             localStorage.setItem("username",response);
+            this.$emit('username-updated',response)
           },
           error: (error) => {
+            this.$notify({
+                title: 'Session expired',
+                text: 'If you are connected with github, please reconnect.',
+                group:"notLoggedIn",
+                type: 'error',
+                duration: 5000 // notification will disappear after 5 seconds
+              });
             console.error(error);
           }
         })

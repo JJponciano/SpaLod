@@ -59,8 +59,10 @@
                     group: 'login-success',
                     duration: 50000, 
                     });
+                  localStorage.clear();
                   localStorage.setItem('username', this.username);
                   localStorage.setItem('UUID',response);
+                  localStorage.setItem('githubLog',false);
                 }
               })
               },
@@ -76,6 +78,7 @@
             })
       },
       oauthLogin(){
+        localStorage.clear();
         window.location.href="https://localhost:8081/oauth2/authorization/github";
       }
     },
