@@ -28,6 +28,8 @@ export default{
         popupC(newValue){
             if(newValue){
                 this.showPopup();
+                this.inputName = '';
+                this.inputDesc = '';
             }
         },
     },
@@ -45,7 +47,6 @@ export default{
         window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
             this.isDarkMode = event.matches;
         });
-        //ajouter le publisher automatiquement, c'est a dire le nom et l'id de la personne qui a créer le tacalog
     },
     methods:{
         detectDarkMode(){
@@ -62,9 +63,16 @@ export default{
             var data = {
                 name: this.inputName,
                 desc: this.inputDesc,
+                id: this.uuidv4(),
+                publisher: localStorage.getItem('username') || "",
             };
             this.$emit('Catalog-data', data);
             this.closePopup();
+        },
+        uuidv4() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
         },
     },
 }

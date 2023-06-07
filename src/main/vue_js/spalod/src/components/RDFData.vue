@@ -27,10 +27,10 @@
                 <div class="metadata-Catalog">
                     <p>Catalog: *</p>
                     <button @click="addNewCatalog">+</button>
-                    <select v-model="selectedOption">
+                    <select v-model="selectedOption" v-bind:disabled="isCatalogDisabled">
                         <option value="" disabled selected hidden>Choose a Catalog</option>
                         <option v-for="(option) in options">
-                            {{ option }}
+                            {{ option.name }}
                         </option>
                     </select>
                 </div>
@@ -126,7 +126,7 @@ export default {
             this.processContent(newFile);
         },
         receivedData(newCatalog){
-            this.options.push(newCatalog.name);
+            this.options.push(newCatalog);
         },
     },
     data() {
@@ -141,14 +141,8 @@ export default {
             queryResult: [],
             metadata: [],
             selectedOption :'',
-            options: [
-                "test1",
-                "test2",
-                "test3",
-                "test4",
-                "test5",
-                "test6"
-            ],
+            options: [],
+            isCatalogDisabled: false,
             queryables: [
                 {q: 'identifier', required: true, d: 'The unique identifier of the dataset', v: false, p: 'http://purl.org/dc/terms/identifier', literal: true},
                 {q: 'title', required: true, d: 'The name given to the resource', v: false, p: 'http://purl.org/dc/terms/title', literal: true},
@@ -221,6 +215,31 @@ export default {
         var yyyy = today.getFullYear();
         this.metadata['created'] = dd + '/' + mm + '/' + yyyy;
         this.metadata['updated'] = dd + '/' + mm + '/' + yyyy;
+
+        const data = {
+                    query: 'SELECT ?title where {?catalog <http://www.w3.org/ns/dcat#dataset> ?dataset . ?catalog <http://purl.org/dc/terms/title> ?title .}',
+                    triplestore: '', // TODO: graph DB
+                };
+                $.ajax({
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    'type': 'POST',
+                    'url': 'https://localhost:8081/api/sparql-select',
+                    'data': JSON.stringify(data),
+                    'dataType': 'json',
+                    success: (data) => {
+                        if (data.results.bindings.length > 0) {
+                            for(var i = 0; i < data.results.bindings.length; i++){
+                                var catalog = {
+                                    name: data.results.bindings[i].title.value,
+                                }
+                                this.options.push(catalog);
+                            }
+                        }
+                    }
+                });
 
         const url = new URL(window.location.href);
         const queryString = url.search.substring(1);
@@ -570,6 +589,41 @@ export default {
         validateMetadata(data) {
             var queryable = this.queryables.find(queryable => queryable.q === data);
             if(this.metadata[queryable.q] !== '' && this.metadata[queryable.q] !== undefined && this.selectedOption !== '') {
+                if(queryable.q === 'identifier') {
+                    var data = {
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.options.find(option => option.name === this.selectedOption).id,
+                        predicate: this.queryables.find(queryable => queryable.q === 'title').p,
+                        object: this.options.find(option => option.name === this.selectedOption).name,
+                    };
+                    this.updateTripleData(data, 'add', () => {
+                        console.log("Catalog title added");
+                    });
+                    data = {
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.options.find(option => option.name === this.selectedOption).id,
+                        predicate: this.queryables.find(queryable => queryable.q === 'description').p,
+                        object: this.options.find(option => option.name === this.selectedOption).desc,
+                    };
+                    this.updateTripleData(data, 'add', () => {
+                        console.log("Catalog description added");
+                    });
+                    data = {
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.options.find(option => option.name === this.selectedOption).id,
+                        predicate: this.queryables.find(queryable => queryable.q === 'publisher').p,
+                        object: this.options.find(option => option.name === this.selectedOption).publisher,
+                    };
+                    this.updateTripleData(data, 'add', () => {
+                        console.log("Catalog publisher added");
+                    });
+                    data = {
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.options.find(option => option.name === this.selectedOption).id,
+                        predicate: 'http://www.w3.org/ns/dcat#dataset',
+                        object: 'http://lab.ponciano.info/ont/spalod#' + this.metadata['identifier'],
+                    };
+                    this.updateTripleData(data, 'add', () => {
+                        console.log("Catalog added");
+                        this.isCatalogDisabled = true;
+                    });
+                }
                 if (queryable.q === 'publisher') {
                     // Delete the old triplets
                     var data = {
