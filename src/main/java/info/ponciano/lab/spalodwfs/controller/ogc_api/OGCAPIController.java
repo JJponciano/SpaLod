@@ -81,10 +81,10 @@ public class OGCAPIController {
     public String conformance() {
         String results = "{\"head\":{\"vars\":\n";
         results += "[\"conformance\"]},\"results\":{\"bindings\":[\n";
-        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collection\"}},\n";
-        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collection/{collectionId}\"}},\n";
-        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collection/{collectionId}/items\"}},\n";
-        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collection/{collectionId}/items/{datasetId}\"}}\n";
+        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collections\"}},\n";
+        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collections/{collectionId}\"}},\n";
+        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collections/{collectionId}/items\"}},\n";
+        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collections/{collectionId}/items/{datasetId}\"}}\n";
         results += "]}}";
         return results;
     }
