@@ -50,8 +50,8 @@ public class ResController {
 
   private final StorageService storageService;
 
-  private static final String GRAPHDB_QUERY_ENDPOINT = "http://localhost:7200/repositories/test";
-  private static final String GRAPHDB_UPDATE_ENDPOINT = "http://localhost:7200/repositories/test/statements";
+  private static final String GRAPHDB_QUERY_ENDPOINT = "http://localhost:7200/repositories/Spalod";
+  private static final String GRAPHDB_UPDATE_ENDPOINT = "http://localhost:7200/repositories/Spalod/statements";
 
   @Autowired
   public ResController(StorageService storageService) {
@@ -130,8 +130,7 @@ public class ResController {
       String subject = "<" + tripleData.getSubject() + ">";
       String predicate = "<" + tripleData.getPredicate() + ">";
       String object = "<" + tripleData.getObject() + ">";
-      System.out.println("--------------------------");
-      System.out.println(subject+" "+predicate+" "+ object);
+  
       ParameterizedSparqlString insertCommand = new ParameterizedSparqlString();
       insertCommand.setCommandText("INSERT DATA { "+subject+" "+predicate+" "+object+" }");
       UpdateRequest insertRequest = UpdateFactory.create(insertCommand.toString());
@@ -146,8 +145,6 @@ public class ResController {
       String subject = "<" + tripleData.getSubject() + ">";
       String predicate = "<" + tripleData.getPredicate() + ">";
       String object = "<" + tripleData.getObject() + ">";
-      System.out.println("--------------------------");
-      System.out.println(subject+" "+predicate+" "+ object);
       ParameterizedSparqlString removeCommand = new ParameterizedSparqlString();
       removeCommand.setCommandText("DELETE { "+subject+" "+predicate+" "+object+" }"+
       "WHERE  { "+subject+" "+predicate+" "+object+" }");
