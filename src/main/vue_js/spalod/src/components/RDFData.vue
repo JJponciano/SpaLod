@@ -96,7 +96,7 @@
           </thead>
           <tbody>
             <tr v-for="(result, index) in queryResult" :key="index">
-              <td v-for="key in keys">{{ result[key] }}</td>
+              <td v-for="key in keys" @click="uriClick(result[key], key)">{{ result[key] }}</td>
             </tr>
           </tbody>
         </table>
@@ -785,6 +785,26 @@ export default {
                     console.log(error);
                 }
             });
+        },
+        uriClick(uri, head) {
+            if(uri.startsWith('https://') || uri.startsWith('http://')) {
+                if (head === 'conformance') {
+                    window.location.href = '/collections'
+                } else if (head === 'collections') {
+                    window.location.href = '/collections/' + uri.split('#')[1];
+                } else if (head === 'dataset') {
+                    var collectionId = window.location.href;
+                    if (collectionId.includes('/collections/')) {
+                        collectionId = collectionId.split('/collections/')[1];
+                        if (collectionId.includes('/items')) {
+                            collectionId = collectionId.split('/items')[0];
+                        }
+                    } else {
+                        collectionId = 'undefined';
+                    }
+                    window.location.href = '/collections/' + collectionId + '/items/' + uri.split('#')[1];
+                }
+            }
         }
     },
 };

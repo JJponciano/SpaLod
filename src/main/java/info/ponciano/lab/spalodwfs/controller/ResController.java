@@ -127,33 +127,33 @@ public class ResController {
       Triplestore.get().addTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
       
       // Insert a triple in graphdb
-      String subject = "<" + tripleData.getSubject() + ">";
-      String predicate = "<" + tripleData.getPredicate() + ">";
-      String object = "<" + tripleData.getObject() + ">";
-      System.out.println("--------------------------");
-      System.out.println(subject+" "+predicate+" "+ object);
-      ParameterizedSparqlString insertCommand = new ParameterizedSparqlString();
-      insertCommand.setCommandText("INSERT DATA { "+subject+" "+predicate+" "+object+" }");
-      UpdateRequest insertRequest = UpdateFactory.create(insertCommand.toString());
-      UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest, GRAPHDB_UPDATE_ENDPOINT);
-      insertProcessor.execute();
+      // String subject = "<" + tripleData.getSubject() + ">";
+      // String predicate = "<" + tripleData.getPredicate() + ">";
+      // String object = "<" + tripleData.getObject() + ">";
+      // System.out.println("--------------------------");
+      // System.out.println(subject+" "+predicate+" "+ object);
+      // ParameterizedSparqlString insertCommand = new ParameterizedSparqlString();
+      // insertCommand.setCommandText("INSERT DATA { "+subject+" "+predicate+" "+object+" }");
+      // UpdateRequest insertRequest = UpdateFactory.create(insertCommand.toString());
+      // UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest, GRAPHDB_UPDATE_ENDPOINT);
+      // insertProcessor.execute();
 
       System.out.println("-> added!");
     } else if ("remove".equalsIgnoreCase(tripleOperation.getOperation())) {
       Triplestore.get().removeTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
 
       // Remove a triple in graphdb
-      String subject = "<" + tripleData.getSubject() + ">";
-      String predicate = "<" + tripleData.getPredicate() + ">";
-      String object = "<" + tripleData.getObject() + ">";
-      System.out.println("--------------------------");
-      System.out.println(subject+" "+predicate+" "+ object);
-      ParameterizedSparqlString removeCommand = new ParameterizedSparqlString();
-      removeCommand.setCommandText("DELETE { "+subject+" "+predicate+" "+object+" }"+
-      "WHERE  { "+subject+" "+predicate+" "+object+" }");
-      UpdateRequest removeRequest = UpdateFactory.create(removeCommand.toString());
-      UpdateProcessor removeProcessor = UpdateExecutionFactory.createRemoteForm(removeRequest, GRAPHDB_UPDATE_ENDPOINT);
-      removeProcessor.execute();
+      // String subject = "<" + tripleData.getSubject() + ">";
+      // String predicate = "<" + tripleData.getPredicate() + ">";
+      // String object = "<" + tripleData.getObject() + ">";
+      // System.out.println("--------------------------");
+      // System.out.println(subject+" "+predicate+" "+ object);
+      // ParameterizedSparqlString removeCommand = new ParameterizedSparqlString();
+      // removeCommand.setCommandText("DELETE { "+subject+" "+predicate+" "+object+" }"+
+      // "WHERE  { "+subject+" "+predicate+" "+object+" }");
+      // UpdateRequest removeRequest = UpdateFactory.create(removeCommand.toString());
+      // UpdateProcessor removeProcessor = UpdateExecutionFactory.createRemoteForm(removeRequest, GRAPHDB_UPDATE_ENDPOINT);
+      // removeProcessor.execute();
 
       System.out.println("-> removed!");
     } else {
