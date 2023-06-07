@@ -8,6 +8,9 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.shared.impl.PrefixMappingImpl;
+import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 import info.ponciano.lab.spalodwfs.model.FormData;
 import info.ponciano.lab.spalodwfs.model.JsonUtil;
+import info.ponciano.lab.spalodwfs.model.QueryResult;
 import info.ponciano.lab.spalodwfs.model.SparqlQuery;
 import info.ponciano.lab.spalodwfs.model.TripleData;
 import info.ponciano.lab.spalodwfs.model.TripleOperation;
@@ -101,8 +105,18 @@ public class ResController {
       results = Triplestore.get().executeSelectQuery(query);
     else
       results = Triplestore.executeSelectQuery(query, triplestore);
-      System.out.println(results);
-    return results;
+      // Query graphdb
+      PrefixMapping prefixMapping = new PrefixMappingImpl();
+      prefixMapping.setNsPrefix("owl", "http://www.w3.org/2002/07/owl#");
+
+      ParameterizedSparqlString queryCommand = new ParameterizedSparqlString();
+      queryCommand.setCommandText(query);
+
+      QueryExecutionHTTP qe = QueryExecutionHTTP.service(GRAPHDB_QUERY_ENDPOINT,queryCommand.asQuery());
+      ResultSet graphResults = qe.execSelect();
+      String queryResults = QueryResult.convertResultSetToJavaObject(graphResults);
+      System.out.println(queryResults);
+    return queryResults;
   }
 
   /**

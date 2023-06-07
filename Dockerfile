@@ -48,5 +48,5 @@ RUN chmod 755 /home/spalod/spalod.sh
 CMD /home/graphdb/graphdb-10.2.1/bin/graphdb
 
 #docker build -t spalod .
-#docker run -p 8080:8080 -p 8081:8081 -d -i --name spalod-container spalod
+#docker run -p 8080:8080 -p 8081:8081 -p 7200:7200 -d -i --name spalod-container spalod
 #docker exec spalod-container /home/spalod/spalod.sh
