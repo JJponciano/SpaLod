@@ -13,7 +13,7 @@ RUN apt-get install unzip
 # # Clone the repository
 RUN apt install git -y
 
-RUN git clone --branch youneskamli https://github.com/JJponciano/SpaLod.git /home/spalod
+RUN git clone https://github.com/JJponciano/SpaLod.git /home/spalod
 
 WORKDIR /home/graphdb
 
