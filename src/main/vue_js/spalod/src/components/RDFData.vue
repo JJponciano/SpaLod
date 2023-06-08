@@ -16,11 +16,6 @@
             </div>
         </div>
         <button @click="refreshMap" class="refresh" v-if="rdfData && rdfData.length > 0">Refresh Map</button>
-        <!-- <div class="dataset" v-if="rdfData && rdfData.length > 0">
-            <h2>Dataset:</h2>
-            <input type="text" v-model="metadata['title']" class="dataset-title" placeholder="Dataset title" @focus="$event.target.select()" spellcheck="false"/>
-            <button id="title" class="validate" @click="validateMetadata('title')">Validate</button>
-        </div> -->
         <div class="metadata" :class="{ active: showMetadata }" v-if="rdfData && rdfData.length > 0">
             <p @click="showMetadata = !showMetadata">Show Metadata</p>
             <div class="metadata-container" v-if="showMetadata">
@@ -96,7 +91,7 @@
           </thead>
           <tbody>
             <tr v-for="(result, index) in queryResult" :key="index">
-              <td v-for="key in keys" @click="uriClick(result[key], key)">{{ result[key] }}</td>
+              <td v-for="key in keys" @click="uriClick(result[key], key)" :class="{clickable: key === 'collections' || key === 'dataset' || key === 'conformance'}">{{ result[key] }}</td>
             </tr>
           </tbody>
         </table>
@@ -1166,10 +1161,14 @@ th {
   font-weight: bold;
 }
 
-/* .dataset {
-    display: flex;
-    flex-direction: row;
-    margin: 10px;
-} */
+.clickable {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.clickable:hover {
+    color: #0baaa7;
+    transition: color 0.5s ease;
+}
 
 </style>
