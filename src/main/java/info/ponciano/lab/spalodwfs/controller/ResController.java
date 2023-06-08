@@ -8,6 +8,9 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.shared.impl.PrefixMappingImpl;
+import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
 import info.ponciano.lab.spalodwfs.model.FormData;
 import info.ponciano.lab.spalodwfs.model.JsonUtil;
+import info.ponciano.lab.spalodwfs.model.QueryResult;
 import info.ponciano.lab.spalodwfs.model.SparqlQuery;
 import info.ponciano.lab.spalodwfs.model.TripleData;
 import info.ponciano.lab.spalodwfs.model.TripleOperation;
@@ -50,8 +54,8 @@ public class ResController {
 
   private final StorageService storageService;
 
-  private static final String GRAPHDB_QUERY_ENDPOINT = "http://localhost:7200/repositories/graphDB_spalod";
-  private static final String GRAPHDB_UPDATE_ENDPOINT = "http://localhost:7200/repositories/graphDB_spalod/statements";
+  private static final String GRAPHDB_QUERY_ENDPOINT = "http://localhost:7200/repositories/Spalod";
+  private static final String GRAPHDB_UPDATE_ENDPOINT = "http://localhost:7200/repositories/Spalod/statements";
 
   @Autowired
   public ResController(StorageService storageService) {
@@ -101,8 +105,18 @@ public class ResController {
       results = Triplestore.get().executeSelectQuery(query);
     else
       results = Triplestore.executeSelectQuery(query, triplestore);
-      System.out.println(results);
-    return results;
+      // Query graphdb
+      PrefixMapping prefixMapping = new PrefixMappingImpl();
+      prefixMapping.setNsPrefix("owl", "http://www.w3.org/2002/07/owl#");
+
+      ParameterizedSparqlString queryCommand = new ParameterizedSparqlString();
+      queryCommand.setCommandText(query);
+
+      QueryExecutionHTTP qe = QueryExecutionHTTP.service(GRAPHDB_QUERY_ENDPOINT,queryCommand.asQuery());
+      ResultSet graphResults = qe.execSelect();
+      String queryResults = QueryResult.convertResultSetToJavaObject(graphResults);
+      System.out.println(queryResults);
+    return queryResults;
   }
 
   /**
@@ -127,33 +141,30 @@ public class ResController {
       Triplestore.get().addTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
       
       // Insert a triple in graphdb
-      // String subject = "<" + tripleData.getSubject() + ">";
-      // String predicate = "<" + tripleData.getPredicate() + ">";
-      // String object = "<" + tripleData.getObject() + ">";
-      // System.out.println("--------------------------");
-      // System.out.println(subject+" "+predicate+" "+ object);
-      // ParameterizedSparqlString insertCommand = new ParameterizedSparqlString();
-      // insertCommand.setCommandText("INSERT DATA { "+subject+" "+predicate+" "+object+" }");
-      // UpdateRequest insertRequest = UpdateFactory.create(insertCommand.toString());
-      // UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest, GRAPHDB_UPDATE_ENDPOINT);
-      // insertProcessor.execute();
+      String subject = "<" + tripleData.getSubject() + ">";
+      String predicate = "<" + tripleData.getPredicate() + ">";
+      String object = "<" + tripleData.getObject() + ">";
+  
+      ParameterizedSparqlString insertCommand = new ParameterizedSparqlString();
+      insertCommand.setCommandText("INSERT DATA { "+subject+" "+predicate+" "+object+" }");
+      UpdateRequest insertRequest = UpdateFactory.create(insertCommand.toString());
+      UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest, GRAPHDB_UPDATE_ENDPOINT);
+      insertProcessor.execute();
 
       System.out.println("-> added!");
     } else if ("remove".equalsIgnoreCase(tripleOperation.getOperation())) {
       Triplestore.get().removeTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
 
       // Remove a triple in graphdb
-      // String subject = "<" + tripleData.getSubject() + ">";
-      // String predicate = "<" + tripleData.getPredicate() + ">";
-      // String object = "<" + tripleData.getObject() + ">";
-      // System.out.println("--------------------------");
-      // System.out.println(subject+" "+predicate+" "+ object);
-      // ParameterizedSparqlString removeCommand = new ParameterizedSparqlString();
-      // removeCommand.setCommandText("DELETE { "+subject+" "+predicate+" "+object+" }"+
-      // "WHERE  { "+subject+" "+predicate+" "+object+" }");
-      // UpdateRequest removeRequest = UpdateFactory.create(removeCommand.toString());
-      // UpdateProcessor removeProcessor = UpdateExecutionFactory.createRemoteForm(removeRequest, GRAPHDB_UPDATE_ENDPOINT);
-      // removeProcessor.execute();
+      String subject = "<" + tripleData.getSubject() + ">";
+      String predicate = "<" + tripleData.getPredicate() + ">";
+      String object = "<" + tripleData.getObject() + ">";
+      ParameterizedSparqlString removeCommand = new ParameterizedSparqlString();
+      removeCommand.setCommandText("DELETE { "+subject+" "+predicate+" "+object+" }"+
+      "WHERE  { "+subject+" "+predicate+" "+object+" }");
+      UpdateRequest removeRequest = UpdateFactory.create(removeCommand.toString());
+      UpdateProcessor removeProcessor = UpdateExecutionFactory.createRemoteForm(removeRequest, GRAPHDB_UPDATE_ENDPOINT);
+      removeProcessor.execute();
 
       System.out.println("-> removed!");
     } else {
