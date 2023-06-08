@@ -21,7 +21,7 @@
                     <button @click="addDataCSV">CSV to GeoJSON</button>
                     <button @click="addDataJSON">JSON to GeoJSON</button>
                     <button @click="addDataGeo">Add GeoJSON</button>
-                    <input type="file" ref="fileInputGeo" style="display: none;" accept="application/json"
+                    <input type="file" ref="fileInputGeo" style="display: none;" accept=".json, .geojson"
                         @change="handleFileInputGeo">
                     <button @click="addDataOwl">Add Owl</button>
                     <input type="file" ref="fileInputOwl" style="display: none;" accept=".owl" @change="handleFileInputOwl">

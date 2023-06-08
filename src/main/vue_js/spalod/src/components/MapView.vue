@@ -16,8 +16,9 @@ export default {
                 const object = JSON.parse(contenu);
 
                 object.features.forEach(feature => {
-                    if(!feature.properties.item) return;
-                    this.dataArray.push([object.name, feature.properties.itemLabel, feature.geometry.coordinates[1], feature.geometry.coordinates[0]]);
+                    if(!feature.properties.item && !feature.properties['Wikidata-L']) return;
+                    const label = feature.properties.itemLabel ? feature.properties.itemLabel : feature.properties.Objektname;
+                    this.dataArray.push([object.name, label, feature.geometry.coordinates[1], feature.geometry.coordinates[0]]);
                 });
                 this.updateMap();
             };
