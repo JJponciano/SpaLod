@@ -178,7 +178,7 @@ export default {
         // Implementing OGC API - Features
         const url = new URL(window.location.href);
         const queryString = url.pathname;
-        if(queryString.includes('collections') || queryString.includes('conformance')) {
+        if(queryString.includes('collections') || queryString.includes('conformance') || queryString === '/') {
             $.ajax({
                 headers: {
                     'Content-Type': 'application/json'
