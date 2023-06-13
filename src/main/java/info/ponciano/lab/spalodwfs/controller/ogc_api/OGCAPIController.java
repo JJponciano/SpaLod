@@ -9,6 +9,19 @@ import info.ponciano.lab.spalodwfs.model.Triplestore;
 @RestController
 public class OGCAPIController {
 
+    @PostMapping("/")
+    public String landingPage() {
+        String results = "{\"head\":{\"vars\":\n";
+        results += "[\"Feature\", \"URL\", \"JSON\"]},\"results\":{\"bindings\":[\n";
+        results += "{\"Feature\": {\"value\": \"Conformance\"},\"URL\": {\"value\": \"https://localhost:8081/conformance\"}, \"JSON\": {\"value\": \"https://localhost:8081/conformance\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Collections\"},\"URL\": {\"value\": \"https://localhost:8081/collections\"}, \"JSON\": {\"value\": \"https://localhost:8081/collections\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Collection\"},\"URL\": {\"value\": \"https://localhost:8081/collections/{collectionId}\"}, \"JSON\": {\"value\": \"https://localhost:8081/collections\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Items\"},\"URL\": {\"value\": \"https://localhost:8081/collections/{collectionId}/items\"}, \"JSON\": {\"value\": \"https://localhost:8081/collections\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Dataset\"},\"URL\": {\"value\": \"https://localhost:8081/collections/{collectionId}/items/{datasetId}\"}, \"JSON\": {\"value\": \"https://localhost:8081/collections\"}}\n";
+        results += "]}}";
+        return results;
+    }
+
     /**
      * Return the list of the collections
      * @return String[][] corresponding to the collection list
