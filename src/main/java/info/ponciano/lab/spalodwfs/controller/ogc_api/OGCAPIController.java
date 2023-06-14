@@ -1,11 +1,16 @@
 package info.ponciano.lab.spalodwfs.controller.ogc_api;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import info.ponciano.lab.spalodwfs.model.Triplestore;
 
+@RequestMapping("/api/spalodWFS")
 @RestController
 public class OGCAPIController {
 
@@ -13,11 +18,8 @@ public class OGCAPIController {
     public String landingPage() {
         String results = "{\"head\":{\"vars\":\n";
         results += "[\"Feature\", \"URL\", \"JSON\"]},\"results\":{\"bindings\":[\n";
-        results += "{\"Feature\": {\"value\": \"Conformance\"},\"URL\": {\"value\": \"https://localhost:8081/conformance\"}, \"JSON\": {\"value\": \"https://localhost:8081/conformance\"}},\n";
-        results += "{\"Feature\": {\"value\": \"Collections\"},\"URL\": {\"value\": \"https://localhost:8081/collections\"}, \"JSON\": {\"value\": \"https://localhost:8081/collections\"}},\n";
-        results += "{\"Feature\": {\"value\": \"Collection\"},\"URL\": {\"value\": \"https://localhost:8081/collections/{collectionId}\"}, \"JSON\": {\"value\": \"https://localhost:8081/collections\"}},\n";
-        results += "{\"Feature\": {\"value\": \"Items\"},\"URL\": {\"value\": \"https://localhost:8081/collections/{collectionId}/items\"}, \"JSON\": {\"value\": \"https://localhost:8081/collections\"}},\n";
-        results += "{\"Feature\": {\"value\": \"Dataset\"},\"URL\": {\"value\": \"https://localhost:8081/collections/{collectionId}/items/{datasetId}\"}, \"JSON\": {\"value\": \"https://localhost:8081/collections\"}}\n";
+        results += "{\"Feature\": {\"value\": \"Conformance\"},\"URL\": {\"value\": \"https://localhost:8081/api/spalodWFS/conformance\"}, \"JSON\": {\"value\": \"https://localhost:8081/api/spalodWFS/conformance\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Collections\"},\"URL\": {\"value\": \"https://localhost:8081/api/spalodWFS/collections\"}, \"JSON\": {\"value\": \"https://localhost:8081/api/spalodWFS/collections\"}}\n";
         results += "]}}";
         return results;
     }
@@ -93,12 +95,44 @@ public class OGCAPIController {
     @PostMapping("/conformance")
     public String conformance() {
         String results = "{\"head\":{\"vars\":\n";
-        results += "[\"conformance\"]},\"results\":{\"bindings\":[\n";
-        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collections\"}},\n";
-        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collections/{collectionId}\"}},\n";
-        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collections/{collectionId}/items\"}},\n";
-        results += "{\"conformance\": {\"value\": \"https://localhost:8081/collections/{collectionId}/items/{datasetId}\"}}\n";
+        results += "[\"Feature\", \"URL\"]},\"results\":{\"bindings\":[\n";
+        results += "{\"Feature\": {\"value\": \"Collections\"},\"URL\": {\"value\": \"https://localhost:8081/collections\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Collection\"},\"URL\": {\"value\": \"https://localhost:8081/collections/{collectionId}\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Items\"}, \"URL\": {\"value\": \"https://localhost:8081/collections/{collectionId}/items\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Dataset\"}, \"URL\": {\"value\": \"https://localhost:8081/collections/{collectionId}/items/{datasetId}\"}}\n";
         results += "]}}";
         return results;
+    }
+
+    public static String mergeJsonStrings(String jsonString1, String jsonString2) {
+        try {
+            JSONObject json1 = new JSONObject(jsonString1);
+            JSONObject json2 = new JSONObject(jsonString2);
+
+            JSONArray vars1 = json1.getJSONObject("head").getJSONArray("vars");
+            JSONArray vars2 = json2.getJSONObject("head").getJSONArray("vars");
+
+            for (int i = 0; i < vars2.length(); i++) {
+                String var = vars2.getString(i);
+                vars1.put(var);
+            }
+
+            JSONObject results1 = json1.getJSONObject("results");
+            JSONObject results2 = json2.getJSONObject("results");
+
+            JSONArray bindings1 = results1.getJSONArray("bindings");
+            JSONArray bindings2 = results2.getJSONArray("bindings");
+
+            for (int i = 0; i < bindings2.length(); i++) {
+                JSONObject binding = bindings2.getJSONObject(i);
+                bindings1.put(binding);
+            }
+
+            return json1.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

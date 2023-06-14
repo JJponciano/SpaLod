@@ -7,12 +7,7 @@ import Login from './components/Login.vue';
 import Register from './components/Register.vue';
 import PopUp from './components/PopUp.vue';
 import PopUpC from './components/PopUpC.vue';
-
-const routes={
-  '/': { component: NavBar, name: 'NavBar' },
-  '/login': { component: Login, name: 'Login' },
-  '/register': { component: Register, name: 'Register' },
-  }
+import OgcApi from './components/OgcApi.vue';
 
 
 export default {
@@ -24,7 +19,8 @@ export default {
     PopUp,
     PopUpC,
     Login,
-    Register
+    Register,
+    OgcApi,
   },
   data() {
     return {
@@ -37,19 +33,18 @@ export default {
       receivedData: null,
       username:""
     };
-  }
-  ,computed: {
+  },
+  computed: {
     currentView() {
       if (this.currentPath === '/' || this.currentPath === '/admin' ) {
         return 'main';
-      } 
-      else if (this.currentPath === '/login') {
+      } else if (this.currentPath === '/login') {
         return 'login';
-      } 
-      else if (this.currentPath === '/register') {
+      } else if (this.currentPath === '/register') {
         return 'register';
-      } 
-      else {
+      } else if (this.currentPath.startsWith('/spalodWFS')) {
+        return 'spalodWFS';
+      } else {
         return 'main';
       }
     }
@@ -126,6 +121,9 @@ export default {
     </div>
     <div class="main" v-if="currentView === 'register'">
       <Register></Register>
+    </div>
+    <div class="main" v-if="currentView === 'spalodWFS'">
+      <OgcApi></OgcApi>
     </div>
   </div>
   <div class="popup">
