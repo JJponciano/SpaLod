@@ -4,12 +4,12 @@
     <table>
           <thead>
             <tr>
-              <th v-for="key in header">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</th>
+              <th v-for="key in header" class="head">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(feature, index) in features" :key="index">
-              <td v-for="key in header" @click="urlClick(feature[key], key)" :class="{ clickable: key === 'collections' || key === 'dataset' || key === 'conformance' || key === 'URL' }">
+              <td v-for="key in header" @click="urlClick(feature[key], key)" :class="{ clickable: key === 'collections' || key === 'dataset' || key === 'conformance' || key === 'URL' }" class="row">
                   <template v-if="key === 'JSON'">
                     <button @click="downloadJson(feature.JSON, feature.Feature)">DOWNLOAD JSON</button>
                   </template>
@@ -133,5 +133,9 @@ h1 {
     font-weight: bold;
     font-size: 2rem;
     margin-bottom: 20px;
+}
+
+.table, .head, .row {
+    border: none;
 }
 </style>
