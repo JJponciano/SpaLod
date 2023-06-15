@@ -28,7 +28,7 @@ public class OGCAPIController {
     @PostMapping("/collections")
     public String collectionsList() {
         System.out.println("***********" + "/collections" + "***********");
-        String query = "SELECT ?collections WHERE {\n?collections <http://www.w3.org/ns/dcat#dataset> ?dataset}";
+        String query = "SELECT DISTINCT ?collections ?name WHERE {\n?collections <http://www.w3.org/ns/dcat#dataset> ?dataset .\n ?collections <http://purl.org/dc/terms/title> ?name .}";
         System.out.println(query);
         String results;
         //results = Triplestore.executeSelectQuery(query, "GraphDB");

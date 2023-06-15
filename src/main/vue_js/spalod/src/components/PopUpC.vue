@@ -44,6 +44,7 @@ export default{
         };
     },
     mounted(){
+        this.detectDarkMode();
         window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
             this.isDarkMode = event.matches;
         });
@@ -61,8 +62,8 @@ export default{
         },
         addCatalog(){
             var data = {
-                name: this.inputName,
-                desc: this.inputDesc,
+                name: this.inputName.replace(/ /g, '_'),
+                desc: this.inputDesc.replace(/ /g, '_'),
                 id: this.uuidv4(),
                 publisher: localStorage.getItem('username') || "",
             };

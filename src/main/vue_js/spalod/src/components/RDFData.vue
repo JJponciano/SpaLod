@@ -92,7 +92,12 @@
           <tbody>
             <tr v-for="(result, index) in queryResult" :key="index">
               <td v-for="key in keys" @click="uriClick(result[key], key)" :class="{ clickable: key === 'collections' || key === 'dataset' || key === 'conformance' || key === 'URL' }">
-                  {{ result[key] }}
+                  <template v-if="key === 'JSON'">
+                    <button @click="downloadJson(result.JSON, result.Feature)">DOWNLOAD JSON</button>
+                  </template>
+                  <template v-else>
+                    {{ result[key] }}
+                  </template>
               </td>
             </tr>
           </tbody>
@@ -218,7 +223,7 @@ export default {
         this.metadata['updated'] = dd + '/' + mm + '/' + yyyy;
 
         const data = {
-                    query: 'SELECT ?title where {?catalog <http://www.w3.org/ns/dcat#dataset> ?dataset . ?catalog <http://purl.org/dc/terms/title> ?title .}',
+                    query: 'SELECT ?catalog ?title ?description ?publisher ?dataset where {?catalog <http://www.w3.org/ns/dcat#dataset> ?dataset . ?catalog <http://purl.org/dc/terms/title> ?title . ?collection <http://purl.org/dc/terms/description> ?description . ?collection <http://purl.org/dc/terms/publisher> ?publisher . ?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .}',
                     triplestore: '', // TODO: graph DB
                 };
                 $.ajax({
@@ -235,7 +240,11 @@ export default {
                             for(var i = 0; i < data.results.bindings.length; i++){
                                 var catalog = {
                                     name: data.results.bindings[i].title.value,
+                                    desc: data.results.bindings[i].description.value,
+                                    id: data.results.bindings[i].catalog.value.split('#')[1],
+                                    publisher: data.results.bindings[i].publisher.value
                                 }
+                                console.log(catalog);
                                 this.options.push(catalog);
                             }
                         }
@@ -335,9 +344,9 @@ export default {
                 this.name = geoJson.name;
                 geoJson.features.forEach(feature => {
                     const properties = feature.properties;
-                    const subject = properties['item'];
+                    const subject = properties['item'] ? properties['item'] : properties['Wikidata-L'];
                     for (const key in properties) {
-                        if (key === 'item') continue;
+                        if (key === 'item' || key === 'Wikidata-L' || key === 'Koordinate') continue;
                         const predicate = key;
                         const object = properties[key];
                         this.rdfData.push({
@@ -347,8 +356,14 @@ export default {
                         });
                     }
 
-                    const coordinates = feature.geometry.coordinates;
+                    const coordinates = feature.geometry.coordinates ? feature.geometry.coordinates : feature.properties.Koordinate;
                     if (coordinates.length > 0) {
+                        if (coordinates.includes('(')) {
+                            coordinates = coordinates.split('(')[1];
+                            console.log(coordinates);
+                            coordinates = coordinates.split(')')[0];
+                            coordinates = coordinates.split(' ');
+                        }
                         const predicate = 'coordinates';
                         const object = coordinates[0] + ', ' + coordinates[1];
                         this.rdfData.push({
@@ -589,6 +604,29 @@ export default {
                 });
             }
         },
+        downloadJson(url, feature) {
+            console.log(url);
+            $.ajax({
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                success: (response) => {
+                    const json = JSON.stringify(response);
+                    const url = window.URL.createObjectURL(new Blob([json]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', feature + ".json");
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: (error) => {
+                    console.log(error);
+                }
+            });
+        },
         validateForm() {
             const requiredQueryables = this.queryables.filter(queryable => queryable.required);
             const invalidQueryables = requiredQueryables.filter(queryable => queryable.v === false);
@@ -600,15 +638,15 @@ export default {
             if(this.metadata[queryable.q] !== '' && this.metadata[queryable.q] !== undefined && this.selectedOption !== '') {
                 if(queryable.q === 'identifier') {
                     var data = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.options.find(option => option.name === this.selectedOption).id,
+                        subject: "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).id,
                         predicate: this.queryables.find(queryable => queryable.q === 'title').p,
-                        object: this.options.find(option => option.name === this.selectedOption).name,
+                        object: String(this.options.find(option => option.name === this.selectedOption).name),
                     };
                     this.updateTripleData(data, 'add', () => {
                         console.log("Catalog title added");
                     });
                     data = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.options.find(option => option.name === this.selectedOption).id,
+                        subject: "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).id,
                         predicate: this.queryables.find(queryable => queryable.q === 'description').p,
                         object: this.options.find(option => option.name === this.selectedOption).desc,
                     };
@@ -616,7 +654,7 @@ export default {
                         console.log("Catalog description added");
                     });
                     data = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.options.find(option => option.name === this.selectedOption).id,
+                        subject: "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).id,
                         predicate: this.queryables.find(queryable => queryable.q === 'publisher').p,
                         object: this.options.find(option => option.name === this.selectedOption).publisher,
                     };
@@ -624,9 +662,9 @@ export default {
                         console.log("Catalog publisher added");
                     });
                     data = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.options.find(option => option.name === this.selectedOption).id,
-                        predicate: 'http://www.w3.org/ns/dcat#dataset',
-                        object: 'http://lab.ponciano.info/ont/spalod#' + this.metadata['identifier'],
+                        subject: "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).id,
+                        predicate: "http://www.w3.org/ns/dcat#dataset",
+                        object: "http://lab.ponciano.info/ont/spalod#" + this.metadata['identifier'],
                     };
                     this.updateTripleData(data, 'add', () => {
                         console.log("Catalog added");
@@ -789,8 +827,8 @@ export default {
         },
         uriClick(uri, head) {
             if(uri.startsWith('https://') || uri.startsWith('http://')) {
-                if (head === 'conformance') {
-                    window.location.href = '/collections'
+                if (uri.startsWith('http://www.opengis.net/')) {
+                    window.open(uri, '_blank').focus();
                 } else if (head === 'collections') {
                     window.location.href = '/collections/' + uri.split('#')[1];
                 } else if (head === 'dataset') {
