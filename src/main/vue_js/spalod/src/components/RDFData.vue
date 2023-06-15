@@ -92,12 +92,7 @@
           <tbody>
             <tr v-for="(result, index) in queryResult" :key="index">
               <td v-for="key in keys" @click="uriClick(result[key], key)" :class="{ clickable: key === 'collections' || key === 'dataset' || key === 'conformance' || key === 'URL' }">
-                <template v-if="key === 'JSON'">
-                  <button @click="downloadJson(result[key], result['Feature'])">Download</button>
-                </template>
-                <template v-else>
                   {{ result[key] }}
-                </template>
               </td>
             </tr>
           </tbody>
@@ -251,7 +246,7 @@ export default {
                     }
                 });
 
-        // Implementing OGC API - Features
+        // Implementing OGC API - Records
         const url = new URL(window.location.href);
         var queryString = url.pathname;
         if (queryString === '/' || queryString.includes('collections') || queryString.includes('conformance')) {
@@ -602,28 +597,6 @@ export default {
                     }
                 });
             }
-        },
-        downloadJson(url, feature) {
-            $.ajax({
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                url: url,
-                type: 'POST',
-                dataType: 'json',
-                success: (response) => {
-                    const json = JSON.stringify(response);
-                    const url = window.URL.createObjectURL(new Blob([json]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', feature + ".json");
-                    document.body.appendChild(link);
-                    link.click();
-                },
-                error: (error) => {
-                    console.log(error);
-                }
-            });
         },
         validateForm() {
             const requiredQueryables = this.queryables.filter(queryable => queryable.required);
