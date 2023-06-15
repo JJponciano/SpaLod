@@ -270,6 +270,7 @@ export default {
                                 var result = data.results.bindings[0][queryable.q].value;
                                 result = result.split('/')[result.split('/').length - 1];
                                 result = result.split('#')[result.split('#').length - 1];
+                                result = result.replace(/_/g, ' ');
                                 this.metadata[queryable.q] = result;
                             }
                         }
