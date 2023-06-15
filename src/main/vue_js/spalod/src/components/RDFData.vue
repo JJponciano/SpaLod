@@ -242,7 +242,7 @@ export default {
                     }
                 });
 
-        // Implementing OGC API - Features
+        // Implementing OGC API - Records
         const url = new URL(window.location.href);
         var queryString = url.pathname;
         if (queryString === '/' || queryString.includes('collections') || queryString.includes('conformance')) {

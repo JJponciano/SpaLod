@@ -31,13 +31,10 @@ export default {
         return {
             header: [],
             features: [],
-            collectionView: false,
         }
     },
     mounted() {
         const url = new URL(window.location.href);
-        this.collectionView = url.pathname.split('/')[2] === 'collections';
-        console.log(this.collectionView);
         $.ajax({
             headers: {
                 'Content-Type': 'application/json'
@@ -63,6 +60,7 @@ export default {
             response.results.bindings.forEach(feature => {
                 const featureObject = {};
                 this.header.forEach((key) => {
+                    console.log(feature[key])
                     featureObject[key] = feature[key].value;
                 });
                 this.features.push(featureObject);
@@ -71,8 +69,8 @@ export default {
         },
         urlClick(url, head) {
             if(url.startsWith('https://') || url.startsWith('http://')) {
-                if (head === 'conformance') {
-                    window.location.href = '/spalodWFS/collections'
+                if (this.getTitle() === 'Conformance') {
+                    window.open(url, '_blank').focus();
                 } else if (head === 'collections') {
                     window.location.href = '/spalodWFS/collections/' + url.split('#')[1];
                 } else if (head === 'dataset') {

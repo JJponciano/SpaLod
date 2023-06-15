@@ -175,7 +175,7 @@ export default {
         });
         this.inputAdvanced=this.queries[this.selectedOption] + this.rangeValue;
         
-        // Implementing OGC API - Features
+        // Implementing OGC API - Records
         const url = new URL(window.location.href);
         const queryString = url.pathname;
         if(queryString.includes('collections') || queryString.includes('conformance') || queryString === '/') {
@@ -183,7 +183,7 @@ export default {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                url: 'https://localhost:8081' + queryString,
+                url: 'https://localhost:8081/api/spalodWFS' + queryString,
                 type: 'POST',
                 dataType: 'json',
                 success: (response) => {
