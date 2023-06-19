@@ -299,7 +299,7 @@ export default {
             const url = 'https://localhost:8081/api/sparql-select';
             const data = {
                 query: this.inputAdvanced,
-                triplestore: ''
+                triplestore: "http://localhost:7200/repositories/Spalod"
             };
             this.postJSON(url, data, this.handleResponse);
         },

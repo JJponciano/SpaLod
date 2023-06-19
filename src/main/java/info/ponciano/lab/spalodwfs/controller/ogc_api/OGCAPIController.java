@@ -31,8 +31,8 @@ public class OGCAPIController {
         String query = "SELECT DISTINCT ?collections ?name WHERE {\n?collections <http://www.w3.org/ns/dcat#dataset> ?dataset .\n ?collections <http://purl.org/dc/terms/title> ?name .}";
         System.out.println(query);
         String results;
-        //results = Triplestore.executeSelectQuery(query, "GraphDB");
-        results = Triplestore.get().executeSelectQuery(query);
+        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
 
@@ -47,8 +47,8 @@ public class OGCAPIController {
         String query = "SELECT ?title ?description ?publisher ?dataset WHERE {\n?collection <http://purl.org/dc/terms/title> ?title .\n?collection <http://purl.org/dc/terms/description> ?description .\n?collection <http://purl.org/dc/terms/publisher> ?publisher .\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <http://lab.ponciano.info/ont/spalod#" + collectionId + ">)\n}";
         System.out.println(query);
         String results;
-        //results = Triplestore.executeSelectQuery(query, "GraphDB");
-        results = Triplestore.get().executeSelectQuery(query);
+        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
 
@@ -63,8 +63,8 @@ public class OGCAPIController {
         String query = "SELECT ?dataset WHERE {\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <http://lab.ponciano.info/ont/spalod#" + collectionId + ">)\n}";
         System.out.println(query);
         String results;
-        //results = Triplestore.executeSelectQuery(query, "GraphDB");
-        results = Triplestore.get().executeSelectQuery(query);
+        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
 
@@ -80,8 +80,8 @@ public class OGCAPIController {
         String query = "SELECT ?item ?itemLabel ?category ?coordinates WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">)\n?item <http://lab.ponciano.info/ont/spalod#itemLabel> ?itemLabel .\n?item <http://lab.ponciano.info/ont/spalod#category> ?category .\n?item <http://lab.ponciano.info/ont/spalod#coordinates> ?coordinates\n}";
         System.out.println(query);
         String results;
-        //results = Triplestore.executeSelectQuery(query, "GraphDB");
-        results = Triplestore.get().executeSelectQuery(query);
+        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
 

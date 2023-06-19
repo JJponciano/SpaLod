@@ -107,7 +107,7 @@
 
 <script>
 import $ from 'jquery';
-
+import {reactive, onBeforeMount } from 'vue';
 $.ajaxSetup({
     xhrFields: {
         withCredentials: true
@@ -115,7 +115,27 @@ $.ajaxSetup({
 });
 
 
+
+
 export default {
+    // setup(){
+    //     console.log(localStorage.getItem("username"))
+    //     onBeforeMount(async ()=> {
+    //     await $.ajax({
+    //         url: 'https://localhost:8081/getGitUser',
+    //         method: 'GET',
+    //         xhrFields: {
+    //             withCredentials: true
+    //         },
+            // success: (response) => {
+            //     localStorage.setItem("username",response);
+            // },
+            // error: (error) => {
+            //     console.error(error);
+            // }
+            // })
+    // });
+    // },
     props: {
         file: File,
         receivedData: {
@@ -213,18 +233,38 @@ export default {
         });
         this.loadPredicates();
         this.metadata['identifier'] = this.uuidv4();
-        this.uid = localStorage.getItem('uuid');
-        this.metadata['publisher'] = localStorage.getItem("username") || "";
-        var today = new Date();
-        var dd = String(today.getDate()).padStart(2, '0');
-        var mm = String(today.getMonth() + 1).padStart(2, '0');
-        var yyyy = today.getFullYear();
-        this.metadata['created'] = dd + '/' + mm + '/' + yyyy;
-        this.metadata['updated'] = dd + '/' + mm + '/' + yyyy;
+
+        const fetchData = async () => {
+            try {
+                const response = await $.ajax({
+                    url: 'https://localhost:8081/getGitUser',
+                    method: 'GET',
+                    xhrFields: {
+                        withCredentials: true
+                    }
+                });
+
+                this.uid = response
+
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0');
+                var yyyy = today.getFullYear();
+                this.metadata['created'] = dd + '/' + mm + '/' + yyyy;
+                this.metadata['updated'] = dd + '/' + mm + '/' + yyyy;
+
+                this.metadata["publisher"]=this.getUsername();
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
 
         const data = {
                     query: 'SELECT ?catalog ?title ?description ?publisher ?dataset where {?catalog <http://www.w3.org/ns/dcat#dataset> ?dataset . ?catalog <http://purl.org/dc/terms/title> ?title . ?collection <http://purl.org/dc/terms/description> ?description . ?collection <http://purl.org/dc/terms/publisher> ?publisher . ?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .}',
-                    triplestore: '', // TODO: graph DB
+                    triplestore: "http://localhost:7200/repositories/Spalod", // TODO: graph DB
                 };
                 $.ajax({
                     headers: {
@@ -263,7 +303,7 @@ export default {
                 this.queryables.forEach((queryable) => {
                     const data = {
                         query: 'SELECT ?' + queryable.q + ' WHERE { <http://lab.ponciano.info/ont/spalod#' + queryString + '> <' + queryable.p + '> ?' + queryable.q + ' }',
-                        triplestore: '', // TODO: graph DB
+                        triplestore: "http://localhost:7200/repositories/Spalod", 
                     };
                     $.ajax({
                         headers: {
@@ -282,6 +322,9 @@ export default {
                                 result = result.replace(/_/g, ' ');
                                 this.metadata[queryable.q] = result;
                             }
+                        },
+                        error: (error) => {
+                            console.log(error)
                         }
                     });
                 });
@@ -295,6 +338,32 @@ export default {
         }
     },
     methods: {
+        getUsername()
+        {
+            const data = {
+                query:'SELECT ?s ?p ?o WHERE {?s ?p ?o. FILTER (?s=<http://lab.ponciano.info/ont/spalod#'+this.uid+'>)}',
+                triplestore: "http://localhost:7200/repositories/Spalod"
+            };
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                'type': 'POST',
+                'url': 'https://localhost:8081/api/sparql-select',
+                'data': JSON.stringify(data),
+                'dataType': 'json',
+                success: (response) => {
+                    const parts = response.results.bindings[0].o.value.split('/');
+                    const lastPart = parts[parts.length - 1];
+                    return lastPart;
+                },
+                error:(error) => {
+                    console.log(error)
+                }
+            });
+
+        },
         uuidv4() {
             return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -315,7 +384,7 @@ export default {
         loadPredicates() {
             const data = {
                 query: 'SELECT ?property ?propertyType WHERE{{?property a owl:ObjectProperty . BIND("Object Property" AS ?propertyType)} UNION {?property a owl:DatatypeProperty . BIND("Data Property" AS ?propertyType)}} ORDER BY ?property',
-                triplestore: '' //intégrer graph DB ici
+                triplestore: "http://localhost:7200/repositories/Spalod" //intégrer graph DB ici
             };
             $.ajax({
                 headers: {
@@ -414,7 +483,7 @@ export default {
             // Delete the old triplet
             const data = {
                 query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + String(triplet.subject).replace(/ /g, '_') + '>)}',
-                triplestore: ''
+                triplestore: "http://localhost:7200/repositories/Spalod"
             };
             $.ajax({
                 headers: {
@@ -675,7 +744,7 @@ export default {
                     // Delete the old triplets
                     var data = {
                         query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier + '>)}',
-                        triplestore: ''
+                        triplestore: "http://localhost:7200/repositories/Spalod"
                     };
                     $.ajax({
                         headers: {
@@ -706,7 +775,7 @@ export default {
 
                     data = {
                         query: 'SELECT ?o WHERE{?s <http://xlmns.com/foaf/0.1/name> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_') + '>)}',
-                        triplestore: ''
+                        triplestore: "http://localhost:7200/repositories/Spalod"
                     };
                     $.ajax({
                         headers: {
@@ -763,7 +832,7 @@ export default {
                     // Delete the old triplet
                     var data = {
                         query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier + '>)}',
-                        triplestore: ''
+                        triplestore: "http://localhost:7200/repositories/Spalod"
                     };
                     $.ajax({
                         headers: {

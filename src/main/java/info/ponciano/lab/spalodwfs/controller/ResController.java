@@ -105,18 +105,9 @@ public class ResController {
       results = Triplestore.get().executeSelectQuery(query);
     else
       results = Triplestore.executeSelectQuery(query, triplestore);
-      // Query graphdb
-      PrefixMapping prefixMapping = new PrefixMappingImpl();
-      prefixMapping.setNsPrefix("owl", "http://www.w3.org/2002/07/owl#");
-
-      ParameterizedSparqlString queryCommand = new ParameterizedSparqlString();
-      queryCommand.setCommandText(query);
-
-      QueryExecutionHTTP qe = QueryExecutionHTTP.service(GRAPHDB_QUERY_ENDPOINT,queryCommand.asQuery());
-      ResultSet graphResults = qe.execSelect();
-      String queryResults = QueryResult.convertResultSetToJavaObject(graphResults);
-      System.out.println(queryResults);
-    return queryResults;
+      
+      System.out.println(results);
+    return results;
   }
 
   /**
@@ -141,6 +132,7 @@ public class ResController {
       Triplestore.get().addTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
       
       // Insert a triple in graphdb
+
       String subject = "<" + tripleData.getSubject() + ">";
       String predicate = "<" + tripleData.getPredicate() + ">";
       String object = "<" + tripleData.getObject() + ">";

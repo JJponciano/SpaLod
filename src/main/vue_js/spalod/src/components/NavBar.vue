@@ -114,7 +114,7 @@
             withCredentials: true
           },
           success: (response) => {
-            localStorage.setItem("username",response);
+            localStorage.setItem("uuid",response);
             this.$emit('username-updated',response)
           },
           error: (error) => {

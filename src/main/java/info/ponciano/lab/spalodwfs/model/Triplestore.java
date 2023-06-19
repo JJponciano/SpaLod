@@ -1,19 +1,21 @@
 package info.ponciano.lab.spalodwfs.model;
 
 import java.io.File;
-import java.util.Date;
 import java.util.*;
 import java.net.URI;
 
 import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
 import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.update.*;
 import org.apache.jena.datatypes.*;
 
 public class Triplestore {
+
+    
+    private static final String GRAPHDB_QUERY_ENDPOINT = "http://localhost:7200/repositories/Spalod";
+
     private static Triplestore triplestore = null;
 
     public static final String directory = "dataset";
@@ -113,15 +115,30 @@ public class Triplestore {
 
         String queryString = PREFIX + sparqlQuery;
         Query query = QueryFactory.create(queryString);
-        QueryExecution qexec = QueryExecution.service(triplestore).query(query).build();
-        // QueryExecution qexec = QueryExecutionFactory.sparqlService(triplestore, query);
-        if (query.isSelectType()) {
-            ResultSet resultSet = qexec.execSelect();
-            String results = QueryResult.convertResultSetToJavaObject(resultSet);
-            return results;
-        } else {
-            throw new IllegalArgumentException("Only SELECT queries are supported.");
+        if(triplestore==GRAPHDB_QUERY_ENDPOINT)
+        {
+            ParameterizedSparqlString queryCommand = new ParameterizedSparqlString();
+            queryCommand.setCommandText(queryString);
+
+            QueryExecutionHTTP qe = QueryExecutionHTTP.service(GRAPHDB_QUERY_ENDPOINT, queryCommand.asQuery());
+            ResultSet graphResults = qe.execSelect();
+            String queryResults = QueryResult.convertResultSetToJavaObject(graphResults);
+            return queryResults;
         }
+        else{
+            QueryExecution qexec = QueryExecution.service(triplestore).query(query).build();
+            // QueryExecution qexec = QueryExecutionFactory.sparqlService(triplestore,
+            // query);
+            if (query.isSelectType()) {
+                ResultSet resultSet = qexec.execSelect();
+                String results = QueryResult.convertResultSetToJavaObject(resultSet);
+                return results;
+            } else {
+                throw new IllegalArgumentException("Only SELECT queries are supported.");
+            }
+        }
+        
+        
     }
 
     public void executeUpdateQuery(String updateString) {
