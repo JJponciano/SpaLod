@@ -19,16 +19,16 @@
         <div class="metadata" :class="{ active: showMetadata }" v-if="rdfData && rdfData.length > 0">
             <p @click="showMetadata = !showMetadata">Show Metadata</p>
             <div class="metadata-container" v-if="showMetadata">
-                <div class="metadata-Catalog">
-                    <p>Catalog: *</p>
-                    <button @click="addNewCatalog">+</button>
-                    <select v-model="selectedOption" v-bind:disabled="isCatalogDisabled">
-                        <option value="" disabled selected hidden>Choose a Catalog</option>
-                        <option v-for="(option) in options">
-                            {{ option.name }}
-                        </option>
-                    </select>
-                </div>
+                    <div class="metadata-Catalog">
+                        <p>Catalog: *</p>
+                        <button @click="addNewCatalog">+</button>
+                        <select v-model="selectedOption" v-bind:disabled="isCatalogDisabled">
+                            <option value="" disabled selected hidden>Choose a Catalog</option>
+                            <option v-for="(option) in options">
+                                {{ option.name }}
+                            </option>
+                        </select>
+                    </div>
                 <div v-for="(queryable, index) in queryables " :key="index" class="metadata-element">
                     <h3 v-if="queryable.required">{{ queryable.q }}: *</h3>
                     <h3 v-else>{{ queryable.q }}:</h3>
@@ -944,7 +944,8 @@ p {
     font-weight: bold;
     padding: 9px;
     width: 250px;
-    margin-left: 248px;
+    margin: 10px 0;
+    left: 23%;
     border: 0px solid #1A202C;
     border-radius: 5px;
     background-color: rgb(241, 241, 241);
