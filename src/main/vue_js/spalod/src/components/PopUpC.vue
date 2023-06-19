@@ -65,7 +65,7 @@ export default{
                 name: this.inputName.replace(/ /g, '_'),
                 desc: this.inputDesc.replace(/ /g, '_'),
                 id: this.uuidv4(),
-                publisher: localStorage.getItem('username') || "",
+                publisher: localStorage.getItem("uuid") || "",
             };
             this.$emit('Catalog-data', data);
             this.closePopup();

@@ -79,6 +79,7 @@ public class OGCAPIController {
         System.out.println("***********" + "/collections/" + collectionId + "/items/" + datasetId + "***********");
         String query = "SELECT ?item ?itemLabel ?category ?coordinates WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">)\n?item <http://lab.ponciano.info/ont/spalod#itemLabel> ?itemLabel .\n?item <http://lab.ponciano.info/ont/spalod#category> ?category .\n?item <http://lab.ponciano.info/ont/spalod#coordinates> ?coordinates\n}";
         System.out.println(query);
+    //    String query="SELECT ?object WHERE {?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item . FILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">) ?item ?predicate ?object .}";
         String results;
         results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
         //results = Triplestore.get().executeSelectQuery(query);

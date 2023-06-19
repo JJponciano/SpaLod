@@ -255,14 +255,7 @@ export default {
 
                 this.metadata["publisher"]=this.getUsername();
 
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchData();
-
-        const data = {
+                const data = {
                     query: 'SELECT ?catalog ?title ?description ?publisher ?dataset where {?catalog <http://www.w3.org/ns/dcat#dataset> ?dataset . ?catalog <http://purl.org/dc/terms/title> ?title . ?collection <http://purl.org/dc/terms/description> ?description . ?collection <http://purl.org/dc/terms/publisher> ?publisher . ?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .}',
                     triplestore: "http://localhost:7200/repositories/Spalod", // TODO: graph DB
                 };
@@ -278,6 +271,7 @@ export default {
                     success: (data) => {
                         if (data.results.bindings.length > 0) {
                             for(var i = 0; i < data.results.bindings.length; i++){
+                                console.log(data.results.bindings[i].publisher.value)
                                 var catalog = {
                                     name: data.results.bindings[i].title.value,
                                     desc: data.results.bindings[i].description.value,
@@ -290,6 +284,16 @@ export default {
                         }
                     }
                 });
+
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
+
+        
 
         // Implementing OGC API - Records
         const url = new URL(window.location.href);
