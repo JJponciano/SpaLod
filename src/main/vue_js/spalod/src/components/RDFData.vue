@@ -92,7 +92,12 @@
           <tbody>
             <tr v-for="(result, index) in queryResult" :key="index">
               <td v-for="key in keys" @click="uriClick(result[key], key)" :class="{ clickable: key === 'collections' || key === 'dataset' || key === 'conformance' || key === 'URL' }">
-                  {{ result[key] }}
+                  <template v-if="key === 'JSON'">
+                    <button @click="downloadJson(result.JSON, result.Feature)">DOWNLOAD JSON</button>
+                  </template>
+                  <template v-else>
+                    {{ result[key] }}
+                  </template>
               </td>
             </tr>
           </tbody>
@@ -274,6 +279,7 @@ export default {
                                 var result = data.results.bindings[0][queryable.q].value;
                                 result = result.split('/')[result.split('/').length - 1];
                                 result = result.split('#')[result.split('#').length - 1];
+                                result = result.replace(/_/g, ' ');
                                 this.metadata[queryable.q] = result;
                             }
                         }
@@ -598,6 +604,29 @@ export default {
                 });
             }
         },
+        downloadJson(url, feature) {
+            console.log(url);
+            $.ajax({
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                success: (response) => {
+                    const json = JSON.stringify(response);
+                    const url = window.URL.createObjectURL(new Blob([json]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', feature + ".json");
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: (error) => {
+                    console.log(error);
+                }
+            });
+        },
         validateForm() {
             const requiredQueryables = this.queryables.filter(queryable => queryable.required);
             const invalidQueryables = requiredQueryables.filter(queryable => queryable.v === false);
@@ -798,8 +827,8 @@ export default {
         },
         uriClick(uri, head) {
             if(uri.startsWith('https://') || uri.startsWith('http://')) {
-                if (head === 'conformance') {
-                    window.location.href = '/collections'
+                if (uri.startsWith('http://www.opengis.net/')) {
+                    window.open(uri, '_blank').focus();
                 } else if (head === 'collections') {
                     window.location.href = '/collections/' + uri.split('#')[1];
                 } else if (head === 'dataset') {
