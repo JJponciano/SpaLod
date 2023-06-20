@@ -244,7 +244,6 @@ export default {
                                     id: data.results.bindings[i].catalog.value.split('#')[1],
                                     publisher: data.results.bindings[i].publisher.value
                                 }
-                                console.log(catalog);
                                 this.options.push(catalog);
                             }
                         }
