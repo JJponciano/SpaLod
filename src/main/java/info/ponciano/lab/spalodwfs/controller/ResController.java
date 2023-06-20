@@ -1,5 +1,6 @@
 package info.ponciano.lab.spalodwfs.controller;
 
+import org.apache.jena.graph.impl.TripleStore;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
@@ -15,6 +16,8 @@ import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -104,7 +107,7 @@ public class ResController {
     else
       results = Triplestore.executeSelectQuery(query, triplestore);
       
-      System.out.println(results);
+      // System.out.println(results);
     return results;
   }
 
@@ -134,23 +137,44 @@ public class ResController {
       String subject = "<" + tripleData.getSubject() + ">";
       String predicate = "<" + tripleData.getPredicate() + ">";
       String object = tripleData.getObject();
-      try {
-        // TEST IF INT
-        int intValue = Integer.parseInt(object);
-        object = "\"" + tripleData.getObject() + "\"^^xsd:integer";
-      } catch (NumberFormatException e1) {
+
+      String queryString = "SELECT ?type where { <"+ tripleData.getPredicate() +"> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
+      String type=Triplestore.executeSelectQuery(queryString,GRAPHDB_QUERY_ENDPOINT);
+      // System.out.println(type);
+      // System.out.println(tripleData.getPredicate());
+
+
+      JSONObject jsonResult = new JSONObject(type);
+      JSONObject resultsObject = jsonResult.getJSONObject("results");
+      JSONArray bindings = resultsObject.getJSONArray("bindings");
+      String predicateType = "";
+      for (int i = 0; i < bindings.length(); i++) {
+        JSONObject binding = bindings.getJSONObject(i);
+        JSONObject predicateTypeObject = binding.getJSONObject("type");
+        // System.out.println(predicateTypeObject.getString("value"));
+        if (predicateTypeObject.getString("value").equals("http://www.w3.org/2002/07/owl#DatatypeProperty"))
+          predicateType = predicateTypeObject.getString("value");
+      }
+      //bindings.length() > 1 ? bindings.getJSONObject(1).getJSONObject("type").getString("value") : bindings.getJSONObject(0).getJSONObject("type").getString("value");
+      // System.out.println(tripleData.getPredicate()+" : "+predicateType);
+      if (predicateType.equals("http://www.w3.org/2002/07/owl#DatatypeProperty")) {
         try {
-          // TEST IF FLOAT
-          float floatValue = Float.parseFloat(object);
-          object = "\"" + tripleData.getObject() + "\"^^xsd:float";
-        } catch (NumberFormatException e2) {
-          try{
-            // TEST IF STRING
-            object = "\"" + tripleData.getObject() + "\"^^xsd:string";
-          } catch(NumberFormatException e3){
-             object = "<" + tripleData.getObject() + ">";
+          // TEST IF INT
+          int intValue = Integer.parseInt(object);
+          object = "\"" + tripleData.getObject() + "\"^^xsd:integer";
+        } catch (NumberFormatException e1) {
+          try {
+            // TEST IF FLOAT
+            float floatValue = Float.parseFloat(object);
+            object = "\"" + tripleData.getObject() + "\"^^xsd:float";
+          } catch (NumberFormatException e2) {
+              // IF STRING
+              object = "\"" + tripleData.getObject() + "\"^^xsd:string";
           }
         }
+      }
+      else{
+        object = "<" + tripleData.getObject() + ">";
       }
 
 
@@ -170,26 +194,32 @@ public class ResController {
       String predicate = "<" + tripleData.getPredicate() + ">";
       String object = tripleData.getObject();
 
-      try {
-        // TEST IF INT
-        int intValue = Integer.parseInt(object);
-        object = "\"" + tripleData.getObject() + "\"^^xsd:integer";
-      } 
-      catch (NumberFormatException e1) {
+      String queryString = "SELECT ?type where { <" + tripleData.getPredicate()
+          + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
+      String type = Triplestore.executeSelectQuery(queryString, GRAPHDB_QUERY_ENDPOINT);
+
+      JSONObject jsonResult = new JSONObject(type);
+      JSONObject resultsObject = jsonResult.getJSONObject("results");
+      JSONArray bindings = resultsObject.getJSONArray("bindings");
+      String predicateType = bindings.getJSONObject(0).getJSONObject("type").getString("value");
+      System.out.println(predicateType);
+      if (predicateType == "http://www.w3.org/2002/07/owl#DatatypeProperty") {
         try {
-          // TEST IF FLOAT
-          float floatValue = Float.parseFloat(object);
-          object = "\"" + tripleData.getObject() + "\"^^xsd:float";
-        } 
-        catch (NumberFormatException e2) {
+          // TEST IF INT
+          int intValue = Integer.parseInt(object);
+          object = "\"" + tripleData.getObject() + "\"^^xsd:integer";
+        } catch (NumberFormatException e1) {
           try {
-            // TEST IF STRING
+            // TEST IF FLOAT
+            float floatValue = Float.parseFloat(object);
+            object = "\"" + tripleData.getObject() + "\"^^xsd:float";
+          } catch (NumberFormatException e2) {
+            // IF STRING
             object = "\"" + tripleData.getObject() + "\"^^xsd:string";
-          } 
-          catch (NumberFormatException e3) {
-            object = "<" + tripleData.getObject() + ">";
           }
         }
+      } else {
+        object = "<" + tripleData.getObject() + ">";
       }
 
       ParameterizedSparqlString removeCommand = new ParameterizedSparqlString();
