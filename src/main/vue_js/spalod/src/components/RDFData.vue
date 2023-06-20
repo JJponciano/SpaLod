@@ -64,7 +64,7 @@
             <div v-if="showResults">
                 <h2 v-if="filteredResults.length > 0">Predicate Options</h2>
                 <li v-for="(result, i) in filteredResults" :key="i" @click="selectResult(result, index)">
-                    {{ result.split('#')[1] }}
+                    {{ decodeURIComponent(result.split('#')[1]) }}
                 </li>
             </div>
         </ul>
@@ -366,7 +366,7 @@ export default {
                 this.name = geoJson.name;
                 geoJson.features.forEach(feature => {
                     const properties = feature.properties;
-                    const subject = properties['itemID'] ?? this.uuidv4();
+                    const subject = properties['itemID'] ?? 'http://lab.ponciano.info/ont/spalod#' + this.uuidv4();
                     for (const key in properties) {
                         if (key === 'Koordinate' || key === 'itemID') continue;
                         const predicate = key;
@@ -438,7 +438,7 @@ export default {
                 return;
             }
 
-            const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
+            const predicate = "http://lab.ponciano.info/ont/spalod#" + encodeURIComponent(triplet.predicate);
 
             // Delete the old triplet
             const data = {
@@ -514,7 +514,7 @@ export default {
             this.areAllPredicatesKnown();
         },
         selectResult(result, index) {
-            this.rdfData[index].predicate = result.split('#')[1];
+            this.rdfData[index].predicate = decodeURIComponent(result.split('#')[1]);
             this.showResults = false;
         },
         selectAll(areAllSelected) {
@@ -666,6 +666,56 @@ export default {
             var queryable = this.queryables.find(queryable => queryable.q === data);
             if(this.metadata[queryable.q] !== '' && this.metadata[queryable.q] !== undefined && this.selectedOption !== '') {
                 if(queryable.q === 'identifier') {
+
+                    // Check if the predicates are known in the ontology
+                    const checkPredicates = {
+                        query: 'SELECT ?type WHERE { <' + queryable.p + '> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }',
+                        triplestore: '', // TODO: graph DB
+                    };
+                    $.ajax({
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        'type': 'POST',
+                        'url': 'https://localhost:8081/api/sparql-select',
+                        'data': JSON.stringify(checkPredicates),
+                        'dataType': 'json',
+                        success: (result) => {
+                            if (result.results.bindings.length === 0) {
+                                var data = {
+                                    subject: "http://www.w3.org/ns/dcat#dataset",
+                                    predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                                    object: "http://www.w3.org/2002/07/owl#ObjectProperty"
+                                };
+                                this.updateTripleData(data, 'add', () => {
+                                    console.log("Predicate added");
+                                });
+
+                                var data = {
+                                    subject: "http://lab.ponciano.info/ont/spalod#hasItem",
+                                    predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                                    object: "http://www.w3.org/2002/07/owl#ObjectProperty"
+                                };
+                                this.updateTripleData(data, 'add', () => {
+                                    console.log("Predicate added");
+                                });
+
+                                this.queryables.forEach(queryable => {
+                                    var object = queryable.literal ? "http://www.w3.org/2002/07/owl#DatatypeProperty" : "http://www.w3.org/2002/07/owl#ObjectProperty";
+                                    data = {
+                                        subject: queryable.p,
+                                        predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                                        object: object,
+                                    };
+                                    this.updateTripleData(data, 'add', () => {
+                                        console.log("Predicate added");
+                                    });
+                                });
+                            }
+                        }
+                    });
+
                     var data = {
                         subject: "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).id,
                         predicate: this.queryables.find(queryable => queryable.q === 'title').p,
@@ -871,7 +921,7 @@ export default {
                         collectionId = 'undefined';
                     }
                     window.location.href = '/collections/' + collectionId + '/items/' + uri.split('#')[1];
-                } else {
+                } else if (head === 'HTML') {
                     window.location.href = uri;
                 }
             }
