@@ -278,7 +278,6 @@ export default {
                                     id: data.results.bindings[i].catalog.value.split('#')[1],
                                     publisher: data.results.bindings[i].publisher.value
                                 }
-                                console.log(catalog);
                                 this.options.push(catalog);
                             }
                         }
@@ -429,14 +428,14 @@ export default {
                         });
                     }
 
-                    const coordinates = feature.geometry.coordinates ? feature.geometry.coordinates : feature.properties.Koordinate;
+                    var coordinates = feature.properties.Koordinate ?? feature.geometry.coordinates;
                     if (coordinates.length > 0) {
                         if (coordinates.includes('(')) {
                             coordinates = coordinates.split('(')[1];
-                            console.log(coordinates);
                             coordinates = coordinates.split(')')[0];
-                            coordinates = coordinates.split(' ');
+                            coordinates = coordinates.split(' ').map(coord => parseFloat(coord));
                         }
+                        console.log(coordinates);
                         const predicate = 'coordinates';
                         const object = coordinates[0] + ', ' + coordinates[1];
                         this.rdfData.push({
@@ -451,7 +450,7 @@ export default {
             };
         },
         refreshMap(){
-            var geojones=this.getGeoJSON();
+            var geojones=this.getGeoJSON(); //le fromage
             const blob = new Blob([JSON.stringify(geojones)], {type: "application/json"});
             const updatefile = new File([blob], "geodata.json", {type: "application/json"});
             this.$emit('update', updatefile);

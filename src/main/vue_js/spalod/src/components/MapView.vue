@@ -16,9 +16,17 @@ export default {
                 const object = JSON.parse(contenu);
 
                 object.features.forEach(feature => {
-                    if(!feature.properties.item && !feature.properties['Wikidata-L']) return;
+                    var coordinates = feature.properties.Koordinate ?? feature.geometry.coordinates;
+                    if (coordinates.length > 0) {
+                        if (coordinates.includes('(')) {
+                            coordinates = coordinates.split('(')[1];
+                            coordinates = coordinates.split(')')[0];
+                            coordinates = coordinates.split(' ').map(coord => parseFloat(coord));
+                        }
+                        if(!feature.properties.item && !feature.properties['Wikidata-L']) return;
                     const label = feature.properties.itemLabel ? feature.properties.itemLabel : feature.properties.Objektname;
-                    this.dataArray.push([object.name, label, feature.geometry.coordinates[1], feature.geometry.coordinates[0]]);
+                    this.dataArray.push([object.name, label, coordinates[1], coordinates[0]]);
+                    }
                 });
                 this.updateMap();
             };
