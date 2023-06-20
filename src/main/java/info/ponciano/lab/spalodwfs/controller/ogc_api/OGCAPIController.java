@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import info.ponciano.lab.spalodwfs.model.Triplestore;
 import org.json.JSONObject;
+import org.apache.jena.base.Sys;
 import org.json.JSONArray;
 
 @RequestMapping("/api/spalodWFS")
@@ -20,10 +21,12 @@ public class OGCAPIController {
     @PostMapping("/")
     public String landingPage() {
         String results = "{\"head\":{\"vars\":\n";
-        results += "[\"Feature\", \"URL\", \"JSON\"]},\"results\":{\"bindings\":[\n";
-        results += "{\"Feature\": {\"value\": \"Conformance\"},\"URL\": {\"value\": \"https://localhost:8081/api/spalodWFS/conformance\"}, \"JSON\": {\"value\": \"https://localhost:8081/api/spalodWFS/conformance\"}},\n";
-        results += "{\"Feature\": {\"value\": \"Collections\"},\"URL\": {\"value\": \"https://localhost:8081/api/spalodWFS/collections\"}, \"JSON\": {\"value\": \"https://localhost:8081/api/spalodWFS/collections\"}}\n";
+        results += "[\"Feature\", \"HTML\", \"JSON\"]},\"results\":{\"bindings\":[\n";
+        results += "{\"Feature\": {\"value\": \"Conformance\"},\"HTML\": {\"value\": \"https://localhost:8080/spalodWFS/conformance\"}, \"JSON\": {\"value\": \"https://localhost:8081/api/spalodWFS/conformance\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Collections\"},\"HTML\": {\"value\": \"https://localhost:8080/spalodWFS/collections\"}, \"JSON\": {\"value\": \"https://localhost:8081/api/spalodWFS/collections\"}}\n";
         results += "]}}";
+        System.out.println(results);
+
         return results;
     }
 
@@ -66,7 +69,7 @@ public class OGCAPIController {
     @PostMapping("/collections/{collectionId}/items")
     public String datasetList(@PathVariable String collectionId) {
         System.out.println("***********" + "/collections/" + collectionId + "/items/***********");
-        String query = "SELECT ?dataset WHERE {\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <http://lab.ponciano.info/ont/spalod#" + collectionId + ">)\n}";
+        String query = "SELECT ?dataset ?title ?description ?publisher ?distribution WHERE {\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <http://lab.ponciano.info/ont/spalod#" + collectionId + ">)\n?dataset <http://purl.org/dc/terms/title> ?title .\n?dataset <http://purl.org/dc/terms/description> ?description .\n?dataset <http://purl.org/dc/terms/publisher> ?publisher .\n?dataset <http://www.w3.org/ns/dcat#distribution> ?distribution .\n}";
         System.out.println(query);
         String results;
         results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
@@ -131,6 +134,8 @@ public class OGCAPIController {
         results += "{\"Feature\": {\"value\": \"JSON of OGC API Records 1.0\"},\"URL\": {\"value\": \"http://www.opengis.net/spec/ogcapi-records-1/1.0/conf/json\"}},\n";
         results += "{\"Feature\": {\"value\": \"HTML of OGC API Records 1.0\"}, \"URL\": {\"value\": \"http://www.opengis.net/spec/ogcapi-records-1/1.0/conf/html\"}}\n";
         results += "]}}";
+        System.out.println(results);
+
         return results;
     }
 }

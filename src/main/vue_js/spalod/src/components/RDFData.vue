@@ -64,7 +64,7 @@
             <div v-if="showResults">
                 <h2 v-if="filteredResults.length > 0">Predicate Options</h2>
                 <li v-for="(result, i) in filteredResults" :key="i" @click="selectResult(result, index)">
-                    {{ result.split('#')[1] }}
+                    {{ decodeURIComponent(result.split('#')[1]) }}
                 </li>
             </div>
         </ul>
@@ -94,6 +94,9 @@
               <td v-for="key in keys" @click="uriClick(result[key], key)" :class="{ clickable: key === 'collections' || key === 'dataset' || key === 'conformance' || key === 'URL' }">
                   <template v-if="key === 'JSON'">
                     <button @click="downloadJson(result.JSON, result.Feature)">DOWNLOAD JSON</button>
+                  </template>
+                  <template v-else-if="key === 'HTML'">
+                    <button @click="uriClick(result[key], key)" class="view-html-button">VIEW HTML</button>
                   </template>
                   <template v-else>
                     {{ result[key] }}
@@ -337,6 +340,26 @@ export default {
                         }
                     });
                 });
+                const data = {
+                    query: 'SELECT ?title WHERE { ?catalog <http://www.w3.org/ns/dcat#dataset> <http://lab.ponciano.info/ont/spalod#' + queryString + '> . ?catalog <http://purl.org/dc/terms/title> ?title . }',
+                    triplestore: '', // TODO: graph DB
+                };
+                $.ajax({
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    'type': 'POST',
+                    'url': 'https://localhost:8081/api/sparql-select',
+                    'data': JSON.stringify(data),
+                    'dataType': 'json',
+                    success: (data) => {
+                        if (data.results.bindings.length > 0) {
+                            var result = data.results.bindings[0].title.value;
+                            this.selectedOption = result;
+                        }
+                    }
+                });
             }
         }
     },
@@ -422,9 +445,9 @@ export default {
                 this.name = geoJson.name;
                 geoJson.features.forEach(feature => {
                     const properties = feature.properties;
-                    const subject = properties['item'] ? properties['item'] : properties['Wikidata-L'];
+                    const subject = properties['itemID'] ?? 'http://lab.ponciano.info/ont/spalod#' + this.uuidv4();
                     for (const key in properties) {
-                        if (key === 'item' || key === 'Wikidata-L' || key === 'Koordinate') continue;
+                        if (key === 'Koordinate' || key === 'itemID') continue;
                         const predicate = key;
                         const object = properties[key];
                         this.rdfData.push({
@@ -443,6 +466,14 @@ export default {
                         }
                         const predicate = 'coordinates';
                         const object = coordinates[0] + ', ' + coordinates[1];
+                        this.rdfData.push({
+                            subject,
+                            predicate,
+                            object,
+                        });
+                    } else if (feature.properties['X Koordina'] && feature.properties['Y Koordina']) {
+                        const predicate = 'coordinates';
+                        const object = feature.properties['X Koordina'] + ', ' + feature.properties['Y Koordina'];
                         this.rdfData.push({
                             subject,
                             predicate,
@@ -486,7 +517,7 @@ export default {
                 return;
             }
 
-            const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
+            const predicate = "http://lab.ponciano.info/ont/spalod#" + encodeURIComponent(triplet.predicate);
 
             // Delete the old triplet
             const data = {
@@ -562,7 +593,7 @@ export default {
             this.areAllPredicatesKnown();
         },
         selectResult(result, index) {
-            this.rdfData[index].predicate = result.split('#')[1];
+            this.rdfData[index].predicate = decodeURIComponent(result.split('#')[1]);
             this.showResults = false;
         },
         selectAll(areAllSelected) {
@@ -714,6 +745,56 @@ export default {
             var queryable = this.queryables.find(queryable => queryable.q === data);
             if(this.metadata[queryable.q] !== '' && this.metadata[queryable.q] !== undefined && this.selectedOption !== '') {
                 if(queryable.q === 'identifier') {
+
+                    // Check if the predicates are known in the ontology
+                    const checkPredicates = {
+                        query: 'SELECT ?type WHERE { <' + queryable.p + '> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }',
+                        triplestore: '', // TODO: graph DB
+                    };
+                    $.ajax({
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        'type': 'POST',
+                        'url': 'https://localhost:8081/api/sparql-select',
+                        'data': JSON.stringify(checkPredicates),
+                        'dataType': 'json',
+                        success: (result) => {
+                            if (result.results.bindings.length === 0) {
+                                var data = {
+                                    subject: "http://www.w3.org/ns/dcat#dataset",
+                                    predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                                    object: "http://www.w3.org/2002/07/owl#ObjectProperty"
+                                };
+                                this.updateTripleData(data, 'add', () => {
+                                    console.log("Predicate added");
+                                });
+
+                                var data = {
+                                    subject: "http://lab.ponciano.info/ont/spalod#hasItem",
+                                    predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                                    object: "http://www.w3.org/2002/07/owl#ObjectProperty"
+                                };
+                                this.updateTripleData(data, 'add', () => {
+                                    console.log("Predicate added");
+                                });
+
+                                this.queryables.forEach(queryable => {
+                                    var object = queryable.literal ? "http://www.w3.org/2002/07/owl#DatatypeProperty" : "http://www.w3.org/2002/07/owl#ObjectProperty";
+                                    data = {
+                                        subject: queryable.p,
+                                        predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                                        object: object,
+                                    };
+                                    this.updateTripleData(data, 'add', () => {
+                                        console.log("Predicate added");
+                                    });
+                                });
+                            }
+                        }
+                    });
+
                     var data = {
                         subject: "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).id,
                         predicate: this.queryables.find(queryable => queryable.q === 'title').p,
@@ -919,12 +1000,8 @@ export default {
                         collectionId = 'undefined';
                     }
                     window.location.href = '/collections/' + collectionId + '/items/' + uri.split('#')[1];
-                } else if (head === 'URL') {
-                    if (uri.includes('/collections')) {
-                        window.location.href = '/collections';
-                    } else {
-                        window.location.href = '/conformance';
-                    }
+                } else if (head === 'HTML') {
+                    window.location.href = uri;
                 }
             }
         }
@@ -1236,7 +1313,7 @@ button:hover {
     transition: background-color 0.5s ease;
 }
 
-.validate {
+.validate, .view-html-button {
     background-color: #0baaa7;
 }
 
