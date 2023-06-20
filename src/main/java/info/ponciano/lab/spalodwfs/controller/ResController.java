@@ -35,12 +35,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Set;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import info.ponciano.lab.spalodwfs.controller.storage.StorageProperties;
 import info.ponciano.lab.spalodwfs.mvc.controllers.last.GeoJsonForm;
 import info.ponciano.lab.pitools.files.PiFile;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.multipart.MultipartFile;
 
 @RequestMapping("/api")
@@ -135,10 +133,30 @@ public class ResController {
 
       String subject = "<" + tripleData.getSubject() + ">";
       String predicate = "<" + tripleData.getPredicate() + ">";
-      String object = "<" + tripleData.getObject() + ">";
+      String object = tripleData.getObject();
+      try {
+        // TEST IF INT
+        int intValue = Integer.parseInt(object);
+        object = "\"" + tripleData.getObject() + "\"^^xsd:integer";
+      } catch (NumberFormatException e1) {
+        try {
+          // TEST IF FLOAT
+          float floatValue = Float.parseFloat(object);
+          object = "\"" + tripleData.getObject() + "\"^^xsd:float";
+        } catch (NumberFormatException e2) {
+          try{
+            // TEST IF STRING
+            object = "\"" + tripleData.getObject() + "\"^^xsd:string";
+          } catch(NumberFormatException e3){
+             object = "<" + tripleData.getObject() + ">";
+          }
+        }
+      }
+
+
   
       ParameterizedSparqlString insertCommand = new ParameterizedSparqlString();
-      insertCommand.setCommandText("INSERT DATA { "+subject+" "+predicate+" "+object+" }");
+      insertCommand.setCommandText("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "+"INSERT DATA { "+subject+" "+predicate+" "+object+" }");
       UpdateRequest insertRequest = UpdateFactory.create(insertCommand.toString());
       UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest, GRAPHDB_UPDATE_ENDPOINT);
       insertProcessor.execute();
@@ -150,9 +168,32 @@ public class ResController {
       // Remove a triple in graphdb
       String subject = "<" + tripleData.getSubject() + ">";
       String predicate = "<" + tripleData.getPredicate() + ">";
-      String object = "<" + tripleData.getObject() + ">";
+      String object = tripleData.getObject();
+
+      try {
+        // TEST IF INT
+        int intValue = Integer.parseInt(object);
+        object = "\"" + tripleData.getObject() + "\"^^xsd:integer";
+      } 
+      catch (NumberFormatException e1) {
+        try {
+          // TEST IF FLOAT
+          float floatValue = Float.parseFloat(object);
+          object = "\"" + tripleData.getObject() + "\"^^xsd:float";
+        } 
+        catch (NumberFormatException e2) {
+          try {
+            // TEST IF STRING
+            object = "\"" + tripleData.getObject() + "\"^^xsd:string";
+          } 
+          catch (NumberFormatException e3) {
+            object = "<" + tripleData.getObject() + ">";
+          }
+        }
+      }
+
       ParameterizedSparqlString removeCommand = new ParameterizedSparqlString();
-      removeCommand.setCommandText("DELETE { "+subject+" "+predicate+" "+object+" }"+
+      removeCommand.setCommandText("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "+"DELETE { "+subject+" "+predicate+" "+object+" }"+
       "WHERE  { "+subject+" "+predicate+" "+object+" }");
       UpdateRequest removeRequest = UpdateFactory.create(removeCommand.toString());
       UpdateProcessor removeProcessor = UpdateExecutionFactory.createRemoteForm(removeRequest, GRAPHDB_UPDATE_ENDPOINT);

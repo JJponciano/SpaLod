@@ -283,7 +283,6 @@ export default {
                 success: (data) => {
                     if (data.results.bindings.length > 0) {
                         for (var i = 0; i < data.results.bindings.length; i++) {
-                            console.log(data.results.bindings[i].publisher.value)
                             var catalog = {
                                 name: data.results.bindings[i].title.value,
                                 desc: data.results.bindings[i].description.value,
