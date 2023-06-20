@@ -25,10 +25,4 @@ public class RegisterController {
         }
         
     }
-
-    @RequestMapping("/saveInOnt")
-    public void saveOnt(@RequestParam("username") String username)
-    {
-        userService.saveInOnt(userService.findByUsername(username));
-    }
 }

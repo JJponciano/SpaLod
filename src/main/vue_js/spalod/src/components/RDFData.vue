@@ -235,59 +235,66 @@ export default {
         this.metadata['identifier'] = this.uuidv4();
 
         const fetchData = async () => {
-            try {
-                const response = await $.ajax({
-                    url: 'https://localhost:8081/getGitUser',
-                    method: 'GET',
-                    xhrFields: {
-                        withCredentials: true
-                    }
-                });
+            console.log(localStorage.getItem("githubLog"))
+            if(localStorage.getItem("githubLog")==null)
+            {
+               try {
+                    const response = await $.ajax({
+                        url: 'https://localhost:8081/getGitUser',
+                        method: 'GET',
+                        xhrFields: {
+                            withCredentials: true
+                        }
+                    });
 
-                this.uid = response
+                    this.uid = response
+                    this.metadata["publisher"] = this.getUsername(); 
 
-                var today = new Date();
-                var dd = String(today.getDate()).padStart(2, '0');
-                var mm = String(today.getMonth() + 1).padStart(2, '0');
-                var yyyy = today.getFullYear();
-                this.metadata['created'] = dd + '/' + mm + '/' + yyyy;
-                this.metadata['updated'] = dd + '/' + mm + '/' + yyyy;
+                } catch (error) {
+                    console.error(error);
+                } 
+            }
+            else
+            {
+                this.uid=localStorage.getItem("uuid")
+                this.metadata["publisher"] = localStorage.getItem("username")
+            }
 
-                this.metadata["publisher"]=this.getUsername();
+            var today = new Date();
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0');
+                    var yyyy = today.getFullYear();
+                    this.metadata['created'] = dd + '/' + mm + '/' + yyyy;
+                    this.metadata['updated'] = dd + '/' + mm + '/' + yyyy;
 
-                const data = {
-                    query: 'SELECT ?catalog ?title ?description ?publisher ?dataset where {?catalog <http://www.w3.org/ns/dcat#dataset> ?dataset . ?catalog <http://purl.org/dc/terms/title> ?title . ?collection <http://purl.org/dc/terms/description> ?description . ?collection <http://purl.org/dc/terms/publisher> ?publisher . ?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .}',
-                    triplestore: "http://localhost:7200/repositories/Spalod", // TODO: graph DB
-                };
-                $.ajax({
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    'type': 'POST',
-                    'url': 'https://localhost:8081/api/sparql-select',
-                    'data': JSON.stringify(data),
-                    'dataType': 'json',
-                    success: (data) => {
-                        if (data.results.bindings.length > 0) {
-                            for(var i = 0; i < data.results.bindings.length; i++){
-                                console.log(data.results.bindings[i].publisher.value)
-                                var catalog = {
-                                    name: data.results.bindings[i].title.value,
-                                    desc: data.results.bindings[i].description.value,
-                                    id: data.results.bindings[i].catalog.value.split('#')[1],
-                                    publisher: data.results.bindings[i].publisher.value
-                                }
-                                this.options.push(catalog);
+            const data = {
+                query: 'SELECT ?catalog ?title ?description ?publisher ?dataset where {?catalog <http://www.w3.org/ns/dcat#dataset> ?dataset . ?catalog <http://purl.org/dc/terms/title> ?title . ?collection <http://purl.org/dc/terms/description> ?description . ?collection <http://purl.org/dc/terms/publisher> ?publisher . ?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .}',
+                triplestore: "http://localhost:7200/repositories/Spalod", // TODO: graph DB
+            };
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                'type': 'POST',
+                'url': 'https://localhost:8081/api/sparql-select',
+                'data': JSON.stringify(data),
+                'dataType': 'json',
+                success: (data) => {
+                    if (data.results.bindings.length > 0) {
+                        for (var i = 0; i < data.results.bindings.length; i++) {
+                            console.log(data.results.bindings[i].publisher.value)
+                            var catalog = {
+                                name: data.results.bindings[i].title.value,
+                                desc: data.results.bindings[i].description.value,
+                                id: data.results.bindings[i].catalog.value.split('#')[1],
+                                publisher: data.results.bindings[i].publisher.value
                             }
+                            this.options.push(catalog);
                         }
                     }
-                });
-
-
-            } catch (error) {
-                console.error(error);
-            }
+                }
+            });
         };
 
         fetchData();
@@ -435,7 +442,6 @@ export default {
                             coordinates = coordinates.split(')')[0];
                             coordinates = coordinates.split(' ').map(coord => parseFloat(coord));
                         }
-                        console.log(coordinates);
                         const predicate = 'coordinates';
                         const object = coordinates[0] + ', ' + coordinates[1];
                         this.rdfData.push({
