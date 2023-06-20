@@ -95,6 +95,9 @@
                   <template v-if="key === 'JSON'">
                     <button @click="downloadJson(result.JSON, result.Feature)">DOWNLOAD JSON</button>
                   </template>
+                  <template v-else-if="key === 'HTML'">
+                    <button @click="uriClick(result[key], key)" class="view-html-button">VIEW HTML</button>
+                  </template>
                   <template v-else>
                     {{ result[key] }}
                   </template>
@@ -284,6 +287,26 @@ export default {
                         }
                     });
                 });
+                const data = {
+                    query: 'SELECT ?title WHERE { ?catalog <http://www.w3.org/ns/dcat#dataset> <http://lab.ponciano.info/ont/spalod#' + queryString + '> . ?catalog <http://purl.org/dc/terms/title> ?title . }',
+                    triplestore: '', // TODO: graph DB
+                };
+                $.ajax({
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    'type': 'POST',
+                    'url': 'https://localhost:8081/api/sparql-select',
+                    'data': JSON.stringify(data),
+                    'dataType': 'json',
+                    success: (data) => {
+                        if (data.results.bindings.length > 0) {
+                            var result = data.results.bindings[0].title.value;
+                            this.selectedOption = result;
+                        }
+                    }
+                });
             }
         }
     },
@@ -343,9 +366,9 @@ export default {
                 this.name = geoJson.name;
                 geoJson.features.forEach(feature => {
                     const properties = feature.properties;
-                    const subject = properties['item'] ? properties['item'] : properties['Wikidata-L'];
+                    const subject = properties['itemID'] ?? this.uuidv4();
                     for (const key in properties) {
-                        if (key === 'item' || key === 'Wikidata-L' || key === 'Koordinate') continue;
+                        if (key === 'Koordinate' || key === 'itemID') continue;
                         const predicate = key;
                         const object = properties[key];
                         this.rdfData.push({
@@ -362,9 +385,16 @@ export default {
                             coordinates = coordinates.split(')')[0];
                             coordinates = coordinates.split(' ').map(coord => parseFloat(coord));
                         }
-                        console.log(coordinates);
                         const predicate = 'coordinates';
                         const object = coordinates[0] + ', ' + coordinates[1];
+                        this.rdfData.push({
+                            subject,
+                            predicate,
+                            object,
+                        });
+                    } else if (feature.properties['X Koordina'] && feature.properties['Y Koordina']) {
+                        const predicate = 'coordinates';
+                        const object = feature.properties['X Koordina'] + ', ' + feature.properties['Y Koordina'];
                         this.rdfData.push({
                             subject,
                             predicate,
@@ -841,12 +871,8 @@ export default {
                         collectionId = 'undefined';
                     }
                     window.location.href = '/collections/' + collectionId + '/items/' + uri.split('#')[1];
-                } else if (head === 'URL') {
-                    if (uri.includes('/collections')) {
-                        window.location.href = '/collections';
-                    } else {
-                        window.location.href = '/conformance';
-                    }
+                } else {
+                    window.location.href = uri;
                 }
             }
         }
@@ -1157,7 +1183,7 @@ button:hover {
     transition: background-color 0.5s ease;
 }
 
-.validate {
+.validate, .view-html-button {
     background-color: #0baaa7;
 }
 
