@@ -1,5 +1,11 @@
 <template>
 <div class="features">
+    <div class="navigation">
+        <template v-for="(nav, index) in navigation" :key="nav.name">
+            <a :href="nav.url">{{ nav.name }}</a>
+            <span v-if="navigation.length > 1 && index != navigation.length - 1"> > </span>
+        </template>
+    </div>
     <h1>{{ getTitle() }}</h1>
     <table>
           <thead>
@@ -12,6 +18,9 @@
               <td v-for="key in header" @click="urlClick(feature[key], key)" :class="{ clickable: key === 'collections' || key === 'dataset' || key === 'conformance' || key === 'URL' }" class="row">
                   <template v-if="key === 'JSON'">
                     <button @click="downloadJson(feature.JSON, feature.Feature)">DOWNLOAD JSON</button>
+                  </template>
+                  <template v-else-if="key === 'HTML'">
+                    <button @click="feature[key] ? urlClick(feature[key], key) : urlClick(feature['collections'], 'collections')" class="view-html-button">VIEW HTML</button>
                   </template>
                   <template v-else>
                     {{ feature[key] }}
@@ -31,6 +40,7 @@ export default {
         return {
             header: [],
             features: [],
+            navigation: [],
         }
     },
     mounted() {
@@ -47,6 +57,7 @@ export default {
                 console.log(error);
             }
         });
+        this.getNavigation();
     },
     methods: {
         getTitle() {
@@ -54,18 +65,35 @@ export default {
             const path = url.pathname.split('/');
             return path[path.length - 1] === 'spalodWFS' ? 'Landing Page of SpaLod WFS Service' : path[path.length - 1].charAt(0).toLocaleUpperCase() + path[path.length - 1].slice(1);
         },
+        getNavigation() {
+            const url = new URL(window.location.href);
+            const path = url.pathname.split('/');
+            var localUrl = '';
+            path.forEach((element, index) => {
+                if (index > 0) {
+                    localUrl += '/' + element;
+                    this.navigation.push({
+                        name: element.charAt(0).toLocaleUpperCase() + element.slice(1),
+                        url: localUrl,
+                    });
+                }
+            });
+            console.log(this.navigation);
+        },
         handleResponse(response) {
             console.log(JSON.stringify(response));
             this.header = response['head']['vars'];
             response.results.bindings.forEach(feature => {
                 const featureObject = {};
                 this.header.forEach((key) => {
-                    console.log(feature[key])
                     featureObject[key] = feature[key].value;
                 });
                 this.features.push(featureObject);
             });
-            console.log(this.header);
+            if (this.getTitle() === 'Collections') {
+                this.header.push('HTML');
+                console.log(this.header);
+            }
         },
         urlClick(url, head) {
             if(url.startsWith('https://') || url.startsWith('http://')) {
@@ -83,9 +111,9 @@ export default {
                     } else {
                         collectionId = 'undefined';
                     }
-                    window.location.href = '/spalodWFS/collections/' + collectionId + '/items/' + url.split('#')[1];
-                } else if (head === 'URL') {
-                    window.location.href = url.includes('/collections') ? '/spalodWFS/collections' : '/spalodWFS/conformance';
+                    window.location.href = '/collections/' + collectionId + '/items/' + url.split('#')[1];
+                } else {
+                    window.location.href = url;
                 }
             }
         },
@@ -138,5 +166,13 @@ h1 {
 }
 .mainOGC{
     top: 100px;
+}
+.navigation {
+    margin: 100px 0;
+    font-size: 20px;
+}
+
+.navigation a {
+    color: #0baaa7;
 }
 </style>

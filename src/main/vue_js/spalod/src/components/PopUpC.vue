@@ -62,8 +62,8 @@ export default{
         },
         addCatalog(){
             var data = {
-                name: this.inputName.replace(/ /g, '_'),
-                desc: this.inputDesc.replace(/ /g, '_'),
+                name: this.inputName.replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+                desc: this.inputDesc.replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
                 id: this.uuidv4(),
                 publisher: localStorage.getItem("uuid") || "",
             };
