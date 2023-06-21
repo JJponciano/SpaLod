@@ -122,7 +122,7 @@ export default {
     <div class="main" v-if="currentView === 'register'">
       <Register></Register>
     </div>
-    <div class="main" v-if="currentView === 'spalodWFS'">
+    <div class="mainOGC" v-if="currentView === 'spalodWFS'">
       <OgcApi></OgcApi>
     </div>
   </div>

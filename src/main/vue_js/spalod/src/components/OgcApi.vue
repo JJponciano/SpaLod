@@ -122,7 +122,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     width: 100vw;
-    height: 100vh;
+    height: fit-content;
     padding: 20px;
 }
 
@@ -135,5 +135,8 @@ h1 {
 
 .table, .head, .row {
     border: none;
+}
+.mainOGC{
+    top: 100px;
 }
 </style>
