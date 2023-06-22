@@ -64,7 +64,7 @@
             <div v-if="showResults">
                 <h2 v-if="filteredResults.length > 0">Predicate Options</h2>
                 <li v-for="(result, i) in filteredResults" :key="i" @click="selectResult(result, index)">
-                    {{ decodeURIComponent(result.split('#')[1]) }}
+                    {{ decodeURIComponent(result.split('#')[1]).replace(/ /g,"").replace(/-/g,"") }}
                 </li>
             </div>
         </ul>
@@ -486,6 +486,7 @@ export default {
                 'dataType': 'json',
                 success: (data) => {
                     this.predicateOptions = data.results.bindings.map(binding => binding.property.value);
+                    console.log(this.predicateOptions)
                 }
             });
             this.areAllPredicatesKnown();
@@ -505,7 +506,7 @@ export default {
                     const subject = properties['itemID'] ?? 'http://lab.ponciano.info/ont/spalod#' + this.uuidv4();
                     for (const key in properties) {
                         if (key === 'Koordinate' || key === 'itemID') continue;
-                        const predicate = encodeURIComponent(key);
+                        const predicate = encodeURIComponent(key.replace(/ /g,"").replace(/-/g,""));
                         const object = properties[key];
                         this.rdfData.push({
                             subject,
@@ -705,7 +706,7 @@ export default {
             this.areAllPredicatesKnown();
         },
         selectResult(result, index) {
-            this.rdfData[index].predicate = decodeURIComponent(result.split('#')[1]);
+            this.rdfData[index].predicate = decodeURIComponent(result.split('#')[1]).replace(/ /g,"").replace(/-/g,"");
             this.showResults = false;
         },
         selectAll(areAllSelected) {
