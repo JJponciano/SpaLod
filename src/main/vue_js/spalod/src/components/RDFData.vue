@@ -571,6 +571,8 @@ export default {
                         if (triplet.predicate === "coordinates") {
                             const [longitude, latitude] = triplet.object.split(',');
                             feature.geometry.coordinates = [parseFloat(longitude), parseFloat(latitude)];
+                            feature.properties.longitude = parseFloat(longitude);
+                            feature.properties.latitude = parseFloat(latitude);
                         } else {
                             feature.properties[triplet.predicate] = triplet.object;
                         }

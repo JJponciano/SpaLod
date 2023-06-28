@@ -3,6 +3,7 @@ package info.ponciano.lab.spalodwfs.controller.ogc_api;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import info.ponciano.lab.spalodwfs.model.Triplestore;
@@ -90,7 +91,7 @@ public class OGCAPIController {
      * @return String[][] corresponding to the list of the items of the dataset
      */
     @PostMapping("/collections/{collectionId}/items/{datasetId}")
-    public String datasetItems(@PathVariable String collectionId, @PathVariable String datasetId) {
+    public String datasetItems(@PathVariable String collectionId, @PathVariable String datasetId, @RequestParam(value = "bbox", required = false) String bbox, @RequestParam(value = "time", required = false) String time) {
         System.out.println("***********" + "/collections/" + collectionId + "/items/" + datasetId + "***********");
         
         // Get the item predicates
@@ -118,6 +119,21 @@ public class OGCAPIController {
         for (int i = 0; i < predicates.length; i++) {
             query += "?item <http://lab.ponciano.info/ont/spalod#" + predicates[i] + "> ?" + predicates[i] + " .\n";
         }
+
+        // Filter by bbox
+        if (bbox != null && !bbox.isEmpty()) {
+            String[] bboxCoordinates = bbox.split(",");
+            if (bboxCoordinates.length == 4) {
+                String latitude1 = bboxCoordinates[0];
+                String longitude1 = bboxCoordinates[1];
+                String latitude2 = bboxCoordinates[2];
+                String longitude2 = bboxCoordinates[3];
+
+                query += "\nFILTER(?latitude >= " + latitude1 + " && ?latitude <= " + latitude2 +
+                        " && ?longitude >= " + longitude1 + " && ?longitude <= " + longitude2 + ")";
+            }
+        }
+        
         query += "}";
         System.out.println(query);
         results = Triplestore.get().executeSelectQuery(query);
