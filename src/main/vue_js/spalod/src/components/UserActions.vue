@@ -178,13 +178,11 @@ export default {
         // Implementing OGC API - Records
         const url = new URL(window.location.href);
         const queryString = url.pathname;
+        console.log(url);
         if(queryString.includes('collections') || queryString.includes('conformance') || queryString === '/') {
             $.ajax({
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                url: 'https://localhost:8081/api/spalodWFS' + queryString,
-                type: 'POST',
+                url: 'https://localhost:8081/api/spalodWFS' + queryString + url.search,
+                type: 'GET',
                 dataType: 'json',
                 success: (response) => {
                     console.log(JSON.stringify(response));

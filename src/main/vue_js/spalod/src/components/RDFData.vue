@@ -238,7 +238,6 @@ export default {
         this.metadata['identifier'] = this.uuidv4();
 
         const fetchData = async () => {
-            console.log(localStorage.getItem("githubLog"))
             if(localStorage.getItem("githubLog")==null)
             {
                try {
@@ -580,7 +579,25 @@ export default {
             // Add the new predicate
             this.loadPredicates();
             if (!this.predicateOptions.includes(predicate)) {
-                var tripleData = {
+                if (predicate === "http://lab.ponciano.info/ont/spalod#coordinates") {
+                    var tripleData = {
+                        subject: "http://lab.ponciano.info/ont/spalod#longitude",
+                        predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        object: "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                    };
+                    this.updateTripleData(tripleData, 'add', () => {
+                        self.predicateOptions.push("http://lab.ponciano.info/ont/spalod#longitude");
+                    });
+                    tripleData = {
+                        subject: "http://lab.ponciano.info/ont/spalod#latitude",
+                        predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        object: "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                    };
+                    this.updateTripleData(tripleData, 'add', () => {
+                        self.predicateOptions.push("http://lab.ponciano.info/ont/spalod#latitude");
+                    });
+                }
+                tripleData = {
                     subject: predicate,
                     predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                     object: "http://www.w3.org/2002/07/owl#" + this.picked,
@@ -622,13 +639,36 @@ export default {
                     });
 
                     // Add the new triplet
-                    tripleData = {
-                        subject: triplet.subject.replace(/ /g, '_'),
-                        predicate: predicate,
-                       /* object: triplet.object.replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/&/g, "&amp;").replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"),
-                       */
-                      object: triplet.predicate === 'coordinates' ? triplet.object.replace(/ /g, '_') : encodeURIComponent(triplet.object).replace(/%20/g,"_") 
-                    };
+                    if (triplet.predicate === 'coordinates') {
+                        var [longitude, latitude] = triplet.object.split(',');
+                        tripleData = {
+                            subject: triplet.subject.replace(/ /g, '_'),
+                            predicate: "http://lab.ponciano.info/ont/spalod#longitude",
+                            object: parseFloat(longitude),
+                        };
+                        this.updateTripleData(tripleData, 'add', () => {
+                            console.log(JSON.stringify(tripleData) + ' added');
+                        });
+                        tripleData = {
+                            subject: triplet.subject.replace(/ /g, '_'),
+                            predicate: "http://lab.ponciano.info/ont/spalod#latitude",
+                            object: parseFloat(latitude),
+                        };
+                        this.updateTripleData(tripleData, 'add', () => {
+                            console.log(JSON.stringify(tripleData) + ' added');
+                        });
+                        tripleData = {
+                            subject: triplet.subject.replace(/ /g, '_'),
+                            predicate: predicate,
+                            object: triplet.object.replace(/ /g, '_')
+                        };
+                    } else {
+                        tripleData = {
+                            subject: triplet.subject.replace(/ /g, '_'),
+                            predicate: predicate,
+                            object: encodeURIComponent(triplet.object).replace(/%20/g, "_")
+                        };
+                    }
                     this.updateTripleData(tripleData, 'add', () => {
                         $('#btn' + index).text('Added').addClass('added');
                         console.log(JSON.stringify(tripleData) + ' added');
@@ -677,17 +717,40 @@ export default {
                 });
 
                 // Add the new triplet
-                tripleData = {
-                    subject: triplet.subject.replace(/ /g, '_'),
-                    predicate: predicate,
-                    /*object: triplet.object.replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/&/g, "&amp;").replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"),
-                    */
-                    object: triplet.predicate === 'coordinates' ? triplet.object.replace(/ /g, '_') : encodeURIComponent(triplet.object).replace(/%20/g,"_")
-                };
-                this.updateTripleData(tripleData, 'add', () => {
-                    $('#btn' + index).text('Added').addClass('added');
-                    console.log(JSON.stringify(tripleData) + ' added');
-                });
+                if (triplet.predicate === 'coordinates') {
+                        var [longitude, latitude] = triplet.object.split(',');
+                        tripleData = {
+                            subject: triplet.subject.replace(/ /g, '_'),
+                            predicate: "http://lab.ponciano.info/ont/spalod#longitude",
+                            object: parseFloat(longitude),
+                        };
+                        this.updateTripleData(tripleData, 'add', () => {
+                            console.log(JSON.stringify(tripleData) + ' added');
+                        });
+                        tripleData = {
+                            subject: triplet.subject.replace(/ /g, '_'),
+                            predicate: "http://lab.ponciano.info/ont/spalod#latitude",
+                            object: parseFloat(latitude),
+                        };
+                        this.updateTripleData(tripleData, 'add', () => {
+                            console.log(JSON.stringify(tripleData) + ' added');
+                        });
+                        tripleData = {
+                            subject: triplet.subject.replace(/ /g, '_'),
+                            predicate: predicate,
+                            object: triplet.object.replace(/ /g, '_')
+                        };
+                    } else {
+                        tripleData = {
+                            subject: triplet.subject.replace(/ /g, '_'),
+                            predicate: predicate,
+                            object: encodeURIComponent(triplet.object).replace(/%20/g, "_")
+                        };
+                    }
+                    this.updateTripleData(tripleData, 'add', () => {
+                        $('#btn' + index).text('Added').addClass('added');
+                        console.log(JSON.stringify(tripleData) + ' added');
+                    }); 
 
                 tripleData = {
                     subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
@@ -763,8 +826,6 @@ export default {
                         if (triplet.predicate === "coordinates") {
                             const [longitude, latitude] = triplet.object.split(',');
                             feature.geometry.coordinates = [parseFloat(longitude), parseFloat(latitude)];
-                            feature.properties.longitude = parseFloat(longitude);
-                            feature.properties.latitude = parseFloat(latitude);
                         } else {
                             feature.properties[triplet.predicate] = triplet.object;
                         }
@@ -982,6 +1043,46 @@ export default {
                         };
                         this.updateTripleData(tripleData, 'add', () => queryable.v = true);
                     });
+                } else if(queryable.q === 'issued' || queryable.q === 'modified') {
+                    // Delete the old triplet
+                    var data = {
+                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier + '>)}',
+                        triplestore: "http://localhost:7200/repositories/Spalod"
+                    };
+                    $.ajax({
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        'type': 'POST',
+                        'url': 'https://localhost:8081/api/sparql-select',
+                        'data': JSON.stringify(data),
+                        'dataType': 'json',
+                        success: (data) => {
+                            if (data.results.bindings.length > 0) {
+                                const object = data.results.bindings[0].o.value
+                                const tripleData = {
+                                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
+                                    predicate: queryable.p,
+                                    object: object,
+                                };
+                                this.updateTripleData(tripleData, 'remove', () => {
+                                    console.log('Triple removed');
+                                });
+                            }
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+
+                    // Add the new triplet
+                    var tripleData = {
+                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
+                        predicate: queryable.p,
+                        object: this.metadata[queryable.q] + '^^http://www.w3.org/2001/XMLSchema#dateTime',
+                    };
+                    this.updateTripleData(tripleData, 'add', () => queryable.v = true);
                 } else {
                     // Delete the old triplet
                     var data = {

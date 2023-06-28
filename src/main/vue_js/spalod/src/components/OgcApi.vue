@@ -50,7 +50,7 @@ export default {
                 'Content-Type': 'application/json'
             },
             url: 'https://localhost:8081/api' + url.pathname + '/',
-            type: 'POST',
+            type: 'GET',
             dataType: 'json',
             success: this.handleResponse,
             error: (error) => {
