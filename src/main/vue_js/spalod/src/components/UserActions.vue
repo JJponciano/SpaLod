@@ -384,6 +384,8 @@ export default {
                 geoJSON.features.push(feature);
             });
             
+            console.log(geoJSON);
+
             const blob = new Blob([JSON.stringify(geoJSON)], { type: 'application/json' });
             const file = new File([blob], 'data.json', { type: 'application/json' });
             this.$emit('file-selected', file);
