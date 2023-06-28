@@ -169,12 +169,23 @@ public class ResController {
             object = "\"" + tripleData.getObject() + "\"^^xsd:float";
           } catch (NumberFormatException e2) {
               // IF STRING
-              object = "\"" + tripleData.getObject() + "\"^^xsd:string";
+              if (object.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
+                object = "\"" + tripleData.getObject() + "\"^^xsd:dateTime";
+                System.out.println("MATCH TIME ----------------------------------");
+              }
+              else{
+                object = "\"" + tripleData.getObject() + "\"^^xsd:string";
+            }
           }
         }
       }
       else{
-        object = "<" + tripleData.getObject() + ">";
+        if (object.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
+          object = "\"" + tripleData.getObject() + "\"^^xsd:dateTime";
+          System.out.println("MATCH TIME ----------------------------------");
+        } else {
+          object = "<" + tripleData.getObject() + ">";
+        }
       }
 
 

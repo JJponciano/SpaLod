@@ -1080,7 +1080,7 @@ export default {
                     var tripleData = {
                         subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
                         predicate: queryable.p,
-                        object: this.metadata[queryable.q] + '^^http://www.w3.org/2001/XMLSchema#dateTime',
+                        object: this.metadata[queryable.q],
                     };
                     this.updateTripleData(tripleData, 'add', () => queryable.v = true);
                 } else {
