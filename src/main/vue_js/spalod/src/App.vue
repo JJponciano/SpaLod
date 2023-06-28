@@ -8,6 +8,7 @@ import Register from './components/Register.vue';
 import PopUp from './components/PopUp.vue';
 import PopUpC from './components/PopUpC.vue';
 import OgcApi from './components/OgcApi.vue';
+import ExternaLinks from './components/ExternalLinks.vue';
 
 
 export default {
@@ -21,6 +22,7 @@ export default {
     Login,
     Register,
     OgcApi,
+    ExternaLinks,
   },
   data() {
     return {
@@ -44,6 +46,9 @@ export default {
         return 'register';
       } else if (this.currentPath.startsWith('/spalodWFS')) {
         return 'spalodWFS';
+      }
+      else if (this.currentPath === '/external_links'){
+        return 'externallinks';
       } else {
         return 'main';
       }
@@ -124,6 +129,9 @@ export default {
     </div>
     <div class="mainOGC" v-if="currentView === 'spalodWFS'">
       <OgcApi></OgcApi>
+    </div>
+    <div class="main" v-if="currentView === 'externallinks'">
+      <ExternaLinks></ExternaLinks>
     </div>
   </div>
   <div class="popup">

@@ -12,7 +12,7 @@
           <li><button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button> </li>
           <li><button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button></li>
           <li><button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button></li>
-          <li><button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button></li>
+          <li><button @click="navigateTo('external_links')" :class="{ active: activeTab === 'external' }">External Links</button></li>
         </ul>
       </div>
       <div class="computer">
@@ -20,7 +20,7 @@
         <button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button>
         <button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button>
         <button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button>
-        <button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button>
+        <button @click="navigateTo('external_links')" :class="{ active: activeTab === 'external' }">External Links</button>
       </div>
       <button v-if="isAdmin" @click="navigateTo('admin')" class="navbar-title">Admin</button>
       <button v-if="!isLoggedIn" @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button>
