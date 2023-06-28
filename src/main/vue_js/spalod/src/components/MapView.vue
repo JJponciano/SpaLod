@@ -19,6 +19,7 @@ export default {
 
                 object.features.forEach(feature => {
                     var coordinates = feature.properties.Koordinate ?? feature.geometry.coordinates;
+                    console.log(coordinates);
                     if (coordinates.length > 0) {
                         if (coordinates.includes('(')) {
                             coordinates = coordinates.split('(')[1];

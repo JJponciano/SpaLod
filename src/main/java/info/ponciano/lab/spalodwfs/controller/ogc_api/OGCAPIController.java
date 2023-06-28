@@ -1,19 +1,17 @@
 package info.ponciano.lab.spalodwfs.controller.ogc_api;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import info.ponciano.lab.spalodwfs.model.Triplestore;
 import org.json.JSONObject;
-import org.apache.jena.base.Sys;
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 
 @RequestMapping("/api/spalodWFS")
@@ -24,7 +22,7 @@ public class OGCAPIController {
      * Return the landing page of the API
      * @return String[][] corresponding to the landing page
      */
-    @PostMapping("/")
+    @GetMapping("/")
     public String landingPage() {
         String results = "{\"head\":{\"vars\":\n";
         results += "[\"Feature\", \"HTML\", \"JSON\"]},\"results\":{\"bindings\":[\n";
@@ -40,7 +38,7 @@ public class OGCAPIController {
      * Return the list of the collections
      * @return String[][] corresponding to the collection list
      */
-    @PostMapping("/collections")
+    @GetMapping("/collections")
     public String collectionsList() {
         System.out.println("***********" + "/collections" + "***********");
         String query = "SELECT DISTINCT ?collections ?name WHERE {\n?collections <http://www.w3.org/ns/dcat#dataset> ?dataset .\n ?collections <http://purl.org/dc/terms/title> ?name .}";
@@ -56,7 +54,7 @@ public class OGCAPIController {
      * @param collectionId Unique identifier of the collection
      * @return String[][] corresponding to the specific collection
      */
-    @PostMapping("/collections/{collectionId}")
+    @GetMapping("/collections/{collectionId}")
     public String collectionQuery(@PathVariable String collectionId) {
         System.out.println("***********" + "/collections/" + collectionId + "***********");
         String query = "SELECT ?title ?description ?publisher ?dataset WHERE {\n?collection <http://purl.org/dc/terms/title> ?title .\n?collection <http://purl.org/dc/terms/description> ?description .\n?collection <http://purl.org/dc/terms/publisher> ?publisher .\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <http://lab.ponciano.info/ont/spalod#" + collectionId + ">)\n}";
@@ -72,7 +70,7 @@ public class OGCAPIController {
      * @param collectionId Unique identifier of the collection
      * @return String[][] corresponding to the specific collection
      */
-    @PostMapping("/collections/{collectionId}/items")
+    @GetMapping("/collections/{collectionId}/items")
     public String datasetList(@PathVariable String collectionId) {
         System.out.println("***********" + "/collections/" + collectionId + "/items/***********");
         String query = "SELECT ?dataset ?title ?description ?publisher ?distribution WHERE {\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <http://lab.ponciano.info/ont/spalod#" + collectionId + ">)\n?dataset <http://purl.org/dc/terms/title> ?title .\n?dataset <http://purl.org/dc/terms/description> ?description .\n?dataset <http://purl.org/dc/terms/publisher> ?publisher .\n?dataset <http://www.w3.org/ns/dcat#distribution> ?distribution .\n}";
@@ -87,19 +85,22 @@ public class OGCAPIController {
      * Return the list of the items inside a specific dataset
      * @param collectionId Unique identifier of the collection
      * @param datasetId Unique identifier of the dataset
+     * @param bbox Bounding box of the items
+     * @param datetime Date and time of the items
      * @return String[][] corresponding to the list of the items of the dataset
      */
-    @PostMapping("/collections/{collectionId}/items/{datasetId}")
-    public String datasetItems(@PathVariable String collectionId, @PathVariable String datasetId) {
+    @GetMapping("/collections/{collectionId}/items/{datasetId}")
+    public String datasetItems(@PathVariable String collectionId, @PathVariable String datasetId, @RequestParam(value = "bbox", required = false) String bbox, @RequestParam(value = "datetime", required = false) String datetime) {
         System.out.println("***********" + "/collections/" + collectionId + "/items/" + datasetId + "***********");
-        
+        System.out.println("BBOX: " + bbox);
         // Get the item predicates
-        String query = "SELECT ?predicate WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">)\n?item ?predicate ?object\n}";
+        String query, datetimeStart, datetimeEnd;
+        query = "SELECT ?predicate WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">)\n?item ?predicate ?object\n}";
         System.out.println(query);
     //    String query="SELECT ?object WHERE {?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item . FILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">) ?item ?predicate ?object .}";
         String results;
         results = Triplestore.get().executeSelectQuery(query);
-        System.out.println(results);
+        //System.out.println(results);
         JSONObject jsonResult = new JSONObject(results);
         JSONObject resultsObject = jsonResult.getJSONObject("results");
         JSONArray bindings = resultsObject.getJSONArray("bindings");
@@ -122,6 +123,14 @@ public class OGCAPIController {
             }
         }
         query += "WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?itemID .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">)\n";
+        if (datetime != null && !datetime.isEmpty()) {
+            String[] datetimeRange = datetime.split("/");
+            datetimeStart = datetimeRange[0];
+            datetimeEnd = datetimeRange[1];
+            System.out.println("DATETIME START: " + datetimeStart);
+            System.out.println("DATETIME END: " + datetimeEnd);
+            query += "?dataset <http://purl.org/dc/terms/issued> ?datetime . FILTER(?datetime >= \"" + datetimeStart + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime> && ?datetime <= \"" + datetimeEnd + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>)\n";
+        } 
         for (int i = 0; i < predicates.length; i++) {
             try {
                 query += "?itemID <http://lab.ponciano.info/ont/spalod#" + predicates[i] + "> ?" + URLDecoder.decode(predicates[i],"UTF-8").replace(" ", "").replace("-", "") + " .\n";
@@ -130,11 +139,26 @@ public class OGCAPIController {
                 e.printStackTrace();
             }
         }
+
+        // Filter by bbox
+        if (bbox != null && !bbox.isEmpty()) {
+            String[] bboxCoordinates = bbox.split(",");
+            if (bboxCoordinates.length == 4) {
+                String latitude1 = bboxCoordinates[0];
+                String latitude2 = bboxCoordinates[1];
+                String longitude1 = bboxCoordinates[2];
+                String longitude2 = bboxCoordinates[3];
+
+                query += "\nFILTER(?latitude >= " + latitude1 + " && ?latitude <= " + latitude2 +
+                        " && ?longitude >= " + longitude1 + " && ?longitude <= " + longitude2 + ")";
+            }
+        }
+        
         query += "}";
         System.out.println(query);
         //results = Triplestore.get().executeSelectQuery(query);
         results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
-        System.out.println(results);
+        //System.out.println(results);
 
         return results;
     }
@@ -143,7 +167,7 @@ public class OGCAPIController {
      * Return the conformance
      * @return String[][] corresponding to the conformance
      */
-    @PostMapping("/conformance")
+    @GetMapping("/conformance")
     public String conformance() {
         String results = "{\"head\":{\"vars\":\n";
         results += "[\"Feature\", \"URL\"]},\"results\":{\"bindings\":[\n";
