@@ -15,6 +15,8 @@ export default {
                 const contenu = lecteur.result;
                 const object = JSON.parse(contenu);
 
+                console.log(object);
+
                 object.features.forEach(feature => {
                     var coordinates = feature.properties.Koordinate ?? feature.geometry.coordinates;
                     if (coordinates.length > 0) {
@@ -23,9 +25,9 @@ export default {
                             coordinates = coordinates.split(')')[0];
                             coordinates = coordinates.split(' ').map(coord => parseFloat(coord));
                         }
-                        if(!feature.properties.item && !feature.properties['Wikidata-L']) return;
-                    const label = feature.properties.itemLabel ? feature.properties.itemLabel : feature.properties.Objektname;
-                    this.dataArray.push([object.name, label, coordinates[1], coordinates[0]]);
+                        if(!feature.properties.itemID) return;
+                    const label = feature.properties.itemLabel ?? feature.properties.Objektname;
+                    this.dataArray.push([object.name, decodeURIComponent(label).replace(/_/g, ' '), coordinates[1], coordinates[0]]);
                     }
                 });
                 this.updateMap();

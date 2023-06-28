@@ -22,30 +22,29 @@
 <script>
 import $ from "jquery";
 export default {
-data() {
+  data() {
     return {
-    username:"",
-    password: "",
-    confirmPassword: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
     };
-},
-methods: {
+  },
+  methods: {
     async submitForm() {
-        if(this.password==this.confirmPassword)
-        {
-          $.ajax({
-            url: 'https://localhost:8081/register',
-            method: 'POST',
-            data: {
-              username: this.username,
-              password: this.password
-            },
-            xhrFields: {
-              withCredentials: true
-            },
-            success: (response) => {
-              console.log(response)
-              $.ajax({
+      if (this.password == this.confirmPassword) {
+        $.ajax({
+          url: 'https://localhost:8081/register',
+          method: 'POST',
+          data: {
+            username: this.username,
+            password: this.password
+          },
+          xhrFields: {
+            withCredentials: true
+          },
+          success: (response) => {
+            console.log(response)
+            $.ajax({
               url: 'https://localhost:8081/login',
               method: 'POST',
               data: {
@@ -73,21 +72,36 @@ methods: {
                       text: 'You have successfully logged in! Click here to go back to default page.',
                       type: 'success',
                       group: 'login-success',
-                      duration: 50000, 
-                      });
+                      duration: 50000,
+                    });
                     localStorage.setItem('username', this.username);
-                    localStorage.setItem('UUID',response);
-                  }
-                })
+                    localStorage.setItem('uuid', response);
+                    localStorage.setItem('githubLog',false);
 
-                $.ajax({
-                  url: 'https://localhost:8081/saveInOnt',
-                  method: 'GET',
-                  data: {
-                    username: this.username,
-                  },
-                  xhrFields: {
-                    withCredentials: true
+                    var tripleData = {
+                      subject: 'http://lab.ponciano.info/ont/spalod#' + response,
+                      predicate: "https://xmlns.com/foaf/0.1/:name",
+                      object: this.username
+                    };
+
+                    const addOperation = {
+                      operation: "add",
+                      tripleData: tripleData,
+                    };
+                    $.ajax({
+                      url: 'https://localhost:8081/api/update',
+                      type: 'POST',
+                      data: JSON.stringify(addOperation),
+                      contentType: 'application/json',
+                      success: (response) => {
+                        console.log(response)
+                      },
+                      error: function (error) {
+                        console.log(error);
+                      }
+                    });
+
+
                   }
                 })
               },
@@ -101,27 +115,27 @@ methods: {
                 console.error(error);
               }
             })
-            },
-            error: (error) => {
-              this.$notify({
-                title: 'User already registered',
-                text: 'Please chose an other username.',
-                type: 'error',
-                duration: 5000, // notification will disappear after 5 seconds
-              });
-              console.error(error);
-            }
-          })
-        }
-        else{
-          this.$notify({
-                title: 'Please make sure your passwords match. ',
-                type: 'error',
-                duration: 10000, // notification will disappear after 5 seconds
-              });
-        } 
+          },
+          error: (error) => {
+            this.$notify({
+              title: 'User already registered',
+              text: 'Please chose an other username.',
+              type: 'error',
+              duration: 5000, // notification will disappear after 5 seconds
+            });
+            console.error(error);
+          }
+        })
+      }
+      else {
+        this.$notify({
+          title: 'Please make sure your passwords match. ',
+          type: 'error',
+          duration: 10000, // notification will disappear after 5 seconds
+        });
+      }
     },
-},
+  },
 };
 </script>
   

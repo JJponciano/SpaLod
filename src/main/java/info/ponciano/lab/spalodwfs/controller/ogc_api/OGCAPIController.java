@@ -10,6 +10,12 @@ import info.ponciano.lab.spalodwfs.model.Triplestore;
 import org.json.JSONObject;
 import org.apache.jena.base.Sys;
 import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+
 
 @RequestMapping("/api/spalodWFS")
 @RestController
@@ -41,10 +47,8 @@ public class OGCAPIController {
         String query = "SELECT DISTINCT ?collections ?name WHERE {\n?collections <http://www.w3.org/ns/dcat#dataset> ?dataset .\n ?collections <http://purl.org/dc/terms/title> ?name .}";
         System.out.println(query);
         String results;
-        //results = Triplestore.executeSelectQuery(query, "GraphDB");
-        results = Triplestore.get().executeSelectQuery(query);
-        System.out.println(results);
-
+        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
 
@@ -59,10 +63,8 @@ public class OGCAPIController {
         String query = "SELECT ?title ?description ?publisher ?dataset WHERE {\n?collection <http://purl.org/dc/terms/title> ?title .\n?collection <http://purl.org/dc/terms/description> ?description .\n?collection <http://purl.org/dc/terms/publisher> ?publisher .\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <http://lab.ponciano.info/ont/spalod#" + collectionId + ">)\n}";
         System.out.println(query);
         String results;
-        //results = Triplestore.executeSelectQuery(query, "GraphDB");
-        results = Triplestore.get().executeSelectQuery(query);
-        System.out.println(results);
-
+        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
 
@@ -77,10 +79,8 @@ public class OGCAPIController {
         String query = "SELECT ?dataset ?title ?description ?publisher ?distribution WHERE {\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <http://lab.ponciano.info/ont/spalod#" + collectionId + ">)\n?dataset <http://purl.org/dc/terms/title> ?title .\n?dataset <http://purl.org/dc/terms/description> ?description .\n?dataset <http://purl.org/dc/terms/publisher> ?publisher .\n?dataset <http://www.w3.org/ns/dcat#distribution> ?distribution .\n}";
         System.out.println(query);
         String results;
-        //results = Triplestore.executeSelectQuery(query, "GraphDB");
-        results = Triplestore.get().executeSelectQuery(query);
-        System.out.println(results);
-
+        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
 
@@ -97,6 +97,7 @@ public class OGCAPIController {
         // Get the item predicates
         String query = "SELECT ?predicate WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">)\n?item ?predicate ?object\n}";
         System.out.println(query);
+    //    String query="SELECT ?object WHERE {?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item . FILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">) ?item ?predicate ?object .}";
         String results;
         results = Triplestore.get().executeSelectQuery(query);
         System.out.println(results);
@@ -111,13 +112,24 @@ public class OGCAPIController {
         }
 
         // Get the item values
-        query = "SELECT ?item ";
+        query = "SELECT ?itemID ";
         for (int i = 0; i < predicates.length; i++) {
-            query += "?" + predicates[i] + " ";
+            
+            try {
+                query += "?" + URLDecoder.decode(predicates[i], "UTF-8").replace(" ", "").replace("-", "") + " ";
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
-        query += "WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">)\n";
+        query += "WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?itemID .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">)\n";
         for (int i = 0; i < predicates.length; i++) {
-            query += "?item <http://lab.ponciano.info/ont/spalod#" + predicates[i] + "> ?" + predicates[i] + " .\n";
+            try {
+                query += "?itemID <http://lab.ponciano.info/ont/spalod#" + predicates[i] + "> ?" + URLDecoder.decode(predicates[i],"UTF-8").replace(" ", "").replace("-", "") + " .\n";
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
         // Filter by bbox
@@ -136,7 +148,8 @@ public class OGCAPIController {
         
         query += "}";
         System.out.println(query);
-        results = Triplestore.get().executeSelectQuery(query);
+        //results = Triplestore.get().executeSelectQuery(query);
+        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
         System.out.println(results);
 
         return results;
