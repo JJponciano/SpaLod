@@ -94,7 +94,6 @@ export default{
     },
     mounted(){
         this.detectDarkMode();
-        window.addEventListener("resize", this.closeNavBar);
         window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
             this.isDarkMode = event.matches;
         });
@@ -114,6 +113,11 @@ export default{
         },
         onValid(){
             this.$refs.fileInput.click();
+        },
+        uuidv4() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
         },
         handleFile() {
             if (this.json) {
@@ -137,10 +141,12 @@ export default{
                                 "type": "Point",
                                 "coordinates": []
                             },
-                            "properties": {}
+                            "properties": {
+                                itemID: 'http://lab.ponciano.info/ont/spalod#' + this.uuidv4(),
+                            }
                         };
-                        if (obj.geo === undefined) {
-                            feature.geometry.coordinates = [parseFloat(obj.longitude), parseFloat(obj.latitude)];
+                        if (obj.geo === undefined || obj.Koordinate === undefined) {
+                            feature.geometry.coordinates = [parseFloat(obj.longitude) ?? parseFloat(obj['X Koordina']), parseFloat(obj.latitude) ?? parseFloat(obj['Y Koordina'])];
                         } else {
                             var coordinates = String(obj.geo).split("(")[1];
                             if (coordinates === undefined) continue;
@@ -185,10 +191,12 @@ export default{
                                 "type": "Point",
                                 "coordinates": []
                             },
-                            "properties": {}
+                            "properties": {
+                                itemID: 'http://lab.ponciano.info/ont/spalod#' + this.uuidv4(),
+                            }
                         };
-                        if (obj.geo === undefined) {
-                            feature.geometry.coordinates = [parseFloat(obj.longitude), parseFloat(obj.latitude)];
+                        if (obj.geo === undefined || obj.Koordinate === undefined) {
+                            feature.geometry.coordinates = [parseFloat(obj.longitude) ?? parseFloat(obj['X Koordina']), parseFloat(obj.latitude) ?? parseFloat(obj['Y Koordina'])];
                         } else {
                             var coordinates = String(obj.geo).split("(")[1];
                             if (coordinates === undefined) continue;
@@ -264,6 +272,10 @@ export default{
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
+}
+.ButtonSelect{
+    display: flex;
+    flex-direction: row;
 }
 button{
     padding: 5px 10px 5px 10px;

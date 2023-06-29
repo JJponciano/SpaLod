@@ -41,16 +41,31 @@
             },
             success: (response) => {
               console.log(response);
-              this.$notify({
-                title: 'Login successful',
-                text: 'You have successfully logged in! Click here to go back to default page.',
-                type: 'success',
-                group: 'login-success',
-                duration: 50000, // notification will disappear after 5 seconds
-              });
-              
-              localStorage.setItem('username', this.username);
-            },
+              $.ajax({
+                url: 'https://localhost:8081/uuid',
+                method: 'GET',
+                data: {
+                  username: this.username,
+                },
+                xhrFields: {
+                  withCredentials: true
+                },
+                success: (response) => {
+                  console.log(response)
+                  this.$notify({
+                    title: 'Login successful',
+                    text: 'You have successfully logged in! Click here to go back to default page.',
+                    type: 'success',
+                    group: 'login-success',
+                    duration: 50000, 
+                    });
+                  localStorage.clear();
+                  localStorage.setItem('username', this.username);
+                  localStorage.setItem('UUID',response);
+                  localStorage.setItem('githubLog',false);
+                }
+              })
+              },
             error: (error) => {
               this.$notify({
                 title: 'Login failed',
@@ -63,6 +78,7 @@
             })
       },
       oauthLogin(){
+        localStorage.clear();
         window.location.href="https://localhost:8081/oauth2/authorization/github";
       }
     },

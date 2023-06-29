@@ -15,9 +15,21 @@ export default {
                 const contenu = lecteur.result;
                 const object = JSON.parse(contenu);
 
+                console.log(object);
+
                 object.features.forEach(feature => {
-                    if(!feature.properties.item) return;
-                    this.dataArray.push([object.name, feature.properties.itemLabel, feature.geometry.coordinates[1], feature.geometry.coordinates[0]]);
+                    var coordinates = feature.properties.Koordinate ?? feature.geometry.coordinates;
+                    console.log(coordinates);
+                    if (coordinates.length > 0) {
+                        if (coordinates.includes('(')) {
+                            coordinates = coordinates.split('(')[1];
+                            coordinates = coordinates.split(')')[0];
+                            coordinates = coordinates.split(' ').map(coord => parseFloat(coord));
+                        }
+                        if(!feature.properties.itemID) return;
+                    const label = feature.properties.itemLabel ?? feature.properties.Objektname;
+                    this.dataArray.push([object.name, decodeURIComponent(label).replace(/_/g, ' '), coordinates[1], coordinates[0]]);
+                    }
                 });
                 this.updateMap();
             };
@@ -41,7 +53,7 @@ export default {
         },
         initMap(){
             // Path to where the files are hosted
-            this.path = 'src/pictures/signaturen/';
+            this.path = 'https://localhost:8080/src/pictures/signaturen/';
 
             // Creation of one layer of points
             this.query = new L.layerGroup();

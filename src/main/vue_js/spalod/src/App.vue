@@ -6,12 +6,9 @@ import RDFData from './components/RDFData.vue';
 import Login from './components/Login.vue';
 import Register from './components/Register.vue';
 import PopUp from './components/PopUp.vue';
-
-const routes={
-  '/': { component: NavBar, name: 'NavBar' },
-  '/login': { component: Login, name: 'Login' },
-  '/register': { component: Register, name: 'Register' },
-  }
+import PopUpC from './components/PopUpC.vue';
+import OgcApi from './components/OgcApi.vue';
+import ExternaLinks from './components/ExternalLinks.vue';
 
 
 export default {
@@ -21,8 +18,11 @@ export default {
     MapView,
     RDFData,
     PopUp,
+    PopUpC,
     Login,
-    Register
+    Register,
+    OgcApi,
+    ExternaLinks,
   },
   data() {
     return {
@@ -30,22 +30,27 @@ export default {
       chooseCSV:false,
       chooseJson:false,
       popup:false,
-      currentPath: window.location.pathname
+      popupC:false,
+      currentPath: window.location.pathname,
+      receivedData: null,
+      username:""
     };
-  }
-  ,computed: {
+  },
+  computed: {
     currentView() {
       if (this.currentPath === '/' || this.currentPath === '/admin' ) {
         return 'main';
-      } 
-      else if (this.currentPath === '/login') {
+      } else if (this.currentPath === '/login') {
         return 'login';
-      } 
-      else if (this.currentPath === '/register') {
+      } else if (this.currentPath === '/register') {
         return 'register';
-      } 
-      else {
-        return 'NavBar';
+      } else if (this.currentPath.startsWith('/spalodWFS')) {
+        return 'spalodWFS';
+      }
+      else if (this.currentPath === '/external_links'){
+        return 'externallinks';
+      } else {
+        return 'main';
       }
     }
   },
@@ -73,14 +78,26 @@ export default {
     onShowpopup(){
       this.popup=true;
     },
+    onShowpopupC(){
+      this.popupC=true;
+    },
     onClosepopUp(){
       this.popup=false;
+    },
+    onClosepopUpC(){
+      this.popupC=false;
     },
     goHome(){
       window.location.href="/";
     },
     goToLogin(){
       window.location.href="/login";
+    },
+    handleCatalogUpdate(data){
+      this.receivedData=data;
+    },
+    logUsername(data){
+      this.username=data;
     }
   }
 };
@@ -88,16 +105,19 @@ export default {
 
 <template>
   <div class="app">
+    <div class="navbar">
+        <NavBar @username-updated="logUsername"></NavBar>
+    </div>
     <div class="main" v-if="currentView === 'main'">
       <div class="user-actions-container">
-        <UserActions @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup"></UserActions>
+        <UserActions @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup" @popupCShow="onShowpopupC"></UserActions>
       </div>
       <div class="right-container" >
         <div class="map-container">
           <MapView :file="file"></MapView>
         </div>
         <div class="rdf-data-container">
-          <RDFData @update="onFileSelected" :file="file"></RDFData>
+          <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData" :username="username"></RDFData>
         </div>
       </div>
     </div>
@@ -107,12 +127,18 @@ export default {
     <div class="main" v-if="currentView === 'register'">
       <Register></Register>
     </div>
-    <div class="navbar">
-        <NavBar></NavBar>
+    <div class="mainOGC" v-if="currentView === 'spalodWFS'">
+      <OgcApi></OgcApi>
+    </div>
+    <div class="main" v-if="currentView === 'externallinks'">
+      <ExternaLinks></ExternaLinks>
     </div>
   </div>
   <div class="popup">
     <PopUp :chooseCSV="chooseCSV" :chooseJson="chooseJson" :popup="popup" @CSVBack="onUnselectCSV" @JsonBack="onUnselectJson" @popupBack="onClosepopUp"></PopUp>
+  </div>
+  <div class="popupC">
+    <PopUpC :popupC="popupC" @popupCBack="onClosepopUpC" @Catalog-data="handleCatalogUpdate"></PopUpC>
   </div>
   <notifications/>
   <notifications group="login-success" @click="goHome()" />
@@ -166,8 +192,15 @@ export default {
 }
 .popup{
   position: fixed;
-  top: 30vh;
-  left: 50vh;
+  top: 35%;
+  left: 40%;
+  width: fit-content;
+  z-index: 100;
+}
+.popupC{
+  position: fixed;
+  top: 35%;
+  left: 40%;
   width: fit-content;
   z-index: 100;
 }
@@ -194,6 +227,11 @@ export default {
     top:30vh;
     left:auto;
     right:5vh;
+  }
+  .popupC{
+    top: 30vh;
+    left: auto;
+    right: 5vh;
   }
 }
 </style>

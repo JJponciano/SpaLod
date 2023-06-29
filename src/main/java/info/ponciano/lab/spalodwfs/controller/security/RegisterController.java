@@ -13,10 +13,16 @@ public class RegisterController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestParam("username") String username, @RequestParam("password") String password) {
+        if(userService.findByUsername(username)==null)
+        {
+            User user = new User(username, password);
+            userService.save(user);
+            return ResponseEntity.ok("User registered successfully");
+        }        
+        else{
+            return ResponseEntity.badRequest().body("User already registered.");
+
+        }
         
-        User user = new User(username, password);
-        userService.save(user);
-        
-        return ResponseEntity.ok("User registered successfully");
     }
 }

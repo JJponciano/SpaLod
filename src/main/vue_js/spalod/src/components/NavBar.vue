@@ -7,18 +7,20 @@
           <span></span>
         </button>
         <ul :class="['menuopen',menuAnimationClass]" @transitionend="onTransitionend">
+          <li><button @click="navigateTo('spalodWFS')" :class="{ active: activeTab === 'spalodwfs' }">SpaLod WFS</button></li>
           <li><button @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button> </li>
           <li><button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button> </li>
           <li><button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button></li>
           <li><button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button></li>
-          <li><button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button></li>
+          <li><button @click="navigateTo('external_links')" :class="{ active: activeTab === 'external' }">External Links</button></li>
         </ul>
       </div>
       <div class="computer">
+        <button @click="navigateTo('spalodWFS')" :class="{ active: activeTab === 'spalodwfs' }">SpaLod WFS</button>
         <button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button>
         <button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button>
         <button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button>
-        <button @click="navigateTo('external')" :class="{ active: activeTab === 'external' }">External Links</button>
+        <button @click="navigateTo('external_links')" :class="{ active: activeTab === 'external' }">External Links</button>
       </div>
       <button v-if="isAdmin" @click="navigateTo('admin')" class="navbar-title">Admin</button>
       <button v-if="!isLoggedIn" @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button>
@@ -78,7 +80,8 @@
             this.isAdmin = true;
           },
           error: (error) => {
-            console.error(error);
+            //console.error(error);
+            console.log(error);
           }
         })
       },
@@ -92,13 +95,40 @@
           success: (response) => {
             this.isLoggedIn = true;
             this.isAdmin =true; // Line to delete if we want to block normal users access
-            this.username=localStorage.getItem('username');
+            if(localStorage.getItem("githubLog")==null)
+            {
+              this.getAccessToken();
+            }
           },
           error: (error) => {
-            console.error(error);
+            //console.error(error);
+            console.log(error);
           }
         })
       },
+      getAccessToken() {
+        $.ajax({
+          url: 'https://localhost:8081/getGitUser',
+          method: 'GET',
+          xhrFields: {
+            withCredentials: true
+          },
+          success: (response) => {
+            localStorage.setItem("uuid",response);
+            this.$emit('username-updated',response)
+          },
+          error: (error) => {
+            this.$notify({
+                title: 'Session expired',
+                text: 'If you are connected with github, please reconnect.',
+                group:"notLoggedIn",
+                type: 'error',
+                duration: 5000 // notification will disappear after 5 seconds
+              });
+            console.error(error);
+          }
+        })
+      }
     },
   };
   </script>
