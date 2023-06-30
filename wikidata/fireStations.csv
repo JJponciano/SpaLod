@@ -1,0 +1,521 @@
+item,itemLabel,latitude,longitude
+http://www.wikidata.org/entity/Q107635607,Feuerwache Krumbach,50.941308814715,12.994014208209
+http://www.wikidata.org/entity/Q107635645,Feuerwache Markersdorf,50.930366988584,12.867653008145
+http://www.wikidata.org/entity/Q107635666,Feuerwache Ottewig,51.178233838744,13.190841670935
+http://www.wikidata.org/entity/Q107635641,Feuerwache Niedersteinbach,50.945787785416,12.652269625808
+http://www.wikidata.org/entity/Q107635630,Feuerwache Helbigsdorf,50.811010147748,13.366261283752
+http://www.wikidata.org/entity/Q107635662,Feuerwache Töpeln,51.12588690554,13.035847688531
+http://www.wikidata.org/entity/Q107635627,Feuerwache Reinsdorf,51.059944915898,12.974771207766
+http://www.wikidata.org/entity/Q107635683,Feuerwache Hartha,51.099477026142,12.970621853097
+http://www.wikidata.org/entity/Q107635647,Feuerwache Altgeringswalde,51.084855732229,12.923075836244
+http://www.wikidata.org/entity/Q107635668,Feuerwache Erdmannsdorf,50.822524876861,13.080435634597
+http://www.wikidata.org/entity/Q107635621,Feuerwache Döbeln,51.120915725446,13.105975286218
+http://www.wikidata.org/entity/Q107635652,Feuerwache Markersdorf,50.928242573431,12.665551444209
+http://www.wikidata.org/entity/Q107635646,Feuerwache Ebersbach,51.100260750601,13.108716795661
+http://www.wikidata.org/entity/Q107635681,Feuerwache Krummenhennersdorf,50.975809434506,13.364179124808
+http://www.wikidata.org/entity/Q107635599,Feuerwache Milkau,51.033557268084,12.886985404356
+http://www.wikidata.org/entity/Q107635605,Feuerwache Niederschöna,50.96320937085,13.421071287486
+http://www.wikidata.org/entity/Q107635604,Feuerwache Hetzdorf,50.97241499323,13.461993528614
+http://www.wikidata.org/entity/Q107635597,Feuerwache Oberbobritzsch,50.87216472604,13.458527951708
+http://www.wikidata.org/entity/Q107635596,Feuerwache Niederbobritzsch,50.897815007559,13.434335152209
+http://www.wikidata.org/entity/Q107635675,Feuerwache Eppendorf,50.799179983722,13.230681659848
+http://www.wikidata.org/entity/Q107635602,Feuerwache Falkenau,50.850091690775,13.115278364428
+http://www.wikidata.org/entity/Q107635606,Feuerwache Oberschaar,50.979497071857,13.408173169357
+http://www.wikidata.org/entity/Q107635582,Feuerwache Niederstriegis,51.079725156836,13.15005647844
+http://www.wikidata.org/entity/Q107635581,Feuerwache Kirchbach,50.87476087807,13.230857703627
+http://www.wikidata.org/entity/Q107635669,Feuerwache Müdisdorf,50.839318195119,13.382487458041
+http://www.wikidata.org/entity/Q107635613,Feuerwache Haßlau,51.09270662875,13.182309485383
+http://www.wikidata.org/entity/Q107635650,Feuerwache Zethau,50.774438886173,13.377927245034
+http://www.wikidata.org/entity/Q107635603,Feuerwache Kleinwaltersdorf,50.933455227565,13.302365926829
+http://www.wikidata.org/entity/Q107635670,Feuerwache Altmitweida,50.964532588814,12.948555361771
+http://www.wikidata.org/entity/Q107635661,Feuerwache Linda,50.87203960508,13.278159413316
+http://www.wikidata.org/entity/Q107635617,Feuerwache Roßwein,51.061768886694,13.181273869268
+http://www.wikidata.org/entity/Q107635679,Feuerwache Schweikershain,51.046643162248,12.949012122392
+http://www.wikidata.org/entity/Q107635629,Feuerwache Gebersbach,51.08601946035,13.068020081952
+http://www.wikidata.org/entity/Q107635678,Feuerwache Naundorf,51.172154343935,12.953936854698
+http://www.wikidata.org/entity/Q107635590,Feuerwache Bräunsdorf,50.938171941155,13.220683306945
+http://www.wikidata.org/entity/Q107635637,Feuerwache Döhlen,51.050345724103,12.829582690274
+http://www.wikidata.org/entity/Q107635649,Feuerwache Mockritz,51.164649184445,13.075450041138
+http://www.wikidata.org/entity/Q107635636,Feuerwache Neukirchen,51.026902746149,13.401305980408
+http://www.wikidata.org/entity/Q107635682,Feuerwache Wendishain,51.133472848009,12.994134239574
+http://www.wikidata.org/entity/Q107635601,Feuerwache Burgstädt,50.921317005854,12.80526566531
+http://www.wikidata.org/entity/Q107635663,Feuerwache Lüttewitz,51.125522569312,13.224597952269
+http://www.wikidata.org/entity/Q107635589,Feuerwache Kleinschirma,50.906825880502,13.287712559462
+http://www.wikidata.org/entity/Q107635592,Feuerwache Breitenau,50.84730763905,13.162298789584
+http://www.wikidata.org/entity/Q107635685,Feuerwache Obergräfenhain,50.991622587953,12.705176982164
+http://www.wikidata.org/entity/Q107635659,Feuerwache Meinsberg,51.08291779915,13.031828207657
+http://www.wikidata.org/entity/Q107635618,Feuerwache Wingendorf,50.913633942398,13.213710802407
+http://www.wikidata.org/entity/Q107635671,Feuerwache Sohra,50.885617170385,13.480652744706
+http://www.wikidata.org/entity/Q107635667,Feuerwache Gersdorf,51.114474510435,12.939258398918
+http://www.wikidata.org/entity/Q107635680,Feuerwache Großschirma,50.966205491675,13.281989037326
+http://www.wikidata.org/entity/Q107635657,Feuerwache Littdorf,51.07133097813,13.12275924458
+http://www.wikidata.org/entity/Q107635616,Feuerwache Langhennersdorf,50.956850188935,13.237743449371
+http://www.wikidata.org/entity/Q107635660,Feuerwache Oberreichenbach,50.857756189821,13.244265169536
+http://www.wikidata.org/entity/Q107635593,Feuerwache Naundorf,50.932501367811,13.432681064587
+http://www.wikidata.org/entity/Q107635594,Feuerwache Hilbersdorf,50.909392168996,13.397918412959
+http://www.wikidata.org/entity/Q107635614,Feuerwache Hainichen,50.980791575286,13.110486919478
+http://www.wikidata.org/entity/Q107635633,Feuerwache Dittmannsdorf,50.99969152489,13.401897838211
+http://www.wikidata.org/entity/Q107635612,Feuerwache Zinnberg,50.918476923271,12.685258294496
+http://www.wikidata.org/entity/Q107635638,Feuerwache Zschaagwitz,51.062936435558,12.853069678424
+http://www.wikidata.org/entity/Q107635634,Feuerwache Hirschfeld,51.039399159178,13.35492967334
+http://www.wikidata.org/entity/Q107635623,Feuerwache Massanei,51.064973504357,13.052825000727
+http://www.wikidata.org/entity/Q107635631,Feuerwache Mulda,50.806659885648,13.415074456427
+http://www.wikidata.org/entity/Q107635674,Feuerwache Beicha,51.156361988536,13.230985334628
+http://www.wikidata.org/entity/Q107635586,Feuerwache Oberschöna,50.89555792771,13.255434982917
+http://www.wikidata.org/entity/Q107635585,Feuerwache Börnichen,50.869088359884,13.158655973321
+http://www.wikidata.org/entity/Q107635658,Feuerwache Waldheim,51.073658707496,13.030098996493
+http://www.wikidata.org/entity/Q107635672,Feuerwache Choren,51.099112701226,13.243389556253
+http://www.wikidata.org/entity/Q107635686,Feuerwache Etzdorf,51.05123338135,13.181699632766
+http://www.wikidata.org/entity/Q107635583,Feuerwache Otzdorf,51.066574500155,13.103126024962
+http://www.wikidata.org/entity/Q107635609,Feuerwache Neuwernsdorf,50.696674990261,13.524926442304
+http://www.wikidata.org/entity/Q107635665,Feuerwache Zschaitz,51.167426143911,13.162601923416
+http://www.wikidata.org/entity/Q107635591,Feuerwache Königsfeld,51.061075784203,12.759129572702
+http://www.wikidata.org/entity/Q107635676,Feuerwache Nöbeln,50.993879303502,12.802285298968
+http://www.wikidata.org/entity/Q107635598,Feuerwache Ottendorf,50.935498938577,12.968684164956
+http://www.wikidata.org/entity/Q107635584,Feuerwache Seifersdorf,51.075912958864,13.197363900972
+http://www.wikidata.org/entity/Q107635625,Feuerwache Kleinhartmannsdorf,50.816089827499,13.25654365194
+http://www.wikidata.org/entity/Q107635600,Feuerwache Oberlichtenau,50.909188899651,12.960171490508
+http://www.wikidata.org/entity/Q107635588,Feuerwache Großvoigtsberg,50.991443252302,13.288079248983
+http://www.wikidata.org/entity/Q107635656,Feuerwache Gleißberg,51.074911194679,13.236073084589
+http://www.wikidata.org/entity/Q107635639,Feuerwache Arnsdorf,50.947304720335,12.732524342222
+http://www.wikidata.org/entity/Q107635654,Feuerwache Burkersdorf/Reinsberg,51.000844456902,13.335442350047
+http://www.wikidata.org/entity/Q107635615,Feuerwache Görbersdorf,50.851101553285,13.196260668995
+http://www.wikidata.org/entity/Q107635677,Feuerwache Wechselburg,50.999743813665,12.778892401569
+http://www.wikidata.org/entity/Q107635688,Feuerwache Neudorf,51.107009842634,13.098346284759
+http://www.wikidata.org/entity/Q107635664,Feuerwache Seifersdorf,50.972482853747,13.235527064531
+http://www.wikidata.org/entity/Q107635624,Feuerwache Hohenfichte,50.822477495983,13.131908299454
+http://www.wikidata.org/entity/Q107635610,Feuerwache Neuhausen,50.674629197167,13.469500947929
+http://www.wikidata.org/entity/Q107635655,Feuerwache Rochlitz,51.044906625071,12.803085379357
+http://www.wikidata.org/entity/Q107635632,Feuerwache Wegefarth,50.917199809142,13.244937656736
+http://www.wikidata.org/entity/Q107635620,Feuerwache Garnsdorf,50.922144587675,12.930171938491
+http://www.wikidata.org/entity/Q107635643,Feuerwache Neuwallwitz,51.061793085614,12.944976542162
+http://www.wikidata.org/entity/Q107635684,Feuerwache Königshain,50.971351012886,12.876479810945
+http://www.wikidata.org/entity/Q107635622,Feuerwache Limritz,51.116247066217,13.050814362151
+http://www.wikidata.org/entity/Q107635628,Feuerwache Schönberg,51.062790783265,13.029164286526
+http://www.wikidata.org/entity/Q107635648,Feuerwache Großweitzschen,51.158600473829,13.046390335666
+http://www.wikidata.org/entity/Q107635611,Feuerwache Niederwiesa,50.863329434552,13.017835391177
+http://www.wikidata.org/entity/Q107635626,Feuerwache Richtzenhain,51.07799665024,13.005370585907
+http://www.wikidata.org/entity/Q107635673,Feuerwache Mochau,51.136826617654,13.186527866022
+http://www.wikidata.org/entity/Q107635642,Feuerwache Steudten,51.024999457464,12.79698935083
+http://www.wikidata.org/entity/Q107635608,Feuerwache Frankenau,50.989830861475,12.914157986167
+http://www.wikidata.org/entity/Q107635640,Feuerwache Gröbschütz,51.03505065854,12.854860470606
+http://www.wikidata.org/entity/Q107538301,Freiwillige Feuerwehr Wartenberg-Malchow 6330,52.57458,13.51557
+http://www.wikidata.org/entity/Q107538439,Feuerwache Treptow 5300,52.44995,13.50992
+http://www.wikidata.org/entity/Q107588409,Feuerwache Plaußig,51.39229,12.4546
+http://www.wikidata.org/entity/Q107538294,Feuerwache Karlshorst 6500,52.48399,13.52074
+http://www.wikidata.org/entity/Q107538297,Freiwillige Feuerwehr Falkenberg 6320,52.56962,13.54614
+http://www.wikidata.org/entity/Q107538349,Freiwillige Feuerwehr Blankenburg 6360,52.59306,13.45186
+http://www.wikidata.org/entity/Q107588408,Feuerwache Leipzig-Nordost,51.40511,12.41588
+http://www.wikidata.org/entity/Q107538330,Feuerwache Wedding 2500,52.54349,13.37031
+http://www.wikidata.org/entity/Q107538446,Freiwillige Feuerwehr Bohnsdorf 5320,52.40168,13.5743
+http://www.wikidata.org/entity/Q107538386,Freiwillige Feuerwehr Tegelort 2420,52.57082,13.2289
+http://www.wikidata.org/entity/Q107538449,Freiwillige Feuerwehr Friedrichshagen 5410,52.44649,13.62609
+http://www.wikidata.org/entity/Q107538317,Freiwillige Feuerwehr Mahlsdorf 6220,52.51159,13.61553
+http://www.wikidata.org/entity/Q107538314,Freiwillige Feuerwehr Kaulsdorf 6210,52.50686,13.58798
+http://www.wikidata.org/entity/Q107588397,Feuerwache Knautnaundorf,51.25268,12.27264
+http://www.wikidata.org/entity/Q107588419,Feuer- und Rettungswache 2 – Nord,51.36957,12.36668
+http://www.wikidata.org/entity/Q107588384,Feuer- und Rettungswache 1 – Mitte,51.34302,12.36865
+http://www.wikidata.org/entity/Q107635457,Feuerwache Rittmitz,51.180260358241,13.110854976514
+http://www.wikidata.org/entity/Q107538361,Freiwillige Feuerwehr Niederschönhausen 2610,52.58191,13.40722
+http://www.wikidata.org/entity/Q107538307,Feuerwache Hellersdorf 6200,52.52559,13.58242
+http://www.wikidata.org/entity/Q107588403,Feuerwache Lindenthal,51.39125,12.32902
+http://www.wikidata.org/entity/Q107588399,Feuerwache Leipzig-Grünau,51.32488,12.29131
+http://www.wikidata.org/entity/Q107538370,Freiwillige Feuerwehr Wilhelmsruh 2640,52.58591,13.37012
+http://www.wikidata.org/entity/Q107588396,Feuerwache Kleinpösna,51.31054,12.51814
+http://www.wikidata.org/entity/Q107538296,Feuerwache Lichtenberg 6400,52.52339,13.49242
+http://www.wikidata.org/entity/Q107538436,Feuerwache Köpenick 5400,52.4474,13.57937
+http://www.wikidata.org/entity/Q107538347,Feuerwache Weißensee 6300,52.55644,13.45975
+http://www.wikidata.org/entity/Q107538342,Feuerwache Neukölln 5100,52.46914,13.43876
+http://www.wikidata.org/entity/Q107538426,Freiwillige Feuerwehr Lichtenrade 4710,52.39247,13.41212
+http://www.wikidata.org/entity/Q107538399,Freiwillige Feuerwehr Staaken 3110,52.54352,13.15032
+http://www.wikidata.org/entity/Q107538397,Freiwillige Feuerwehr Kladow 3220,52.45469,13.14536
+http://www.wikidata.org/entity/Q107635467,Feuerwache Goßberg,50.987848465692,13.210503148426
+http://www.wikidata.org/entity/Q107538455,Freiwillige Feuerwehr Müggelheim 5440,52.41046,13.66438
+http://www.wikidata.org/entity/Q107635459,Feuerwache Berbersdorf,51.009988496842,13.177626937017
+http://www.wikidata.org/entity/Q107538351,Freiwillige Feuerwehr Blankenfelde 2630,52.61771,13.3876
+http://www.wikidata.org/entity/Q107635460,Feuerwache Clausnitz,50.745507050722,13.482800102544
+http://www.wikidata.org/entity/Q107538346,Feuerwache Pankow 2600,52.58212,13.42912
+http://www.wikidata.org/entity/Q107538458,Freiwillige Feuerwehr Oberschöneweide 5340,52.4643,13.51229
+http://www.wikidata.org/entity/Q107538377,Feuerwache Hermsdorf 2300,52.61555,13.30894
+http://www.wikidata.org/entity/Q107538337,"Feuerwehr-Dienstgebäude Mitte (Behördenleitung, Stab, Zentraler Service)",52.51695,13.41463
+http://www.wikidata.org/entity/Q107588387,Feuer- und Rettungswache 4 -Süd,51.31274,12.39609
+http://www.wikidata.org/entity/Q107538407,Feuerwache Steglitz 4200,52.45585,13.33004
+http://www.wikidata.org/entity/Q107588410,Feuerwache Rehbach,51.27259,12.27616
+http://www.wikidata.org/entity/Q107538393,Feuerwache Spandau-Süd 3200,52.52092,13.20424
+http://www.wikidata.org/entity/Q107588394,Feuerwache Engelsdorf,51.33885,12.49053
+http://www.wikidata.org/entity/Q107635471,Feuerwache Reinsberg,51.00827969505,13.365953850143
+http://www.wikidata.org/entity/Q107635461,Feuerwache Holzhau,50.735631904597,13.590040616328
+http://www.wikidata.org/entity/Q107538462,Freiwillige Feuerwehr Schmöckwitz 5450,52.37578,13.64846
+http://www.wikidata.org/entity/Q107538419,Feuerwache Marienfelde 4700,52.42975,13.3805
+http://www.wikidata.org/entity/Q107538300,Freiwillige Feuerwehr Hohenschönhausen 6310,52.54518,13.50814
+http://www.wikidata.org/entity/Q107588412,Feuerwache Wiederitzsch,51.39113,12.37242
+http://www.wikidata.org/entity/Q107538144,Feuerwache Ranke 3500,52.50175,13.33263
+http://www.wikidata.org/entity/Q107635466,Feuerwache Penig,50.935198489958,12.703059247952
+http://www.wikidata.org/entity/Q107538326,Technischer Dienst II 6139,52.53585,13.53721
+http://www.wikidata.org/entity/Q107588389,Feuer- und Rettungswache 3 – Nordost,51.36561,12.45781
+http://www.wikidata.org/entity/Q107538378,Feuerwache Tegel 2400,52.58651,13.28614
+http://www.wikidata.org/entity/Q107588401,Feuerwache Leipzig-Süd,51.32405,12.37441
+http://www.wikidata.org/entity/Q107538441,Freiwillige Feuerwehr Adlershof 5310,52.43933,13.55003
+http://www.wikidata.org/entity/Q107538381,Freiwillige Feuerwehr Frohnau 2320,52.63696,13.30117
+http://www.wikidata.org/entity/Q107538344,Freiwillige Feuerwehr Rudow 5210,52.41699,13.49691
+http://www.wikidata.org/entity/Q107588393,Feuerwache Burghausen,51.35722,12.26435
+http://www.wikidata.org/entity/Q107588404,Feuerwache Lützschena,51.38441,12.28096
+http://www.wikidata.org/entity/Q107538310,Feuerwache Marzahn 6100,52.5358,13.53627
+http://www.wikidata.org/entity/Q107538366,Freiwillige Feuerwehr Prenzlauer Berg 1310,52.54487,13.44048
+http://www.wikidata.org/entity/Q107538395,Freiwillige Feuerwehr Gatow 3210,52.48982,13.18071
+http://www.wikidata.org/entity/Q107538405,Stützpunktwache Haselhorst,52.54404,13.24773
+http://www.wikidata.org/entity/Q107635468,Feuerwache Mobendorf,50.971536178702,13.186279369877
+http://www.wikidata.org/entity/Q107588411,Feuerwache Rückmarsdorf,51.34445,12.25193
+http://www.wikidata.org/entity/Q107588395,Feuerwache Hartmannsdorf,51.26435,12.30867
+http://www.wikidata.org/entity/Q107538452,Freiwillige Feuerwehr Grünau 5470,52.4356,13.57016
+http://www.wikidata.org/entity/Q107588390,Feuerwache Baalsdorf,51.32393,12.48365
+http://www.wikidata.org/entity/Q107538147,Feuerwache Suarez 3300,52.50905,13.29598
+http://www.wikidata.org/entity/Q107588391,Feuerwache Böhlitz-Ehrenberg,51.35998,12.28157
+http://www.wikidata.org/entity/Q107538424,Feuerwache Tempelhof 4300,52.46694,13.38405
+http://www.wikidata.org/entity/Q107635463,Feuerwache Rechenberg-Bienenmühle,50.737022263895,13.553823296766
+http://www.wikidata.org/entity/Q107635464,Feuerwache Chursdorf,50.918128401381,12.744135311441
+http://www.wikidata.org/entity/Q107538328,Feuerwache Moabit 1400,52.52265,13.33323
+http://www.wikidata.org/entity/Q107538355,Freiwillige Feuerwehr Buchholz 2620,52.60703,13.4355
+http://www.wikidata.org/entity/Q107538332,Freiwillige Feuerwehr Mitte 1110,52.52659,13.38922
+http://www.wikidata.org/entity/Q107538383,Freiwillige Feuerwehr Heiligensee 2410,52.60661,13.21138
+http://www.wikidata.org/entity/Q107538288,Feuerwache Urban 1500,52.49553,13.40312
+http://www.wikidata.org/entity/Q107538444,Freiwillige Feuerwehr Altglienicke 5330,52.42382,13.52903
+http://www.wikidata.org/entity/Q107588398,Feuerwache Lausen,51.30462,12.2591
+http://www.wikidata.org/entity/Q107588400,Feuerwache Leipzig-Ost,51.33644,12.39461
+http://www.wikidata.org/entity/Q107635469,Feuerwache Diethensdorf,50.947651639405,12.854547086553
+http://www.wikidata.org/entity/Q107538409,Feuerwache Zehlendorf 4100,52.4374,13.26521
+http://www.wikidata.org/entity/Q107588385,Feuer- und Rettungswache 6 – West,51.32903,12.33348
+http://www.wikidata.org/entity/Q107538461,Freiwillige Feuerwehr Rauchfangswerder 5460,52.34723,13.64596
+http://www.wikidata.org/entity/Q107588407,Feuerwache Mölkau,51.33157,12.44447
+http://www.wikidata.org/entity/Q107538359,Freiwillige Feuerwehr Karow 2720,52.61099,13.48301
+http://www.wikidata.org/entity/Q107538353,Freiwillige Feuerwehr Buch 2710,52.63774,13.50148
+http://www.wikidata.org/entity/Q107538464,Freiwillige Feuerwehr Wilhelmshagen 5430,52.4367,13.71614
+http://www.wikidata.org/entity/Q107588406,Feuerwache Miltitz,51.32093,12.25533
+http://www.wikidata.org/entity/Q107538312,Freiwillige Feuerwehr Hellersdorf 6230,52.53,13.58952
+http://www.wikidata.org/entity/Q107635465,Feuerwache Langenleuba-Oberhain,50.963819761454,12.655321419244
+http://www.wikidata.org/entity/Q107588386,Feuerwache 5 – Südwest,51.30123,12.30852
+http://www.wikidata.org/entity/Q107588402,Feuerwache Liebertwolkwitz,51.28065,12.45898
+http://www.wikidata.org/entity/Q107635458,Feuerwache Claußnitz,50.935148384766,12.883783750415
+http://www.wikidata.org/entity/Q107538357,Freiwillige Feuerwehr Heinersdorf 6370,52.57145,13.4373
+http://www.wikidata.org/entity/Q107538319,Freiwillige Feuerwehr Marzahn 6110,52.54204,13.56246
+http://www.wikidata.org/entity/Q107538364,Freiwillige Feuerwehr Pankow 2650,52.57313,13.41551
+http://www.wikidata.org/entity/Q107635555,Feuerwache Reichenbach,51.046642976356,13.090449144246
+http://www.wikidata.org/entity/Q107635576,Feuerwache Berthelsdorf,50.957177739546,12.775921640594
+http://www.wikidata.org/entity/Q107635493,Feuerwache Pappendorf,50.986395666391,13.186447985809
+http://www.wikidata.org/entity/Q107635569,Feuerwache Halsbrücke,50.959877568462,13.340763664124
+http://www.wikidata.org/entity/Q107635571,Feuerwache Höfchen,51.033579572931,12.997936046003
+http://www.wikidata.org/entity/Q107635554,Feuerwache Obergruna,51.015329546486,13.317655342948
+http://www.wikidata.org/entity/Q107635540,Feuerwache Stein,50.954934781801,12.820752888438
+http://www.wikidata.org/entity/Q107635498,Feuerwache Altenhain,50.881007540565,13.048471884799
+http://www.wikidata.org/entity/Q107635480,Feuerwache Gahlenz,50.833430820587,13.223079853807
+http://www.wikidata.org/entity/Q107635543,Feuerwache Ostrau,51.202373176405,13.16085962391
+http://www.wikidata.org/entity/Q107635579,Feuerwache Wolfsgrund,50.770227832493,13.410926406036
+http://www.wikidata.org/entity/Q107635483,Feuerwache Hartha,50.902901907558,13.18028090432
+http://www.wikidata.org/entity/Q107635561,Feuerwache Bockendorf,50.925483946188,13.159008236362
+http://www.wikidata.org/entity/Q107635575,Feuerwache Marbach,50.788381420847,13.132795637913
+http://www.wikidata.org/entity/Q107635497,Feuerwache Niedersaida,50.750615124773,13.284752287022
+http://www.wikidata.org/entity/Q107635550,Feuerwache Langenau,50.834320639972,13.296091182783
+http://www.wikidata.org/entity/Q107635553,Feuerwache Reichenbach,50.987798700301,13.238867218973
+http://www.wikidata.org/entity/Q107635521,Feuerwache Dittersbach,50.924014377647,13.073110566713
+http://www.wikidata.org/entity/Q107635541,Feuerwache Topfseifersdorf,50.997349530104,12.867136142512
+http://www.wikidata.org/entity/Q107635557,Feuerwache Hartmannsdorf,50.883945201996,12.800904012216
+http://www.wikidata.org/entity/Q107635495,Feuerwache Marbach,51.045265087213,13.232294671161
+http://www.wikidata.org/entity/Q107635525,Feuerwache Nassau,50.766923167594,13.535891196124
+http://www.wikidata.org/entity/Q107635568,Feuerwache Tuttendorf,50.938629320412,13.358367099761
+http://www.wikidata.org/entity/Q107635473,Feuerwache Bernsdorf,51.006849308348,12.824252247806
+http://www.wikidata.org/entity/Q107635533,Feuerwache Lauenhain,51.002555232322,12.967175219697
+http://www.wikidata.org/entity/Q107635472,Feuerwache Noßwitz,51.043747836049,12.767721126833
+http://www.wikidata.org/entity/Q107635529,Feuerwache Siebenlehn,51.027247811365,13.306482160446
+http://www.wikidata.org/entity/Q107635489,Feuerwache Rossau,50.99706484403,13.04884846716
+http://www.wikidata.org/entity/Q107635559,Feuerwache Cämmerswalde,50.709976047607,13.501541677553
+http://www.wikidata.org/entity/Q107635556,Feuerwache Kriebethal,51.046003863934,13.017407739386
+http://www.wikidata.org/entity/Q107635475,Feuerwache Hermsdorf,51.010336918694,13.012168424155
+http://www.wikidata.org/entity/Q107635578,Feuerwache Voigtsdorf,50.751342296884,13.397738480005
+http://www.wikidata.org/entity/Q107635532,Feuerwache Ringethal,51.005026863401,13.001216913842
+http://www.wikidata.org/entity/Q107635538,Feuerwache Gränitz,50.804317317517,13.286143411455
+http://www.wikidata.org/entity/Q107635502,Feuerwache Zettlitz,51.073018237578,12.839669592536
+http://www.wikidata.org/entity/Q107635481,Feuerwache Frankenstein,50.900856992734,13.208260247914
+http://www.wikidata.org/entity/Q107635549,Feuerwache Schellenberg,50.806873424591,13.129142531666
+http://www.wikidata.org/entity/Q107635526,Feuerwache Freiberg,50.905313019281,13.338445735521
+http://www.wikidata.org/entity/Q107635512,Feuerwache Großwaltersdorf,50.781461210063,13.270939739544
+http://www.wikidata.org/entity/Q107635516,Feuerwache Zug,50.887500153499,13.346275031098
+http://www.wikidata.org/entity/Q107635510,Feuerwache Dittersbach,50.790939412164,13.486582415403
+http://www.wikidata.org/entity/Q107635548,Feuerwache Leubsdorf,50.801337918531,13.168151676316
+http://www.wikidata.org/entity/Q107635547,Feuerwache Rochsburg,50.945270516465,12.749895699567
+http://www.wikidata.org/entity/Q107635520,Feuerwache Irbersdorf,50.949652085307,13.048538144703
+http://www.wikidata.org/entity/Q107635573,Feuerwache Schwarzbach,51.087698925188,12.7719363631
+http://www.wikidata.org/entity/Q107635501,Feuerwache Schrebitz,51.205334919983,13.069124577622
+http://www.wikidata.org/entity/Q107635537,Feuerwache Lunzenau,50.961329418934,12.755062400853
+http://www.wikidata.org/entity/Q107635485,Feuerwache Röllingshain,50.944347118735,12.915959349871
+http://www.wikidata.org/entity/Q107635488,Feuerwache Langenstriegis,50.907292822884,13.119844150303
+http://www.wikidata.org/entity/Q107635551,Feuerwache Tauscha,50.913294136832,12.721577284971
+http://www.wikidata.org/entity/Q107635513,Feuerwache Hermsdorf,51.074585385462,12.875410052177
+http://www.wikidata.org/entity/Q107635504,Feuerwache Frankenberg,50.903277121047,13.031091396196
+http://www.wikidata.org/entity/Q107635560,Feuerwache Hohentanne,50.982683504809,13.312073473922
+http://www.wikidata.org/entity/Q107635528,Feuerwache Arras,51.056429468833,12.901949589103
+http://www.wikidata.org/entity/Q107635539,Feuerwache Weißenborn,50.871121343179,13.398950963526
+http://www.wikidata.org/entity/Q107635552,Feuerwache Lichtenberg,50.832719052962,13.427370242349
+http://www.wikidata.org/entity/Q107635534,Feuerwache Köthensdorf,50.909626236002,12.867633446055
+http://www.wikidata.org/entity/Q107635570,Feuerwache Grünlichtenberg,51.041484875963,13.061951826036
+http://www.wikidata.org/entity/Q107635492,Feuerwache Friedebach,50.71215636363,13.423462464901
+http://www.wikidata.org/entity/Q107635486,Feuerwache Dorfchemnitz,50.763954580176,13.451785355329
+http://www.wikidata.org/entity/Q107635503,Feuerwache Taura,50.917986687753,12.841175487181
+http://www.wikidata.org/entity/Q107635506,Feuerwache Hennersdorf,50.796492094521,13.075197973211
+http://www.wikidata.org/entity/Q107635530,Feuerwache Schlegel,50.995155387494,13.1304056965
+http://www.wikidata.org/entity/Q107635542,Feuerwache Noschkowitz,51.191304340545,13.139121277568
+http://www.wikidata.org/entity/Q107635580,Feuerwache Kockisch,50.993257407663,13.003285808081
+http://www.wikidata.org/entity/Q107635523,Feuerwache Kleinbobritzsch,50.818229509011,13.539733638
+http://www.wikidata.org/entity/Q107635574,Feuerwache Wiederau,50.975723812514,12.838015645471
+http://www.wikidata.org/entity/Q107635535,Feuerwache Obersaida,50.769229816396,13.334363826793
+http://www.wikidata.org/entity/Q107635487,Feuerwache Hausdorf,50.886209828079,13.099324003547
+http://www.wikidata.org/entity/Q107635564,Feuerwache Eulendorf,50.930878440246,13.132070281658
+http://www.wikidata.org/entity/Q107635477,Feuerwache Greifendorf,51.025860078858,13.114795031251
+http://www.wikidata.org/entity/Q107635484,Feuerwache Memmendorf,50.884645633417,13.191729392852
+http://www.wikidata.org/entity/Q107635499,Feuerwache Augustusburg,50.821199540621,13.104982855154
+http://www.wikidata.org/entity/Q107635507,Feuerwache Frauenstein,50.799825430771,13.539466789511
+http://www.wikidata.org/entity/Q107635514,Feuerwache Brand-Erbisdorf,50.871743254585,13.320925574525
+http://www.wikidata.org/entity/Q107635563,Feuerwache Cunnersdorf,50.955602305253,13.144013818853
+http://www.wikidata.org/entity/Q107635518,Feuerwache Erlau,51.006877595934,12.925255141707
+http://www.wikidata.org/entity/Q107635527,Feuerwache Geringswalde,51.075772690802,12.907403556378
+http://www.wikidata.org/entity/Q107635482,Feuerwache Oederan,50.860381271788,13.177699688983
+http://www.wikidata.org/entity/Q107635496,Feuerwache Großhartmannsdorf,50.794410763929,13.318166571089
+http://www.wikidata.org/entity/Q107635476,Feuerwache Schönerstädt,50.884033820894,13.140811707721
+http://www.wikidata.org/entity/Q107635546,Feuerwache Göritzhain,50.969470829612,12.793278916397
+http://www.wikidata.org/entity/Q107635519,Feuerwache Mittelsaida,50.762136405746,13.303970921063
+http://www.wikidata.org/entity/Q107635490,Feuerwache Dreiwerden,50.96566262218,13.024635160913
+http://www.wikidata.org/entity/Q107635474,Feuerwache Lichtenwalde,50.883199567927,13.006949979943
+http://www.wikidata.org/entity/Q107635479,Feuerwache Arnsdorf,51.010294546574,13.133327587062
+http://www.wikidata.org/entity/Q107635478,Feuerwache Böhrigen,51.031964766515,13.158638246669
+http://www.wikidata.org/entity/Q107635577,Feuerwache St. Michaelis,50.87056935742,13.295084002946
+http://www.wikidata.org/entity/Q107635558,Feuerwache Mühlau,50.902844106508,12.759577207934
+http://www.wikidata.org/entity/Q107635566,Feuerwache Gersdorf/Frankenau,50.956702251315,13.081620089907
+http://www.wikidata.org/entity/Q107635531,Feuerwache Mittweida,50.978877298341,12.984716970837
+http://www.wikidata.org/entity/Q107635515,Feuerwache Berthelsdorf,50.867934634476,13.369267175524
+http://www.wikidata.org/entity/Q107635536,Feuerwache Elsdorf,50.966366534498,12.728268566111
+http://www.wikidata.org/entity/Q107635508,Feuerwache Tanneberg,51.026371230028,12.966458974548
+http://www.wikidata.org/entity/Q107635491,Feuerwache Moosheim,51.013367825972,13.093550855291
+http://www.wikidata.org/entity/Q107635517,Feuerwache Flöha,50.861158058382,13.063030366213
+http://www.wikidata.org/entity/Q107635494,Feuerwache Sayda,50.722093028468,13.450401532874
+http://www.wikidata.org/entity/Q107635545,Feuerwache Auerswalde,50.899930707346,12.920505504874
+http://www.wikidata.org/entity/Q107635500,Feuerwache Crossen,51.032984806106,12.924109117355
+http://www.wikidata.org/entity/Q107635509,Feuerwache Burkersdorf/Fra.,50.820041688732,13.491045777112
+http://www.wikidata.org/entity/Q98593854,Feuerwehrgerätehaus Osterweddingen,52.05237,11.58252
+http://www.wikidata.org/entity/Q105045187,Feuerwache Alt-Lietzow,52.518663946557,13.311588537257
+http://www.wikidata.org/entity/Q98607721,Baudenkmal D-5-71-136-684 in Dinkelsbühl im Ortsteil Langensteinbach,49.042218229249,10.309533492395
+http://www.wikidata.org/entity/Q107491500,Alte Feuerwache,51.520604,14.002061
+http://www.wikidata.org/entity/Q98643744,Baudenkmal D-1-72-117-98 in Bischofswiesen im Ortsteil Bischofswiesen,47.628385567104,12.9881577356
+http://www.wikidata.org/entity/Q101242803,Feuerwache 2,54.1386,12.0427
+http://www.wikidata.org/entity/Q107469100,Feuerwache Röhrer Weg,48.672688228915,9.0131932497025
+http://www.wikidata.org/entity/Q107492054,Feuerwehr Sedlitz,51.54897,14.05737
+http://www.wikidata.org/entity/Q98671581,Baudenkmal D-3-62-000-1568 in Regensburg im Ortsteil Schwabelweis,49.025006773775,12.145487722723
+http://www.wikidata.org/entity/Q107491572,Feuerwehr Senftenberg,51.511578958431,13.9827005573
+http://www.wikidata.org/entity/Q107491605,Feuerwehr Niemtsch,51.493283,13.979057
+http://www.wikidata.org/entity/Q98717452,Baudenkmal D-7-74-135-40 in Günzburg im Ortsteil Günzburg,48.456636676533,10.277084082656
+http://www.wikidata.org/entity/Q107492055,Feuerwehr Hosena,51.45244,14.02634
+http://www.wikidata.org/entity/Q98593832,Feuerwehrgerätehaus,52.03616,11.52298
+http://www.wikidata.org/entity/Q98739587,Feuerwehrgerätehaus Haimhauserstraße 15 in München (D-1-62-000-2384#1),48.162214119496,11.590476995337
+http://www.wikidata.org/entity/Q107491603,Feuerwehr Kleinkoschen,51.505291634579,14.066708074547
+http://www.wikidata.org/entity/Q98688675,Feuerwehrgerätehaus Schandelah,52.26901,10.69095
+http://www.wikidata.org/entity/Q107357224,Feuerwache in Mehrow,52.5714,13.617338888889
+http://www.wikidata.org/entity/Q98645194,Baudenkmal D-1-90-111-23 in Altenstadt (Oberbayern) im Ortsteil Altenstadt,47.825203231132,10.871792334873
+http://www.wikidata.org/entity/Q104833489,Feuerwehrhaus Lehde,51.86436,13.99071
+http://www.wikidata.org/entity/Q100141912,Feuerwehrgebäude Trogen,50.364208,11.956151
+http://www.wikidata.org/entity/Q107492048,Feuerwehr Peickwitz,51.46417,13.98114
+http://www.wikidata.org/entity/Q98644756,Baudenkmal D-1-84-123-3 in Haar (bei München) im Ortsteil Haar,48.110179365976,11.727487555661
+http://www.wikidata.org/entity/Q107491549,Feuerwehr Großkoschen,51.495429888177,14.056274891687
+http://www.wikidata.org/entity/Q98593812,Feuerwehrgerätehaus,51.995856,11.533413
+http://www.wikidata.org/entity/Q98484019,Feuerwehrgerätehaus,49.988862818253,9.5680081419073
+http://www.wikidata.org/entity/Q98688766,Feuerwehrgerätehaus Halle-Neustadt,51.486935,11.938711
+http://www.wikidata.org/entity/Q107208395,Feuerwache Tiergarten,52.521607807541,13.366494072542
+http://www.wikidata.org/entity/Q106223295,Feuerwehrzentrum Kalk,50.93937,6.99016
+http://www.wikidata.org/entity/Q98626964,Feuerwehrgerätehaus Großgründlacher Hauptstraße 36 in Nürnberg (D-5-64-000-664#5),49.529605383476,11.011274419307
+http://www.wikidata.org/entity/Q98689124,Feuerwehrgerätehaus Zschortau,51.47987,12.35881
+http://www.wikidata.org/entity/Q98688569,Feuerwehrgerätehaus Rötgesbüttel,52.41489,10.52974
+http://www.wikidata.org/entity/Q98688727,Feuerwehrgerätehaus Hönebach,50.93419,9.95133
+http://www.wikidata.org/entity/Q98645514,Baudenkmal D-1-85-125-44 in Burgheim im Ortsteil Straß,48.709327347485,11.054283767474
+http://www.wikidata.org/entity/Q106539113,Baudenkmal D-7-78-144-52 in Bad Grönenbach,47.84974,10.22209
+http://www.wikidata.org/entity/Q107491589,Feuerwehr Brieske,51.499457015581,13.96263794686
+http://www.wikidata.org/entity/Q101242785,Feuerwache 1,54.0783,12.117
+http://www.wikidata.org/entity/Q105455622,Feuerwache Ströbitz,51.754411,14.300986
+http://www.wikidata.org/entity/Q104679914,Feuerwache Sindelfingen,48.707976332835,9.0085422992706
+http://www.wikidata.org/entity/Q107526693,Freiwillige Feuerwehr Biesdorf 6120,52.50951,13.55647
+http://www.wikidata.org/entity/Q98593870,Feuerwehrgerätehaus,52.25798,11.50332
+http://www.wikidata.org/entity/Q105045189,Feuerwache Spandau-Nord,52.5448,13.21039
+http://www.wikidata.org/entity/Q104833488,Feuerwehr Zerkwitz,51.86281,13.92945
+http://www.wikidata.org/entity/Q107491531,Alte Feuerwache Buchwalde,51.513472225477,14.015692305196
+http://www.wikidata.org/entity/Q98628746,Feuerwehrgerätehaus Reutersbrunnenstraße 24 in Nürnberg (D-5-64-000-1638#1),49.453608044035,11.057626441058
+http://www.wikidata.org/entity/Q98688657,Feuerwehrgerätehaus Wusterwitz,52.37028,12.38416
+http://www.wikidata.org/entity/Q98593880,Feuerwehrgerätehaus,52.146623,11.441683
+http://www.wikidata.org/entity/Q98688603,Feuerwehrzentrale Samtgemeinde Papenteich,52.38492,10.53549
+http://www.wikidata.org/entity/Q98688751,Feuerwehrgerätehaus Wulfen,51.8203754,11.9306307
+http://www.wikidata.org/entity/Q98688542,Feuerwehrgerätehaus Holzhausen,51.30297,12.45034
+http://www.wikidata.org/entity/Q98637458,Hauptwache,50.93189,11.59099
+http://www.wikidata.org/entity/Q101242805,Feuerwache 3,54.145,12.1132
+http://www.wikidata.org/entity/Q98621993,Feuerwehrgerätehaus Burghof 1 in Cadolzburg (D-5-73-114-10#3),49.458914027714,10.850826862162
+http://www.wikidata.org/entity/Q105243725,Feuerwehrhaus,48.570644131154,8.9589697122574
+http://www.wikidata.org/entity/Q89039591,Feuerwehrwache,51.16009,11.80498
+http://www.wikidata.org/entity/Q91338444,Feuerwehrgerätehaus,48.3614487,7.8349208
+http://www.wikidata.org/entity/Q55991931,Feuerwehrgerätehaus,51.4666832,10.9929029
+http://www.wikidata.org/entity/Q49231335,Feuerwache in halboffener Bebauung (bauliche Einheit mit Aue 16) Schadestraße 11,50.8279,12.91694
+http://www.wikidata.org/entity/Q88960991,Feuerwehrgerätehaus,48.33285,7.82344
+http://www.wikidata.org/entity/Q49594338,Leipziger Wall 15,51.55844,12.99797
+http://www.wikidata.org/entity/Q32297773,Feuerwache Lichterfelde,52.42962,13.31599
+http://www.wikidata.org/entity/Q63249299,Feuerwache Berlin-Kreuzberg,52.49863,13.42924
+http://www.wikidata.org/entity/Q57016005,Spritzenhaus Lübbenau,51.869187,13.969488
+http://www.wikidata.org/entity/Q87326666,Feuerwache,51.366079,10.337915
+http://www.wikidata.org/entity/Q28966757,Feuerwache Sudenburg,52.109859,11.598496
+http://www.wikidata.org/entity/Q56435780,Feuerwehrgerätehaus,51.58351,11.49806
+http://www.wikidata.org/entity/Q95691928,Feuerwehr Dittwar,49.59037,9.63551
+http://www.wikidata.org/entity/Q63254568,Feuerwache Berlin-Charlottenburg-Nord,52.53302,13.28276
+http://www.wikidata.org/entity/Q49389779,Feuerwehrgerätehaus Clara-Zetkin-Straße 10,51.543573,14.724293
+http://www.wikidata.org/entity/Q63254521,Feuerwache Berlin-Wittenau,52.58746,13.34135
+http://www.wikidata.org/entity/Q95691993,Feuerwehr Distelhausen,49.59845,9.68989
+http://www.wikidata.org/entity/Q61708106,Hauptfeuerwache (Kiel),54.331583333333,10.121166666667
+http://www.wikidata.org/entity/Q89680356,Feuerwehrgerätehaus,51.13335,11.92597
+http://www.wikidata.org/entity/Q95691991,Feuerwehr Dittigheim,49.61051,9.67381
+http://www.wikidata.org/entity/Q53673316,Freiwillige Feuerwehr Schlatkow,53.920102777778,13.581047222222
+http://www.wikidata.org/entity/Q56055084,Feuerwehrgerätehaus,51.56997,11.48442
+http://www.wikidata.org/entity/Q94997770,Feuerwehrhaus,52.48194,10.5475
+http://www.wikidata.org/entity/Q87993041,Feuerwache,48.33802,7.87321
+http://www.wikidata.org/entity/Q54860637,Dezernat 16,49.406766,8.672412
+http://www.wikidata.org/entity/Q61697268,Feuerwache Friedrichshain,52.511944444444,13.444444444444
+http://www.wikidata.org/entity/Q54988948,Vitra Feuerwehrhaus,47.60036,7.61463
+http://www.wikidata.org/entity/Q30340485,Alte Feuerwache,49.23398,7.00056
+http://www.wikidata.org/entity/Q54915037,Freiwillige Feuerwehr Ranzin,53.94926,13.52696
+http://www.wikidata.org/entity/Q61768902,Feuerwache Feurigstraße 58,52.48461,13.35676
+http://www.wikidata.org/entity/Q95691996,Feuerwehr Impfingen,49.64711,9.65712
+http://www.wikidata.org/entity/Q49352081,"Ernst-Thälmann-Straße 38, 42",50.979512,14.602383
+http://www.wikidata.org/entity/Q95692065,Feuerwehr Gerlachsheim,49.58069,9.71776
+http://www.wikidata.org/entity/Q41281060,ancienne brasserie du monastère franciscain,49.03609358226,11.471531857559
+http://www.wikidata.org/entity/Q56240166,Feuerwache Wilmersdorf,52.48743,13.32066
+http://www.wikidata.org/entity/Q34368679,Salzstadel,47.784253,9.610553
+http://www.wikidata.org/entity/Q95691925,Feuerwehr Tauberbischofsheim,49.62547,9.66522
+http://www.wikidata.org/entity/Q63249322,Feuerwache Berlin-Wannsee,52.42946,13.18438
+http://www.wikidata.org/entity/Q63250975,Feuerwache Berlin-Buckow,52.43419,13.46808
+http://www.wikidata.org/entity/Q91227746,Feuerwehrgerätehaus,48.31509,7.80921
+http://www.wikidata.org/entity/Q54915156,Freiwillige Feuerwehr Groß Polzin,53.8964,13.59614
+http://www.wikidata.org/entity/Q97154209,Feuer- und Rettungswache Hildesheim,52.15885,9.95954
+http://www.wikidata.org/entity/Q56010257,Feuerwehrgerätehaus,51.4565,11.00648
+http://www.wikidata.org/entity/Q49329662,Feuerwehrgerätehaus (im Hof des ehemaligen Rathauses Reichenbrand) Hohensteiner Straße 4,50.81229,12.82719
+http://www.wikidata.org/entity/Q32662104,Feuerwache und Remise,52.540013,13.406789
+http://www.wikidata.org/entity/Q49403196,Feuerwache mit Wachturm der ehemaligen Brikettfabrik Werkstraße 4,51.501269,14.340728
+http://www.wikidata.org/entity/Q83170725,Feuerwehrgerätehaus,52.35406,10.11472
+http://www.wikidata.org/entity/Q88464482,Feuerwehrhaus Oestrum,51.41981,6.68162
+http://www.wikidata.org/entity/Q32662104,Feuerwache und Remise,52.54,13.4067
+http://www.wikidata.org/entity/Q66425441,Feuerwache,49.40043,7.49323
+http://www.wikidata.org/entity/Q49395723,Feuerwehrhäuschen mit Schlauchmast Hauptstraße 46 (vor),51.517477,14.188583
+http://www.wikidata.org/entity/Q95691988,Feuerwehr Dienstadt,49.6325,9.61229
+http://www.wikidata.org/entity/Q1409780,Feuerwache Striesen,51.0414,13.7938
+http://www.wikidata.org/entity/Q435571,Alte Feuerwache (Esslingen),48.7394,9.30966
+http://www.wikidata.org/entity/Q28152404,Feuerwache Frose,51.795444444444,11.379305555556
+http://www.wikidata.org/entity/Q1409780,Feuerwache Striesen,51.0414,13.7939
+http://www.wikidata.org/entity/Q28755385,Feuerwehrgerätehaus Bad Doberan,54.1128,11.915
+http://www.wikidata.org/entity/Q26772483,Alte Feuerwache,48.4899,9.21029
+http://www.wikidata.org/entity/Q116838604,Pompiers volontaires d'Unterkotzau,50.337120107598,11.89903003874
+http://www.wikidata.org/entity/Q116971308,Pompiers volontaires de Wölbattendorf,50.307801106217,11.851032672033
+http://www.wikidata.org/entity/Q19279594,Feuerwache Alsterdorf,53.61377,10.00126
+http://www.wikidata.org/entity/Q16499721,Altes Feuerwehrgerätehaus (Reken),51.831700833333,7.0388355555556
+http://www.wikidata.org/entity/Q435579,Alte Feuerwache Loschwitz,51.05305556,13.81444444
+http://www.wikidata.org/entity/Q435574,Alte Feuerwache,49.49553,8.47413
+http://www.wikidata.org/entity/Q117220200,Feuerhauptwache,51.766,14.3354
+http://www.wikidata.org/entity/Q117083369,Feuerwehrgerätehaus Bleichheim,48.20838,7.82507
+http://www.wikidata.org/entity/Q19285020,Hauptfeuerwache Berliner Tor,53.554524,10.022591
+http://www.wikidata.org/entity/Q25089929,Hauptfeuerwache,48.1327,11.5695
+http://www.wikidata.org/entity/Q22250216,Feuerwache Schillerpark,52.553582,13.35194
+http://www.wikidata.org/entity/Q116922868,"Ehrfeldstraße 1, Hannover",52.33002,9.8479
+http://www.wikidata.org/entity/Q19279596,Feuerwache Veddel,53.523017,10.019956
+http://www.wikidata.org/entity/Q19279595,Feuerwache Innenstadt,53.54618,9.98253
+http://www.wikidata.org/entity/Q28755228,Alte Wache Bad Doberan,54.1035,11.8999
+http://www.wikidata.org/entity/Q110983250,Q110983250,48.62924621849,8.9991331100464
+http://www.wikidata.org/entity/Q108560081,Feuerwache Altona,53.54969,9.94474
+http://www.wikidata.org/entity/Q108049475,Hauptstraße 20,50.87019,14.65095
+http://www.wikidata.org/entity/Q111083118,Feuerwehrhaus Sindelfingen-Maichingen,48.723811638467,8.9659541845322
+http://www.wikidata.org/entity/Q116758316,Feuerwehrhaus Meißenheim,48.40622,7.77919
+http://www.wikidata.org/entity/Q108524322,Feuerwehrgerätehaus Prinzbach,48.31958,8.0018
+http://www.wikidata.org/entity/Q109299967,Freiwillige Feuerwehr Moorburg,53.49256,9.93207
+http://www.wikidata.org/entity/Q110515112,Kahnfeuerwehr Lehde,51.863375315043,13.992182921685
+http://www.wikidata.org/entity/Q108663148,Feuerwehrgerätehaus Schweighausen,48.22005,7.96614
+http://www.wikidata.org/entity/Q107651913,Feuerwehrgerätehaus,48.3096,7.85959
+http://www.wikidata.org/entity/Q110515242,Alte Feuerwache Altdöbern,51.64928973123,14.029051285724
+http://www.wikidata.org/entity/Q115941103,"Teichstraße 8, Hannover",52.36834,9.71211
+http://www.wikidata.org/entity/Q110498619,Feuerwehrhaus Schwarzheide,51.47035265691,13.891167123619
+http://www.wikidata.org/entity/Q108774811,Feuerwehrgerätehaus Erlach,48.56747,8.02076
+http://www.wikidata.org/entity/Q110529454,Feuerwehrhaus Göritz,51.801221700116,14.045316574429
+http://www.wikidata.org/entity/Q110498699,Freiwillige Feuerwehr am Schloss Großkmehlen,51.379363914886,13.726110646719
+http://www.wikidata.org/entity/Q107635691,Feuerwache Brösen,51.152224114662,12.888120157825
+http://www.wikidata.org/entity/Q108562613,Feuerwehrgerätehaus Bollenbach,48.29157,8.07274
+http://www.wikidata.org/entity/Q107635689,Feuerwache Leisnig,51.157283028801,12.913985897638
+http://www.wikidata.org/entity/Q108562960,Feuerwehrgerätehaus Schönberg,48.32792,7.98298
+http://www.wikidata.org/entity/Q110498678,"Freiwillige Feuerwehr Schwarzheide, Dorfplatz",51.485472849948,13.832053836764
+http://www.wikidata.org/entity/Q108774807,Feuerwehrgerätehaus Renchen,48.58722,8.01059
+http://www.wikidata.org/entity/Q107635756,Feuerwache Meinitz,51.142651190142,12.923026812829
+http://www.wikidata.org/entity/Q116800147,Feuerwehr Görike,52.943807457062,12.202121856807
+http://www.wikidata.org/entity/Q113772602,Freiwillige Feuerwehr Neugraben,53.47406,9.86242
+http://www.wikidata.org/entity/Q109300963,Freiwillige Feuerwehr Hausbruch,53.47218,9.87542
+http://www.wikidata.org/entity/Q108497075,Am Kleinen Felde 28,52.385665,9.72225
+http://www.wikidata.org/entity/Q108524268,Feuerwehrgerätehaus Biberach,48.34397,8.02782
+http://www.wikidata.org/entity/Q108566166,Feuerwehrgerätehaus Allmannsweier,48.36497,7.78068
+http://www.wikidata.org/entity/Q108663204,Feuerwehrgerätehaus Schuttertal,48.26946,7.9563
+http://www.wikidata.org/entity/Q110601972,Freiwillige Feuerwehr Allermöhe,53.48208,10.13086
+http://www.wikidata.org/entity/Q110515042,Feuerwehr Frauwalde,51.383365401747,13.712242452859
+http://www.wikidata.org/entity/Q111473612,Freiwillige Feuerwehr Moorwerder,53.47936,10.05324
+http://www.wikidata.org/entity/Q111827676,Feuerwehrgerätehaus,52.3644951,9.9116622
+http://www.wikidata.org/entity/Q107635694,Feuerwache Clennen,51.199145590207,12.924935174875
+http://www.wikidata.org/entity/Q108562962,Feuerwehrgerätehaus Wittelbach,48.29091,7.95166
+http://www.wikidata.org/entity/Q108000815,Feuerwehrgerätehaus,54.040891,9.036908
+http://www.wikidata.org/entity/Q112127919,Feuer- und Rettungswache Wandsbek,53.58448,10.11813
+http://www.wikidata.org/entity/Q110501192,Feuerwehr Ogrosen,51.713383338525,14.040574005573
+http://www.wikidata.org/entity/Q115952463,Feuerwache Darmstadt,49.87434,8.64062
+http://www.wikidata.org/entity/Q107635698,Feuerwache Ziegra,51.102423969199,13.059299171569
+http://www.wikidata.org/entity/Q110439910,Feuerwehr Groß Beuchow,51.849012120111,13.905606780071
+http://www.wikidata.org/entity/Q114134042,Freiwillige Feuerwehr Pöseldorf,53.56456,9.9746
+http://www.wikidata.org/entity/Q113732719,Freiwillige Feuerwehr Billstedt-Horn,53.55669,10.10186
+http://www.wikidata.org/entity/Q109984465,Feuerwache in Zeitz,51.048111111111,12.134944444444
+http://www.wikidata.org/entity/Q108663109,Feuerwehrgerätehaus Dörlinbach,48.24662,7.95452
+http://www.wikidata.org/entity/Q108697023,Feuerwehrgerätehaus Schmieheim,48.28005,7.85772
+http://www.wikidata.org/entity/Q108535567,Feuerwache Wilhelmsburg,53.50582,9.98839
+http://www.wikidata.org/entity/Q110602302,Freiwillige Feuerwehr Curslack,53.44984,10.2216
+http://www.wikidata.org/entity/Q107652045,Feuerwehrgerätehaus,48.33814,7.91123
+http://www.wikidata.org/entity/Q115590238,Feuerwache Düren,50.79323024514,6.5033612134569
+http://www.wikidata.org/entity/Q115941094,"Küchengartenstraße 1, Hannover",52.36829,9.71252
+http://www.wikidata.org/entity/Q113513697,Feuerwache Weidenpesch,50.985461111111,6.9492888888889
+http://www.wikidata.org/entity/Q110529473,Feuerwehrhaus Lauchhammer-Ost,51.492246096322,13.784432102702
+http://www.wikidata.org/entity/Q107635757,Feuerwache Beiersdorf,51.182943398892,12.966705076812
+http://www.wikidata.org/entity/Q110529441,Feuerwehr Dörrwalde,51.588068204594,14.061505369358
+http://www.wikidata.org/entity/Q108095293,Zehntscheune Ballenberg,49.4022283,9.5552707
+http://www.wikidata.org/entity/Q113006643,Feuerwehrhaus Aidlingen,48.677856391828,8.8833099603653
+http://www.wikidata.org/entity/Q108566173,Feuerwehrgerätehaus Einsatzabteilung Süd,48.341982,7.758785
+http://www.wikidata.org/entity/Q110515299,Feuerwehr Buchwäldchen,51.69210095264,14.005069151196
+http://www.wikidata.org/entity/Q108544031,Feuerwache Rotherbaum,53.56875,9.97543
+http://www.wikidata.org/entity/Q108774809,Feuerwehrgerätehaus Ulm,48.58004,8.05012
+http://www.wikidata.org/entity/Q108049496,Bahnhofstraße 10,50.89417,14.66474
+http://www.wikidata.org/entity/Q111752666,Alte Feuerwache Kolkwitz,51.755116666667,14.249858333333
+http://www.wikidata.org/entity/Q108697079,Feuerwehrgerätehaus Kippenheim,48.2957,7.82033
+http://www.wikidata.org/entity/Q108562442,Feuerwehrgerätehaus Haslach im Kinzigtal,48.27906,8.08758
+http://www.wikidata.org/entity/Q107635760,Feuerwache Westewitz,51.137926027644,13.028656663375
+http://www.wikidata.org/entity/Q111843099,Freiwillige Feuerwehr Nienstedten,53.55321,9.84894
+http://www.wikidata.org/entity/Q108566164,Feuerwehrgerätehaus Ottenheim,48.38561,7.75144
+http://www.wikidata.org/entity/Q111434202,Feuerwehrhaus,48.556653165298,8.9598494768143
+http://www.wikidata.org/entity/Q108562958,Feuerwehrgerätehaus Seelbach,48.31064,7.9367
+http://www.wikidata.org/entity/Q113499777,Freiwillige Feuerwehr Sasel,53.65485,10.11046
+http://www.wikidata.org/entity/Q110498596,Feuerwehr Rutzkau,51.666430024659,13.862151852556
+http://www.wikidata.org/entity/Q107635690,Feuerwache Wiesenthal,51.178022171993,12.893748683395
+http://www.wikidata.org/entity/Q110498514,Feuerwehr Bronkow,51.669781961277,13.914684831653
+http://www.wikidata.org/entity/Q110304632,Freiwillige Feuerwehr Neudorf,53.47198,10.07276
+http://www.wikidata.org/entity/Q108544554,Feuerwehrhaus Schwarzenbruck,49.35718,11.24439
+http://www.wikidata.org/entity/Q110515183,Freiwillige Feuerwehr Ruhland,51.456222694904,13.857691000794
+http://www.wikidata.org/entity/Q113508648,Feuerwache in Ahrensfelde,52.57668,13.57931
+http://www.wikidata.org/entity/Q110529486,Feuerwehr Gosda Weißag,51.691426828079,13.966002103347
+http://www.wikidata.org/entity/Q110560129,Feuerwache West,48.3514,7.81826
+http://www.wikidata.org/entity/Q107651975,Feuerwehrgerätehaus,48.32953,7.9312
+http://www.wikidata.org/entity/Q107651502,Feuerwehrgerätehaus,48.3284,7.84055
+http://www.wikidata.org/entity/Q109984501,alte Feuerwache in Kayna,50.993555555556,12.235583333333
+http://www.wikidata.org/entity/Q110529493,Spritzenhaus Vetschau/Spreewald,51.783081234796,14.07686684946
+http://www.wikidata.org/entity/Q111317620,Freiwillige Feuerwehr Francop,53.50578,9.87611
+http://www.wikidata.org/entity/Q107635758,Feuerwache Börtewitz,51.212266059957,12.980402090338
+http://www.wikidata.org/entity/Q110498477,Feuerwehr Grünewald,51.400763948406,13.996239165437
+http://www.wikidata.org/entity/Q108829194,Feuerwehrhaus Sindelfingen-Darmsheim,48.6948,8.9392
+http://www.wikidata.org/entity/Q114289616,Rathaus Nikolassee,52.431361111111,13.195055555556
+http://www.wikidata.org/entity/Q107635699,Feuerwache Naundorf,51.045647303233,13.135084466478
+http://www.wikidata.org/entity/Q110315824,Freiwillige Feuerwehr Spadenland,53.48636,10.05435
+http://www.wikidata.org/entity/Q108562611,Feuerwehrgerätehaus Schnellingen,48.28535,8.08295
