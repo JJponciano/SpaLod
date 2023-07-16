@@ -1,0 +1,21 @@
+city,cityLabel,latitude,longitude,population
+http://www.wikidata.org/entity/Q64,Berlin,52.516666666667,13.383333333333,3677472
+http://www.wikidata.org/entity/Q1055,Hamburg,53.55,10.0,1853935
+http://www.wikidata.org/entity/Q1726,München,48.1375,11.575,1487708
+http://www.wikidata.org/entity/Q365,Köln,50.942222222222,6.9577777777778,1073096
+http://www.wikidata.org/entity/Q1794,Frankfurt am Main,50.110555555556,8.6822222222222,759224
+http://www.wikidata.org/entity/Q1209,Freie Hansestadt Bremen,53.133333333333,8.7333333333333,661000
+http://www.wikidata.org/entity/Q1022,Stuttgart,48.7775,9.18,626275
+http://www.wikidata.org/entity/Q2079,Leipzig,51.34,12.375,625341
+http://www.wikidata.org/entity/Q1718,Düsseldorf,51.231144444444,6.7723805555556,619477
+http://www.wikidata.org/entity/Q2079,Leipzig,51.34,12.375,601866
+http://www.wikidata.org/entity/Q1295,Dortmund,51.513888888889,7.4652777777778,586852
+http://www.wikidata.org/entity/Q2066,Essen,51.450833333333,7.0130555555556,579432
+http://www.wikidata.org/entity/Q24879,Bremen,53.076944444444,8.8088888888889,563290
+http://www.wikidata.org/entity/Q1731,Dresden,51.05,13.74,555351
+http://www.wikidata.org/entity/Q1715,Hannover,52.374444444444,9.7386111111111,552710
+http://www.wikidata.org/entity/Q2090,Nürnberg,49.453888888889,11.0775,510632
+http://www.wikidata.org/entity/Q2100,Duisburg,51.432222222222,6.7611111111111,495152
+http://www.wikidata.org/entity/Q2103,Bochum,51.483333333333,7.2166666666667,363441
+http://www.wikidata.org/entity/Q2107,Wuppertal,51.266666666667,7.1833333333333,354572
+http://www.wikidata.org/entity/Q853708,Charlottenburg,52.5147,13.2836,345139
