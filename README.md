@@ -1,6 +1,6 @@
 # SpaLod
 Spatial data management with semantic web technology and Linked Open Data (LOD)
-
+[![Spalod Docker Image](https://github.com/JJponciano/SpaLod/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/JJponciano/SpaLod/actions/workflows/docker-image.yml)
 ## Docker 
 
 Clone the repository and go inside:
