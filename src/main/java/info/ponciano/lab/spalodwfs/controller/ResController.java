@@ -1,5 +1,14 @@
 package info.ponciano.lab.spalodwfs.controller;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.jena.graph.impl.TripleStore;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ParameterizedSparqlString;
@@ -18,6 +27,7 @@ import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +43,19 @@ import info.ponciano.lab.spalodwfs.model.Triplestore;
 import info.ponciano.lab.spalodwfs.services.FormDataService;
 import info.ponciano.lab.spalodwfs.mvc.models.geojson.GeoJsonRDF;
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
+import info.ponciano.lab.spalodwfs.mvc.models.semantic.OntoManagementException;
+import info.ponciano.lab.spalodwfs.mvc.models.semantic.OwlManagement;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
 import java.util.Set;
 
 import info.ponciano.lab.spalodwfs.controller.storage.StorageProperties;
 import info.ponciano.lab.spalodwfs.mvc.controllers.last.GeoJsonForm;
+import info.ponciano.lab.pisemantic.PiOntologyException;
+import info.ponciano.lab.pisemantic.PiSparql;
 import info.ponciano.lab.pitools.files.PiFile;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -255,12 +271,18 @@ public class ResController {
    * 
    *         Example: curl -X POST -F "file=@/path/to/your/geojson-file.geojson"
    *         http://localhost:8081/api/uplift
+   * @throws Exception
+   * @throws PiOntologyException
+   * @throws ParseException
+   * @throws IOException
+   * @throws FileNotFoundException
    * 
    */
   @PostMapping("/uplift")
-  public String uplift(@RequestParam("file") MultipartFile file) {
+  public String  uplift(@RequestParam("file") MultipartFile file) throws FileNotFoundException, IOException, ParseException, PiOntologyException, Exception {
+    PiSparql ont = new OwlManagement(KB.DEFAULT_ONTO).getOnt();
+
     System.out.println("***********" + "/uplift" + "***********");
-    try {
       // store file
       storageService.store(file);
 
@@ -269,20 +291,22 @@ public class ResController {
       String geojsonfilepath = KB.STORAGE_DIR + "/" + filename;
 
       // execute the uplift
-      GeoJsonRDF.upliftGeoJSON(geojsonfilepath, KB.get().getOnt());
-      KB.get().save();
+      GeoJsonRDF.upliftGeoJSON(geojsonfilepath, ont);
+      // KB.get().save();
       String out;
       if (filename != null)
         out = filename.substring(0, filename.lastIndexOf(".")) + ".owl";
       else
         out = "out.owl";
       String res = new StorageProperties().getLocation() + "/" + out;
-      System.out.println(res);
-      new PiFile(KB.OUT_ONTO).copy(res);
-      return out;
-    } catch (Exception ex) {
-      return ex.getMessage();
-    }
+      ont.write(res);
+      // Set the appropriate Content-Type header based on the file's MIME type
+        Path path = new File(res).toPath();
+        // Set the Content-Disposition header to prompt the user to download the file
+        String result = path.getFileName().toString();
+        // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + res);
+      System.out.println("results: "+ result);
+      return "/files/"+result;
   }
 
   /**
@@ -365,6 +389,8 @@ public class ResController {
       e.printStackTrace();
     }
     String json = JsonUtil.setToJson(unknownPredicates);
+    System.out.println("***********" + "DONE :check-ontology" + "***********");
+
     return json;
   }
 

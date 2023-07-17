@@ -32,6 +32,8 @@
   
   <script>
   import $ from "jquery";
+  import { API_BASE_URL } from '@/config.js';
+
   export default {
     data() {
       return {
@@ -71,7 +73,7 @@
       },
       checkRole(){
         $.ajax({
-          url: 'https://localhost:8081/admin',
+          url: API_BASE_URL +'/admin',
           method: 'GET',
           xhrFields: {
             withCredentials: true
@@ -87,7 +89,7 @@
       },
       checkLoggedIn() { 
         $.ajax({
-          url: 'https://localhost:8081/status',
+          url: API_BASE_URL +'/status',
           method: 'GET',
           xhrFields: {
             withCredentials: true
@@ -108,7 +110,7 @@
       },
       getAccessToken() {
         $.ajax({
-          url: 'https://localhost:8081/getGitUser',
+          url: API_BASE_URL +'/getGitUser',
           method: 'GET',
           xhrFields: {
             withCredentials: true

@@ -70,7 +70,7 @@ public class GeoJsonRDF {
         JSONObject jsonObject = (JSONObject) object;
 
         //Reads the collection
-        String nameCollection = (String) jsonObject.get("name");
+        String nameCollection = (String) jsonObject.get("name")+"_"+UUID.randomUUID().toString();
         FeatureCollection featureCollection = new FeatureCollection(nameCollection);
 
         extractFeatures(jsonObject, featureCollection);

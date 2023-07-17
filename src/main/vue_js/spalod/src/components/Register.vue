@@ -21,6 +21,8 @@
 
 <script>
 import $ from "jquery";
+import { API_BASE_URL } from '@/config.js';
+
 export default {
   data() {
     return {
@@ -33,7 +35,7 @@ export default {
     async submitForm() {
       if (this.password == this.confirmPassword) {
         $.ajax({
-          url: 'https://localhost:8081/register',
+          url: API_BASE_URL +'/register',
           method: 'POST',
           data: {
             username: this.username,
@@ -45,7 +47,7 @@ export default {
           success: (response) => {
             console.log(response)
             $.ajax({
-              url: 'https://localhost:8081/login',
+              url: API_BASE_URL +'/login',
               method: 'POST',
               data: {
                 username: this.username,
@@ -57,7 +59,7 @@ export default {
               success: (response) => {
                 console.log(response);
                 $.ajax({
-                  url: 'https://localhost:8081/uuid',
+                  url: API_BASE_URL +'/uuid',
                   method: 'GET',
                   data: {
                     username: this.username,
@@ -89,7 +91,7 @@ export default {
                       tripleData: tripleData,
                     };
                     $.ajax({
-                      url: 'https://localhost:8081/api/update',
+                      url: API_BASE_URL +'/api/update',
                       type: 'POST',
                       data: JSON.stringify(addOperation),
                       contentType: 'application/json',

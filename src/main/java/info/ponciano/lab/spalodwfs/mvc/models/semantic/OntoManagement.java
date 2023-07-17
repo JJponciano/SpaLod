@@ -283,7 +283,7 @@ public abstract class OntoManagement implements KnowledgeBaseInterface {
      * @return this ontModel.
      */
     @Override
-    public PiOnt getOnt() {
+    public PiSparql getOnt() {
         return ont;
     }
 

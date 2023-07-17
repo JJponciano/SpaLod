@@ -44,18 +44,20 @@ import info.ponciano.lab.spalodwfs.model.TripleOperation;
 @Component
 public class UserService implements UserDetailsService {
     
-    private final String DB_FILE = "./src/main/java/info/ponciano/lab/spalodwfs/controller/security/users.txt";
+    private final String DB_FILE = "users.txt";
 
     // Finds a user by their username
     public User findByUsername(String username) {
         try (BufferedReader br = new BufferedReader(new FileReader(DB_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts[1].equals(username)) {
-                    String password = parts[2];
-                    ArrayList<String> roles = new ArrayList<>(Arrays.asList(parts[3].split(";")));
-                    return new User(username, password,roles);
+                if (!line.isBlank()){
+                    String[] parts = line.split(",");
+                    if (parts[1].equals(username)) {
+                        String password = parts[2];
+                        ArrayList<String> roles = new ArrayList<>(Arrays.asList(parts[3].split(";")));
+                        return new User(username, password,roles);
+                    }            
                 }
             }
         } catch (IOException e) {

@@ -19,6 +19,8 @@
   
 <script>
   import $ from "jquery";
+  import { API_BASE_URL } from '@/config.js';
+
   export default {
     name:'Login',
     data() {
@@ -30,7 +32,7 @@
     methods: {
         async submitForm() {
           $.ajax({
-            url: 'https://localhost:8081/login',
+            url: API_BASE_URL +'/login',
             method: 'POST',
             data: {
               username: this.username,
@@ -42,7 +44,7 @@
             success: (response) => {
               console.log(response);
               $.ajax({
-                url: 'https://localhost:8081/uuid',
+                url: API_BASE_URL +'/uuid',
                 method: 'GET',
                 data: {
                   username: this.username,
@@ -79,7 +81,7 @@
       },
       oauthLogin(){
         localStorage.clear();
-        window.location.href="https://localhost:8081/oauth2/authorization/github";
+        window.location.href=API_BASE_URL +"/oauth2/authorization/github";
       }
     },
   };

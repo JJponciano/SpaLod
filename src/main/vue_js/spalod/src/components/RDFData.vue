@@ -111,6 +111,8 @@
 <script>
 import $ from 'jquery';
 import {reactive, onBeforeMount } from 'vue';
+import { API_BASE_URL } from '@/config.js';
+
 $.ajaxSetup({
     xhrFields: {
         withCredentials: true
@@ -125,7 +127,7 @@ export default {
     //     console.log(localStorage.getItem("username"))
     //     onBeforeMount(async ()=> {
     //     await $.ajax({
-    //         url: 'https://localhost:8081/getGitUser',
+    //         url: API_BASE_URL +'/getGitUser',
     //         method: 'GET',
     //         xhrFields: {
     //             withCredentials: true
@@ -242,7 +244,7 @@ export default {
             {
                try {
                     const response = await $.ajax({
-                        url: 'https://localhost:8081/getGitUser',
+                        url: API_BASE_URL +'/getGitUser',
                         method: 'GET',
                         xhrFields: {
                             withCredentials: true
@@ -279,7 +281,7 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 'type': 'POST',
-                'url': 'https://localhost:8081/api/sparql-select',
+                'url': API_BASE_URL +'/api/sparql-select',
                 'data': JSON.stringify(data),
                 'dataType': 'json',
                 success: (data) => {
@@ -311,7 +313,7 @@ export default {
                 'Content-Type': 'application/json'
             },
             'type': 'POST',
-            'url': 'https://localhost:8081/api/sparql-select',
+            'url': API_BASE_URL +'/api/sparql-select',
             'data': JSON.stringify(checkPredicates),
             'dataType': 'json',
             success: (result) => {
@@ -379,7 +381,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': 'https://localhost:8081/api/sparql-select',
+                        'url': API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -406,7 +408,7 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     'type': 'POST',
-                    'url': 'https://localhost:8081/api/sparql-select',
+                    'url': API_BASE_URL +'/api/sparql-select',
                     'data': JSON.stringify(data),
                     'dataType': 'json',
                     success: (data) => {
@@ -438,7 +440,7 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 'type': 'POST',
-                'url': 'https://localhost:8081/api/sparql-select',
+                'url': API_BASE_URL +'/api/sparql-select',
                 'data': JSON.stringify(data),
                 'dataType': 'json',
                 success: (response) => {
@@ -480,7 +482,7 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 'type': 'POST',
-                'url': 'https://localhost:8081/api/sparql-select',
+                'url': API_BASE_URL +'/api/sparql-select',
                 'data': JSON.stringify(data),
                 'dataType': 'json',
                 success: (data) => {
@@ -617,7 +619,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': 'https://localhost:8081/api/sparql-select',
+                        'url': API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -695,7 +697,7 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     'type': 'POST',
-                    'url': 'https://localhost:8081/api/sparql-select',
+                    'url': API_BASE_URL +'/api/sparql-select',
                     'data': JSON.stringify(data),
                     'dataType': 'json',
                     success: (data) => {
@@ -856,14 +858,14 @@ export default {
                 let formData = new FormData();
                 formData.append('file', file);
                 $.ajax({
-                    url: 'https://localhost:8081/api/uplift',
+                    url: API_BASE_URL +'/api/uplift',
                     type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
                     success: function (response) {
                         $.ajax({
-                            url: `https://localhost:8081/download/data/${response}`,
+                            url: `${API_BASE_URL}/download/data/${response}`,
                             method: 'GET',
                             xhrFields: {
                                 responseType: 'blob',
@@ -967,7 +969,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': 'https://localhost:8081/api/sparql-select',
+                        'url': API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -998,7 +1000,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': 'https://localhost:8081/api/sparql-select',
+                        'url': API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -1055,7 +1057,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': 'https://localhost:8081/api/sparql-select',
+                        'url': API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -1095,7 +1097,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': 'https://localhost:8081/api/sparql-select',
+                        'url': API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -1141,7 +1143,7 @@ export default {
                 tripleData: tripleData,
             };
             $.ajax({
-                url: 'https://localhost:8081/api/update',
+                url: API_BASE_URL +'/api/update',
                 type: 'POST',
                 data: JSON.stringify(addOperation),
                 contentType: 'application/json',

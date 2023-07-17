@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
-        <uri id="Automatically generated entry, Timestamp=1681806440042" name="duplicate:http://dcat-ap.de/def/licenses" uri="licenseDocument.rdf"/>
-        <uri id="Automatically generated entry, Timestamp=1681806440042" name="duplicate:http://dcat-ap.de/def/licenses" uri="licenses-dcat.rdf"/>
-        <uri id="Automatically generated entry, Timestamp=1681806440042" name="http://lab.ponciano.info/Spalod" uri="geotime.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1681806440042" name="http://lab.ponciano.info/ont/spalod" uri="spalod.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1681806440042" name="http://lab.ponciano.info/ontology/2020/Spalod/data" uri="vocab.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1681806440042" name="http://lab.ponciano.info/ontology/2020/Spalod/dcat#" uri="geotime2.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1681806440042" name="http://lab.ponciano.info/ontology/2020/Spalod/iso-19115" uri="iso-19115.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1681806440042" name="http://www.opengis.net/ont/geosparql" uri="geosparql.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1681806440042" name="http://www.w3.org/2002/07/owl" uri="iso19110.rdf"/>
-        <uri id="Automatically generated entry, Timestamp=1681806440042" name="https://schema.org/" uri="schemaorg.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1689611824094" name="duplicate:http://dcat-ap.de/def/licenses" uri="licenseDocument.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1689611824094" name="duplicate:http://dcat-ap.de/def/licenses" uri="licenses-dcat.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1689611824094" name="http://lab.ponciano.info/Spalod" uri="geotime.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1689611824094" name="http://lab.ponciano.info/ont/spalod" uri="spalod.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1689611824094" name="http://lab.ponciano.info/ontology/2020/Spalod/data" uri="vocab.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1689611824094" name="http://lab.ponciano.info/ontology/2020/Spalod/dcat#" uri="geotime2.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1689611824094" name="http://lab.ponciano.info/ontology/2020/Spalod/iso-19115" uri="iso-19115.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1689611824094" name="http://www.opengis.net/ont/geosparql" uri="geosparql.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1689611824094" name="http://www.w3.org/2002/07/owl" uri="iso19110.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1689611824094" name="https://schema.org/" uri="schemaorg.owl"/>
     </group>
 </catalog>
