@@ -19,7 +19,6 @@
   
 <script>
   import $ from "jquery";
-  import { API_BASE_URL } from '@/config.js';
 
   export default {
     name:'Login',
@@ -32,7 +31,7 @@
     methods: {
         async submitForm() {
           $.ajax({
-            url: API_BASE_URL +'/login',
+            url: import.meta.env.VITE_APP_API_BASE_URL +'/login',
             method: 'POST',
             data: {
               username: this.username,
@@ -44,7 +43,7 @@
             success: (response) => {
               console.log(response);
               $.ajax({
-                url: API_BASE_URL +'/uuid',
+                url: import.meta.env.VITE_APP_API_BASE_URL +'/uuid',
                 method: 'GET',
                 data: {
                   username: this.username,
@@ -81,7 +80,7 @@
       },
       oauthLogin(){
         localStorage.clear();
-        window.location.href=API_BASE_URL +"/oauth2/authorization/github";
+        window.location.href=import.meta.env.VITE_APP_API_BASE_URL +"/oauth2/authorization/github";
       }
     },
   };
