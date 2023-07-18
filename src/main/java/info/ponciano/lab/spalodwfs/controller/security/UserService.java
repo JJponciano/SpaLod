@@ -1,6 +1,7 @@
 package info.ponciano.lab.spalodwfs.controller.security;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,6 +49,11 @@ public class UserService implements UserDetailsService {
 
     // Finds a user by their username
     public User findByUsername(String username) {
+        try {
+            new File(DB_FILE).createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         try (BufferedReader br = new BufferedReader(new FileReader(DB_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
