@@ -34,6 +34,7 @@
 
 <script>
 import $ from "jquery";
+import { API_BASE_URL } from '@/config.js';
 
 export default {
     data() {
@@ -49,7 +50,7 @@ export default {
             headers: {
                 'Content-Type': 'application/json'
             },
-            url: 'https://localhost:8081/api' + url.pathname + '/',
+            url: API_BASE_URL +'/api' + url.pathname + '/',
             type: 'GET',
             dataType: 'json',
             success: this.handleResponse,

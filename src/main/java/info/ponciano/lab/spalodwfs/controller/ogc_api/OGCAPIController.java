@@ -118,7 +118,6 @@ public class OGCAPIController {
             try {
                 query += "?" + URLDecoder.decode(predicates[i], "UTF-8").replace(" ", "").replace("-", "") + " ";
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -135,7 +134,6 @@ public class OGCAPIController {
             try {
                 query += "?itemID <http://lab.ponciano.info/ont/spalod#" + predicates[i] + "> ?" + URLDecoder.decode(predicates[i],"UTF-8").replace(" ", "").replace("-", "") + " .\n";
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

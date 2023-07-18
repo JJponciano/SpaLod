@@ -6,6 +6,7 @@ import vue from '@vitejs/plugin-vue'
 const fs = require('fs');
 const path = require('path');
 
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
@@ -15,7 +16,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: 8080,
+    port: 80,
     https: {
       key: fs.readFileSync(path.resolve(__dirname, './new-server.key')),
       cert: fs.readFileSync(path.resolve(__dirname, './server.crt')),

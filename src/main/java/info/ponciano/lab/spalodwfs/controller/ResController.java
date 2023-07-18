@@ -1,5 +1,18 @@
 package info.ponciano.lab.spalodwfs.controller;
 
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.jena.graph.impl.TripleStore;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ParameterizedSparqlString;
@@ -7,8 +20,15 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.apache.jena.rdfconnection.RDFConnectionRemote;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.shared.impl.PrefixMappingImpl;
 import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
@@ -18,6 +38,7 @@ import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +54,20 @@ import info.ponciano.lab.spalodwfs.model.Triplestore;
 import info.ponciano.lab.spalodwfs.services.FormDataService;
 import info.ponciano.lab.spalodwfs.mvc.models.geojson.GeoJsonRDF;
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
+import info.ponciano.lab.spalodwfs.mvc.models.semantic.OntoManagementException;
+import info.ponciano.lab.spalodwfs.mvc.models.semantic.OwlManagement;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.util.HashSet;
 import java.util.Set;
 
 import info.ponciano.lab.spalodwfs.controller.storage.StorageProperties;
 import info.ponciano.lab.spalodwfs.mvc.controllers.last.GeoJsonForm;
+import info.ponciano.lab.pisemantic.PiOntologyException;
+import info.ponciano.lab.pisemantic.PiSparql;
 import info.ponciano.lab.pitools.files.PiFile;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -99,15 +127,16 @@ public class ResController {
     System.out.println("***********" + "/sparql-select" + "***********");
     System.out.println("Query:");
     System.out.println(sq);
-    String query = sq.getResults();
+    String query = KB.PREFIX + " " + sq.getResults();
     String triplestore = sq.getTriplestore();
     String results;
     if (triplestore == null || triplestore.isBlank())
       results = Triplestore.get().executeSelectQuery(query);
     else
       results = Triplestore.executeSelectQuery(query, triplestore);
-      
-      // System.out.println(results);
+    System.out.println("***********" + "END /sparql-select" + "***********");
+
+    // System.out.println(results);
     return results;
   }
 
@@ -131,18 +160,18 @@ public class ResController {
     TripleData tripleData = tripleOperation.getTripleData();
     if ("add".equalsIgnoreCase(tripleOperation.getOperation())) {
       Triplestore.get().addTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
-      
+
       // Insert a triple in graphdb
 
       String subject = "<" + tripleData.getSubject() + ">";
       String predicate = "<" + tripleData.getPredicate() + ">";
       String object = tripleData.getObject();
 
-      String queryString = "SELECT ?type where { <"+ tripleData.getPredicate() +"> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
-      String type=Triplestore.executeSelectQuery(queryString,GRAPHDB_QUERY_ENDPOINT);
+      String queryString = "SELECT ?type where { <" + tripleData.getPredicate()
+          + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
+      String type = Triplestore.executeSelectQuery(queryString, GRAPHDB_QUERY_ENDPOINT);
       // System.out.println(type);
       // System.out.println(tripleData.getPredicate());
-
 
       JSONObject jsonResult = new JSONObject(type);
       JSONObject resultsObject = jsonResult.getJSONObject("results");
@@ -155,7 +184,9 @@ public class ResController {
         if (predicateTypeObject.getString("value").equals("http://www.w3.org/2002/07/owl#DatatypeProperty"))
           predicateType = predicateTypeObject.getString("value");
       }
-      //bindings.length() > 1 ? bindings.getJSONObject(1).getJSONObject("type").getString("value") : bindings.getJSONObject(0).getJSONObject("type").getString("value");
+      // bindings.length() > 1 ?
+      // bindings.getJSONObject(1).getJSONObject("type").getString("value") :
+      // bindings.getJSONObject(0).getJSONObject("type").getString("value");
       // System.out.println(tripleData.getPredicate()+" : "+predicateType);
       if (predicateType.equals("http://www.w3.org/2002/07/owl#DatatypeProperty")) {
         try {
@@ -168,18 +199,16 @@ public class ResController {
             float floatValue = Float.parseFloat(object);
             object = "\"" + tripleData.getObject() + "\"^^xsd:float";
           } catch (NumberFormatException e2) {
-              // IF STRING
-              if (object.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
-                object = "\"" + tripleData.getObject() + "\"^^xsd:dateTime";
-                System.out.println("MATCH TIME ----------------------------------");
-              }
-              else{
-                object = "\"" + tripleData.getObject() + "\"^^xsd:string";
+            // IF STRING
+            if (object.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
+              object = "\"" + tripleData.getObject() + "\"^^xsd:dateTime";
+              System.out.println("MATCH TIME ----------------------------------");
+            } else {
+              object = "\"" + tripleData.getObject() + "\"^^xsd:string";
             }
           }
         }
-      }
-      else{
+      } else {
         if (object.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
           object = "\"" + tripleData.getObject() + "\"^^xsd:dateTime";
           System.out.println("MATCH TIME ----------------------------------");
@@ -188,10 +217,8 @@ public class ResController {
         }
       }
 
-
-  
       ParameterizedSparqlString insertCommand = new ParameterizedSparqlString();
-      insertCommand.setCommandText("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "+"INSERT DATA { "+subject+" "+predicate+" "+object+" }");
+      insertCommand.setCommandText(KB.PREFIX + " INSERT DATA { " + subject + " " + predicate + " " + object + " }");
       UpdateRequest insertRequest = UpdateFactory.create(insertCommand.toString());
       UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest, GRAPHDB_UPDATE_ENDPOINT);
       insertProcessor.execute();
@@ -234,8 +261,8 @@ public class ResController {
       }
 
       ParameterizedSparqlString removeCommand = new ParameterizedSparqlString();
-      removeCommand.setCommandText("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "+"DELETE { "+subject+" "+predicate+" "+object+" }"+
-      "WHERE  { "+subject+" "+predicate+" "+object+" }");
+      removeCommand.setCommandText(KB.PREFIX + " DELETE { " + subject + " " + predicate + " " + object + " }" +
+          "WHERE  { " + subject + " " + predicate + " " + object + " }");
       UpdateRequest removeRequest = UpdateFactory.create(removeCommand.toString());
       UpdateProcessor removeProcessor = UpdateExecutionFactory.createRemoteForm(removeRequest, GRAPHDB_UPDATE_ENDPOINT);
       removeProcessor.execute();
@@ -255,34 +282,43 @@ public class ResController {
    * 
    *         Example: curl -X POST -F "file=@/path/to/your/geojson-file.geojson"
    *         http://localhost:8081/api/uplift
+   * @throws Exception
+   * @throws PiOntologyException
+   * @throws ParseException
+   * @throws IOException
+   * @throws FileNotFoundException
    * 
    */
   @PostMapping("/uplift")
-  public String uplift(@RequestParam("file") MultipartFile file) {
+  public String uplift(@RequestParam("file") MultipartFile file)
+      throws FileNotFoundException, IOException, ParseException, PiOntologyException, Exception {
+    PiSparql ont = new OwlManagement(KB.DEFAULT_ONTO).getOnt();
+
     System.out.println("***********" + "/uplift" + "***********");
-    try {
-      // store file
-      storageService.store(file);
+    // store file
+    storageService.store(file);
 
-      // File reading
-      String filename = file.getOriginalFilename();
-      String geojsonfilepath = KB.STORAGE_DIR + "/" + filename;
+    // File reading
+    String filename = file.getOriginalFilename();
+    String geojsonfilepath = KB.STORAGE_DIR + "/" + filename;
 
-      // execute the uplift
-      GeoJsonRDF.upliftGeoJSON(geojsonfilepath, KB.get().getOnt());
-      KB.get().save();
-      String out;
-      if (filename != null)
-        out = filename.substring(0, filename.lastIndexOf(".")) + ".owl";
-      else
-        out = "out.owl";
-      String res = new StorageProperties().getLocation() + "/" + out;
-      System.out.println(res);
-      new PiFile(KB.OUT_ONTO).copy(res);
-      return out;
-    } catch (Exception ex) {
-      return ex.getMessage();
-    }
+    // execute the uplift
+    GeoJsonRDF.upliftGeoJSON(geojsonfilepath, ont);
+    // KB.get().save();
+    String out;
+    if (filename != null)
+      out = filename.substring(0, filename.lastIndexOf(".")) + ".owl";
+    else
+      out = "out.owl";
+    String res = new StorageProperties().getLocation() + "/" + out;
+    ont.write(res);
+    // Set the appropriate Content-Type header based on the file's MIME type
+    Path path = new File(res).toPath();
+    // Set the Content-Disposition header to prompt the user to download the file
+    String result = path.getFileName().toString();
+    // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + res);
+    System.out.println("results: " + result);
+    return "/files/" + result;
   }
 
   /**
@@ -357,14 +393,59 @@ public class ResController {
     String filename = file.getOriginalFilename();
     String filepath = KB.STORAGE_DIR + "/" + filename;
     OntModel newOntology = ModelFactory.createOntologyModel();
-    Set<String> unknownPredicates = null;
+    Set<String> unknownPredicates = new HashSet<>();
     try {
       newOntology.read(new FileInputStream(filepath), null);
-      unknownPredicates = Triplestore.get().getUnknownPredicates(newOntology);
+      Set<String> may_unknown = Triplestore.get().getUnknownPredicates(newOntology);
+      // for reach unknown properties, check that the property is also unknwown in the
+      // triplestore
+      may_unknown.forEach(p -> {
+        if (p.toLowerCase().contains("spalod")) {
+          String query = KB.PREFIX + " SELECT ?s ?o WHERE {?s <" + p + "> ?o}";
+          String result = Triplestore.executeSelectQuery(query, GRAPHDB_QUERY_ENDPOINT);
+          try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(result);
+
+            JsonNode bindingsNode = jsonNode.at("/results/bindings");
+            boolean isEmpty = bindingsNode.isArray() && bindingsNode.isEmpty();
+            String substring = p.substring(p.lastIndexOf("#") + 1, p.length());
+
+            System.out.println(substring + ": Is bindings array empty? " + isEmpty);
+            if (isEmpty) {
+              unknownPredicates.add(substring);
+
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+
+      });
+       StmtIterator stmtIterator = newOntology.listStatements();
+        while (stmtIterator.hasNext()) {
+           TripleOperation tripleOperation=null;
+          try {
+
+            Statement statement = stmtIterator.nextStatement();
+            Resource subject = statement.getSubject();
+            Property predicate = statement.getPredicate();
+            RDFNode object = statement.getObject();
+            tripleOperation = new TripleOperation("add", new TripleData(subject.toString(), predicate.toString(), object.toString()));
+             this.update(tripleOperation);
+              } catch (Exception e) {
+                System.err.println(":::::::::::::::::ERROR:::::::::::::::::");
+                System.err.println("DATA : "+tripleOperation);
+                System.err.println(e.getMessage());
+                System.err.println(":::::::::::::::::END ERROR:::::::::::::::::");
+          }
+        }
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
     String json = JsonUtil.setToJson(unknownPredicates);
+    System.out.println("***********" + "DONE: check-ontology" + "***********");
+
     return json;
   }
 

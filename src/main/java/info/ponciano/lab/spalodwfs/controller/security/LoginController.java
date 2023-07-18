@@ -87,8 +87,11 @@ public class LoginController
       @RolesAllowed({"USER","ADMIN"})
       @GetMapping("/uuid")
       public ResponseEntity<String> getUserId(@RequestParam("username") String username)
-      {
-            return new ResponseEntity<>(userService.getUUID(username),HttpStatus.OK);
+      {            
+            System.out.print("::::::: Request UUID: ");
+            String uuid = userService.getUUID(username);
+            System.out.println(uuid);
+            return new ResponseEntity<>(uuid,HttpStatus.OK);
       }
 
       @GetMapping("/getGitUser")
