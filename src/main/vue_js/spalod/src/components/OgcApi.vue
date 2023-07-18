@@ -34,7 +34,6 @@
 
 <script>
 import $ from "jquery";
-import { API_BASE_URL } from '@/config.js';
 
 export default {
     data() {
@@ -50,7 +49,7 @@ export default {
             headers: {
                 'Content-Type': 'application/json'
             },
-            url: API_BASE_URL +'/api' + url.pathname + '/',
+            url: import.meta.env.VITE_APP_API_BASE_URL +'/api' + url.pathname + '/',
             type: 'GET',
             dataType: 'json',
             success: this.handleResponse,
