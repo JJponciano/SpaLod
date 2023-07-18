@@ -32,7 +32,6 @@
   
   <script>
   import $ from "jquery";
-  import { API_BASE_URL } from '@/config.js';
 
   export default {
     data() {
@@ -73,7 +72,7 @@
       },
       checkRole(){
         $.ajax({
-          url: API_BASE_URL +'/admin',
+          url: import.meta.env.VITE_APP_API_BASE_URL +'/admin',
           method: 'GET',
           xhrFields: {
             withCredentials: true
@@ -89,7 +88,7 @@
       },
       checkLoggedIn() { 
         $.ajax({
-          url: API_BASE_URL +'/status',
+          url: import.meta.env.VITE_APP_API_BASE_URL +'/status',
           method: 'GET',
           xhrFields: {
             withCredentials: true
@@ -110,7 +109,7 @@
       },
       getAccessToken() {
         $.ajax({
-          url: API_BASE_URL +'/getGitUser',
+          url: import.meta.env.VITE_APP_API_BASE_URL +'/getGitUser',
           method: 'GET',
           xhrFields: {
             withCredentials: true
