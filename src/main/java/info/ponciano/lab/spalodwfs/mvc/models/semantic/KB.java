@@ -70,6 +70,7 @@ public class KB implements KnowledgeBaseInterface {
             + "PREFIX dpp: <http://dbpedia.org/property/>\n"
             + "PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>\n"
             + "PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n";
+            + "PREFIX spalod: <http://lab.ponciano.info/spalod#>\n";
     private OwlManagement model;
 
     public static KB get() {
