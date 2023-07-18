@@ -1,10 +1,13 @@
+
 import { fileURLToPath, URL } from 'node:url'
+
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 const fs = require('fs');
 const path = require('path');
+// require('dotenv').config()
 
 
 // https://vitejs.dev/config/
@@ -23,7 +26,7 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'https://localhost:8081',
+        target: "https://localhost:8081",
         changeOrigin: true,
         secure:false,
       },
