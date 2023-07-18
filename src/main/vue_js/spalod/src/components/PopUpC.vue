@@ -20,6 +20,10 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '@/config.js';
+import { GRAPH_DB } from '@/config.js';
+import { FRONT_BASE_URL } from '@/config.js';
+
 export default{
     props:{
         popupC: Boolean,
