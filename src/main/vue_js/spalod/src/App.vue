@@ -11,6 +11,7 @@ import OgcApi from './components/OgcApi.vue';
 import ExternaLinks from './components/ExternalLinks.vue';
 
 
+
 export default {
   components: {
     NavBar,
