@@ -147,3 +147,4 @@ SpalodOutput_back.owl
 src/main/vue_js/spalod/package-lock.json
 package-lock.json
 users.txt
+*.json
