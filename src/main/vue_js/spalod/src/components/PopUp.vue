@@ -142,7 +142,7 @@ export default{
                                 "coordinates": []
                             },
                             "properties": {
-                                itemID: 'http://lab.ponciano.info/ont/spalod#' + this.uuidv4(),
+                                itemID: 'spalod:' + this.uuidv4(),
                             }
                         };
                         if (obj.geo === undefined || obj.Koordinate === undefined) {
@@ -192,7 +192,7 @@ export default{
                                 "coordinates": []
                             },
                             "properties": {
-                                itemID: 'http://lab.ponciano.info/ont/spalod#' + this.uuidv4(),
+                                itemID: 'spalod:' + this.uuidv4(),
                             }
                         };
                         if (obj.geo === undefined || obj.Koordinate === undefined) {
