@@ -113,7 +113,7 @@
 <script>
 import $ from 'jquery';
 import {reactive, onBeforeMount } from 'vue';
-import { API_BASE_URL } from '@/config.js';
+
 
 $.ajaxSetup({
     xhrFields: {
@@ -230,7 +230,7 @@ export default {
             {
                try {
                     const response = await $.ajax({
-                        url: API_BASE_URL +'/getGitUser',
+                        url: import.meta.env.VITE_APP_API_BASE_URL +'/getGitUser',
                         method: 'GET',
                         xhrFields: {
                             withCredentials: true
@@ -259,7 +259,7 @@ export default {
 
             const data = {
                 query: 'SELECT ?catalog ?title ?description ?publisher ?dataset where {?catalog <http://www.w3.org/ns/dcat#dataset> ?dataset . ?catalog <http://purl.org/dc/terms/title> ?title . ?collection <http://purl.org/dc/terms/description> ?description . ?collection <http://purl.org/dc/terms/publisher> ?publisher . ?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .}',
-                triplestore: "http://localhost:7200/repositories/Spalod", // TODO: graph DB
+                triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod", // TODO: graph DB
             };
             $.ajax({
                 headers: {
@@ -267,7 +267,7 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 'type': 'POST',
-                'url': API_BASE_URL +'/api/sparql-select',
+                'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                 'data': JSON.stringify(data),
                 'dataType': 'json',
                 success: (data) => {
@@ -291,7 +291,7 @@ export default {
         // Check if the predicates are known in the ontology
         const checkPredicates = {
             query: 'SELECT ?type WHERE { <' + this.queryables.find(queryable => queryable.q === "identifier").p + '> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }',
-            triplestore: 'http://localhost:7200/repositories/Spalod', 
+            triplestore: import.meta.env.VITE_GRAPH_DB+'/repositories/Spalod', 
         };
         $.ajax({
             headers: {
@@ -299,7 +299,7 @@ export default {
                 'Content-Type': 'application/json'
             },
             'type': 'POST',
-            'url': API_BASE_URL +'/api/sparql-select',
+            'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
             'data': JSON.stringify(checkPredicates),
             'dataType': 'json',
             success: (result) => {
@@ -359,7 +359,7 @@ export default {
                 this.queryables.forEach((queryable) => {
                     const data = {
                         query: 'SELECT ?' + queryable.q + ' WHERE { <spalod:' + queryString + '> <' + queryable.p + '> ?' + queryable.q + ' }',
-                        triplestore: "http://localhost:7200/repositories/Spalod", 
+                        triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod", 
                     };
                     $.ajax({
                         headers: {
@@ -367,7 +367,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': API_BASE_URL +'/api/sparql-select',
+                        'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -394,7 +394,7 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     'type': 'POST',
-                    'url': API_BASE_URL +'/api/sparql-select',
+                    'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                     'data': JSON.stringify(data),
                     'dataType': 'json',
                     success: (data) => {
@@ -418,7 +418,7 @@ export default {
         {
             const data = {
                 query:'SELECT ?s ?p ?o WHERE {?s ?p ?o. FILTER (?s=<spalod:'+this.uid+'>)}',
-                triplestore: "http://localhost:7200/repositories/Spalod"
+                triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod"
             };
             $.ajax({
                 headers: {
@@ -426,7 +426,7 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 'type': 'POST',
-                'url': API_BASE_URL +'/api/sparql-select',
+                'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                 'data': JSON.stringify(data),
                 'dataType': 'json',
                 success: (response) => {
@@ -462,7 +462,7 @@ export default {
         loadPredicates() {
             const data = {
                 query: 'SELECT ?property ?propertyType WHERE{{?property a owl:ObjectProperty . BIND("Object Property" AS ?propertyType)} UNION {?property a owl:DatatypeProperty . BIND("Data Property" AS ?propertyType)}} ORDER BY ?property',
-                triplestore: "http://localhost:7200/repositories/Spalod" //intégrer graph DB ici
+                triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod" //intégrer graph DB ici
             };
             $.ajax({
                 headers: {
@@ -470,7 +470,7 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 'type': 'POST',
-                'url': API_BASE_URL +'/api/sparql-select',
+                'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                 'data': JSON.stringify(data),
                 'dataType': 'json',
                 success: (data) => {
@@ -611,7 +611,7 @@ export default {
                     // Delete the old triplet
                     const data = {
                         query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + String(triplet.subject).replace(/ /g, '_') + '>)}',
-                        triplestore: "http://localhost:7200/repositories/Spalod"
+                        triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod"
                     };
                     $.ajax({
                         headers: {
@@ -619,7 +619,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': API_BASE_URL +'/api/sparql-select',
+                        'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -689,7 +689,7 @@ export default {
                 // Delete the old triplet
                 const data = {
                     query: 'SELECT ?o WHERE{?s <' + predicate + '> ?o . FILTER(?s = <' + String(triplet.subject).replace(/ /g, '_') + '>)}',
-                    triplestore: "http://localhost:7200/repositories/Spalod"
+                    triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod"
                 };
                 $.ajax({
                     headers: {
@@ -697,7 +697,7 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     'type': 'POST',
-                    'url': API_BASE_URL +'/api/sparql-select',
+                    'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                     'data': JSON.stringify(data),
                     'dataType': 'json',
                     success: (data) => {
@@ -858,14 +858,14 @@ export default {
                 let formData = new FormData();
                 formData.append('file', file);
                 $.ajax({
-                    url: API_BASE_URL +'/api/uplift',
+                    url: import.meta.env.VITE_APP_API_BASE_URL +'/api/uplift',
                     type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
                     success: function (response) {
                         $.ajax({
-                            url: `${API_BASE_URL}/download/data/${response}`,
+                            url: `${import.meta.env.VITE_APP_API_BASE_URL}/download/data/${response}`,
                             method: 'GET',
                             xhrFields: {
                                 responseType: 'blob',
@@ -961,7 +961,7 @@ export default {
                     // Delete the old triplets
                     var data = {
                         query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'spalod:' + this.metadata.identifier + '>)}',
-                        triplestore: "http://localhost:7200/repositories/Spalod"
+                        triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod"
                     };
                     $.ajax({
                         headers: {
@@ -969,7 +969,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': API_BASE_URL +'/api/sparql-select',
+                        'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -992,7 +992,7 @@ export default {
 
                     data = {
                         query: 'SELECT ?o WHERE{?s <http://xlmns.com/foaf/0.1/name> ?o . FILTER(?s = <' + 'spalod:' + String(this.metadata[queryable.q]).replace(/ /g, '_') + '>)}',
-                        triplestore: "http://localhost:7200/repositories/Spalod"
+                        triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod"
                     };
                     $.ajax({
                         headers: {
@@ -1000,7 +1000,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': API_BASE_URL +'/api/sparql-select',
+                        'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -1049,7 +1049,7 @@ export default {
                     // Delete the old triplet
                     var data = {
                         query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'spalod:' + this.metadata.identifier + '>)}',
-                        triplestore: "http://localhost:7200/repositories/Spalod"
+                        triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod"
                     };
                     $.ajax({
                         headers: {
@@ -1057,7 +1057,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': API_BASE_URL +'/api/sparql-select',
+                        'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -1089,7 +1089,7 @@ export default {
                     // Delete the old triplet
                     var data = {
                         query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'spalod:' + this.metadata.identifier + '>)}',
-                        triplestore: "http://localhost:7200/repositories/Spalod"
+                        triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod"
                     };
                     $.ajax({
                         headers: {
@@ -1097,7 +1097,7 @@ export default {
                             'Content-Type': 'application/json'
                         },
                         'type': 'POST',
-                        'url': API_BASE_URL +'/api/sparql-select',
+                        'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
                         'data': JSON.stringify(data),
                         'dataType': 'json',
                         success: (data) => {
@@ -1143,7 +1143,7 @@ export default {
                 tripleData: tripleData,
             };
             $.ajax({
-                url: API_BASE_URL +'/api/update',
+                url: import.meta.env.VITE_APP_API_BASE_URL +'/api/update',
                 type: 'POST',
                 data: JSON.stringify(addOperation),
                 contentType: 'application/json',
