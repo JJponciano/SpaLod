@@ -46,9 +46,12 @@
         <p v-for="(triplet, index) in rdfData" :key="triplet.id">
             <input type="checkbox" v-model="selectedTriplets" :value="triplet" />
             <input type="text" v-model="triplet.subject" class="subject" />
-            <input type="text" v-model="triplet.predicate" class="predicate"
-                :class="{ unknown: unkownPredicates.includes(triplet.predicate) }"
-                @input="filterResults(triplet.predicate, index)" @focus="activeInput = index" :title="unkownPredicates.includes(triplet.predicate)
+            <input type="text" v-model="triplet.predicate" class="object" />
+            
+            <!-- WARNING BELOW IS POSSIBLE CONFUSION -->
+            <input type="text" v-model="triplet.object" class="predicate"
+                :class="{ unknown: unkownPredicates.includes(triplet.object) }"
+                @input="filterResults(triplet.object, index)" @focus="activeInput = index" :title="unkownPredicates.includes(triplet.object)
                         ? 'Unknown predicate: Please add it manually by specifying the type'
                         : null" />
         <ul v-if="activeInput === index" class="autocomplete-results">
@@ -68,7 +71,6 @@
                 </li>
             </div>
         </ul>
-        <input type="text" v-model="triplet.object" class="object" />
         <button class="delete-button" @click="deleteTriplet(index)">Delete</button>
         <button :id="'btn' + index" class="add-button" @click="addTriplet(triplet, index)">Add</button>
         <br v-if="rdfData[index + 1] && rdfData[index + 1].subject !== rdfData[index].subject">
@@ -119,35 +121,16 @@ $.ajaxSetup({
     }
 });
 
-
-
-
 export default {
-    // setup(){
-    //     console.log(localStorage.getItem("username"))
-    //     onBeforeMount(async ()=> {
-    //     await $.ajax({
-    //         url: API_BASE_URL +'/getGitUser',
-    //         method: 'GET',
-    //         xhrFields: {
-    //             withCredentials: true
-    //         },
-            // success: (response) => {
-            //     localStorage.setItem("username",response);
-            // },
-            // error: (error) => {
-            //     console.error(error);
-            // }
-            // })
-    // });
-    // },
+
     props: {
         file: File,
         receivedData: {
             type: Object,
             default: null,
         },
-        username:String
+        username:String,
+        properties_unknown:String
     },
     watch: {
         file(newFile) {
@@ -155,6 +138,9 @@ export default {
         },
         receivedData(newCatalog){
             this.options.push(newCatalog);
+        },
+        properties_unknown(prpts){
+            this.define_properties(prpts);
         },
         username(newUsername){
             this.metadata["publisher"]=newUsername;
@@ -328,7 +314,7 @@ export default {
                     });
 
                     var data = {
-                        subject: "http://lab.ponciano.info/ont/spalod#hasItem",
+                        subject: "spalod:hasItem",
                         predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                         object: "http://www.w3.org/2002/07/owl#ObjectProperty"
                     };
@@ -372,7 +358,7 @@ export default {
             if (queryString && queryString.length > 0) {
                 this.queryables.forEach((queryable) => {
                     const data = {
-                        query: 'SELECT ?' + queryable.q + ' WHERE { <http://lab.ponciano.info/ont/spalod#' + queryString + '> <' + queryable.p + '> ?' + queryable.q + ' }',
+                        query: 'SELECT ?' + queryable.q + ' WHERE { <spalod:' + queryString + '> <' + queryable.p + '> ?' + queryable.q + ' }',
                         triplestore: "http://localhost:7200/repositories/Spalod", 
                     };
                     $.ajax({
@@ -399,7 +385,7 @@ export default {
                     });
                 });
                 const data = {
-                    query: 'SELECT ?title WHERE { ?catalog <http://www.w3.org/ns/dcat#dataset> <http://lab.ponciano.info/ont/spalod#' + queryString + '> . ?catalog <http://purl.org/dc/terms/title> ?title . }',
+                    query: 'SELECT ?title WHERE { ?catalog <http://www.w3.org/ns/dcat#dataset> <spalod:' + queryString + '> . ?catalog <http://purl.org/dc/terms/title> ?title . }',
                     triplestore: '', // TODO: graph DB
                 };
                 $.ajax({
@@ -431,7 +417,7 @@ export default {
         getUsername()
         {
             const data = {
-                query:'SELECT ?s ?p ?o WHERE {?s ?p ?o. FILTER (?s=<http://lab.ponciano.info/ont/spalod#'+this.uid+'>)}',
+                query:'SELECT ?s ?p ?o WHERE {?s ?p ?o. FILTER (?s=<spalod:'+this.uid+'>)}',
                 triplestore: "http://localhost:7200/repositories/Spalod"
             };
             $.ajax({
@@ -460,9 +446,11 @@ export default {
             );
         },
         areAllPredicatesKnown() {
+
             this.unkownPredicates = [];
             this.rdfData.forEach((triplet) => {
-                const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
+                console.log("predicate: "+triplet.predicate);
+                const predicate = "spalod:" + triplet.predicate;
                 if (!this.predicateOptions.includes(predicate)) {
                     if (!this.unkownPredicates.includes(triplet.predicate)) {
                         this.unkownPredicates.push(triplet.predicate);
@@ -495,6 +483,18 @@ export default {
         detectDarkMode() {
             this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         },
+        define_properties(prpts) {
+            this.rdfData = [];
+            // Parse JSON string to array
+            let parsedResponse = JSON.parse(prpts);      
+            parsedResponse.forEach(item => {
+                this.rdfData.push({
+                    subject: item,
+                    predicate: 'owl:equivalentProperty',
+                    object: item
+                });
+                });
+        },
         processContent(file) {
             this.rdfData = [];
             const fileReader = new FileReader();
@@ -504,7 +504,7 @@ export default {
                 this.name = geoJson.name;
                 geoJson.features.forEach(feature => {
                     const properties = feature.properties;
-                    const subject = properties['itemID'] ?? 'http://lab.ponciano.info/ont/spalod#' + this.uuidv4();
+                    const subject = properties['itemID'] ?? 'spalod:' + this.uuidv4();
                     for (const key in properties) {
                         if (key === 'Koordinate' || key === 'itemID') continue;
                         const predicate = encodeURIComponent(key.replace(/ /g,"").replace(/-/g,""));
@@ -576,27 +576,27 @@ export default {
                 return;
             }
 
-            const predicate = "http://lab.ponciano.info/ont/spalod#" + triplet.predicate;
+            const predicate = "spalod:" + triplet.predicate;
 
             // Add the new predicate
             this.loadPredicates();
             if (!this.predicateOptions.includes(predicate)) {
-                if (predicate === "http://lab.ponciano.info/ont/spalod#coordinates") {
+                if (predicate === "spalod:coordinates") {
                     var tripleData = {
-                        subject: "http://lab.ponciano.info/ont/spalod#longitude",
+                        subject: "spalod:longitude",
                         predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                         object: "http://www.w3.org/2002/07/owl#DatatypeProperty",
                     };
                     this.updateTripleData(tripleData, 'add', () => {
-                        self.predicateOptions.push("http://lab.ponciano.info/ont/spalod#longitude");
+                        self.predicateOptions.push("spalod:longitude");
                     });
                     tripleData = {
-                        subject: "http://lab.ponciano.info/ont/spalod#latitude",
+                        subject: "spalod:latitude",
                         predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                         object: "http://www.w3.org/2002/07/owl#DatatypeProperty",
                     };
                     this.updateTripleData(tripleData, 'add', () => {
-                        self.predicateOptions.push("http://lab.ponciano.info/ont/spalod#latitude");
+                        self.predicateOptions.push("spalod:latitude");
                     });
                 }
                 tripleData = {
@@ -645,7 +645,7 @@ export default {
                         var [longitude, latitude] = triplet.object.split(',');
                         tripleData = {
                             subject: triplet.subject.replace(/ /g, '_'),
-                            predicate: "http://lab.ponciano.info/ont/spalod#longitude",
+                            predicate: "spalod:longitude",
                             object: parseFloat(longitude),
                         };
                         this.updateTripleData(tripleData, 'add', () => {
@@ -653,7 +653,7 @@ export default {
                         });
                         tripleData = {
                             subject: triplet.subject.replace(/ /g, '_'),
-                            predicate: "http://lab.ponciano.info/ont/spalod#latitude",
+                            predicate: "spalod:latitude",
                             object: parseFloat(latitude),
                         };
                         this.updateTripleData(tripleData, 'add', () => {
@@ -677,8 +677,8 @@ export default {
                     });
 
                     tripleData = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
-                        predicate: 'http://lab.ponciano.info/ont/spalod#hasItem',
+                        subject: 'spalod:' + this.metadata.identifier,
+                        predicate: 'spalod:hasItem',
                         object: triplet.subject.replace(/ /g, '_')
                     };
                     this.updateTripleData(tripleData, 'add', () => {
@@ -723,7 +723,7 @@ export default {
                         var [longitude, latitude] = triplet.object.split(',');
                         tripleData = {
                             subject: triplet.subject.replace(/ /g, '_'),
-                            predicate: "http://lab.ponciano.info/ont/spalod#longitude",
+                            predicate: "spalod:longitude",
                             object: parseFloat(longitude),
                         };
                         this.updateTripleData(tripleData, 'add', () => {
@@ -731,7 +731,7 @@ export default {
                         });
                         tripleData = {
                             subject: triplet.subject.replace(/ /g, '_'),
-                            predicate: "http://lab.ponciano.info/ont/spalod#latitude",
+                            predicate: "spalod:latitude",
                             object: parseFloat(latitude),
                         };
                         this.updateTripleData(tripleData, 'add', () => {
@@ -755,8 +755,8 @@ export default {
                     }); 
 
                 tripleData = {
-                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
-                    predicate: 'http://lab.ponciano.info/ont/spalod#hasItem',
+                    subject: 'spalod:' + this.metadata.identifier,
+                    predicate: 'spalod:hasItem',
                     object: triplet.subject.replace(/ /g, '_')
                 };
                 this.updateTripleData(tripleData, 'add', () => {
@@ -924,7 +924,7 @@ export default {
             if(this.metadata[queryable.q] !== '' && this.metadata[queryable.q] !== undefined && this.selectedOption !== '') {
                 if(queryable.q === 'identifier') {
                     var data = {
-                        subject: "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).id,
+                        subject: "spalod:" + this.options.find(option => option.name === this.selectedOption).id,
                         predicate: this.queryables.find(queryable => queryable.q === 'title').p,
                         object: String(this.options.find(option => option.name === this.selectedOption).name),
                     };
@@ -932,7 +932,7 @@ export default {
                         console.log("Catalog title added");
                     });
                     data = {
-                        subject: "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).id,
+                        subject: "spalod:" + this.options.find(option => option.name === this.selectedOption).id,
                         predicate: this.queryables.find(queryable => queryable.q === 'description').p,
                         object: this.options.find(option => option.name === this.selectedOption).desc,
                     };
@@ -940,17 +940,17 @@ export default {
                         console.log("Catalog description added");
                     });
                     data = {
-                        subject: "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).id,
+                        subject: "spalod:" + this.options.find(option => option.name === this.selectedOption).id,
                         predicate: this.queryables.find(queryable => queryable.q === 'publisher').p,
-                        object: this.options.find(option => option.name === this.selectedOption).publisher.startsWith("http://lab.ponciano.info/ont/spalod#") ? this.options.find(option => option.name === this.selectedOption).publisher : "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).publisher,
+                        object: this.options.find(option => option.name === this.selectedOption).publisher.startsWith("spalod:") ? this.options.find(option => option.name === this.selectedOption).publisher : "spalod:" + this.options.find(option => option.name === this.selectedOption).publisher,
                     };
                     this.updateTripleData(data, 'add', () => {
                         console.log("Catalog publisher added");
                     });
                     data = {
-                        subject: "http://lab.ponciano.info/ont/spalod#" + this.options.find(option => option.name === this.selectedOption).id,
+                        subject: "spalod:" + this.options.find(option => option.name === this.selectedOption).id,
                         predicate: "http://www.w3.org/ns/dcat#dataset",
-                        object: "http://lab.ponciano.info/ont/spalod#" + this.metadata['identifier'],
+                        object: "spalod:" + this.metadata['identifier'],
                     };
                     this.updateTripleData(data, 'add', () => {
                         console.log("Catalog added");
@@ -960,7 +960,7 @@ export default {
                 if (queryable.q === 'publisher') {
                     // Delete the old triplets
                     var data = {
-                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier + '>)}',
+                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'spalod:' + this.metadata.identifier + '>)}',
                         triplestore: "http://localhost:7200/repositories/Spalod"
                     };
                     $.ajax({
@@ -976,7 +976,7 @@ export default {
                             if (data.results.bindings.length > 0) {
                                 const object = data.results.bindings[0].o.value
                                 const tripleData = {
-                                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
+                                    subject: 'spalod:' + this.metadata.identifier,
                                     predicate: queryable.p,
                                     object: object,
                                 };
@@ -991,7 +991,7 @@ export default {
                     });
 
                     data = {
-                        query: 'SELECT ?o WHERE{?s <http://xlmns.com/foaf/0.1/name> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_') + '>)}',
+                        query: 'SELECT ?o WHERE{?s <http://xlmns.com/foaf/0.1/name> ?o . FILTER(?s = <' + 'spalod:' + String(this.metadata[queryable.q]).replace(/ /g, '_') + '>)}',
                         triplestore: "http://localhost:7200/repositories/Spalod"
                     };
                     $.ajax({
@@ -1007,7 +1007,7 @@ export default {
                             if (data.results.bindings.length > 0) {
                                 const object = data.results.bindings[0].o.value
                                 const tripleData = {
-                                    subject: 'http://lab.ponciano.info/ont/spalod#' + String(this.metadata[queryable.q]).replace(/ /g, '_'),
+                                    subject: 'spalod:' + String(this.metadata[queryable.q]).replace(/ /g, '_'),
                                     predicate: 'http://xlmns.com/foaf/0.1/name',
                                     object: object,
                                 };
@@ -1023,14 +1023,14 @@ export default {
 
                     // Add the new triplets
                     var tripleData = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
+                        subject: 'spalod:' + this.metadata.identifier,
                         predicate: queryable.p,
-                        object: 'http://lab.ponciano.info/ont/spalod#' + this.uid,
+                        object: 'spalod:' + this.uid,
                     };
                     this.updateTripleData(tripleData, 'add', () => queryable.v = true);
 
                     tripleData = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.uid,
+                        subject: 'spalod:' + this.uid,
                         predicate: 'http://xlmns.com/foaf/0.1/name',
                         object: String(this.metadata[queryable.q]).replace(/ /g, '_'),
                     }
@@ -1039,7 +1039,7 @@ export default {
                     String(this.metadata[queryable.q]).split(',').forEach(keyword => {
                         // Add the new triplets
                         var tripleData = {
-                            subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
+                            subject: 'spalod:' + this.metadata.identifier,
                             predicate: queryable.p,
                             object: keyword,
                         };
@@ -1048,7 +1048,7 @@ export default {
                 } else if(queryable.q === 'issued' || queryable.q === 'modified') {
                     // Delete the old triplet
                     var data = {
-                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier + '>)}',
+                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'spalod:' + this.metadata.identifier + '>)}',
                         triplestore: "http://localhost:7200/repositories/Spalod"
                     };
                     $.ajax({
@@ -1064,7 +1064,7 @@ export default {
                             if (data.results.bindings.length > 0) {
                                 const object = data.results.bindings[0].o.value
                                 const tripleData = {
-                                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
+                                    subject: 'spalod:' + this.metadata.identifier,
                                     predicate: queryable.p,
                                     object: object,
                                 };
@@ -1080,7 +1080,7 @@ export default {
 
                     // Add the new triplet
                     var tripleData = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
+                        subject: 'spalod:' + this.metadata.identifier,
                         predicate: queryable.p,
                         object: this.metadata[queryable.q],
                     };
@@ -1088,7 +1088,7 @@ export default {
                 } else {
                     // Delete the old triplet
                     var data = {
-                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier + '>)}',
+                        query: 'SELECT ?o WHERE{?s <' + queryable.p + '> ?o . FILTER(?s = <' + 'spalod:' + this.metadata.identifier + '>)}',
                         triplestore: "http://localhost:7200/repositories/Spalod"
                     };
                     $.ajax({
@@ -1104,7 +1104,7 @@ export default {
                             if (data.results.bindings.length > 0) {
                                 const object = data.results.bindings[0].o.value
                                 const tripleData = {
-                                    subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
+                                    subject: 'spalod:' + this.metadata.identifier,
                                     predicate: queryable.p,
                                     object: object,
                                 };
@@ -1120,9 +1120,9 @@ export default {
 
                     // Add the new triplet
                     var tripleData = {
-                        subject: 'http://lab.ponciano.info/ont/spalod#' + this.metadata.identifier,
+                        subject: 'spalod:' + this.metadata.identifier,
                         predicate: queryable.p,
-                        /*object: queryable.literal ? String(this.metadata[queryable.q]).replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/&/g, "&amp;").replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;") : 'http://lab.ponciano.info/ont/spalod#' + encodeURIComponent(String(this.metadata[queryable.q]).replace(/ /g, '_')),
+                        /*object: queryable.literal ? String(this.metadata[queryable.q]).replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/&/g, "&amp;").replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;") : 'spalod:' + encodeURIComponent(String(this.metadata[queryable.q]).replace(/ /g, '_')),
                         */
                         object: encodeURIComponent(this.metadata[queryable.q]).replace(/%20/g,"_")
                     };
