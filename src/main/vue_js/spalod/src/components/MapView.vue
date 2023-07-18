@@ -53,7 +53,7 @@ export default {
         },
         initMap(){
             // Path to where the files are hosted
-            this.path = 'https://localhost:8080/src/pictures/signaturen/';
+            this.path = '/pictures/signaturen/';
 
             // Creation of one layer of points
             this.query = new L.layerGroup();
