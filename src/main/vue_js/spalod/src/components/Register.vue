@@ -21,8 +21,6 @@
 
 <script>
 import $ from "jquery";
-import { API_BASE_URL } from '@/config.js';
-
 export default {
   data() {
     return {
@@ -35,7 +33,7 @@ export default {
     async submitForm() {
       if (this.password == this.confirmPassword) {
         $.ajax({
-          url: API_BASE_URL +'/register',
+          url: import.meta.env.VITE_APP_API_BASE_URL +'/register',
           method: 'POST',
           data: {
             username: this.username,
@@ -47,7 +45,7 @@ export default {
           success: (response) => {
             console.log(response)
             $.ajax({
-              url: API_BASE_URL +'/login',
+              url: import.meta.env.VITE_APP_API_BASE_URL +'/login',
               method: 'POST',
               data: {
                 username: this.username,
@@ -59,7 +57,7 @@ export default {
               success: (response) => {
                 console.log(response);
                 $.ajax({
-                  url: API_BASE_URL +'/uuid',
+                  url: import.meta.env.VITE_APP_API_BASE_URL +'/uuid',
                   method: 'GET',
                   data: {
                     username: this.username,
@@ -91,7 +89,7 @@ export default {
                       tripleData: tripleData,
                     };
                     $.ajax({
-                      url: API_BASE_URL +'/api/update',
+                      url: import.meta.env.VITE_APP_API_BASE_URL +'/api/update',
                       type: 'POST',
                       data: JSON.stringify(addOperation),
                       contentType: 'application/json',
@@ -139,6 +137,10 @@ export default {
     },
   },
 };
+
+console.log(import.meta.env.VITE_APP_GRAPH_DB)
+console.log(import.meta.env.VITE_APP_API_BASE_URL)
+console.log(import.meta.env.VITE_APP_FRONT_BASE_URL)
 </script>
   
 
