@@ -145,3 +145,4 @@ SpalodOutput_back.owl
 .DS_Store
 .vscode/settings.json
 src/main/vue_js/spalod/package-lock.json
+package-lock.json
