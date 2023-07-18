@@ -63,7 +63,6 @@
 
 <script>
 import $ from "jquery";
-import { API_BASE_URL } from '@/config.js';
 
 $.ajaxSetup({
     xhrFields: {
@@ -183,7 +182,7 @@ export default {
         console.log(url);
         if (queryString.includes('collections') || queryString.includes('conformance') || queryString === '/') {
             $.ajax({
-                url: API_BASE_URL + '/api/spalodWFS' + queryString + url.search,
+                url: import.meta.env.VITE_APP_API_BASE_URL + '/api/spalodWFS' + queryString + url.search,
                 type: 'GET',
                 dataType: 'json',
                 success: (response) => {
@@ -232,7 +231,7 @@ export default {
                 tripleData: tripleData,
             };
             $.ajax({
-                url: API_BASE_URL + '/api/update',
+                url: import.meta.env.VITE_APP_API_BASE_URL + '/api/update',
                 type: 'POST',
                 data: JSON.stringify(addOperation),
                 contentType: 'application/json',
@@ -264,14 +263,14 @@ export default {
             formData.append('file', file);
 
             $.ajax({
-                url: API_BASE_URL + '/api/uplift',
+                url: import.meta.env.VITE_APP_API_BASE_URL + '/api/uplift',
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: (response, textStatus, xhr) => {
                 
-                    window.location.href = API_BASE_URL+response;
+                    window.location.href = import.meta.env.VITE_APP_API_BASE_URL+response;
                     
                 },
                 error: (xhr, textStatus, errorThrown) => {
@@ -284,7 +283,7 @@ export default {
         }, seek_unknown(response){
             if (response == '[]') {
                         $.ajax({
-                            url: API_BASE_URL + '/api/enrich',
+                            url: import.meta.env.VITE_APP_API_BASE_URL + '/api/enrich',
                             type: 'POST',
                             data: formData,
                             processData: false,
@@ -319,13 +318,13 @@ export default {
             const file = event.target.files[0];
             let formData = new FormData();
             formData.append('file', file);
-            this.post_checkont( API_BASE_URL + '/api/check-ontology',formData, this.seek_unknown)
+            this.post_checkont( import.meta.env.VITE_APP_API_BASE_URL + '/api/check-ontology',formData, this.seek_unknown)
         },
         confirmRequest() {
-            const url = API_BASE_URL + '/api/sparql-select';
+            const url = import.meta.env.VITE_APP_API_BASE_URL + '/api/sparql-select';
             const data = {
                 query: this.inputAdvanced,
-                triplestore: "http://localhost:7200/repositories/Spalod"
+                triplestore:  import.meta.env.VITE_+"/repositories/Spalod"
             };
             this.postJSON(url, data, this.handleResponse);
         },
