@@ -33,6 +33,7 @@ export default {
       popupC:false,
       currentPath: window.location.pathname,
       receivedData: null,
+      properties_unknown:null,
       username:""
     };
   },
@@ -62,6 +63,9 @@ export default {
   methods: {
     onFileSelected(file) {
       this.file = file;
+    },
+    onProperties_unknown(properties_unknown) {
+      this.properties_unknown = properties_unknown;
     },
     onChooseCSV(){
       this.chooseCSV=true;
@@ -110,14 +114,14 @@ export default {
     </div>
     <div class="main" v-if="currentView === 'main'">
       <div class="user-actions-container">
-        <UserActions @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup" @popupCShow="onShowpopupC"></UserActions>
+        <UserActions @properties_unknown="onProperties_unknown" @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup" @popupCShow="onShowpopupC"></UserActions>
       </div>
       <div class="right-container" >
         <div class="map-container">
           <MapView :file="file"></MapView>
         </div>
         <div class="rdf-data-container">
-          <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData" :username="username"></RDFData>
+          <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData" :username="username" :properties_unknown="properties_unknown"></RDFData>
         </div>
       </div>
     </div>
