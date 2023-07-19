@@ -291,7 +291,7 @@ export default {
         // Check if the predicates are known in the ontology
         const checkPredicates = {
             query: 'SELECT ?type WHERE { <' + this.queryables.find(queryable => queryable.q === "identifier").p + '> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }',
-            triplestore: import.meta.env.VITE_GRAPH_DB+'/repositories/Spalod', 
+            triplestore: import.meta.env.VITE_APP_GRAPH_DB+'/repositories/Spalod', 
         };
         $.ajax({
             headers: {
@@ -386,7 +386,7 @@ export default {
                 });
                 const data = {
                     query: 'SELECT ?title WHERE { ?catalog <http://www.w3.org/ns/dcat#dataset> <spalod:' + queryString + '> . ?catalog <http://purl.org/dc/terms/title> ?title . }',
-                    triplestore: '', // TODO: graph DB
+                    triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod", 
                 };
                 $.ajax({
                     headers: {
@@ -1176,6 +1176,7 @@ export default {
             }
         }
     },
+
 };
 </script>
 
