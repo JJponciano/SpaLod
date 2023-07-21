@@ -28,7 +28,7 @@ public class Sparql {
             + "PREFIX wd: <http://www.wikidata.org/entity/>\n"
             + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n"
             + "PREFIX wikibase: <http://wikiba.se/ontology#>\n"
-            + "PREFIX dct: <http://purl.org/dc/terms/>\n"
+            // + "PREFIX dct: <http://purl.org/dc/terms/>\n"
             + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
             + "PREFIX bd: <http://www.bigdata.com/rdf#>\n"
             + "PREFIX wds: <http://www.wikidata.org/entity/statement/>\n"
