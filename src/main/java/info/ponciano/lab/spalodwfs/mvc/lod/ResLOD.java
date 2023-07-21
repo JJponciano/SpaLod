@@ -28,7 +28,7 @@ public class ResLOD {
      * To use the map, the 4 first variables have to be the category, the label (display in the popup),the  latitude, and, the longitude
      * @return String[][] corresponding to the query results with the first row as header.
      * Example of curl query:
-     * curl -X POST http://localhost:8080/datalod -H 'Content-type:application/json' -d '{"query":"SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE {   VALUES ?category{ wd:Q3914}   ?item wdt:P17 wd:Q183.  ?item wdt:P31 ?category .  ?item p:P625 ?statement .   ?statement psv:P625 ?coordinate_node .  ?coordinate_node wikibase:geoLatitude ?latitude .  ?coordinate_node wikibase:geoLongitude ?longitude .FILTER(?latitude <= 86.42397134276521).FILTER(?latitude >= -63.39152174400882).FILTER(?longitude <= 219.02343750000003).FILTER(?longitude >= -202.85156250000003)}LIMIT 500", "triplestore": "https://query.wikidata.org/sparql"}'
+     * curl -X POST "+KB.SERVER+":8080/datalod -H 'Content-type:application/json' -d '{"query":"SELECT ?category ?itemLabel ?latitude ?longitude ?item WHERE {   VALUES ?category{ wd:Q3914}   ?item wdt:P17 wd:Q183.  ?item wdt:P31 ?category .  ?item p:P625 ?statement .   ?statement psv:P625 ?coordinate_node .  ?coordinate_node wikibase:geoLatitude ?latitude .  ?coordinate_node wikibase:geoLongitude ?longitude .FILTER(?latitude <= 86.42397134276521).FILTER(?latitude >= -63.39152174400882).FILTER(?longitude <= 219.02343750000003).FILTER(?longitude >= -202.85156250000003)}LIMIT 500", "triplestore": "https://query.wikidata.org/sparql"}'
      */
     @PostMapping("/datalod")
     public SemData sparqlQuery(@RequestBody SparqlQuery sq) {
