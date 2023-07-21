@@ -37,7 +37,7 @@ var sq = new Object();
 sq.query=$("#sparqlText").val();
 sq.triplestore= $('input[name="triplestore"]:checked').val();
 
-$.postJSON("http://localhost:8081/dataluplift", sq, $.update)
+$.postJSON(import.meta.env.VITE_APP_API_BASE_URL+"/dataluplift", sq, $.update)
 
 
 });
