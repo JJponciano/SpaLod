@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import info.ponciano.lab.spalodwfs.model.Triplestore;
+import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
+
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -17,7 +19,6 @@ import java.net.URLDecoder;
 @RequestMapping("/api/spalodWFS")
 @RestController
 public class OGCAPIController {
-
     /**
      * Return the landing page of the API
      * @return String[][] corresponding to the landing page
@@ -26,8 +27,8 @@ public class OGCAPIController {
     public String landingPage() {
         String results = "{\"head\":{\"vars\":\n";
         results += "[\"Feature\", \"HTML\", \"JSON\"]},\"results\":{\"bindings\":[\n";
-        results += "{\"Feature\": {\"value\": \"Conformance\"},\"HTML\": {\"value\": \"https://localhost:8080/spalodWFS/conformance\"}, \"JSON\": {\"value\": \"https://localhost:8081/api/spalodWFS/conformance\"}},\n";
-        results += "{\"Feature\": {\"value\": \"Collections\"},\"HTML\": {\"value\": \"https://localhost:8080/spalodWFS/collections\"}, \"JSON\": {\"value\": \"https://localhost:8081/api/spalodWFS/collections\"}}\n";
+        results += "{\"Feature\": {\"value\": \"Conformance\"},\"HTML\": {\"value\": \""+KB.SERVER+":8080/spalodWFS/conformance\"}, \"JSON\": {\"value\": \""+KB.SERVER+":8081/api/spalodWFS/conformance\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Collections\"},\"HTML\": {\"value\": \""+KB.SERVER+":8080/spalodWFS/collections\"}, \"JSON\": {\"value\": \""+KB.SERVER+":8081/api/spalodWFS/collections\"}}\n";
         results += "]}}";
         System.out.println(results);
 
@@ -41,10 +42,10 @@ public class OGCAPIController {
     @GetMapping("/collections")
     public String collectionsList() {
         System.out.println("***********" + "/collections" + "***********");
-        String query = "SELECT DISTINCT ?collections ?name WHERE {\n?collections <http://www.w3.org/ns/dcat#dataset> ?dataset .\n ?collections <http://purl.org/dc/terms/title> ?name .}";
+        String query = "SELECT DISTINCT ?collections ?name WHERE {\n?collections <http://www.w3.org/ns/dcat#dataset> ?dataset .\n ?collections <"+KB.NS+"title> ?name .}";
         System.out.println(query);
         String results;
-        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, ""+KB.SERVER+":7200/repositories/Spalod");
         //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
@@ -57,10 +58,10 @@ public class OGCAPIController {
     @GetMapping("/collections/{collectionId}")
     public String collectionQuery(@PathVariable String collectionId) {
         System.out.println("***********" + "/collections/" + collectionId + "***********");
-        String query = "SELECT ?title ?description ?publisher ?dataset WHERE {\n?collection <http://purl.org/dc/terms/title> ?title .\n?collection <http://purl.org/dc/terms/description> ?description .\n?collection <http://purl.org/dc/terms/publisher> ?publisher .\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <http://lab.ponciano.info/ont/spalod#" + collectionId + ">)\n}";
+        String query = "SELECT ?title ?description ?publisher ?dataset WHERE {\n?collection <"+KB.NS+"title> ?title .\n?collection <"+KB.NS+"description> ?description .\n?collection <"+KB.NS+"publisher> ?publisher .\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <"+KB.NS+"" + collectionId + ">)\n}";
         System.out.println(query);
         String results;
-        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, ""+KB.SERVER+":7200/repositories/Spalod");
         //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
@@ -73,10 +74,10 @@ public class OGCAPIController {
     @GetMapping("/collections/{collectionId}/items")
     public String datasetList(@PathVariable String collectionId) {
         System.out.println("***********" + "/collections/" + collectionId + "/items/***********");
-        String query = "SELECT ?dataset ?title ?description ?publisher ?distribution WHERE {\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <http://lab.ponciano.info/ont/spalod#" + collectionId + ">)\n?dataset <http://purl.org/dc/terms/title> ?title .\n?dataset <http://purl.org/dc/terms/description> ?description .\n?dataset <http://purl.org/dc/terms/publisher> ?publisher .\n?dataset <http://www.w3.org/ns/dcat#distribution> ?distribution .\n}";
+        String query = "SELECT ?dataset ?title ?description ?publisher ?distribution WHERE {\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <"+KB.NS+"" + collectionId + ">)\n?dataset <"+KB.NS+"title> ?title .\n?dataset <"+KB.NS+"description> ?description .\n?dataset <"+KB.NS+"publisher> ?publisher .\n?dataset <http://www.w3.org/ns/dcat#distribution> ?distribution .\n}";
         System.out.println(query);
         String results;
-        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, ""+KB.SERVER+":7200/repositories/Spalod");
         //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
@@ -95,9 +96,9 @@ public class OGCAPIController {
         System.out.println("BBOX: " + bbox);
         // Get the item predicates
         String query, datetimeStart, datetimeEnd;
-        query = "SELECT ?predicate WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">)\n?item ?predicate ?object\n}";
+        query = "SELECT ?predicate WHERE {\n?dataset <"+KB.NS+"hasItem> ?item .\nFILTER(?dataset = <"+KB.NS+"" + datasetId + ">)\n?item ?predicate ?object\n}";
         System.out.println(query);
-    //    String query="SELECT ?object WHERE {?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?item . FILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">) ?item ?predicate ?object .}";
+    //    String query="SELECT ?object WHERE {?dataset <"+KB.NS+"hasItem> ?item . FILTER(?dataset = <"+KB.NS+"" + datasetId + ">) ?item ?predicate ?object .}";
         String results;
         results = Triplestore.get().executeSelectQuery(query);
         //System.out.println(results);
@@ -121,18 +122,18 @@ public class OGCAPIController {
                 e.printStackTrace();
             }
         }
-        query += "WHERE {\n?dataset <http://lab.ponciano.info/ont/spalod#hasItem> ?itemID .\nFILTER(?dataset = <http://lab.ponciano.info/ont/spalod#" + datasetId + ">)\n";
+        query += "WHERE {\n?dataset <"+KB.NS+"hasItem> ?itemID .\nFILTER(?dataset = <"+KB.NS+"" + datasetId + ">)\n";
         if (datetime != null && !datetime.isEmpty()) {
             String[] datetimeRange = datetime.split("/");
             datetimeStart = datetimeRange[0];
             datetimeEnd = datetimeRange[1];
             System.out.println("DATETIME START: " + datetimeStart);
             System.out.println("DATETIME END: " + datetimeEnd);
-            query += "?dataset <http://purl.org/dc/terms/issued> ?datetime . FILTER(?datetime >= \"" + datetimeStart + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime> && ?datetime <= \"" + datetimeEnd + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>)\n";
+            query += "?dataset <"+KB.NS+"issued> ?datetime . FILTER(?datetime >= \"" + datetimeStart + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime> && ?datetime <= \"" + datetimeEnd + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>)\n";
         } 
         for (int i = 0; i < predicates.length; i++) {
             try {
-                query += "?itemID <http://lab.ponciano.info/ont/spalod#" + predicates[i] + "> ?" + URLDecoder.decode(predicates[i],"UTF-8").replace(" ", "").replace("-", "") + " .\n";
+                query += "?itemID <"+KB.NS+"" + predicates[i] + "> ?" + URLDecoder.decode(predicates[i],"UTF-8").replace(" ", "").replace("-", "") + " .\n";
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -155,7 +156,7 @@ public class OGCAPIController {
         query += "}";
         System.out.println(query);
         //results = Triplestore.get().executeSelectQuery(query);
-        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, ""+KB.SERVER+":7200/repositories/Spalod");
         //System.out.println(results);
 
         return results;
