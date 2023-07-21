@@ -38,7 +38,8 @@ import org.apache.jena.query.Dataset;
  * @author Dr Jean-Jacques Ponciano Contact: jean-jacques@ponciano.info
  */
 public class KB implements KnowledgeBaseInterface {
-
+    public static final String SERVER="http://localhost";
+    // public static final String SERVER="https://spalod.northeurope.cloudapp.azure.com";
     public static final String STORAGE_DIR = "dynamic_storage";
     public static final String URI = "http://lab.ponciano.info/ont/spalod";
     public static final String NS = URI+"#";
