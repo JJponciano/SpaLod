@@ -324,7 +324,7 @@ export default {
             const url = import.meta.env.VITE_APP_API_BASE_URL + '/api/sparql-select';
             const data = {
                 query: this.inputAdvanced,
-                triplestore:  import.meta.env.VITE_+"/repositories/Spalod"
+                triplestore:  import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod"
             };
             this.postJSON(url, data, this.handleResponse);
         },
