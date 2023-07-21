@@ -9,12 +9,15 @@ import org.apache.jena.rdf.model.*;
 import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
 import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.update.*;
+
+import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
+
 import org.apache.jena.datatypes.*;
 
 public class Triplestore {
 
     
-    private static final String GRAPHDB_QUERY_ENDPOINT = "http://localhost:7200/repositories/Spalod";
+    private static final String GRAPHDB_QUERY_ENDPOINT = KB.SERVER+":7200/repositories/Spalod";
 
     private static Triplestore triplestore = null;
 
@@ -29,7 +32,7 @@ public class Triplestore {
             + "PREFIX wd: <http://www.wikidata.org/entity/>\n"
             + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n"
             + "PREFIX wikibase: <http://wikiba.se/ontology#>\n"
-            + "PREFIX dct: <http://purl.org/dc/terms/>\n"
+            // + "PREFIX dct: <http://purl.org/dc/terms/>\n"
             + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
             + "PREFIX bd: <http://www.bigdata.com/rdf#>\n"
             + "PREFIX wds: <http://www.wikidata.org/entity/statement/>\n"
