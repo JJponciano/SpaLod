@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,7 +23,7 @@ import java.nio.file.Paths;
  *
  * @author Claire #Ponciano
  */
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = ""+KB.SERVER+":8080")
 @Controller
 @RequestMapping("/download")
 public class FileDownloadController {
