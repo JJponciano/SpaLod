@@ -52,6 +52,11 @@ import org.json.simple.parser.ParseException;
  */
 public class GeoJsonRDF {
 
+    public static final String SF = "http://www.opengis.net/ont/sf#";
+    public static final String GEOSPARQLHAS_GEOMETRY = "http://www.opengis.net/ont/geosparql#hasGeometry";
+    public static final String GEOSPARQLAS_WKT = "http://www.opengis.net/ont/geosparql#asWKT";
+    public static final String GEOSPARQL_FEATURE = "http://www.opengis.net/ont/geosparql#Feature";
+    public static final String DCAT_DATASET = "http://www.w3.org/ns/dcat#Dataset";
     /**
      * Uplift a geoJSON file in an ontology
      *
@@ -194,11 +199,6 @@ public class GeoJsonRDF {
         }
     }
 
-    public static final String SF = "http://www.opengis.net/ont/sf#";
-    public static final String GEOSPARQLHAS_GEOMETRY = "http://www.opengis.net/ont/geosparql#hasGeometry";
-    public static final String GEOSPARQLAS_WKT = "http://www.opengis.net/ont/geosparql#asWKT";
-    public static final String GEOSPARQL_FEATURE = "http://www.opengis.net/ont/geosparql#Feature";
-    public static final String DCAT_DATASET = "http://www.w3.org/ns/dcat#Dataset";
 
     private static void extractFeatures(JSONObject jsonObject, FeatureCollection featureCollection)
             throws NumberFormatException, PiOntologyException {
