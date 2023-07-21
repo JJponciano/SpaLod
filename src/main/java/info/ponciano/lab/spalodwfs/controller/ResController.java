@@ -83,8 +83,8 @@ public class ResController {
 
   private final StorageService storageService;
 
-  private static final String GRAPHDB_QUERY_ENDPOINT = "http://localhost:7200/repositories/Spalod";
-  private static final String GRAPHDB_UPDATE_ENDPOINT = "http://localhost:7200/repositories/Spalod/statements";
+  private static final String GRAPHDB_QUERY_ENDPOINT = ""+KB.SERVER+":7200/repositories/Spalod";
+  private static final String GRAPHDB_UPDATE_ENDPOINT = ""+KB.SERVER+":7200/repositories/Spalod/statements";
 
   @Autowired
   public ResController(StorageService storageService) {
@@ -109,7 +109,7 @@ public class ResController {
    * @return String[][] corresponding to the query results with the first row as
    *         header.
    *         Example of curl query:
-   *         curl -X POST http://localhost:8081/api/sparql-select -H
+   *         curl -X POST "+KB.SERVER+":8081/api/sparql-select -H
    *         'Content-type:application/json' -d '{"query":"SELECT ?category
    *         ?itemLabel ?latitude ?longitude ?item WHERE { VALUES ?category{
    *         wd:Q3914} ?item wdt:P17 wd:Q183. ?item wdt:P31 ?category . ?item
@@ -151,71 +151,95 @@ public class ResController {
    *         curl -X POST -H "Content-Type: application/json" -d '{"operation":
    *         "add", "tripleData": {"subject": "http://example.com/subject1",
    *         "predicate": "http://example.com/predicate1", "object":
-   *         "http://example.com/object1"}}' http://localhost:8081/api/update
+   *         "http://example.com/object1"}}' "+KB.SERVER+":8081/api/update
    */
   @PostMapping("/update")
   public ResponseEntity<Void> update(@RequestBody TripleOperation tripleOperation) {
     System.out.println("***********" + "/update" + "***********");
     System.out.print(tripleOperation);
     TripleData tripleData = tripleOperation.getTripleData();
-    if ("add".equalsIgnoreCase(tripleOperation.getOperation())) {
-      Triplestore.get().addTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
+    String subject = "<" + tripleData.getSubject() + ">";
+    String predicate = "<" + tripleData.getPredicate() + ">";
+    String object = tripleData.getObject();
+    if (object.startsWith("http"))
+      object = "<" + object + ">";
 
+    // try to add until it is done
+    boolean inprocess = true;
+    while (inprocess) {
+      try {
+        update_model(tripleOperation, subject, predicate, object);
+        Thread.sleep(100);
+        inprocess = false;
+      } catch (Exception e) {
+        if (!e.getMessage().equals("Currently in an active transaction")) {
+          inprocess = false;
+          System.err.println(":::::::::::::::::ERROR:::::::::::::::::");
+          System.err.println("DATA : " + tripleOperation);
+          System.err.println(e.getMessage());
+          System.err.println(":::::::::::::::::END ERROR:::::::::::::::::");
+        }
+
+      }
+    }
+    return ResponseEntity.ok().build();
+  }
+
+  private void update_model(TripleOperation tripleOperation, String subject, String predicate, String object) {
+    if ("add".equalsIgnoreCase(tripleOperation.getOperation())) {
+      // Triplestore.get().addTriple(tripleData.getSubject(),
+      // tripleData.getPredicate(), tripleData.getObject());
       // Insert a triple in graphdb
 
-      String subject = "<" + tripleData.getSubject() + ">";
-      String predicate = "<" + tripleData.getPredicate() + ">";
-      String object = tripleData.getObject();
+      // String queryString = "SELECT ?type where { <" + tripleData.getPredicate()
+      // + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
+      // String type = Triplestore.executeSelectQuery(queryString,
+      // GRAPHDB_QUERY_ENDPOINT);
 
-      String queryString = "SELECT ?type where { <" + tripleData.getPredicate()
-          + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
-      String type = Triplestore.executeSelectQuery(queryString, GRAPHDB_QUERY_ENDPOINT);
-      // System.out.println(type);
-      // System.out.println(tripleData.getPredicate());
-
-      JSONObject jsonResult = new JSONObject(type);
-      JSONObject resultsObject = jsonResult.getJSONObject("results");
-      JSONArray bindings = resultsObject.getJSONArray("bindings");
-      String predicateType = "";
-      for (int i = 0; i < bindings.length(); i++) {
-        JSONObject binding = bindings.getJSONObject(i);
-        JSONObject predicateTypeObject = binding.getJSONObject("type");
-        // System.out.println(predicateTypeObject.getString("value"));
-        if (predicateTypeObject.getString("value").equals("http://www.w3.org/2002/07/owl#DatatypeProperty"))
-          predicateType = predicateTypeObject.getString("value");
-      }
-      // bindings.length() > 1 ?
-      // bindings.getJSONObject(1).getJSONObject("type").getString("value") :
-      // bindings.getJSONObject(0).getJSONObject("type").getString("value");
-      // System.out.println(tripleData.getPredicate()+" : "+predicateType);
-      if (predicateType.equals("http://www.w3.org/2002/07/owl#DatatypeProperty")) {
-        try {
-          // TEST IF INT
-          int intValue = Integer.parseInt(object);
-          object = "\"" + tripleData.getObject() + "\"^^xsd:integer";
-        } catch (NumberFormatException e1) {
-          try {
-            // TEST IF FLOAT
-            float floatValue = Float.parseFloat(object);
-            object = "\"" + tripleData.getObject() + "\"^^xsd:float";
-          } catch (NumberFormatException e2) {
-            // IF STRING
-            if (object.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
-              object = "\"" + tripleData.getObject() + "\"^^xsd:dateTime";
-              System.out.println("MATCH TIME ----------------------------------");
-            } else {
-              object = "\"" + tripleData.getObject() + "\"^^xsd:string";
-            }
-          }
-        }
-      } else {
-        if (object.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
-          object = "\"" + tripleData.getObject() + "\"^^xsd:dateTime";
-          System.out.println("MATCH TIME ----------------------------------");
-        } else {
-          object = "<" + tripleData.getObject() + ">";
-        }
-      }
+      // JSONObject jsonResult = new JSONObject(type);
+      // JSONObject resultsObject = jsonResult.getJSONObject("results");
+      // JSONArray bindings = resultsObject.getJSONArray("bindings");
+      // String predicateType = "";
+      // for (int i = 0; i < bindings.length(); i++) {
+      // JSONObject binding = bindings.getJSONObject(i);
+      // JSONObject predicateTypeObject = binding.getJSONObject("type");
+      // // System.out.println(predicateTypeObject.getString("value"));
+      // if
+      // (predicateTypeObject.getString("value").equals("http://www.w3.org/2002/07/owl#DatatypeProperty"))
+      // predicateType = predicateTypeObject.getString("value");
+      // }
+      // // bindings.length() > 1 ?
+      // // bindings.getJSONObject(1).getJSONObject("type").getString("value") :
+      // // bindings.getJSONObject(0).getJSONObject("type").getString("value");
+      // // System.out.println(tripleData.getPredicate()+" : "+predicateType);
+      // if (predicateType.equals("http://www.w3.org/2002/07/owl#DatatypeProperty")) {
+      // try {
+      // // TEST IF INT
+      // Integer.parseInt(object);
+      // object = "\"" + tripleData.getObject() + "\"^^xsd:integer";
+      // } catch (NumberFormatException e1) {
+      // try {
+      // // TEST IF FLOAT
+      // Float.parseFloat(object);
+      // object = "\"" + tripleData.getObject() + "\"^^xsd:float";
+      // } catch (NumberFormatException e2) {
+      // // IF STRING
+      // if (object.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
+      // object = "\"" + tripleData.getObject() + "\"^^xsd:dateTime";
+      // System.out.println("MATCH TIME ----------------------------------");
+      // } else {
+      // object = "\"" + tripleData.getObject() + "\"^^xsd:string";
+      // }
+      // }
+      // }
+      // } else {
+      // if (object.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
+      // object = "\"" + tripleData.getObject() + "\"^^xsd:dateTime";
+      // System.out.println("MATCH TIME ----------------------------------");
+      // } else {
+      // object = "<" + tripleData.getObject() + ">";
+      // }
+      // }
 
       ParameterizedSparqlString insertCommand = new ParameterizedSparqlString();
       insertCommand.setCommandText(KB.PREFIX + " INSERT DATA { " + subject + " " + predicate + " " + object + " }");
@@ -225,40 +249,36 @@ public class ResController {
 
       System.out.println("-> added!");
     } else if ("remove".equalsIgnoreCase(tripleOperation.getOperation())) {
-      Triplestore.get().removeTriple(tripleData.getSubject(), tripleData.getPredicate(), tripleData.getObject());
 
-      // Remove a triple in graphdb
-      String subject = "<" + tripleData.getSubject() + ">";
-      String predicate = "<" + tripleData.getPredicate() + ">";
-      String object = tripleData.getObject();
+      // String queryString = "SELECT ?type where { <" + tripleData.getPredicate()
+      // + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
+      // String type = Triplestore.executeSelectQuery(queryString,
+      // GRAPHDB_QUERY_ENDPOINT);
 
-      String queryString = "SELECT ?type where { <" + tripleData.getPredicate()
-          + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
-      String type = Triplestore.executeSelectQuery(queryString, GRAPHDB_QUERY_ENDPOINT);
-
-      JSONObject jsonResult = new JSONObject(type);
-      JSONObject resultsObject = jsonResult.getJSONObject("results");
-      JSONArray bindings = resultsObject.getJSONArray("bindings");
-      String predicateType = bindings.getJSONObject(0).getJSONObject("type").getString("value");
-      System.out.println(predicateType);
-      if (predicateType == "http://www.w3.org/2002/07/owl#DatatypeProperty") {
-        try {
-          // TEST IF INT
-          int intValue = Integer.parseInt(object);
-          object = "\"" + tripleData.getObject() + "\"^^xsd:integer";
-        } catch (NumberFormatException e1) {
-          try {
-            // TEST IF FLOAT
-            float floatValue = Float.parseFloat(object);
-            object = "\"" + tripleData.getObject() + "\"^^xsd:float";
-          } catch (NumberFormatException e2) {
-            // IF STRING
-            object = "\"" + tripleData.getObject() + "\"^^xsd:string";
-          }
-        }
-      } else {
-        object = "<" + tripleData.getObject() + ">";
-      }
+      // JSONObject jsonResult = new JSONObject(type);
+      // JSONObject resultsObject = jsonResult.getJSONObject("results");
+      // JSONArray bindings = resultsObject.getJSONArray("bindings");
+      // String predicateType =
+      // bindings.getJSONObject(0).getJSONObject("type").getString("value");
+      // System.out.println(predicateType);
+      // if (predicateType == "http://www.w3.org/2002/07/owl#DatatypeProperty") {
+      // try {
+      // // TEST IF INT
+      // int intValue = Integer.parseInt(object);
+      // object = "\"" + tripleData.getObject() + "\"^^xsd:integer";
+      // } catch (NumberFormatException e1) {
+      // try {
+      // // TEST IF FLOAT
+      // float floatValue = Float.parseFloat(object);
+      // object = "\"" + tripleData.getObject() + "\"^^xsd:float";
+      // } catch (NumberFormatException e2) {
+      // // IF STRING
+      // object = "\"" + tripleData.getObject() + "\"^^xsd:string";
+      // }
+      // }
+      // } else {
+      // object = "<" + tripleData.getObject() + ">";
+      // }
 
       ParameterizedSparqlString removeCommand = new ParameterizedSparqlString();
       removeCommand.setCommandText(KB.PREFIX + " DELETE { " + subject + " " + predicate + " " + object + " }" +
@@ -271,7 +291,6 @@ public class ResController {
     } else {
       throw new IllegalArgumentException("Invalid operation: " + tripleOperation.getOperation());
     }
-    return ResponseEntity.ok().build();
   }
 
   /**
@@ -281,7 +300,7 @@ public class ResController {
    * @return The path to the updated ontology file.
    * 
    *         Example: curl -X POST -F "file=@/path/to/your/geojson-file.geojson"
-   *         http://localhost:8081/api/uplift
+   *         "+KB.SERVER+":8081/api/uplift
    * @throws Exception
    * @throws PiOntologyException
    * @throws ParseException
@@ -330,7 +349,7 @@ public class ResController {
    * 
    *         Example: curl -X POST -H "Content-Type: application/json" -d
    *         '{"name": "http://example.com/your-uri"}'
-   *         http://localhost:8081/api/downlift
+   *         "+KB.SERVER+":8081/api/downlift
    * 
    */
   @PostMapping("/downlift")
@@ -360,7 +379,7 @@ public class ResController {
    *         classes and properties.
    * 
    *         Example: curl -X POST -F "file=@/path/to/your/ontology-file.ttl"
-   *         http://localhost:8081/api/enrich
+   *         "+KB.SERVER+":8081/api/enrich
    * 
    */
   @PostMapping("/enrich")
@@ -396,10 +415,16 @@ public class ResController {
     Set<String> unknownPredicates = new HashSet<>();
     try {
       newOntology.read(new FileInputStream(filepath), null);
-      Set<String> may_unknown = Triplestore.get().getUnknownPredicates(newOntology);
-      // for reach unknown properties, check that the property is also unknwown in the
-      // triplestore
-      may_unknown.forEach(p -> {
+
+      StmtIterator stmtIterator = newOntology.listStatements();
+      while (stmtIterator.hasNext()) {
+
+        Statement statement = stmtIterator.nextStatement();
+        Resource subject = statement.getSubject();
+        Property predicate = statement.getPredicate();
+        RDFNode object = statement.getObject();
+        String p = predicate.getURI();
+        // test if the predicate is knwown
         if (p.toLowerCase().contains("spalod")) {
           String query = KB.PREFIX + " SELECT ?s ?o WHERE {?s <" + p + "> ?o}";
           String result = Triplestore.executeSelectQuery(query, GRAPHDB_QUERY_ENDPOINT);
@@ -410,38 +435,25 @@ public class ResController {
             JsonNode bindingsNode = jsonNode.at("/results/bindings");
             boolean isEmpty = bindingsNode.isArray() && bindingsNode.isEmpty();
             String substring = p.substring(p.lastIndexOf("#") + 1, p.length());
-
-            System.out.println(substring + ": Is bindings array empty? " + isEmpty);
             if (isEmpty) {
-              unknownPredicates.add(substring);
-
+              unknownPredicates.add("spalod:" + substring);
             }
+
           } catch (Exception e) {
             e.printStackTrace();
           }
         }
+       
+        // add the statements
+        TripleOperation tripleOperation = new TripleOperation("add",
+            new TripleData(subject.toString(), predicate.toString(), object.toString()));
+        this.update(tripleOperation);
 
-      });
-       StmtIterator stmtIterator = newOntology.listStatements();
-        while (stmtIterator.hasNext()) {
-           TripleOperation tripleOperation=null;
-          try {
+      }
 
-            Statement statement = stmtIterator.nextStatement();
-            Resource subject = statement.getSubject();
-            Property predicate = statement.getPredicate();
-            RDFNode object = statement.getObject();
-            tripleOperation = new TripleOperation("add", new TripleData(subject.toString(), predicate.toString(), object.toString()));
-             this.update(tripleOperation);
-              } catch (Exception e) {
-                System.err.println(":::::::::::::::::ERROR:::::::::::::::::");
-                System.err.println("DATA : "+tripleOperation);
-                System.err.println(e.getMessage());
-                System.err.println(":::::::::::::::::END ERROR:::::::::::::::::");
-          }
-        }
     } catch (FileNotFoundException e) {
       e.printStackTrace();
+      return "ERROR: " + e.getMessage();
     }
     String json = JsonUtil.setToJson(unknownPredicates);
     System.out.println("***********" + "DONE: check-ontology" + "***********");
