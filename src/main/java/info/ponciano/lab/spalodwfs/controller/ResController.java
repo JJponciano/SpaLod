@@ -13,8 +13,12 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.impl.TripleStore;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.ontology.OntResource;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -44,6 +48,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import info.ponciano.lab.spalodwfs.controller.storage.StorageService;
+import info.ponciano.lab.spalodwfs.model.Enrichment;
 import info.ponciano.lab.spalodwfs.model.FormData;
 import info.ponciano.lab.spalodwfs.model.JsonUtil;
 import info.ponciano.lab.spalodwfs.model.QueryResult;
@@ -82,9 +87,6 @@ public class ResController {
   private FormDataService formDataService;
 
   private final StorageService storageService;
-
-  private static final String GRAPHDB_QUERY_ENDPOINT = ""+KB.SERVER+":7200/repositories/Spalod";
-  private static final String GRAPHDB_UPDATE_ENDPOINT = ""+KB.SERVER+":7200/repositories/Spalod/statements";
 
   @Autowired
   public ResController(StorageService storageService) {
@@ -128,12 +130,12 @@ public class ResController {
     System.out.println("Query:");
     System.out.println(sq);
     String query = KB.PREFIX + " " + sq.getResults();
-    String triplestore = sq.getTriplestore();
+    // String triplestore = sq.getTriplestore();
     String results;
-    if (triplestore == null || triplestore.isBlank())
-      results = Triplestore.get().executeSelectQuery(query);
-    else
-      results = Triplestore.executeSelectQuery(query, triplestore);
+    // if (triplestore == null || triplestore.isBlank())
+    // results = Triplestore.get().executeSelectQuery(query);
+    // else
+    results = Triplestore.executeSelectQuery(query, KB.GRAPHDB_UPDATE_ENDPOINT);
     System.out.println("***********" + "END /sparql-select" + "***********");
 
     // System.out.println(results);
@@ -158,30 +160,46 @@ public class ResController {
     System.out.println("***********" + "/update" + "***********");
     System.out.print(tripleOperation);
     TripleData tripleData = tripleOperation.getTripleData();
-    String subject = "<" + tripleData.getSubject() + ">";
-    String predicate = "<" + tripleData.getPredicate() + ">";
+    String subject = tripleData.getSubject();
+    String predicate = tripleData.getPredicate();
     String object = tripleData.getObject();
     if (object.startsWith("http"))
       object = "<" + object + ">";
+    if (predicate.startsWith("http"))
+      predicate = "<" + predicate + ">";
+    if (subject.startsWith("http"))
+      subject = "<" + subject + ">";
+    String operation = tripleOperation.getOperation();
+    String query;
 
-    // try to add until it is done
-    boolean inprocess = true;
-    while (inprocess) {
-      try {
-        update_model(tripleOperation, subject, predicate, object);
-        Thread.sleep(100);
-        inprocess = false;
-      } catch (Exception e) {
-        if (!e.getMessage().equals("Currently in an active transaction")) {
-          inprocess = false;
-          System.err.println(":::::::::::::::::ERROR:::::::::::::::::");
-          System.err.println("DATA : " + tripleOperation);
-          System.err.println(e.getMessage());
-          System.err.println(":::::::::::::::::END ERROR:::::::::::::::::");
-        }
-
-      }
+    if ("add".equals(operation)) {
+      query = KB.PREFIX + " INSERT DATA { " + subject + " " + predicate + " " + object + " }";
+    } else if ("delete".equals(operation)) {
+      query = KB.PREFIX + "DELETE DATA { " + subject + " " + predicate + " " + object + " }";
+    } else {
+      throw new IllegalArgumentException("Unknown operation: " + operation);
     }
+
+    Triplestore.executeUpdateQuery(query, KB.GRAPHDB_UPDATE_ENDPOINT);
+
+    // // try to add until it is done
+    // boolean inprocess = true;
+    // while (inprocess) {
+    // try {
+    // update_model(tripleOperation, subject, predicate, object);
+    // Thread.sleep(100);
+    // inprocess = false;
+    // } catch (Exception e) {
+    // if (!e.getMessage().equals("Currently in an active transaction")) {
+    // inprocess = false;
+    // System.err.println(":::::::::::::::::ERROR:::::::::::::::::");
+    // System.err.println("DATA : " + tripleOperation);
+    // System.err.println(e.getMessage());
+    // System.err.println(":::::::::::::::::END ERROR:::::::::::::::::");
+    // }
+
+    // }
+    // }
     return ResponseEntity.ok().build();
   }
 
@@ -194,7 +212,7 @@ public class ResController {
       // String queryString = "SELECT ?type where { <" + tripleData.getPredicate()
       // + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
       // String type = Triplestore.executeSelectQuery(queryString,
-      // GRAPHDB_QUERY_ENDPOINT);
+      // KB.GRAPHDB_QUERY_ENDPOINT);
 
       // JSONObject jsonResult = new JSONObject(type);
       // JSONObject resultsObject = jsonResult.getJSONObject("results");
@@ -244,7 +262,8 @@ public class ResController {
       ParameterizedSparqlString insertCommand = new ParameterizedSparqlString();
       insertCommand.setCommandText(KB.PREFIX + " INSERT DATA { " + subject + " " + predicate + " " + object + " }");
       UpdateRequest insertRequest = UpdateFactory.create(insertCommand.toString());
-      UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest, GRAPHDB_UPDATE_ENDPOINT);
+      UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest,
+          KB.GRAPHDB_UPDATE_ENDPOINT);
       insertProcessor.execute();
 
       System.out.println("-> added!");
@@ -253,7 +272,7 @@ public class ResController {
       // String queryString = "SELECT ?type where { <" + tripleData.getPredicate()
       // + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
       // String type = Triplestore.executeSelectQuery(queryString,
-      // GRAPHDB_QUERY_ENDPOINT);
+      // KB.GRAPHDB_QUERY_ENDPOINT);
 
       // JSONObject jsonResult = new JSONObject(type);
       // JSONObject resultsObject = jsonResult.getJSONObject("results");
@@ -284,7 +303,8 @@ public class ResController {
       removeCommand.setCommandText(KB.PREFIX + " DELETE { " + subject + " " + predicate + " " + object + " }" +
           "WHERE  { " + subject + " " + predicate + " " + object + " }");
       UpdateRequest removeRequest = UpdateFactory.create(removeCommand.toString());
-      UpdateProcessor removeProcessor = UpdateExecutionFactory.createRemoteForm(removeRequest, GRAPHDB_UPDATE_ENDPOINT);
+      UpdateProcessor removeProcessor = UpdateExecutionFactory.createRemoteForm(removeRequest,
+          KB.GRAPHDB_UPDATE_ENDPOINT);
       removeProcessor.execute();
 
       System.out.println("-> removed!");
@@ -382,25 +402,26 @@ public class ResController {
    *         "+KB.SERVER+":8081/api/enrich
    * 
    */
-  @PostMapping("/enrich")
-  public ResponseEntity<Void> enrich(@RequestParam("file") MultipartFile file) {
-    System.out.println("***********" + "/enrich" + "***********");
+  // @PostMapping("/enrich")
+  // public ResponseEntity<Void> enrich(@RequestParam("file") MultipartFile file)
+  // {
+  // // System.out.println("***********" + "/enrich" + "***********");
 
-    // store file
-    storageService.store(file);
-    // File reading
-    String filename = file.getOriginalFilename();
-    String filepath = KB.STORAGE_DIR + "/" + filename;
-    OntModel newOntology = ModelFactory.createOntologyModel();
-    try {
-      newOntology.read(new FileInputStream(filepath), null);
-      Triplestore.get().addOntology(newOntology);
-      return ResponseEntity.ok().build();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-      return ResponseEntity.badRequest().build();
-    }
-  }
+  // // // store file
+  // // storageService.store(file);
+  // // // File reading
+  // // String filename = file.getOriginalFilename();
+  // // String filepath = KB.STORAGE_DIR + "/" + filename;
+  // // OntModel newOntology = ModelFactory.createOntologyModel();
+  // // try {
+  // // newOntology.read(new FileInputStream(filepath), null);
+  // // Triplestore.get().addOntology(newOntology);
+  // // return ResponseEntity.ok().build();
+  // // } catch (FileNotFoundException e) {
+  // // e.printStackTrace();
+  // // return ResponseEntity.badRequest().build();
+  // // }
+  // }
 
   @PostMapping("/check-ontology")
   public String check(@RequestParam("file") MultipartFile file) {
@@ -411,54 +432,71 @@ public class ResController {
     // File reading
     String filename = file.getOriginalFilename();
     String filepath = KB.STORAGE_DIR + "/" + filename;
-    OntModel newOntology = ModelFactory.createOntologyModel();
-    Set<String> unknownPredicates = new HashSet<>();
     try {
-      newOntology.read(new FileInputStream(filepath), null);
+      Enrichment enrichment = new Enrichment(filepath);
+      Set<String> unknownPredicates = enrichment.getUnknownPredicates();
+      System.out.println(unknownPredicates);
+      String query = "INSERT DATA { " + enrichment.getTriples() + " }";
+      Triplestore.executeUpdateQuery(query, KB.GRAPHDB_UPDATE_ENDPOINT);
 
-      StmtIterator stmtIterator = newOntology.listStatements();
-      while (stmtIterator.hasNext()) {
+      // OntModel newOntology = ModelFactory.createOntologyModel();
+      // newOntology.read(new FileInputStream(filepath), null);
 
-        Statement statement = stmtIterator.nextStatement();
-        Resource subject = statement.getSubject();
-        Property predicate = statement.getPredicate();
-        RDFNode object = statement.getObject();
-        String p = predicate.getURI();
-        // test if the predicate is knwown
-        if (p.toLowerCase().contains("spalod")) {
-          String query = KB.PREFIX + " SELECT ?s ?o WHERE {?s <" + p + "> ?o}";
-          String result = Triplestore.executeSelectQuery(query, GRAPHDB_QUERY_ENDPOINT);
-          try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(result);
+      // StmtIterator stmtIterator = newOntology.listStatements();
+      // while (stmtIterator.hasNext()) {
 
-            JsonNode bindingsNode = jsonNode.at("/results/bindings");
-            boolean isEmpty = bindingsNode.isArray() && bindingsNode.isEmpty();
-            String substring = p.substring(p.lastIndexOf("#") + 1, p.length());
-            if (isEmpty) {
-              unknownPredicates.add("spalod:" + substring);
-            }
+      // Statement statement = stmtIterator.nextStatement();
+      // Resource subject = statement.getSubject();
+      // Property predicate = statement.getPredicate();
 
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-       
-        // add the statements
-        TripleOperation tripleOperation = new TripleOperation("add",
-            new TripleData(subject.toString(), predicate.toString(), object.toString()));
-        this.update(tripleOperation);
+      // RDFNode object = statement.getObject();
+      // String p = predicate.getURI();
+      // // test if the predicate is knwown
+      // if (p.toLowerCase().contains("spalod")) {
+      // String query = KB.PREFIX + " SELECT ?s ?o WHERE {?s <" + p + "> ?o}";
+      // String result = Triplestore.executeSelectQuery(query,
+      // KB.GRAPHDB_QUERY_ENDPOINT);
+      // try {
+      // ObjectMapper objectMapper = new ObjectMapper();
+      // JsonNode jsonNode = objectMapper.readTree(result);
 
-      }
+      // JsonNode bindingsNode = jsonNode.at("/results/bindings");
+      // boolean isEmpty = bindingsNode.isArray() && bindingsNode.isEmpty();
+      // String substring = p.substring(p.lastIndexOf("#") + 1, p.length());
+      // if (isEmpty) {
+      // unknownPredicates.add("spalod:" + substring);
+      // }
 
+      // } catch (Exception e) {
+      // e.printStackTrace();
+      // }
+      // }
+
+      // // add the statements
+
+      // OntProperty ontProperty = newOntology.getOntProperty(predicate.getURI());
+      // if (ontProperty.isObjectProperty()) {
+      // System.out.println(predicate + " is an object property.");
+      // } else if (ontProperty.isDatatypeProperty()) {
+      // System.out.println(predicate + " is a datatype property.");
+      // RDFDatatype dataType =
+      // ontProperty.getRange().as(OntResource.class).asLiteral().getDatatype();
+      // System.out.println("The datatype of " + predicate + " is " + dataType);
+      // }
+
+      // TripleOperation tripleOperation = new TripleOperation("add",
+      // new TripleData(subject.toString(), predicate.toString(), object.toString()));
+      // this.update(tripleOperation);
+
+      // }
+      String json = JsonUtil.setToJson(unknownPredicates);
+      System.out.println("***********" + "DONE: check-ontology" + "***********");
+
+      return json;
     } catch (FileNotFoundException e) {
       e.printStackTrace();
       return "ERROR: " + e.getMessage();
     }
-    String json = JsonUtil.setToJson(unknownPredicates);
-    System.out.println("***********" + "DONE: check-ontology" + "***********");
-
-    return json;
   }
 
 }
