@@ -16,7 +16,8 @@
             </div>
         </div>
         <button @click="refreshMap" class="refresh" v-if="rdfData && rdfData.length > 0">Refresh Map</button>
-        <div class="metadata" :class="{ active: showMetadata }" v-if="rdfData && rdfData.length > 0">
+        <!-- v-if="rdfData && rdfData.length > 0" -->
+        <div class="metadata" :class="{ active: showMetadata }">
             <p @click="showMetadata = !showMetadata">Show Metadata</p>
             <div class="metadata-container" v-if="showMetadata">
                     <div class="metadata-Catalog">
@@ -29,6 +30,17 @@
                             </option>
                         </select>
                     </div>
+                    <div class="metadata-Catalog">
+                        <p>Dataset identifier: *</p>
+                        <select v-model="metadata['identifier']" v-bind:disabled="isCatalogDisabled">
+                            <option value="" disabled selected hidden>Choose a dataset</option>
+                            <option v-for="(option) in optionsDataset">
+                                {{ option.name }}
+                            </option>
+                        </select>
+                    </div>
+            <!-- {q: 'identifier', required: true, d: 'The unique identifier of the dataset', v: false, p: 'http://purl.org/dc/terms/identifier', literal: true}, -->
+
                 <div v-for="(queryable, index) in queryables " :key="index" class="metadata-element">
                     <h3 v-if="queryable.required">{{ queryable.q }}: *</h3>
                     <h3 v-else>{{ queryable.q }}:</h3>
@@ -148,7 +160,7 @@ export default {
     },
     data() {
         return {
-            name: "",
+            name: "default",
             isDarkMode: false,
             rdfData: [],
             predicateOptions: [],
@@ -159,6 +171,7 @@ export default {
             metadata: [],
             selectedOption :'',
             options: [],
+            optionsDataset: [],
             isCatalogDisabled: false,
             queryables: [
                 {q: 'identifier', required: true, d: 'The unique identifier of the dataset', v: false, p: 'http://purl.org/dc/terms/identifier', literal: true},
@@ -223,7 +236,7 @@ export default {
             this.isDarkMode = event.matches;
         });
         this.loadPredicates();
-        this.metadata['identifier'] = this.uuidv4();
+        // this.metadata['identifier'] = this.uuidv4();
 
         const fetchData = async () => {
             if(localStorage.getItem("githubLog")==null)
@@ -280,6 +293,31 @@ export default {
                                 publisher: data.results.bindings[i].publisher.value
                             }
                             this.options.push(catalog);
+                        }
+                    }
+                }
+            });
+            const datadcat = {
+                query: 'SELECT  ?dataset where { ?dataset rdf:type <http://www.w3.org/ns/dcat#Dataset>}',
+                triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod",
+            };
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                'type': 'POST',
+                'url': import.meta.env.VITE_APP_API_BASE_URL +'/api/sparql-select',
+                'data': JSON.stringify(datadcat),
+                'dataType': 'json',
+                success: (datadcat) => {
+                    if (datadcat.results.bindings.length > 0) {
+                        for (var i = 0; i < datadcat.results.bindings.length; i++) {
+                            var dataset = {
+                                id: datadcat.results.bindings[i].dataset.value.split('#')[1],
+                                name: datadcat.results.bindings[i].dataset.value.split('#')[1],
+                            }
+                            this.optionsDataset.push(dataset);
                         }
                     }
                 }
@@ -417,7 +455,7 @@ export default {
         getUsername()
         {
             const data = {
-                query:'SELECT ?s ?p ?o WHERE {?s ?p ?o. FILTER (?s=<spalod:'+this.uid+'>)}',
+                query:'SELECT ?s ?p ?o WHERE {?s ?p ?o. FILTER (?s = spalod:'+this.uid+')}',
                 triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod"
             };
             $.ajax({
@@ -432,7 +470,8 @@ export default {
                 success: (response) => {
                     const parts = response.results.bindings[0].o.value.split('/');
                     const lastPart = parts[parts.length - 1];
-                    return lastPart;
+                    // return lastPart;
+                    return this.uid;
                 },
                 error:(error) => {
                     console.log(error)
@@ -440,10 +479,10 @@ export default {
             });
 
         },
-        uuidv4() {
+         uuidv4() {
             return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-            );
+            ).replace(/-/g, "");
         },
         areAllPredicatesKnown() {
 
@@ -462,7 +501,7 @@ export default {
         loadPredicates() {
             const data = {
                 query: 'SELECT ?property ?propertyType WHERE{{?property a owl:ObjectProperty . BIND("Object Property" AS ?propertyType)} UNION {?property a owl:DatatypeProperty . BIND("Data Property" AS ?propertyType)}} ORDER BY ?property',
-                triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod" //intégrer graph DB ici
+                triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod" 
             };
             $.ajax({
                 headers: {
@@ -576,7 +615,7 @@ export default {
                 return;
             }
 
-            const predicate = "spalod:" + triplet.predicate;
+            const predicate =  triplet.predicate;
 
             // Add the new predicate
             this.loadPredicates();
