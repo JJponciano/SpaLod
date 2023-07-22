@@ -52,3 +52,14 @@ Run the server:
 ```bash
 java -jar target/spalod-0.0.1-SNAPSHOT.jar
 ```
+
+## Example of request:
+```
+SELECT ?s ?p ?o WHERE {?s ?p ?o. ?d rdf:type dcat:Dataset . ?d spalod:hasFeature ?s}
+
+SELECT ?d ?item ?coords WHERE { ?d rdf:type dcat:Dataset . ?d spalod:hasFeature ?f. ?f geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coords . ?f spalod:itemlabel ?item}
+SELECT ?d ?item ?coordinates WHERE { ?d rdf:type dcat:Dataset . ?d spalod:hasFeature ?f. ?f geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . ?f spalod:itemlabel ?item}
+SELECT ?d ?itemID ?itemLabel ?coordinates WHERE { ?d rdf:type dcat:Dataset . ?d spalod:hasFeature ?itemID. ?itemID geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . ?itemID spalod:itemlabel ?itemLabel}
+
+
+```
