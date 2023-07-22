@@ -45,7 +45,7 @@ public class OGCAPIController {
         String query = "SELECT DISTINCT ?collections ?name WHERE {\n?collections <http://www.w3.org/ns/dcat#dataset> ?dataset .\n ?collections <"+KB.NS+"title> ?name .}";
         System.out.println(query);
         String results;
-        results = Triplestore.executeSelectQuery(query, ""+KB.SERVER+":7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, ""+KB.GRAPHDB+":7200/repositories/Spalod");
         //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
@@ -61,7 +61,7 @@ public class OGCAPIController {
         String query = "SELECT ?title ?description ?publisher ?dataset WHERE {\n?collection <"+KB.NS+"title> ?title .\n?collection <"+KB.NS+"description> ?description .\n?collection <"+KB.NS+"publisher> ?publisher .\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <"+KB.NS+"" + collectionId + ">)\n}";
         System.out.println(query);
         String results;
-        results = Triplestore.executeSelectQuery(query, ""+KB.SERVER+":7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, ""+KB.GRAPHDB+":7200/repositories/Spalod");
         //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
@@ -77,7 +77,7 @@ public class OGCAPIController {
         String query = "SELECT ?dataset ?title ?description ?publisher ?distribution WHERE {\n?collection <http://www.w3.org/ns/dcat#dataset> ?dataset .\nFILTER(?collection = <"+KB.NS+"" + collectionId + ">)\n?dataset <"+KB.NS+"title> ?title .\n?dataset <"+KB.NS+"description> ?description .\n?dataset <"+KB.NS+"publisher> ?publisher .\n?dataset <http://www.w3.org/ns/dcat#distribution> ?distribution .\n}";
         System.out.println(query);
         String results;
-        results = Triplestore.executeSelectQuery(query, ""+KB.SERVER+":7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, ""+KB.GRAPHDB+":7200/repositories/Spalod");
         //results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
@@ -156,7 +156,7 @@ public class OGCAPIController {
         query += "}";
         System.out.println(query);
         //results = Triplestore.get().executeSelectQuery(query);
-        results = Triplestore.executeSelectQuery(query, ""+KB.SERVER+":7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, ""+KB.GRAPHDB+":7200/repositories/Spalod");
         //System.out.println(results);
 
         return results;
