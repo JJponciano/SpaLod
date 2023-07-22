@@ -32,8 +32,8 @@
                     </div>
                     <div class="metadata-Catalog">
                         <p>Dataset identifier: *</p>
-                        <select v-model="metadata['identifier']" v-bind:disabled="isCatalogDisabled">
-                            <option value="" disabled selected hidden>Choose a dataset</option>
+                        <select v-model="metadata['identifier']" >
+                            <option value="" disabled selected hidden  >Choose a dataset</option>
                             <option v-for="(option) in optionsDataset">
                                 {{ option.name }}
                             </option>
@@ -259,7 +259,7 @@ export default {
             }
             else
             {
-                this.uid=localStorage.getItem("uuid")
+                this.uid=localStorage.getItem("UUID")
                 this.metadata["publisher"] = localStorage.getItem("username")
             }
 
@@ -455,7 +455,7 @@ export default {
         getUsername()
         {
             const data = {
-                query:'SELECT ?s ?p ?o WHERE {?s ?p ?o. FILTER (?s = spalod:'+this.uid+')}',
+                query:'SELECT ?s ?p ?o WHERE {?s ?p ?o. FILTER (?s = <spalod:'+this.uid+'>)}',
                 triplestore: import.meta.env.VITE_APP_GRAPH_DB+"/repositories/Spalod"
             };
             $.ajax({
