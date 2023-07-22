@@ -135,7 +135,7 @@ public class ResController {
     // if (triplestore == null || triplestore.isBlank())
     // results = Triplestore.get().executeSelectQuery(query);
     // else
-    results = Triplestore.executeSelectQuery(query, KB.GRAPHDB_UPDATE_ENDPOINT);
+    results = Triplestore.executeSelectQuery(query, KB.GRAPHDB_QUERY_ENDPOINT);
     System.out.println("***********" + "END /sparql-select" + "***********");
 
     // System.out.println(results);
@@ -160,15 +160,18 @@ public class ResController {
     System.out.println("***********" + "/update" + "***********");
     System.out.print(tripleOperation);
     TripleData tripleData = tripleOperation.getTripleData();
-    String subject = tripleData.getSubject();
-    String predicate = tripleData.getPredicate();
-    String object = tripleData.getObject();
-    if (object.startsWith("http"))
-      object = "<" + object + ">";
-    if (predicate.startsWith("http"))
-      predicate = "<" + predicate + ">";
-    if (subject.startsWith("http"))
-      subject = "<" + subject + ">";
+    String subject = KB.sparqlValue(tripleData.getSubject());
+    String predicate = KB.sparqlValue(tripleData.getPredicate());
+    String object = KB.sparqlValue(tripleData.getObject());
+    // if (object.startsWith("http"))
+    //   object = "<" + object + ">";
+    // if (predicate.startsWith("http"))
+    //   predicate = "<" + predicate + ">";
+    // if (subject.startsWith("http"))
+    //   subject = "<" + subject + ">";
+
+    
+
     String operation = tripleOperation.getOperation();
     String query;
 
