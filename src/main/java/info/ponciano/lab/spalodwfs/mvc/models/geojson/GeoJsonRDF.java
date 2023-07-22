@@ -57,6 +57,7 @@ public class GeoJsonRDF {
     public static final String GEOSPARQLAS_WKT = "http://www.opengis.net/ont/geosparql#asWKT";
     public static final String GEOSPARQL_FEATURE = "http://www.opengis.net/ont/geosparql#Feature";
     public static final String DCAT_DATASET = "http://www.w3.org/ns/dcat#Dataset";
+
     /**
      * Uplift a geoJSON file in an ontology
      *
@@ -83,20 +84,20 @@ public class GeoJsonRDF {
             getData(ont, object);
 
         } else if (object instanceof JSONArray) {
-        //    first convert the JSON in geoJSON
-        Path path = Paths.get(pathGeoJson);
-        String filename = path.getFileName().toString();
-        String filenameWithoutExtension = filename.contains(".") ?
-                filename.substring(0, filename.lastIndexOf('.')) : filename;
-        String outputPath = path.getParent().toString() + "/" +
-                filenameWithoutExtension + "_geo" +
-                (filename.contains(".") ? filename.substring(filename.lastIndexOf('.')) : "");
-        JsonToGeoJson.convertJsonToGeoJson(pathGeoJson,outputPath);
-        parser = new JSONParser();// creates an instance of a JSONParser object
-        object = parser
-                .parse(new FileReader(outputPath));
+            // first convert the JSON in geoJSON
+            Path path = Paths.get(pathGeoJson);
+            String filename = path.getFileName().toString();
+            String filenameWithoutExtension = filename.contains(".") ? filename.substring(0, filename.lastIndexOf('.'))
+                    : filename;
+            String outputPath = path.getParent().toString() + "/" +
+                    filenameWithoutExtension + "_geo" +
+                    (filename.contains(".") ? filename.substring(filename.lastIndexOf('.')) : "");
+            JsonToGeoJson.convertJsonToGeoJson(pathGeoJson, outputPath);
+            parser = new JSONParser();// creates an instance of a JSONParser object
+            object = parser
+                    .parse(new FileReader(outputPath));
 
-       getData(ont, object);
+            getData(ont, object);
         } else {
             throw new Exception("Unexpected JSON type: " + object.getClass());
         }
@@ -106,7 +107,12 @@ public class GeoJsonRDF {
     private static void getData(PiOnt ont, Object object) throws PiOntologyException, Exception {
         JSONObject jsonObject = (JSONObject) object;
         // Reads the collection
-        String nameCollection = (String) jsonObject.get("name") + "_" + UUID.randomUUID().toString();
+        Object str = jsonObject.get("name");
+        String nameCollection = "";
+        if (str != null) {
+            nameCollection = (String) str + "_" + UUID.randomUUID().toString();
+        }
+        nameCollection += UUID.randomUUID().toString();
         FeatureCollection featureCollection = new FeatureCollection(nameCollection);
 
         extractFeatures(jsonObject, featureCollection);
@@ -198,7 +204,6 @@ public class GeoJsonRDF {
                 data.addProperty(hasFeature, indF);
         }
     }
-
 
     private static void extractFeatures(JSONObject jsonObject, FeatureCollection featureCollection)
             throws NumberFormatException, PiOntologyException {
