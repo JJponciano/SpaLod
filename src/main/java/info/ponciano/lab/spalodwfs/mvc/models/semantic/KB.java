@@ -17,6 +17,8 @@
  * MA 02110-1301  USA
  */
 package info.ponciano.lab.spalodwfs.mvc.models.semantic;
+    import java.net.URI;
+import java.net.URISyntaxException;
 
 import info.ponciano.lab.pisemantic.PiOnt;
 import info.ponciano.lab.pisemantic.PiOntologyException;
@@ -39,12 +41,13 @@ import org.apache.jena.update.*;
 public class KB implements KnowledgeBaseInterface {
     
     public static final String SERVER="https://localhost";
+    public static final String GRAPHDB="http://localhost";
     
-    public static final String GRAPHDB_QUERY_ENDPOINT = "" + KB.SERVER + ":7200/repositories/Spalod";
-    public static final String GRAPHDB_UPDATE_ENDPOINT = "" + KB.SERVER + ":7200/repositories/Spalod/statements";
+    public static final String GRAPHDB_QUERY_ENDPOINT =  KB.GRAPHDB + ":7200/repositories/Spalod";
+    public static final String GRAPHDB_UPDATE_ENDPOINT = KB.GRAPHDB + ":7200/repositories/Spalod/statements";
     // public static final String SERVER="https://spalod.northeurope.cloudapp.azure.com";
     public static final String STORAGE_DIR = "dynamic_storage";
-    public static final String URI = "http://lab.ponciano.info/ont/spalod";
+    public static final String URI = "https://spalod.northeurope.cloudapp.azure.com";
     public static final String NS = URI+"#";
     private static KB kb = null;
   
@@ -53,6 +56,7 @@ public class KB implements KnowledgeBaseInterface {
     private static final String SCHEAMORD_PATH = "src/main/resources/ontologies/schemaorg.owl";
 
     public static final String OUT_ONTO = "SpalodOutput.owl";
+
     public static final String PREFIX = "PREFIX schema: <http://schema.org/>\n"
             + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n"
             + "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
@@ -60,7 +64,7 @@ public class KB implements KnowledgeBaseInterface {
             + "PREFIX wd: <http://www.wikidata.org/entity/>\n"
             + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n"
             + "PREFIX wikibase: <http://wikiba.se/ontology#>\n"
-            + "PREFIX dct: <http://purl.org/dc/terms/>\n"
+            + "PREFIX dcat: <http://www.w3.org/ns/dcat#>\n"
             + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
             + "PREFIX bd: <http://www.bigdata.com/rdf#>\n"
             + "PREFIX wds: <http://www.wikidata.org/entity/statement/>\n"
@@ -72,9 +76,10 @@ public class KB implements KnowledgeBaseInterface {
             + "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>\n"
             + "PREFIX dp: <http://dbpedia.org/resource/>\n"
             + "PREFIX dpp: <http://dbpedia.org/property/>\n"
+            + "PREFIX spalod: <" + KB.NS + ">\n"
             + "PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>\n"
             + "PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"
-            + "PREFIX spalod: <http://lab.ponciano.info/spalod#>\n";
+            + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n";
     private OwlManagement model;
 
     public static KB get() {
@@ -235,4 +240,57 @@ public class KB implements KnowledgeBaseInterface {
         }
 
     }
+
+public static String sparqlValue(String str) {
+    // Regular expression for checking if a string represents a float
+    String floatPattern = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
+    // Regular expression for checking if a string represents a date in ISO 8601 format
+    String datePattern = "\\d{4}-\\d{2}-\\d{2}";
+    // Regular expression for checking if a string represents a boolean
+    String boolPattern = "true|false";
+    // Regular expression for checking if a string represents an integer
+    String intPattern = "-?\\d+";
+    // Regular expression for checking if a string is a prefixed name (in the format "prefix:something")
+    String prefixPattern = "\\w+:\\w+";
+    
+    if (str.matches(prefixPattern)||str.startsWith("spalod:")) {
+
+        // The string is a prefixed name
+        return str;
+    }
+
+    try {
+        // Check if the string is a valid URI
+        URI uri = new URI(str);
+        if (uri.getScheme() != null && uri.getHost() != null) {
+            return "<" + str + ">";
+        }
+    } catch (IllegalArgumentException | URISyntaxException ex) {
+        // Not a URI
+    }
+
+    if (str.matches(floatPattern)) {
+        // The string represents a float
+        return "\"" + str + "\"^^<http://www.w3.org/2001/XMLSchema#float>";
+    }
+
+    if (str.matches(datePattern)) {
+        // The string represents a date
+        return "\"" + str + "\"^^<http://www.w3.org/2001/XMLSchema#date>";
+    }
+    
+    if (str.matches(boolPattern)) {
+        // The string represents a boolean
+        return "\"" + str + "\"^^<http://www.w3.org/2001/XMLSchema#boolean>";
+    }
+
+    if (str.matches(intPattern)) {
+        // The string represents an integer
+        return "\"" + str + "\"^^<http://www.w3.org/2001/XMLSchema#integer>";
+    }
+
+    // If none of the above, we assume it's a simple literal
+    return "\"" + str + "\"";
+}
+
 }
