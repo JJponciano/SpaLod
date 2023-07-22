@@ -16,37 +16,12 @@ import org.apache.jena.datatypes.*;
 
 public class Triplestore {
 
-    private static final String GRAPHDB_QUERY_ENDPOINT = KB.SERVER + ":7200/repositories/Spalod";
 
     private static Triplestore triplestore = null;
 
     public static final String directory = "dataset";
     private final Dataset dataset;
-    public static final String URI = "http://lab.ponciano.info/ont/spalod";
-    public static final String NS = URI + "#";
-    public static final String PREFIX = "PREFIX schema: <http://schema.org/>\n"
-            + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n"
-            + "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
-            + "PREFIX hist: <http://wikiba.se/history/ontology#>\n"
-            + "PREFIX wd: <http://www.wikidata.org/entity/>\n"
-            + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n"
-            + "PREFIX wikibase: <http://wikiba.se/ontology#>\n"
-            // + "PREFIX dct: <http://purl.org/dc/terms/>\n"
-            + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
-            + "PREFIX bd: <http://www.bigdata.com/rdf#>\n"
-            + "PREFIX wds: <http://www.wikidata.org/entity/statement/>\n"
-            + "PREFIX wdv: <http://www.wikidata.org/value/>\n"
-            + "PREFIX p: <http://www.wikidata.org/prop/>\n"
-            + "PREFIX ps: <http://www.wikidata.org/prop/statement/>\n"
-            + "PREFIX psv: <http://www.wikidata.org/prop/statement/value/>\n"
-            + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>\n"
-            + "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>\n"
-            + "PREFIX dp: <http://dbpedia.org/resource/>\n"
-            + "PREFIX dpp: <http://dbpedia.org/property/>\n"
-            + "PREFIX spalod: <" + NS + ">\n"
-            + "PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>\n"
-            + "PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"
-            + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n";
+
 
     public static Triplestore get() {
         if (triplestore == null) {
@@ -105,7 +80,7 @@ public class Triplestore {
 
     public String executeSelectQuery(String queryString) {
         dataset.begin(ReadWrite.READ);
-        Query query = QueryFactory.create(PREFIX + queryString);
+        Query query = QueryFactory.create(KB.PREFIX + queryString);
         QueryExecution qexec = QueryExecutionFactory.create(query, dataset);
         ResultSet execSelect = qexec.execSelect();
         String results = QueryResult.convertResultSetToJavaObject(execSelect);
@@ -115,33 +90,38 @@ public class Triplestore {
 
     public static String executeSelectQuery(String sparqlQuery, String triplestore) {
         if(!sparqlQuery.contains("PREFIX schema:"))
-        sparqlQuery = PREFIX + sparqlQuery;
+        sparqlQuery = KB.PREFIX + sparqlQuery;
+        Query query = QueryFactory.create(sparqlQuery);
         // if (triplestore == GRAPHDB_QUERY_ENDPOINT) {
             ParameterizedSparqlString queryCommand = new ParameterizedSparqlString();
             queryCommand.setCommandText(sparqlQuery);
 
-            QueryExecutionHTTP qe = QueryExecutionHTTP.service(GRAPHDB_QUERY_ENDPOINT, queryCommand.asQuery());
+            QueryExecutionHTTP qe = QueryExecutionHTTP.service(triplestore, queryCommand.asQuery());
             ResultSet graphResults = qe.execSelect();
             String queryResults = QueryResult.convertResultSetToJavaObject(graphResults);
             return queryResults;
-        // } else {
-        //     QueryExecution qexec = QueryExecution.service(triplestore).query(query).build();
-        //     // QueryExecution qexec = QueryExecutionFactory.sparqlService(triplestore,
-        //     // query);
-        //     if (query.isSelectType()) {
-        //         ResultSet resultSet = qexec.execSelect();
-        //         String results = QueryResult.convertResultSetToJavaObject(resultSet);
-        //         return results;
-        //     } else {
-        //         throw new IllegalArgumentException("Only SELECT queries are supported.");
-        //     }
+        // // } else {
+                
+
+            // QueryExecution qexec = QueryExecutionFactory.sparqlService(triplestore,
+            // query);
+            //   QueryExecution qexec = QueryExecution.service(triplestore).query(query).build();
+            // // QueryExecution qexec = QueryExecutionFactory.sparqlService(triplestore,
+            // // query);
+            // if (query.isSelectType()) {
+            //     ResultSet resultSet = qexec.execSelect();
+            //     String results = QueryResult.convertResultSetToJavaObject(resultSet);
+            //     return results;
+            // } else {
+            //     throw new IllegalArgumentException("Only SELECT queries are supported.");
+            // }
         // }
 
     }
 
     public void executeUpdateQuery(String updateString) {
         dataset.begin(ReadWrite.WRITE);
-        UpdateRequest updateRequest = UpdateFactory.create(PREFIX + updateString);
+        UpdateRequest updateRequest = UpdateFactory.create(KB.PREFIX + updateString);
         UpdateProcessor updateProcessor = UpdateExecutionFactory.create(updateRequest, dataset);
         updateProcessor.execute();
         dataset.commit();
@@ -156,7 +136,7 @@ public class Triplestore {
     }
 
     public void addTriple(String subject, String predicate, String object, String xsdtype) {
-        String updateString = PREFIX
+        String updateString = KB.PREFIX
                 + String.format("INSERT DATA { <%s> <%s> \"%s\"^^xsd:%s }", Triplestore.ensureUriWithNamespace(subject),
                         Triplestore.ensureUriWithNamespace(predicate), object, xsdtype);
         executeUpdateQuery(updateString);
@@ -181,7 +161,7 @@ public class Triplestore {
             new URI(input);
             return input;
         } catch (Exception e) {
-            return NS + input;
+            return KB.NS + input;
         }
     }
 
