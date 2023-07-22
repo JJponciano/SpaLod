@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
 import org.apache.jena.update.*;
-import org.apache.jena.query.Dataset;
 
 /**
  * Knowledge base singleton class to manage semantic access.
@@ -38,7 +37,11 @@ import org.apache.jena.query.Dataset;
  * @author Dr Jean-Jacques Ponciano Contact: jean-jacques@ponciano.info
  */
 public class KB implements KnowledgeBaseInterface {
-    public static final String SERVER="http://localhost";
+    
+    public static final String SERVER="https://localhost";
+    
+    public static final String GRAPHDB_QUERY_ENDPOINT = "" + KB.SERVER + ":7200/repositories/Spalod";
+    public static final String GRAPHDB_UPDATE_ENDPOINT = "" + KB.SERVER + ":7200/repositories/Spalod/statements";
     // public static final String SERVER="https://spalod.northeurope.cloudapp.azure.com";
     public static final String STORAGE_DIR = "dynamic_storage";
     public static final String URI = "http://lab.ponciano.info/ont/spalod";
