@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
@@ -25,6 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import info.ponciano.lab.spalodwfs.mvc.models.geojson.GeoJsonRDF;
 import info.ponciano.lab.spalodwfs.mvc.models.semantic.KB;
 
 public class Enrichment {
@@ -49,7 +53,12 @@ public class Enrichment {
     public Enrichment(String filepath) throws FileNotFoundException {
         this.ont = ModelFactory.createOntologyModel();
         this.ont.read(new FileInputStream(filepath), null);
+        // OntClass dataset = ont.createClass(GeoJsonRDF.DCAT_DATASET);
+        // String name = KB.NS + UUID.randomUUID().toString();
+        // Individual mapThem = dataset.createIndividual(name);
+
         setOperations();
+        
     }
 
     private void setOperations() {
@@ -156,7 +165,7 @@ public class Enrichment {
 
     }
 
-    public String sparqlValue(RDFNode node) {
+    public static String sparqlValue(RDFNode node) {
         if (node.isLiteral()) {
             Literal lit = node.asLiteral();
             if (lit.getDatatypeURI() != null) {
