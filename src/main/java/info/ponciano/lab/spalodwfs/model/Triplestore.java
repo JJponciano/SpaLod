@@ -16,8 +16,7 @@ import org.apache.jena.datatypes.*;
 
 public class Triplestore {
 
-    
-    private static final String GRAPHDB_QUERY_ENDPOINT = KB.SERVER+":7200/repositories/Spalod";
+    private static final String GRAPHDB_QUERY_ENDPOINT = KB.SERVER + ":7200/repositories/Spalod";
 
     private static Triplestore triplestore = null;
 
@@ -115,33 +114,29 @@ public class Triplestore {
     }
 
     public static String executeSelectQuery(String sparqlQuery, String triplestore) {
-
-        String queryString = PREFIX + sparqlQuery;
-        Query query = QueryFactory.create(queryString);
-        if(triplestore==GRAPHDB_QUERY_ENDPOINT)
-        {
+        if(!sparqlQuery.contains("PREFIX schema:"))
+        sparqlQuery = PREFIX + sparqlQuery;
+        // if (triplestore == GRAPHDB_QUERY_ENDPOINT) {
             ParameterizedSparqlString queryCommand = new ParameterizedSparqlString();
-            queryCommand.setCommandText(queryString);
+            queryCommand.setCommandText(sparqlQuery);
 
             QueryExecutionHTTP qe = QueryExecutionHTTP.service(GRAPHDB_QUERY_ENDPOINT, queryCommand.asQuery());
             ResultSet graphResults = qe.execSelect();
             String queryResults = QueryResult.convertResultSetToJavaObject(graphResults);
             return queryResults;
-        }
-        else{
-            QueryExecution qexec = QueryExecution.service(triplestore).query(query).build();
-            // QueryExecution qexec = QueryExecutionFactory.sparqlService(triplestore,
-            // query);
-            if (query.isSelectType()) {
-                ResultSet resultSet = qexec.execSelect();
-                String results = QueryResult.convertResultSetToJavaObject(resultSet);
-                return results;
-            } else {
-                throw new IllegalArgumentException("Only SELECT queries are supported.");
-            }
-        }
-        
-        
+        // } else {
+        //     QueryExecution qexec = QueryExecution.service(triplestore).query(query).build();
+        //     // QueryExecution qexec = QueryExecutionFactory.sparqlService(triplestore,
+        //     // query);
+        //     if (query.isSelectType()) {
+        //         ResultSet resultSet = qexec.execSelect();
+        //         String results = QueryResult.convertResultSetToJavaObject(resultSet);
+        //         return results;
+        //     } else {
+        //         throw new IllegalArgumentException("Only SELECT queries are supported.");
+        //     }
+        // }
+
     }
 
     public void executeUpdateQuery(String updateString) {
@@ -154,13 +149,16 @@ public class Triplestore {
     }
 
     public void addTriple(String subject, String predicate, String object) {
-        String updateString = String.format("INSERT DATA { <%s> <%s> <%s> }",  Triplestore.ensureUriWithNamespace(subject),  Triplestore.ensureUriWithNamespace(predicate),  Triplestore.ensureUriWithNamespace(object));
+        String updateString = String.format("INSERT DATA { <%s> <%s> <%s> }",
+                Triplestore.ensureUriWithNamespace(subject), Triplestore.ensureUriWithNamespace(predicate),
+                Triplestore.ensureUriWithNamespace(object));
         executeUpdateQuery(updateString);
     }
 
     public void addTriple(String subject, String predicate, String object, String xsdtype) {
         String updateString = PREFIX
-                + String.format("INSERT DATA { <%s> <%s> \"%s\"^^xsd:%s }", Triplestore.ensureUriWithNamespace(subject),  Triplestore.ensureUriWithNamespace(predicate), object, xsdtype);
+                + String.format("INSERT DATA { <%s> <%s> \"%s\"^^xsd:%s }", Triplestore.ensureUriWithNamespace(subject),
+                        Triplestore.ensureUriWithNamespace(predicate), object, xsdtype);
         executeUpdateQuery(updateString);
     }
 
@@ -186,6 +184,7 @@ public class Triplestore {
             return NS + input;
         }
     }
+
     public Set<String> getUnknownPredicates(Model model) {
         StmtIterator stmtIterator = model.listStatements();
         Set<String> unknownPredicates = new HashSet<>();
@@ -229,7 +228,30 @@ public class Triplestore {
                 "http://example.com/object1");
         triplestore.addTriple("http://example.com/subject2", "http://example.com/predicate2",
                 "http://example.com/object2");
-                String results = triplestore.executeSelectQuery("SELECT ?s ?p ?o WHERE{ ?s ?p ?o}");
+        String results = triplestore.executeSelectQuery("SELECT ?s ?p ?o WHERE{ ?s ?p ?o}");
         System.out.println(results);
+    }
+
+    public static void executeUpdateQuery(String query, String graphdbUpdateEndpoint) {
+        boolean inprocess = true;
+        while (inprocess) {
+            try {
+                UpdateRequest insertRequest = UpdateFactory.create(query);
+                UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest,
+                        graphdbUpdateEndpoint);
+                insertProcessor.execute();
+                Thread.sleep(100);
+                inprocess = false;
+            } catch (Exception e) {
+                if (!e.getMessage().equals("Currently in an active transaction")) {
+                    inprocess = false;
+                    System.err.println(":::::::::::::::::ERROR:::::::::::::::::");
+                    System.err.println(query);
+                    System.err.println("----------");
+                    System.err.println(e.getMessage());
+                    System.err.println(":::::::::::::::::END ERROR:::::::::::::::::");
+                }
+            }
+        }
     }
 }
