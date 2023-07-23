@@ -327,6 +327,28 @@ public class GeoJsonRDF {
         return data.toJSONString();
     }
 
+    private JSONObject extractGeometry(String wkt) {
+        String pointString =wkt;
+
+        // Extract the coordinates from the point string
+        int start = pointString.indexOf('(') + 1; // After '('
+        int end = pointString.indexOf(')'); // Before ')'
+        String coordinatesString = pointString.substring(start, end);
+
+        // Split the coordinates string into longitude and latitude
+        String[] coordinatesArray = coordinatesString.split(" ");
+        double longitude = Double.parseDouble(coordinatesArray[0]);
+        double latitude = Double.parseDouble(coordinatesArray[1]);
+
+        // Build the JSON object
+        JSONObject geometry = new JSONObject();
+        geometry.put("type", "Point");
+        geometry.put("coordinates", new double[] { longitude, latitude });
+
+        System.out.println(geometry.toString());
+        return geometry;
+    }
+
     public static void createGeometryJson(RDFNode object, JSONObject jsonGEO)
             throws PiOntologyException, NumberFormatException {
         // fobject is a geometry
