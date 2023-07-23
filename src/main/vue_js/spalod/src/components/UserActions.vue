@@ -455,7 +455,7 @@ export default {
       this.post_checkont(
         import.meta.env.VITE_APP_API_BASE_URL + "/api/check-ontology",
         formData,
-        this.seek_unknown
+        this.confirmRequest
       );
     },
     confirmRequest() {
