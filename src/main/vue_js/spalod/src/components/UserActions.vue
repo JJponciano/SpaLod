@@ -63,7 +63,13 @@
       <button ref="confirmRequest" @click="confirmRequest" class="confirm">
         Confirm Request
       </button>
+      <!-- ---------------- DATASET--------------------------- -->
+      <!-- <div id="app">
+        <Dataset @change="handleChangeDataset" />
+      </div> -->
+      <!-- ---------------- END DATASET--------------------------- -->
     </div>
+
     <div class="navbar-menu" :class="{ active: menuOpen, dark: isDarkMode }">
       <ul class="navbar-nav">
         <li>
@@ -103,6 +109,7 @@
 <script>
 import $ from "jquery";
 import RDFData from "./RDFData.vue";
+import Dataset from "./Dataset.vue";
 
 $.ajaxSetup({
   xhrFields: {
@@ -111,20 +118,24 @@ $.ajaxSetup({
 });
 
 export default {
+  name: "User action",
+  components: {
+    Dataset,
+  },
   data() {
     return {
       isDarkMode: false,
       menuOpen: false,
       showAddMenu: false,
       showFilter: false,
-      showCatalog: false,
+      showCatalog: true,
       min: 100,
       max: 1000,
       rangeValue: 150,
       step: 50,
       inputAdvanced: "",
       inputCatalog: "",
-      advancedMenuOpen: false,
+      advancedMenuOpen: true,
       placeholders: "Write your custom request here",
       selectedOption: "default",
       options: [
@@ -247,36 +258,79 @@ export default {
     this.inputAdvanced = this.queries[this.selectedOption] + this.rangeValue;
 
     // Implementing OGC API - Records
-    const url = new URL(window.location.href);
-    const queryString = url.pathname;
-    console.log(url);
-    if (
-      queryString.includes("collections") ||
-      queryString.includes("conformance") ||
-      queryString === "/"
-    ) {
-      $.ajax({
-        url:
-          import.meta.env.VITE_APP_API_BASE_URL +
-          "/api/spalodWFS" +
-          queryString +
-          url.search,
-        type: "GET",
-        dataType: "json",
-        success: (response) => {
-          console.log(JSON.stringify(response));
-          this.handleResponse(response);
-        },
-        error: (error) => {
-          console.log(error);
-        },
-      });
-    }
+    this.getdateset();
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.closeNavBar);
   },
   methods: {
+    // ---------------- DATASET---------------------------
+    getdateset() {
+      const url = new URL(window.location.href);
+      const queryString = url.pathname;
+      console.log(url);
+      if (
+        queryString.includes("collections") ||
+        queryString.includes("conformance") ||
+        queryString === "/"
+      ) {
+        $.ajax({
+          url:
+            import.meta.env.VITE_APP_API_BASE_URL +
+            "/api/spalodWFS" +
+            queryString +
+            url.search,
+          type: "GET",
+          // dataType: "json",
+          processData: false,
+          contentType: false,
+          success: (response, textStatus, xhr) => {
+            const fileUrl = import.meta.env.VITE_APP_API_BASE_URL + response;
+            if (fileUrl.endsWith(".json")) {
+              let parts = queryString.split("/");
+              let datasetID = parts.pop();
+              const url = import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-select";
+              const data = {
+                query: "SELECT ?itemID ?itemLabel ?coordinates WHERE {  spalod:"+datasetID+" spalod:hasFeature ?itemID. ?itemID geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . ?itemID spalod:itemlabel ?itemLabel}",
+                triplestore: import.meta.env.VITE_APP_GRAPH_DB + "/repositories/Spalod",
+              };
+              this.postJSON(url, data, this.handleResponse);
+              // $.ajax({
+              //   headers: {
+              //     Accept: "application/json",
+              //     "Content-Type": "application/json",
+              //   },
+              //   type: "GET",
+              //   url: fileUrl,
+              //   dataType: "json",
+              //   success: (fileContent) => {
+              //     this.handleResponse(fileContent);
+              //   },
+              //   error: (error) => {
+              //     console.log(error);
+              //   },
+              // });
+            } 
+              window.location.href = fileUrl;
+            
+          },
+          error: (xhr, textStatus, errorThrown) => {
+            // success: (response) => {
+            //   console.log(JSON.stringify(response));
+            //   window.location.href =
+            //     import.meta.env.VITE_APP_API_BASE_URL + response;
+            //   // this.handleResponse(response);
+            // },
+            // error: (error) => {
+            console.log(error);
+          },
+        });
+      }
+    },
+    handleChangeDataset(newValue) {
+      console.log("New value selected:", newValue);
+      // Here, you can handle the new selected value as needed
+    },
     toggleNavBar() {
       this.menuOpen = !this.menuOpen;
     },
@@ -473,6 +527,8 @@ export default {
         features: [],
       };
       console.log("--------------------------------------");
+      console.log(response);
+
       const header = response["head"]["vars"];
       response["results"]["bindings"].forEach((item) => {
         const feature = {
@@ -484,33 +540,33 @@ export default {
           properties: {},
         };
 
-
         header.forEach((variable) => {
-        let value=String(item[variable]["value"]);
-        // if the value is a wkt, update the coords
-        const match = value.match(/POINT\s*\(([^)]+)\)/);
-        if (match) {
+          let value = String(item[variable]["value"]);
+          // if the value is a wkt, update the coords
+          const match = value.match(/POINT\s*\(([^)]+)\)/);
+          if (match) {
             const [longitude, latitude] = match[1].split(" ");
             feature.geometry.coordinates = [
-                parseFloat(longitude),
-                parseFloat(latitude),
-              ];
-        } 
-        
-        //   if (variable === "coordinates") {
-        //     var coords = String(item[variable]["value"]).split("/");
-        //     coords = coords[coords.length - 1];
-        //     coords = coords.split("#");
-        //     coords = coords[coords.length - 1];
-        //     coords = coords.split(",_");
-        //     if (coords) {
-        //       feature.geometry.coordinates = [
-        //         parseFloat(coords[0]),
-        //         parseFloat(coords[1]),
-        //       ];
-        //     }
-        //   } else
-           if (variable === "itemLabel") { //TODO we should change this as I (jj) did for the coordinates just before
+              parseFloat(longitude),
+              parseFloat(latitude),
+            ];
+          }
+
+          //   if (variable === "coordinates") {
+          //     var coords = String(item[variable]["value"]).split("/");
+          //     coords = coords[coords.length - 1];
+          //     coords = coords.split("#");
+          //     coords = coords[coords.length - 1];
+          //     coords = coords.split(",_");
+          //     if (coords) {
+          //       feature.geometry.coordinates = [
+          //         parseFloat(coords[0]),
+          //         parseFloat(coords[1]),
+          //       ];
+          //     }
+          //   } else
+          if (variable === "itemLabel") {
+            //TODO we should change this as I (jj) did for the coordinates just before
             var label = String(item[variable]["value"]).split("/");
             label = label[label.length - 1];
             // label = label.split('#');
