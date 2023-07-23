@@ -7,7 +7,7 @@
           <span></span>
         </button>
         <ul :class="['menuopen',menuAnimationClass]" @transitionend="onTransitionend">
-          <li><button @click="navigateTo('spalodWFS')" :class="{ active: activeTab === 'spalodwfs' }">SpaLod WFS</button></li>
+          <li><button @click="navigateTo('spalodWFS')" :class="{ active: activeTab === 'spalodwfs' }">SpaLod API</button></li>
           <li><button @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button> </li>
           <li><button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button> </li>
           <li><button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button></li>
@@ -16,7 +16,7 @@
         </ul>
       </div>
       <div class="computer">
-        <button @click="navigateTo('spalodWFS')" :class="{ active: activeTab === 'spalodwfs' }">SpaLod WFS</button>
+        <button @click="navigateTo('spalodWFS')" :class="{ active: activeTab === 'spalodwfs' }">SpaLod API</button>
         <button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button>
         <button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button>
         <button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button>
