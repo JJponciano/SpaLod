@@ -62,4 +62,6 @@ SELECT ?d ?item ?coordinates WHERE { ?d rdf:type dcat:Dataset . ?d spalod:hasFea
 SELECT ?d ?itemID ?itemLabel ?coordinates WHERE { ?d rdf:type dcat:Dataset . ?d spalod:hasFeature ?itemID. ?itemID geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . ?itemID spalod:itemlabel ?itemLabel}
 
 
+SELECT ?f ?g ?wkt ?fp ?o WHERE { spalod:67504af5-5d32-4815-ae53-fb879f4bb0c7 spalod:hasFeature  ?f. ?f geosparql:hasGeometry ?g. ?g geosparql:asWKT ?wkt . ?f ?fp ?o}
+
 ```
