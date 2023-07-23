@@ -32,7 +32,7 @@
                     </div>
                     <div class="metadata-Catalog">
                         <p>Dataset identifier: *</p>
-                        <select v-model="metadata['identifier']" >
+                        <select v-model="metadata['identifier']" v-bind:disabled="isCatalogDisabled">
                             <option value="" disabled selected hidden  >Choose a dataset</option>
                             <option v-for="(option) in optionsDataset">
                                 {{ option.name }}
@@ -610,10 +610,11 @@ export default {
             }
         },
         addTriplet(triplet, index) {
-            if (!this.validateForm()) {
-                alert('Please validate the metadata before adding new triplets');
-                return;
-            }
+            // UNCONMMENT THE FOLLOWING TO BLOCK IF METADATA ARE NOT VALIDATED
+            // if (!this.validateForm()) {
+            //     alert('Please validate the metadata before adding new triplets');
+            //     return;
+            // }
 
             const predicate =  triplet.predicate;
 
