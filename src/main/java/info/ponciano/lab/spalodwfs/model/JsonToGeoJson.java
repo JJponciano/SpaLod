@@ -122,7 +122,7 @@ public class JsonToGeoJson {
                 if (!reserved2geometry.contains(key)) {
                     // Adds the "item" from the input JSON object to the properties of the GeoJSON
                     // feature.
-                    properties.put("key", inputObject.get(key));
+                    properties.put(key, inputObject.get(key));
 
                     // Adds the properties object to the GeoJSON feature.
                     feature.put("properties", properties);
