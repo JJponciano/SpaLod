@@ -23,7 +23,8 @@ import java.nio.file.Paths;
  *
  * @author Claire #Ponciano
  */
-@CrossOrigin(origins = ""+KB.SERVER+":8080")
+// @CrossOrigin(origins = ""+KB.SERVER+":8080")
+@CrossOrigin(origins = "*")
 @Controller
 @RequestMapping("/download")
 public class FileDownloadController {
