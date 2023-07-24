@@ -503,6 +503,24 @@ export default {
           },
         },
         error: (error) => {
+          if (error.status === 0 && !error.statusText && !error.responseText) {
+            this.$notify({
+                title: "Not Connected",
+                text: "Please log in or register to continue."  ,
+                group:"notLoggedIn",
+                type: 'error',
+                duration: 2000 // notification will disappear after 5 seconds
+              });
+          }else{
+            this.$notify({
+                title: error.responseText,
+                text: "Please log in or register to continue."  ,
+                group:"notLoggedIn",
+                type: 'error',
+                duration: 2000 // notification will disappear after 5 seconds
+              });
+          }
+          
           console.log(error);
         },
       });
