@@ -150,3 +150,4 @@ users.txt
 *.json
 _output
 _geo
+src/main/vue_js/node_modules/
