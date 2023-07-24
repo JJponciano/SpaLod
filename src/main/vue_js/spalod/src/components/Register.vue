@@ -79,7 +79,7 @@ export default {
                     localStorage.setItem('githubLog',false);
 
                     var tripleData = {
-                      subject: 'http://lab.ponciano.info/ont/spalod#' + response,
+                      subject: 'https://spalod.northeurope.cloudapp.azure.com#' + response,
                       predicate: "https://xmlns.com/foaf/0.1/:name",
                       object: this.username
                     };
@@ -137,10 +137,6 @@ export default {
     },
   },
 };
-
-console.log(import.meta.env.VITE_APP_GRAPH_DB)
-console.log(import.meta.env.VITE_APP_API_BASE_URL)
-console.log(import.meta.env.VITE_APP_FRONT_BASE_URL)
 </script>
   
 
