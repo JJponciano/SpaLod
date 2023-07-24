@@ -25,8 +25,8 @@ spring:
 ---
 
 spring:
-   profiles: prod
-   application:
+  profiles: prod
+  application:
         VITE_APP_GRAPH_DB: http://localhost:7200
         VITE_APP_API_BASE_URL: https://localhost:8081
         VITE_APP_FRONT_BASE_URL: https://spalod.northeurope.cloudapp.azure.com:8080
