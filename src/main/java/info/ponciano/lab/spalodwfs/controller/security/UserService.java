@@ -41,10 +41,9 @@ import org.springframework.web.client.RestTemplate;
 import info.ponciano.lab.spalodwfs.model.TripleData;
 import info.ponciano.lab.spalodwfs.model.TripleOperation;
 
-
 @Component
 public class UserService implements UserDetailsService {
-    
+
     private final String DB_FILE = "users.txt";
 
     // Finds a user by their username
@@ -57,13 +56,13 @@ public class UserService implements UserDetailsService {
         try (BufferedReader br = new BufferedReader(new FileReader(DB_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (!line.isBlank()){
+                if (!line.isBlank()) {
                     String[] parts = line.split(",");
                     if (parts[1].equals(username)) {
                         String password = parts[2];
                         ArrayList<String> roles = new ArrayList<>(Arrays.asList(parts[3].split(";")));
-                        return new User(username, password,roles);
-                    }            
+                        return new User(username, password, roles);
+                    }
                 }
             }
         } catch (IOException e) {
@@ -77,7 +76,8 @@ public class UserService implements UserDetailsService {
         try (PrintWriter pw = new PrintWriter(new FileWriter(DB_FILE, true))) {
             String uuid = generateUUID();
             String roles = String.join(";", user.getRoles());
-            pw.println(uuid+","+user.getUsername() + "," + new BCryptPasswordEncoder(10).encode(user.getPassword()) + "," + roles);
+            pw.println(uuid + "," + user.getUsername() + "," + new BCryptPasswordEncoder(10).encode(user.getPassword())
+                    + "," + roles);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,15 +89,14 @@ public class UserService implements UserDetailsService {
         User user = findByUsername(username);
         if (user != null) {
             List<GrantedAuthority> authorities = user.getRoles()
-            .stream()
-            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
-            .collect(Collectors.toList());
+                    .stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                    .collect(Collectors.toList());
 
             return new org.springframework.security.core.userdetails.User(
-            user.getUsername(),
-            user.getPassword(), 
-            authorities     
-            );
+                    user.getUsername(),
+                    user.getPassword(),
+                    authorities);
         }
         throw new UsernameNotFoundException("User not found: " + username);
     }
@@ -109,7 +108,7 @@ public class UserService implements UserDetailsService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts[1].equals(username) && (!parts[3].contains("ADMIN")) ) {
+                if (parts[1].equals(username) && (!parts[3].contains("ADMIN"))) {
                     parts[3] += ";ADMIN"; // Update the role to ADMIN
                     line = String.join(",", parts); // Join the parts back into a line
                 }
@@ -118,7 +117,7 @@ public class UserService implements UserDetailsService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    
+
         // Rewrite the file with the updated information
         try (PrintWriter pw = new PrintWriter(new FileWriter(DB_FILE))) {
             for (String line : lines) {
@@ -128,29 +127,36 @@ public class UserService implements UserDetailsService {
             e.printStackTrace();
         }
     }
-    
+
     public static String generateUUID() {
         SecureRandom secureRandom = new SecureRandom();
         byte[] randomBytes = new byte[16];
         secureRandom.nextBytes(randomBytes);
 
         // Set version (4) and variant (2) bits
-        randomBytes[6] &= 0x0f;  // Version (4) bits
+        randomBytes[6] &= 0x0f; // Version (4) bits
         randomBytes[6] |= 0x40;
-        randomBytes[8] &= 0x3f;  // Variant (2) bits
+        randomBytes[8] &= 0x3f; // Variant (2) bits
         randomBytes[8] |= 0x80;
 
         return UUID.nameUUIDFromBytes(randomBytes).toString();
     }
 
-    public String getUUID(String username)
-    {   
+    public String getUUID(String username) {
         try (BufferedReader br = new BufferedReader(new FileReader(DB_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts[1].equals(username)) {
-                    return parts[0];
+                // Trim the leading and trailing spaces to handle empty lines effectively
+                line = line.trim();
+
+                // Skip processing if the line is empty
+                if (!line.isEmpty()) {
+
+                    String[] parts = line.split(",");
+                    // Make sure the parts array has at least two elements before accessing them
+                    if (parts.length >= 2 && parts[1].equals(username)) {
+                        return parts[0];
+                    }
                 }
             }
         } catch (IOException e) {
