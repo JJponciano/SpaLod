@@ -19,7 +19,7 @@ public class JsonToGeoJsonTest {
         String inputPath = "src/test/resources/test.json";
         String outputPath = "src/test/resources/test_output.json";
         String expectedOutputPath = "src/test/resources/test_geo.json";
-
+ 
         // Run the method to test
         JsonToGeoJson.convertJsonToGeoJson(inputPath, outputPath);
 
@@ -28,4 +28,4 @@ public class JsonToGeoJsonTest {
         JSONObject actualOutput = (JSONObject) parser.parse(new FileReader(outputPath));
         System.out.println(actualOutput);
     }
-}
+} 
