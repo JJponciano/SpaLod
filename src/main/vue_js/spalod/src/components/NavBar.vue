@@ -10,20 +10,22 @@
           <li><button @click="navigateTo('spalodWFS')" :class="{ active: activeTab === 'spalodwfs' }">SpaLod API</button></li>
           <li><button @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button> </li>
           <li><button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button> </li>
-          <li><button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button></li>
+          <li><button @click="navigateTo('admin')" :class="{ active: activeTab === 'admin' }">Admin</button></li>
           <li><button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button></li>
           <li><button @click="navigateTo('external_links')" :class="{ active: activeTab === 'external' }">External Links</button></li>
         </ul>
       </div>
+      <button v-if="isAdmin" @click="logout()" class="navbar-title">Logout</button>
+      <button v-if="!isLoggedIn" @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button>
       <div class="computer">
         <button @click="navigateTo('spalodWFS')" :class="{ active: activeTab === 'spalodwfs' }">SpaLod API</button>
         <button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button>
-        <button @click="navigateTo('public')" :class="{ active: activeTab === 'public' }">Public</button>
+        <button @click="navigateTo('admin')" :class="{ active: activeTab === 'admin' }">Admin</button>
         <button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button>
         <button @click="navigateTo('external_links')" :class="{ active: activeTab === 'external' }">External Links</button>
+
       </div>
-      <button v-if="isAdmin" @click="navigateTo('admin')" class="navbar-title">Admin</button>
-      <button v-if="!isLoggedIn" @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button>
+    
     </div>
     <div>
 
@@ -119,18 +121,41 @@
             this.$emit('username-updated',response)
           },
           error: (error) => {
-            this.$notify({
-                title: 'Session expired',
-                text: 'If you are connected with github, please reconnect.',
-                group:"notLoggedIn",
-                type: 'error',
-                duration: 5000 // notification will disappear after 5 seconds
-              });
+            // this.$notify({
+            //     title: 'Session expired',
+            //     text: 'If you are connected with github, please reconnect.',
+            //     group:"notLoggedIn",
+            //     type: 'error',
+            //     duration: 2000 // notification will disappear after 5 seconds
+            //   });
             console.error(error);
           }
         })
-      }
+      }, logout() {
+        alert("logout");
+      // Call a function to remove the cookies
+      this.removeCookies();
+      
+      // Redirect or perform any other actions after logout if needed
     },
+    removeCookies() {
+      $.ajax({
+        url: import.meta.env.VITE_APP_API_BASE_URL + '/logout',
+        method: 'POST',
+        xhrFields: {
+          withCredentials: true,
+        },
+        success: () => {
+          this.isLoggedIn = false;
+          this.isAdmin = false; // Reset isAdmin if needed
+          // Any other logic to clean up after logout
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
+    }
+    }
   };
   </script>
   
