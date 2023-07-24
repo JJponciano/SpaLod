@@ -291,7 +291,7 @@ export default {
               let datasetID = parts.pop();
               const url = import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-select";
               const data = {
-                query: "SELECT ?itemID ?itemLabel ?coordinates WHERE {  spalod:"+datasetID+" spalod:hasFeature ?itemID. ?itemID geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . ?itemID spalod:itemlabel ?itemLabel}",
+                query: "SELECT ?itemID ?coordinates WHERE {  spalod:"+datasetID+" spalod:hasFeature ?itemID. ?itemID geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . }",
                 triplestore: import.meta.env.VITE_APP_GRAPH_DB + "/repositories/Spalod",
               };
               this.postJSON(url, data, this.handleResponse);
@@ -416,20 +416,24 @@ export default {
     },
     seek_unknown(response) {
       if (response == "[]") {
-        $.ajax({
-          url: import.meta.env.VITE_APP_API_BASE_URL + "/api/enrich",
-          type: "POST",
-          data: formData,
-          processData: false,
-          contentType: false,
-          success: function () {
-            alert("Ontology enriched successfully!");
-          },
-          error: function () {
-            alert("Error while enriching ontology!");
-          },
-        });
+        alert("Ontology enriched successfully!");
+
+        // $.ajax({
+        //   url: import.meta.env.VITE_APP_API_BASE_URL + "/api/enrich",
+        //   type: "POST",
+        //   data: formData,
+        //   processData: false,
+        //   contentType: false,
+        //   success: function () {
+        //     alert("Ontology enriched successfully!");
+        //   },
+        //   error: function () {
+        //     alert("Error while enriching ontology!");
+        //   },
+        // });
       } else {
+        alert("Ontology enriched successfully! Please indicate equivalent properties !");
+
         console.log(response);
         this.$emit("properties_unknown", response);
       }
@@ -454,8 +458,9 @@ export default {
       formData.append("file", file);
       this.post_checkont(
         import.meta.env.VITE_APP_API_BASE_URL + "/api/check-ontology",
-        formData,
-        this.confirmRequest
+        formData,this.seek_unknown
+        //this.handleResponse
+        // this.confirmRequest
       );
     },
     confirmRequest() {
