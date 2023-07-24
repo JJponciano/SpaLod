@@ -9,6 +9,7 @@ import PopUp from './components/PopUp.vue';
 import PopUpC from './components/PopUpC.vue';
 import OgcApi from './components/OgcApi.vue';
 import ExternaLinks from './components/ExternalLinks.vue';
+import Docs from './components/Docs.vue';
 
 
 
@@ -24,6 +25,7 @@ export default {
     Register,
     OgcApi,
     ExternaLinks,
+    Docs,
   },
   data() {
     return {
@@ -51,6 +53,8 @@ export default {
       }
       else if (this.currentPath === '/external_links'){
         return 'externallinks';
+      } else if (this.currentPath === '/doc'){
+        return 'docs';
       } else {
         return 'main';
       }
@@ -137,6 +141,9 @@ export default {
     </div>
     <div class="main" v-if="currentView === 'externallinks'">
       <ExternaLinks></ExternaLinks>
+    </div>
+    <div class="main" v-if="currentView === 'docs'">
+      <Docs></Docs>
     </div>
   </div>
   <div class="popup">
