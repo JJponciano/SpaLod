@@ -1,5 +1,6 @@
 package info.ponciano.lab.spalodwfs.controller.ogc_api;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,14 @@ import java.util.UUID;
 @RequestMapping("/api/spalodWFS")
 @RestController
 public class OGCAPIController {
+    @Value("${spring.application.VITE_APP_GRAPH_DB}")
+    private String graphDbUrl;
+
+    @Value("${spring.application.VITE_APP_API_BASE_URL}")
+    private String apiBaseUrl;
+
+    @Value("${spring.application.VITE_APP_FRONT_BASE_URL}")
+    private String frontBaseUrl;
 
     /**
      * Return the landing page of the API
@@ -36,10 +45,11 @@ public class OGCAPIController {
 
         String results = "{\"head\":{\"vars\":\n";
         results += "[\"Feature\", \"HTML\", \"JSON\"]},\"results\":{\"bindings\":[\n";
-        results += "{\"Feature\": {\"value\": \"Conformance\"},\"HTML\": {\"value\": \"https://localhost:8080/spalodWFS/conformance\"}, \"JSON\": {\"value\": \"https://localhost:8081/api/spalodWFS/conformance\"}},\n";
-        results += "{\"Feature\": {\"value\": \"Collections\"},\"HTML\": {\"value\": \"https://localhost:8080/spalodWFS/collections\"}, \"JSON\": {\"value\": \"https://localhost:8081/api/spalodWFS/collections\"}}\n";
+        results += "{\"Feature\": {\"value\": \"Conformance\"},\"HTML\": {\"value\": \"" + frontBaseUrl
+                + "/spalodWFS/conformance\"}, \"JSON\": {\"value\": \""+apiBaseUrl+"/api/spalodWFS/conformance\"}},\n";
+        results += "{\"Feature\": {\"value\": \"Collections\"},\"HTML\": {\"value\": \"" + frontBaseUrl
+                + "/spalodWFS/collections\"}, \"JSON\": {\"value\": \""+apiBaseUrl+"/api/spalodWFS/collections\"}}\n";
         results += "]}}";
-        System.out.println(results);
 
         return results;
     }
@@ -114,9 +124,8 @@ public class OGCAPIController {
         DatasetDownlift dd = new DatasetDownlift(datasetId);
         JSONObject data = dd.getData();
 
-        
-        String res = new StorageProperties().getLocation() + "/" + UUID.randomUUID().toString()+".json";
-           try (FileWriter file = new FileWriter(res)) {
+        String res = new StorageProperties().getLocation() + "/" + UUID.randomUUID().toString() + ".json";
+        try (FileWriter file = new FileWriter(res)) {
             file.write(data.toString());
             System.out.println("Successfully Copied JSON Object to File...");
             System.out.println("\nJSON Object: " + data);
