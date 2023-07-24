@@ -80,8 +80,19 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api")
 @RestController
 public class ResController {
-  @Value("${triplestore.sparqlEndpoint}")
-  private String sparqlEndpoint;
+  @Value("${spring.application.VITE_APP_GRAPH_DB}")
+  private String graphDbUrl;
+
+  @Value("${spring.application.VITE_APP_API_BASE_URL}")
+  private String apiBaseUrl;
+
+  @Value("${spring.application.VITE_APP_FRONT_BASE_URL}")
+  private String frontBaseUrl;
+
+  @Value("${spring.application.GRAPHDB_QUERY_ENDPOINT}")
+  public   String GRAPHDB_QUERY_ENDPOINT;
+   @Value("${spring.application.GRAPHDB_UPDATE_ENDPOINT}")
+  public   String GRAPHDB_UPDATE_ENDPOINT;
 
   @Autowired
   private FormDataService formDataService;
@@ -127,6 +138,13 @@ public class ResController {
   @PostMapping("/sparql-select")
   public String sparqlQuery(@RequestBody SparqlQuery sq) {
     System.out.println("***********" + "/sparql-select" + "***********");
+    System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    System.out.println(GRAPHDB_QUERY_ENDPOINT);
+    System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     System.out.println("Query:");
     System.out.println(sq);
     String query = KB.PREFIX + " " + sq.getResults();
@@ -135,7 +153,7 @@ public class ResController {
     // if (triplestore == null || triplestore.isBlank())
     // results = Triplestore.get().executeSelectQuery(query);
     // else
-    results = Triplestore.executeSelectQuery(query, KB.GRAPHDB_QUERY_ENDPOINT);
+    results = Triplestore.executeSelectQuery(query,  GRAPHDB_QUERY_ENDPOINT);
     System.out.println("***********" + "END /sparql-select" + "***********");
 
     // System.out.println(results);
@@ -183,7 +201,7 @@ public class ResController {
       throw new IllegalArgumentException("Unknown operation: " + operation);
     }
 
-    Triplestore.executeUpdateQuery(query, KB.GRAPHDB_UPDATE_ENDPOINT);
+    Triplestore.executeUpdateQuery(query,  GRAPHDB_UPDATE_ENDPOINT);
 
     // // try to add until it is done
     // boolean inprocess = true;
@@ -215,7 +233,7 @@ public class ResController {
       // String queryString = "SELECT ?type where { <" + tripleData.getPredicate()
       // + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
       // String type = Triplestore.executeSelectQuery(queryString,
-      // KB.GRAPHDB_QUERY_ENDPOINT);
+      //  GRAPHDB_QUERY_ENDPOINT);
 
       // JSONObject jsonResult = new JSONObject(type);
       // JSONObject resultsObject = jsonResult.getJSONObject("results");
@@ -266,7 +284,7 @@ public class ResController {
       insertCommand.setCommandText(KB.PREFIX + " INSERT DATA { " + subject + " " + predicate + " " + object + " }");
       UpdateRequest insertRequest = UpdateFactory.create(insertCommand.toString());
       UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest,
-          KB.GRAPHDB_UPDATE_ENDPOINT);
+           GRAPHDB_UPDATE_ENDPOINT);
       insertProcessor.execute();
 
       System.out.println("-> added!");
@@ -275,7 +293,7 @@ public class ResController {
       // String queryString = "SELECT ?type where { <" + tripleData.getPredicate()
       // + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }";
       // String type = Triplestore.executeSelectQuery(queryString,
-      // KB.GRAPHDB_QUERY_ENDPOINT);
+      //  GRAPHDB_QUERY_ENDPOINT);
 
       // JSONObject jsonResult = new JSONObject(type);
       // JSONObject resultsObject = jsonResult.getJSONObject("results");
@@ -307,7 +325,7 @@ public class ResController {
           "WHERE  { " + subject + " " + predicate + " " + object + " }");
       UpdateRequest removeRequest = UpdateFactory.create(removeCommand.toString());
       UpdateProcessor removeProcessor = UpdateExecutionFactory.createRemoteForm(removeRequest,
-          KB.GRAPHDB_UPDATE_ENDPOINT);
+           GRAPHDB_UPDATE_ENDPOINT);
       removeProcessor.execute();
 
       System.out.println("-> removed!");
@@ -440,7 +458,7 @@ public class ResController {
       Set<String> unknownPredicates = enrichment.getUnknownPredicates();
       System.out.println(unknownPredicates);
       String query = "INSERT DATA { " + enrichment.getTriples() + " }";
-      Triplestore.executeUpdateQuery(query, KB.GRAPHDB_UPDATE_ENDPOINT);
+      Triplestore.executeUpdateQuery(query,  GRAPHDB_UPDATE_ENDPOINT);
 
       // OntModel newOntology = ModelFactory.createOntologyModel();
       // newOntology.read(new FileInputStream(filepath), null);
@@ -458,7 +476,7 @@ public class ResController {
       // if (p.toLowerCase().contains("spalod")) {
       // String query = KB.PREFIX + " SELECT ?s ?o WHERE {?s <" + p + "> ?o}";
       // String result = Triplestore.executeSelectQuery(query,
-      // KB.GRAPHDB_QUERY_ENDPOINT);
+      //  GRAPHDB_QUERY_ENDPOINT);
       // try {
       // ObjectMapper objectMapper = new ObjectMapper();
       // JsonNode jsonNode = objectMapper.readTree(result);
