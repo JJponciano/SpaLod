@@ -8,6 +8,12 @@ server:
 
     
 spring:
+  application:
+        VITE_APP_GRAPH_DB: http://localhost:7200
+        VITE_APP_API_BASE_URL: https://localhost:8081
+        VITE_APP_FRONT_BASE_URL: https://localhost:8080
+        GRAPHDB_QUERY_ENDPOINT: http://localhost:7200/repositories/Spalod
+        GRAPHDB_UPDATE_ENDPOINT: http://localhost:7200/repositories/Spalod/statements
   security:
     oauth2:
       client:
@@ -16,6 +22,20 @@ spring:
             clientId: 46d5da3810de3587035b
             clientSecret: 7c521fa36a579e48d95b0bb58ba68c78aef454bb
 
-# application.properties
-triplestore.sparqlEndpoint: http://87185f19b3c7:7200/repositories/graphDB_spalod
+---
 
+spring:
+   profiles: prod
+   application:
+        VITE_APP_GRAPH_DB: http://localhost:7200
+        VITE_APP_API_BASE_URL: https://localhost:8081
+        VITE_APP_FRONT_BASE_URL: https://spalod.northeurope.cloudapp.azure.com:8080
+        GRAPHDB_QUERY_ENDPOINT: http://localhost:7200/repositories/Spalod
+        GRAPHDB_UPDATE_ENDPOINT: http://localhost:7200/repositories/Spalod/statements
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: 46d5da3810de3587035b
+            clientSecret: 7c521fa36a579e48d95b0bb58ba68c78aef454bb
