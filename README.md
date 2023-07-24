@@ -1,6 +1,17 @@
 # SpaLod
 Spatial data management with semantic web technology and Linked Open Data (LOD)
-[![Spalod Docker Image](https://github.com/JJponciano/SpaLod/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/JJponciano/SpaLod/actions/workflows/docker-image.yml)
+## Introduction
+
+SpaLOD addresses the increasingly complex challenge brought about by the rapid growth of geospatial data, which expands by at least 20% every year. This has resulted in an enormous increase in data heterogeneity, creating complexities in structure and vocabulary variations. The vocabularies in use depend heavily on the application domain and the language in which the data is described, making integration and unification a daunting task.
+
+In light of these challenges and harnessing the potential of Semantic Web technologies, numerous approaches have emerged to group these data into knowledge graphs. These knowledge graphs enable efficient data linking, ease sharing, and enhance maintenance. However, they also bring forth the daunting task of data homogenization due to the non-unified data structures and vocabulary variations.
+
+To overcome this problem of homogenization, we present SpaLOD, a comprehensive framework designed to efficiently group heterogeneous spatial data into a single knowledge base. The knowledge base is rooted in an ontology connected to Schema.org and DCAT-AP, providing a data structure compatible with GeoSPARQL. One of the unique strengths of SpaLOD is its ability to integrate geospatial data independently of their original language. This is made possible by translating them using advanced Neural Machine Translation.
+
+SpaLOD sets a new benchmark in the field of geospatial data, enabling a universal sharing platform and fostering collaboration between different states and organizations globally. Through SpaLOD, we envision a future where geospatial data can be universally used, integrated, and shared, regardless of their original structure and language.
+
+
+
 ## Docker 
 
 Clone the repository and go inside:
