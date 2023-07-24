@@ -40,11 +40,10 @@ import org.apache.jena.update.*;
  */
 public class KB implements KnowledgeBaseInterface {
     
-    public static final String SERVER="https://localhost";
     public static final String GRAPHDB="http://localhost";
     
-    public static final String GRAPHDB_QUERY_ENDPOINT =  KB.GRAPHDB + ":7200/repositories/Spalod";
-    public static final String GRAPHDB_UPDATE_ENDPOINT = KB.GRAPHDB + ":7200/repositories/Spalod/statements";
+    public static final String GRAPHDB_QUERY_ENDPOINT = GRAPHDB+ ":7200/repositories/Spalod";
+    public static final String GRAPHDB_UPDATE_ENDPOINT = GRAPHDB+":7200/repositories/Spalod/statements";
     // public static final String SERVER="https://spalod.northeurope.cloudapp.azure.com";
     public static final String STORAGE_DIR = "dynamic_storage";
     public static final String URI = "https://spalod.northeurope.cloudapp.azure.com";
