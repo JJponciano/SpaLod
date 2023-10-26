@@ -21,8 +21,10 @@ public class GeoJsonRDFTest {
     @Test
     void testUpliftGeoJSON() throws FileNotFoundException, IOException, ParseException, PiOntologyException, Exception {
         String geojsonfilepath="src/test/resources/researchLaboratory.json";
+        geojsonfilepath="C:\\Users\\49151\\Downloads\\Radnetz_Deutschland_06-2022.geojson";
             PiSparql ont = new OwlManagement(KB.DEFAULT_ONTO).getOnt();
             // execute the uplift
             GeoJsonRDF.upliftGeoJSON(geojsonfilepath, ont);
+            System.out.println("ok");
     }
 }
