@@ -33,7 +33,7 @@ public  class Geometry {
     private final List<Double> coordinates;
 
     public Geometry(String type, double... coordinates) {
-        if (!type.equals("Point")) {
+        if (!type.equals("Point")&&!type.equals("LineString")) {
             throw new UnsupportedOperationException(type + " geometry is not supported yet.");
         }
         this.type = type;
@@ -56,13 +56,28 @@ public  class Geometry {
     }
     @Override
     public String toString() {
-        String value = "POINT (";
-        for (int i = 0; i < coordinates.size(); i++) {
-            double coordinate = coordinates.get(i);
-            value += coordinate;
-            if (i + 1 < coordinates.size()) {
-                value += " ";
+        System.out.println("---- "+coordinates);
+        String value;
+        if(type.equals("LineString")){
+            value = "POINT (";
+            for (int i = 0; i < coordinates.size(); i++) {
+                double coordinate = coordinates.get(i);
+                value += coordinate;
+                if (i + 1 < coordinates.size()) {
+                    value += " ";
+                }
             }
+        }
+        else{
+            value = "POINT (";
+            for (int i = 0; i < coordinates.size(); i++) {
+                double coordinate = coordinates.get(i);
+                value += coordinate;
+                if (i + 1 < coordinates.size()) {
+                    value += " ";
+                }
+            }
+
         }
         value += ")";
         return value;
