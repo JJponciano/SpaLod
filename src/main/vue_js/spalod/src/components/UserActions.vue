@@ -295,33 +295,13 @@ export default {
                 triplestore: import.meta.env.VITE_APP_GRAPH_DB + "/repositories/Spalod",
               };
               this.postJSON(url, data, this.handleResponse);
-              // $.ajax({
-              //   headers: {
-              //     Accept: "application/json",
-              //     "Content-Type": "application/json",
-              //   },
-              //   type: "GET",
-              //   url: fileUrl,
-              //   dataType: "json",
-              //   success: (fileContent) => {
-              //     this.handleResponse(fileContent);
-              //   },
-              //   error: (error) => {
-              //     console.log(error);
-              //   },
-              // });
+              //TODO download the file but crash the view of data
+              //window.location.href = fileUrl; 
+
             } 
-              window.location.href = fileUrl;
             
           },
           error: (xhr, textStatus, errorThrown) => {
-            // success: (response) => {
-            //   console.log(JSON.stringify(response));
-            //   window.location.href =
-            //     import.meta.env.VITE_APP_API_BASE_URL + response;
-            //   // this.handleResponse(response);
-            // },
-            // error: (error) => {
             console.log(error);
           },
         });
@@ -489,7 +469,8 @@ export default {
         dataType: "json",
         success: callback,
         statusCode: {
-          401: function () {
+          401: function () {       
+
             vueInstance.$notify({
               title: "Unauthorized access.",
               group: "notLoggedIn",
@@ -525,9 +506,9 @@ export default {
                 duration: 2000 // notification will disappear after 5 seconds
               });
           }
-          
           console.log(error);
-        },
+
+        },    
       });
     },
     extractCoordinates(wkt) {
@@ -543,6 +524,7 @@ export default {
       }
     },
     handleResponse(response) {
+
       // HERE THE FUNCTION CREATE A JSON OBJECT THAT  IS USED LATER IN RDFData (JJ)
       const geoJSON = {
         type: "FeatureCollection",
@@ -550,7 +532,6 @@ export default {
         features: [],
       };
       console.log("--------------------------------------");
-      console.log(response);
 
       const header = response["head"]["vars"];
       response["results"]["bindings"].forEach((item) => {

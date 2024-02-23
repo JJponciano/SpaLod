@@ -3,7 +3,11 @@ package info.ponciano.lab.spalodwfs.model;
 import java.io.File;
 import java.util.*;
 import java.net.URI;
-
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse.BodyHandlers;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
@@ -90,7 +94,8 @@ public class Triplestore {
 
     public static String executeSelectQuery(String sparqlQuery, String triplestore) {
         if(!sparqlQuery.contains("PREFIX schema:"))
-        sparqlQuery = KB.PREFIX + sparqlQuery;
+            sparqlQuery = KB.PREFIX + sparqlQuery;
+        System.out.println(sparqlQuery);
         Query query = QueryFactory.create(sparqlQuery);
         // if (triplestore == GRAPHDB_QUERY_ENDPOINT) {
             ParameterizedSparqlString queryCommand = new ParameterizedSparqlString();
@@ -213,25 +218,36 @@ public class Triplestore {
     }
 
     public static void executeUpdateQuery(String query, String graphdbUpdateEndpoint) {
-        boolean inprocess = true;
-        while (inprocess) {
-            try {
-                UpdateRequest insertRequest = UpdateFactory.create(query);
-                UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest,
-                        graphdbUpdateEndpoint);
-                insertProcessor.execute();
-                Thread.sleep(100);
-                inprocess = false;
-            } catch (Exception e) {
-                if (!e.getMessage().equals("Currently in an active transaction")) {
-                    inprocess = false;
-                    System.err.println(":::::::::::::::::ERROR:::::::::::::::::");
-                    System.err.println(query);
-                    System.err.println("----------");
-                    System.err.println(e.getMessage());
-                    System.err.println(":::::::::::::::::END ERROR:::::::::::::::::");
-                }
+        try {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(graphdbUpdateEndpoint))
+                .header("Content-Type", "application/sparql-update")
+                .POST(BodyPublishers.ofString(query))
+                .build();
+
+        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+
+        System.out.println("Response status code: " + response.statusCode());
+        System.out.println("Response body: " + response.body());
+        // boolean inprocess = true;
+        // while (inprocess) {
+        //     try {
+        //         UpdateRequest insertRequest = UpdateFactory.create(query);
+        //         UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest,
+        //                 graphdbUpdateEndpoint);
+        //         insertProcessor.execute();
+        //         Thread.sleep(100);
+        //         inprocess = false;
+        } catch (Exception e) {
+            if (!e.getMessage().equals("Currently in an active transaction")) {
+                System.err.println(":::::::::::::::::ERROR:::::::::::::::::");
+                System.err.println(query);
+                System.err.println("----------");
+                System.err.println(e.getMessage());
+                System.err.println(":::::::::::::::::END ERROR:::::::::::::::::");
             }
         }
+        // }
     }
 }
