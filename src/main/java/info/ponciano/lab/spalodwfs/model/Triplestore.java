@@ -230,15 +230,7 @@ public class Triplestore {
 
         System.out.println("Response status code: " + response.statusCode());
         System.out.println("Response body: " + response.body());
-        // boolean inprocess = true;
-        // while (inprocess) {
-        //     try {
-        //         UpdateRequest insertRequest = UpdateFactory.create(query);
-        //         UpdateProcessor insertProcessor = UpdateExecutionFactory.createRemoteForm(insertRequest,
-        //                 graphdbUpdateEndpoint);
-        //         insertProcessor.execute();
-        //         Thread.sleep(100);
-        //         inprocess = false;
+
         } catch (Exception e) {
             if (!e.getMessage().equals("Currently in an active transaction")) {
                 System.err.println(":::::::::::::::::ERROR:::::::::::::::::");

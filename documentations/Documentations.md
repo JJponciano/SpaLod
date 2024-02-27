@@ -1,5 +1,3 @@
-# SpaLod
-Spatial data management with semantic web technology and Linked Open Data (LOD)
 # Spalod (Spatial data management with semantic web technology and Linked Open Data): A Platform for Integrating GIS Files into Web Semantics through GraphDB
 
 ## Introduction
@@ -746,15 +744,3 @@ In this documentation, we have embarked on an in-depth exploration of leveraging
 The comprehensive exploration provided in this documentation illustrates the complexity and the potential of combining GeoJSON and RDF within the context of Java programming. By bridging these formats, we unlock new possibilities for data representation, sharing, and analysis across a myriad of applications. The challenges encountered and overcome serve as a testament to the evolving landscape of data processing and the continuous need for innovative solutions to harness the full potential of geographic information in the digital age.
 
 As we conclude, it is clear that the journey from GeoJSON to RDF and beyond is not merely a technical endeavor but a gateway to realizing the vast possibilities of the semantic web and GIS technologies. This documentation serves as a foundation for future exploration and development, encouraging further innovation and exploration in the rich intersection of geographic information systems, semantic web technologies, and Java programming.
-## Example of request:
-```
-SELECT ?s ?p ?o WHERE {?s ?p ?o. ?d rdf:type dcat:Dataset . ?d spalod:hasFeature ?s}
-
-SELECT ?d ?item ?coords WHERE { ?d rdf:type dcat:Dataset . ?d spalod:hasFeature ?f. ?f geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coords . ?f spalod:itemlabel ?item}
-SELECT ?d ?item ?coordinates WHERE { ?d rdf:type dcat:Dataset . ?d spalod:hasFeature ?f. ?f geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . ?f spalod:itemlabel ?item}
-SELECT ?d ?itemID ?itemLabel ?coordinates WHERE { ?d rdf:type dcat:Dataset . ?d spalod:hasFeature ?itemID. ?itemID geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . ?itemID spalod:itemlabel ?itemLabel}
-
-
-SELECT ?f ?g ?wkt ?fp ?o WHERE { spalod:67504af5-5d32-4815-ae53-fb879f4bb0c7 spalod:hasFeature  ?f. ?f geosparql:hasGeometry ?g. ?g geosparql:asWKT ?wkt . ?f ?fp ?o}
-
-```
