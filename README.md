@@ -758,3 +758,83 @@ SELECT ?d ?itemID ?itemLabel ?coordinates WHERE { ?d rdf:type dcat:Dataset . ?d 
 SELECT ?f ?g ?wkt ?fp ?o WHERE { spalod:67504af5-5d32-4815-ae53-fb879f4bb0c7 spalod:hasFeature  ?f. ?f geosparql:hasGeometry ?g. ?g geosparql:asWKT ?wkt . ?f ?fp ?o}
 
 ```
+
+On azure:
+```
+/opt/apache-maven-3.9.3/bin/mvn  package
+export SPRING_PROFILES_ACTIVE=prod
+
+/usr/local/bin/spalod-run.sh 
+ #!/bin/bash
+
+# timestamp
+timestamp=$(date "+%Y.%m.%d-%H.%M.%S")
+
+# run npm
+cd /home/i3mainz/SpaLod/src/main/vue_js/spalod/
+echo "Running npm..."
+npm run dev -- --host > /var/log/npm_$timestamp.log 2>&1 &
+echo $! > /var/run/npm.pid
+cat  /var/run/npm.pid
+# run java jar
+cd /home/i3mainz/SpaLod/
+echo "Running java jar..."
+/opt/apache-maven-3.9.3/bin/mvn  package  -DskipTests
+java -jar target/spalod-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod > /var/log/java_$timestamp.log 2>&1 &
+echo $! > /var/run/java.pid
+cat /var/run/java.pid
+# run graphdb
+echo "Running graphdb..."
+/home/i3mainz/graphdb-10.2.1/bin/graphdb > /var/log/graphdb_$timestamp.log 2>&1 &
+echo $! > /var/run/graphdb.pid
+cat  /var/run/graphdb.pid
+
+/usr/local/bin/spalod-stop.sh 
+#!/bin/bash
+
+# stop npm
+if [ -f /var/run/npm.pid ]; then
+    echo "Stopping npm..."
+    kill -9 $(cat /var/run/npm.pid)
+    rm /var/run/npm.pid
+fi
+
+# stop java jar
+if [ -f /var/run/java.pid ]; then
+    echo "Stopping java jar..."
+    kill -9 $(cat /var/run/java.pid)
+    rm /var/run/java.pid
+fi
+
+# stop graphdb
+if [ -f /var/run/graphdb.pid ]; then
+    echo "Stopping graphdb..."
+    kill -9 $(cat /var/run/graphdb.pid)
+    rm /var/run/graphdb.pid
+fi
+
+/usr/local/bin/spalod-run.sh 
+ #!/bin/bash
+
+# timestamp
+timestamp=$(date "+%Y.%m.%d-%H.%M.%S")
+
+# run npm
+cd /home/i3mainz/SpaLod/src/main/vue_js/spalod/
+echo "Running npm..."
+npm run dev -- --host > /var/log/npm_$timestamp.log 2>&1 &
+echo $! > /var/run/npm.pid
+cat  /var/run/npm.pid
+# run java jar
+cd /home/i3mainz/SpaLod/
+echo "Running java jar..."
+/opt/apache-maven-3.9.3/bin/mvn  package  -DskipTests
+java -jar target/spalod-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod > /var/log/java_$timestamp.log 2>&1 &
+echo $! > /var/run/java.pid
+cat /var/run/java.pid
+# run graphdb
+echo "Running graphdb..."
+/home/i3mainz/graphdb-10.2.1/bin/graphdb > /var/log/graphdb_$timestamp.log 2>&1 &
+echo $! > /var/run/graphdb.pid
+cat  /var/run/graphdb.pid
+```

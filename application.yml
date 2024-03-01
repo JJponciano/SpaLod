@@ -27,11 +27,11 @@ spring:
 spring:
   profiles: prod
   application:
-        VITE_APP_GRAPH_DB: http://localhost:7200
-        VITE_APP_API_BASE_URL: https://localhost:8081
+        VITE_APP_GRAPH_DB: https://spalod.northeurope.cloudapp.azure.com:7200
+        VITE_APP_API_BASE_URL: https://spalod.northeurope.cloudapp.azure.com:8081
         VITE_APP_FRONT_BASE_URL: https://spalod.northeurope.cloudapp.azure.com:8080
-        GRAPHDB_QUERY_ENDPOINT: http://localhost:7200/repositories/Spalod
-        GRAPHDB_UPDATE_ENDPOINT: http://localhost:7200/repositories/Spalod/statements
+        GRAPHDB_QUERY_ENDPOINT: https://spalod.northeurope.cloudapp.azure.com:7200/repositories/Spalod
+        GRAPHDB_UPDATE_ENDPOINT: https://spalod.northeurope.cloudapp.azure.com:7200/repositories/Spalod/statements
   security:
     oauth2:
       client:
