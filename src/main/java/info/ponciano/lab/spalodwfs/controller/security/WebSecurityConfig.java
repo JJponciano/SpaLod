@@ -3,6 +3,7 @@ package info.ponciano.lab.spalodwfs.controller.security;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,8 @@ import io.swagger.v3.core.util.Json;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-
+	@Value("${spring.application.VITE_APP_FRONT_BASE_URL}")
+    private String VITE_APP_FRONT_BASE_URL;
 	@Autowired
     private UserService userDetailsService;
 
@@ -82,7 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll()
 			.and()
 			.oauth2Login()
-				.defaultSuccessUrl("https://localhost:8080",true);
+				.defaultSuccessUrl(VITE_APP_FRONT_BASE_URL,true);
 			//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 	}
 

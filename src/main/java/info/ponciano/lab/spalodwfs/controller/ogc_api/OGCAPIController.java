@@ -28,6 +28,8 @@ import java.util.UUID;
 public class OGCAPIController {
     @Value("${spring.application.VITE_APP_GRAPH_DB}")
     private String graphDbUrl;
+    @Value("${spring.application.GRAPHDB_QUERY_ENDPOINT}")
+    private String GRAPHDB_QUERY_ENDPOINT;
 
     @Value("${spring.application.VITE_APP_API_BASE_URL}")
     private String apiBaseUrl;
@@ -65,7 +67,7 @@ public class OGCAPIController {
         String query = "SELECT DISTINCT ?collections ?name WHERE {\n?collections <http://www.w3.org/ns/dcat#dataset> ?dataset .\n ?collections <http://purl.org/dc/terms/title> ?name .}";
         System.out.println(query);
         String results;
-        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, GRAPHDB_QUERY_ENDPOINT);
         // results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
@@ -83,7 +85,7 @@ public class OGCAPIController {
                 + KB.NS + "" + collectionId + ">)\n}";
         System.out.println(query);
         String results;
-        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, GRAPHDB_QUERY_ENDPOINT);
         // results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
@@ -102,7 +104,7 @@ public class OGCAPIController {
                 + ">)\n?dataset <http://purl.org/dc/terms/title> ?title .\n?dataset <http://purl.org/dc/terms/description> ?description .\n?dataset <http://purl.org/dc/terms/publisher> ?publisher .\n?dataset <http://www.w3.org/ns/dcat#distribution> ?distribution .\n}";
         System.out.println(query);
         String results;
-        results = Triplestore.executeSelectQuery(query, "http://localhost:7200/repositories/Spalod");
+        results = Triplestore.executeSelectQuery(query, GRAPHDB_QUERY_ENDPOINT);
         // results = Triplestore.get().executeSelectQuery(query);
         return results;
     }
