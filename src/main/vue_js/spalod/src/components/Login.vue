@@ -12,8 +12,8 @@
         </div>
         <button type="submit">Login</button>
       </form>
-      <p> Login with OAuth 2.0</p>
-      <button @click="oauthLogin()">Github</button>
+      <!-- <p> Login with OAuth 2.0</p>
+      <button @click="oauthLogin()">Github</button> -->
     </div>
 </template>
   
