@@ -2,6 +2,7 @@
 Spatial data management with semantic web technology and Linked Open Data (LOD)
 # Spalod (Spatial data management with semantic web technology and Linked Open Data): A Platform for Integrating GIS Files into Web Semantics through GraphDB
 
+[Setup Video](https://youtu.be/MmOsin9FG3U?si=r-tv0ENgJsmXtV5I)
 ## Introduction
 SpaLOD addresses the increasingly complex challenge brought about by the rapid growth of geospatial data, which expands by at least 20% every year. This has resulted in an enormous increase in data heterogeneity, creating complexities in structure and vocabulary variations. The vocabularies in use depend heavily on the application domain and the language in which the data is described, making integration and unification a daunting task.
 
