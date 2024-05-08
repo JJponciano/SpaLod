@@ -1,0 +1,28 @@
+services:
+  graphdb:
+    image: ontotext/graphdb:9.11.2-se
+    ports:
+      - "7200:7200"
+    volumes:
+      - graphdb-data:/opt/graphdb/home
+
+  spalod-backend:
+    build:
+      context: .
+      dockerfile: spring.Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - graphdb
+
+  spalod-frontend:
+    build:
+      context: .
+      dockerfile: vue.Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - spalod-backend
+
+volumes:
+  graphdb-data:
