@@ -22,6 +22,10 @@ To create the Conda environment from `environment.yml`, run:
 
 ```bash
 conda env create -f environment.yml
+#or
+conda create -n spalod_env=3.10
+conda activate spalod_env
+pip install django djangorestframework dj-rest-auth social-auth-app-django django-allauth
 ```
 
 This will install all the dependencies, including Python and Django, as specified in the `environment.yml` file.
