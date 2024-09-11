@@ -16,10 +16,9 @@ class UpdateOntologyView(APIView):
         # Extract the mappings from the request body
         mappings = request.data.get("mappings", [])
         
-        # SPARQL endpoint
-        sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
+        # SPARQL endpoint for update queries
+        sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod/statements")
         sparql.setMethod(POST)
-        sparql.setReturnFormat("json")
 
         try:
             # For each mapping, create SPARQL update queries
@@ -32,7 +31,7 @@ class UpdateOntologyView(APIView):
                 sparql_query = f"""
                     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
                     INSERT DATA {{
-                        <{new_property}> <http://your-ontology/isSimilarTo> <{old_property}> .
+                        <{new_property}> <https://schema.org/isSimilarTo> <{old_property}> .
                         <{new_property}> <http://spalod/hasBeenValidated> "{current_time}"^^xsd:dateTime .
                     }}
                 """
@@ -45,6 +44,7 @@ class UpdateOntologyView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class PropertiesQueryView(APIView):
     def get(self, request, *args, **kwargs):
