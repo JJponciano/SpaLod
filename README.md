@@ -112,3 +112,23 @@ curl -X POST http://127.0.0.1:8000/api/upload-file/ \
 -F "metadata={\"description\": \"This is test metadata\"}"
 ```
 
+
+## To update the ontology mapping
+```bash
+
+curl -X POST http://127.0.0.1:8000/api/update-ontology/ \
+-H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78" \
+-H "Content-Type: application/json" \
+-d '{
+      "mappings": [
+        {
+          "new_property": "http://your-ontology/newProperty1",
+          "old_property": "http://your-ontology/oldProperty1"
+        },
+        {
+          "new_property": "http://your-ontology/newProperty2",
+          "old_property": "http://your-ontology/oldProperty2"
+        }
+      ]
+    }'
+```
