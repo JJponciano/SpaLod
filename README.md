@@ -112,12 +112,3 @@ curl -X POST http://127.0.0.1:8000/api/upload-file/ \
 -F "metadata={\"description\": \"This is test metadata\"}"
 ```
 
-### 4. Recreate the Environment
-
-If you need to recreate the Conda environment from the `environment.yml` file, use:
-
-```bash
-conda env create -f environment.yml
-```
-
-This command will install all dependencies and packages as specified in the file.
