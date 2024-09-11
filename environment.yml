@@ -1,0 +1,47 @@
+name: spalod_env
+channels:
+  - defaults
+dependencies:
+  - asgiref=3.8.1=py310hecd8cb5_0
+  - bzip2=1.0.8=h6c40b1e_6
+  - ca-certificates=2024.7.2=hecd8cb5_0
+  - django=5.1=py310hecd8cb5_0
+  - libffi=3.4.4=hecd8cb5_1
+  - ncurses=6.4=hcec6c5f_0
+  - openssl=3.0.15=h46256e1_0
+  - pip=24.2=py310hecd8cb5_0
+  - python=3.10.14=h5ee71fb_1
+  - readline=8.2=hca72f7f_0
+  - setuptools=72.1.0=py310hecd8cb5_0
+  - sqlite=3.45.3=h6c40b1e_0
+  - sqlparse=0.4.4=py310hecd8cb5_0
+  - tk=8.6.14=h4d00af3_0
+  - typing_extensions=4.11.0=py310hecd8cb5_0
+  - tzdata=2024a=h04d1e81_0
+  - wheel=0.43.0=py310hecd8cb5_0
+  - xz=5.4.6=h6c40b1e_1
+  - zlib=1.2.13=h4b97444_1
+  - pip:
+      - certifi==2024.8.30
+      - cffi==1.17.1
+      - charset-normalizer==3.3.2
+      - cryptography==43.0.1
+      - defusedxml==0.8.0rc2
+      - dj-rest-auth==6.0.0
+      - djangorestframework==3.15.2
+      - idna==3.8
+      - isodate==0.6.1
+      - oauthlib==3.2.2
+      - pycparser==2.22
+      - pyjwt==2.9.0
+      - pyparsing==3.1.4
+      - python3-openid==3.2.0
+      - rdflib==7.0.0
+      - requests==2.32.3
+      - requests-oauthlib==2.0.0
+      - six==1.16.0
+      - social-auth-app-django==5.4.2
+      - social-auth-core==4.5.4
+      - sparqlwrapper==2.0.0
+      - urllib3==2.2.2
+prefix: /Volumes/poncianoCloud/miniconda3/envs/spalod_env
