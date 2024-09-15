@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import PropertiesQueryView,UpdateOntologyView,FileUploadView,SparqlQueryAPIView
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('sparql-query/', SparqlQueryAPIView.as_view(), name='sparql_query_api'),
     path('upload-file/', FileUploadView.as_view(), name='file-upload'),
@@ -8,3 +9,6 @@ urlpatterns = [
     path('update-ontology/', UpdateOntologyView.as_view(), name='update_ontology'),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
