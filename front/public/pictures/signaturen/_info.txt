@@ -1,0 +1,4 @@
+Die hier vorliegenden Signaturen werden im WMS-Dienst verwendet. Sie können auch für andere Projekte eingesetzt werden.
+
+
+Bei Bedarf können sie in einem anderen Format zur Verfügung gestellt werden.
