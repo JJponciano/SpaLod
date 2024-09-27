@@ -1,17 +1,16 @@
 <script>
-import NavBar from './components/NavBar.vue';
-import UserActions from './components/UserActions.vue';
-import MapView from './components/MapView.vue';
-import RDFData from './components/RDFData.vue';
-import Login from './components/Login.vue';
-import Register from './components/Register.vue';
-import PopUp from './components/PopUp.vue';
-import PopUpC from './components/PopUpC.vue';
-import OgcApi from './components/OgcApi.vue';
-import ExternaLinks from './components/ExternalLinks.vue';
-import Docs from './components/Docs.vue';
-
-
+import NavBar from "./components/NavBar.vue";
+import UserActions from "./components/UserActions.vue";
+import MapView from "./components/MapView.vue";
+import RDFData from "./components/RDFData.vue";
+import Login from "./components/Login.vue";
+import Register from "./components/Register.vue";
+import PopUp from "./components/PopUp.vue";
+import PopUpC from "./components/PopUpC.vue";
+import OgcApi from "./components/OgcApi.vue";
+import ExternaLinks from "./components/ExternalLinks.vue";
+import Docs from "./components/Docs.vue";
+import { checkLogin } from './services/login'
 
 export default {
   components: {
@@ -30,38 +29,42 @@ export default {
   data() {
     return {
       file: null,
-      chooseCSV:false,
-      chooseJson:false,
-      popup:false,
-      popupC:false,
+      chooseCSV: false,
+      chooseJson: false,
+      popup: false,
+      popupC: false,
       currentPath: window.location.pathname,
       receivedData: null,
-      properties_unknown:null,
-      username:""
+      properties_unknown: null,
+      username: "",
     };
   },
   computed: {
     currentView() {
-      if (this.currentPath === '/' || this.currentPath === '/admin' ) {
-        return 'main';
-      } else if (this.currentPath === '/login') {
-        return 'login';
-      } else if (this.currentPath === '/register') {
-        return 'register';
-      } else if (this.currentPath.startsWith('/spalodWFS')) {
-        return 'spalodWFS';
-      }
-      else if (this.currentPath === '/external_links'){
-        return 'externallinks';
-      } else if (this.currentPath === '/doc'){
-        return 'docs';
+      if (this.currentPath === "/" || this.currentPath === "/admin") {
+        return "main";
+      } else if (this.currentPath === "/login") {
+        return "login";
+      } else if (this.currentPath === "/register") {
+        return "register";
+      } else if (this.currentPath.startsWith("/spalodWFS")) {
+        return "spalodWFS";
+      } else if (this.currentPath === "/external_links") {
+        return "externallinks";
+      } else if (this.currentPath === "/doc") {
+        return "docs";
+      } else if (this.currentPath === "/login/gitlab/") {
+        return "login-gitlab";
       } else {
-        return 'main';
+        return "main";
       }
-    }
+    },
+  },
+  async beforeCreate() {
+    await checkLogin();
   },
   mounted() {
-    window.addEventListener('popstate', () => {
+    window.addEventListener("popstate", () => {
       this.currentPath = window.location.pathname;
     });
   },
@@ -72,61 +75,64 @@ export default {
     onProperties_unknown(properties_unknown) {
       this.properties_unknown = properties_unknown;
     },
-    onChooseCSV(){
-      this.chooseCSV=true;
+    onChooseCSV() {
+      this.chooseCSV = true;
     },
-    onChooseJson(){
-      this.chooseJson=true;
+    onChooseJson() {
+      this.chooseJson = true;
     },
-    onUnselectCSV(){
-      this.chooseCSV=false;
+    onUnselectCSV() {
+      this.chooseCSV = false;
     },
-    onUnselectJson(){
-      this.chooseJson=false;
+    onUnselectJson() {
+      this.chooseJson = false;
     },
-    onShowpopup(){
-      this.popup=true;
+    onShowpopup() {
+      this.popup = true;
     },
-    onShowpopupC(){
-      this.popupC=true;
+    onShowpopupC() {
+      this.popupC = true;
     },
-    onClosepopUp(){
-      this.popup=false;
+    onClosepopUp() {
+      this.popup = false;
     },
-    onClosepopUpC(){
-      this.popupC=false;
+    onClosepopUpC() {
+      this.popupC = false;
     },
-    goHome(){
-      window.location.href="/";
+    goHome() {
+      window.location.href = "/";
     },
-    goToLogin(){
-      window.location.href="/login";
+    goToLogin() {
+      window.location.href = "/login";
     },
-    handleCatalogUpdate(data){
-      this.receivedData=data;
+    handleCatalogUpdate(data) {
+      this.receivedData = data;
     },
-    logUsername(data){
-      this.username=data;
-    }
-  }
+    logUsername(data) {
+      this.username = data;
+    },
+  },
 };
 </script>
 
 <template>
   <div class="app">
     <div class="navbar">
-        <NavBar @username-updated="logUsername"></NavBar>
+      <NavBar @username-updated="logUsername"></NavBar>
     </div>
     <div class="main" v-if="currentView === 'main'">
       <div class="user-actions-container">
-        <UserActions @properties_unknown="onProperties_unknown" @file-selected="onFileSelected" @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup" @popupCShow="onShowpopupC"></UserActions>
+        <UserActions @properties_unknown="onProperties_unknown" @file-selected="onFileSelected"
+          @JsonSelected="onChooseJson" @CSVSelected="onChooseCSV" @popupShow="onShowpopup" @popupCShow="onShowpopupC">
+        </UserActions>
       </div>
-      <div class="right-container" >
+      <div class="right-container">
         <div class="map-container">
           <MapView :file="file"></MapView>
         </div>
         <div class="rdf-data-container">
-          <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData" :username="username" :properties_unknown="properties_unknown"></RDFData>
+          <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData"
+            :username="username" :properties_unknown="properties_unknown"></RDFData>
         </div>
       </div>
     </div>
@@ -145,23 +151,27 @@ export default {
     <div class="main" v-if="currentView === 'docs'">
       <Docs></Docs>
     </div>
+    <div class="main" v-if="currentView === 'login-gitlab'">
+      <div class="loader-container">
+        <div class="loader"></div>
+      </div>
+    </div>
   </div>
   <div class="popup">
-    <PopUp :chooseCSV="chooseCSV" :chooseJson="chooseJson" :popup="popup" @CSVBack="onUnselectCSV" @JsonBack="onUnselectJson" @popupBack="onClosepopUp"></PopUp>
+    <PopUp :chooseCSV="chooseCSV" :chooseJson="chooseJson" :popup="popup" @CSVBack="onUnselectCSV"
+      @JsonBack="onUnselectJson" @popupBack="onClosepopUp"></PopUp>
   </div>
   <div class="popupC">
     <PopUpC :popupC="popupC" @popupCBack="onClosepopUpC" @Catalog-data="handleCatalogUpdate"></PopUpC>
   </div>
-  <notifications/>
+  <notifications />
   <notifications group="login-success" @click="goHome()" />
   <notifications group="register-success" @click="goToLogin()" />
-  <notifications group="notLoggedIn" @click="goToLogin()"/>
+  <notifications group="notLoggedIn" @click="goToLogin()" />
 </template>
 
-
-<style scoped>
-
-.navbar{
+<style scoped lang="scss">
+.navbar {
   z-index: 10;
 }
 
@@ -171,6 +181,7 @@ export default {
   min-height: 100vh;
   z-index: 1;
 }
+
 .main {
   display: flex;
   flex-direction: row;
@@ -202,19 +213,78 @@ export default {
 .rdf-data-container {
   flex: 1;
 }
-.popup{
+
+.popup {
   position: fixed;
   top: 35%;
   left: 40%;
   width: fit-content;
   z-index: 100;
 }
-.popupC{
+
+.popupC {
   position: fixed;
   top: 35%;
   left: 40%;
   width: fit-content;
   z-index: 100;
+}
+
+.loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  .loader {
+    height: 30px;
+    aspect-ratio: 2.5;
+    --_g: no-repeat radial-gradient(farthest-side, #fff 90%, #000);
+    background: var(--_g), var(--_g), var(--_g), var(--_g);
+    background-size: 20% 50%;
+    animation: l44 1s infinite linear alternate;
+  }
+}
+
+@keyframes l44 {
+
+  0%,
+  5% {
+    background-position: calc(0*100%/3) 50%, calc(1*100%/3) 50%, calc(2*100%/3) 50%, calc(3*100%/3) 50%
+  }
+
+  12.5% {
+    background-position: calc(0*100%/3) 0, calc(1*100%/3) 50%, calc(2*100%/3) 50%, calc(3*100%/3) 50%
+  }
+
+  25% {
+    background-position: calc(0*100%/3) 0, calc(1*100%/3) 0, calc(2*100%/3) 50%, calc(3*100%/3) 50%
+  }
+
+  37.5% {
+    background-position: calc(0*100%/3) 100%, calc(1*100%/3) 0, calc(2*100%/3) 0, calc(3*100%/3) 50%
+  }
+
+  50% {
+    background-position: calc(0*100%/3) 100%, calc(1*100%/3) 100%, calc(2*100%/3) 0, calc(3*100%/3) 0
+  }
+
+  62.5% {
+    background-position: calc(0*100%/3) 50%, calc(1*100%/3) 100%, calc(2*100%/3) 100%, calc(3*100%/3) 0
+  }
+
+  75% {
+    background-position: calc(0*100%/3) 50%, calc(1*100%/3) 50%, calc(2*100%/3) 100%, calc(3*100%/3) 100%
+  }
+
+  87.5% {
+    background-position: calc(0*100%/3) 50%, calc(1*100%/3) 50%, calc(2*100%/3) 50%, calc(3*100%/3) 100%
+  }
+
+  95%,
+  100% {
+    background-position: calc(0*100%/3) 50%, calc(1*100%/3) 50%, calc(2*100%/3) 50%, calc(3*100%/3) 50%
+  }
 }
 
 @media (max-width: 768px) {
@@ -227,20 +297,24 @@ export default {
     flex: 1;
     padding: 10px 0px 10px;
   }
-  .user-actions-container{
+
+  .user-actions-container {
     padding: 70px 125px 0px;
     height: fit-content;
     position: absolute;
   }
-  .map-container{
+
+  .map-container {
     margin-top: 120px;
   }
-  .popup{
-    top:30vh;
-    left:auto;
-    right:5vh;
+
+  .popup {
+    top: 30vh;
+    left: auto;
+    right: 5vh;
   }
-  .popupC{
+
+  .popupC {
     top: 30vh;
     left: auto;
     right: 5vh;

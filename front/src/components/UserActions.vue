@@ -3,11 +3,7 @@
     <button class="navbar_button" @click="toggleNavBar">Menu</button>
     <div class="side_pannel">
       <select v-model="selectedOption">
-        <option
-          v-for="(option, index) in options"
-          :key="index"
-          :value="option.value"
-        >
+        <option v-for="(option, index) in options" :key="index" :value="option.value">
           {{ option.label }}
         </option>
       </select>
@@ -15,15 +11,8 @@
         <p @click="showFilter = !showFilter">Filter</p>
         <div class="filtercontainer" v-if="showFilter">
           <p>Max items number</p>
-          <input
-            class="inputbar"
-            type="range"
-            :min="min"
-            :max="max"
-            :step="step"
-            v-model="rangeValue"
-            @input="updateRange"
-          />
+          <input class="inputbar" type="range" :min="min" :max="max" :step="step" v-model="rangeValue"
+            @input="updateRange" />
           <p>{{ rangeValue }}</p>
         </div>
       </div>
@@ -33,31 +22,16 @@
           <button @click="addDataCSV">CSV to GeoJSON</button>
           <button @click="addDataJSON">JSON to GeoJSON</button>
           <button @click="addDataGeo">Add GeoJSON</button>
-          <input
-            type="file"
-            ref="fileInputGeo"
-            style="display: none"
-            accept=".json, .geojson"
-            @change="handleFileInputGeo"
-          />
+          <input type="file" ref="fileInputGeo" style="display: none" accept=".json, .geojson"
+            @change="handleFileInputGeo" />
           <button @click="addDataOwl">Add Owl</button>
-          <input
-            type="file"
-            ref="fileInputOwl"
-            style="display: none"
-            accept=".owl"
-            @change="handleFileInputOwl"
-          />
+          <input type="file" ref="fileInputOwl" style="display: none" accept=".owl" @change="handleFileInputOwl" />
         </div>
       </div>
       <div class="advancedMenu" :class="{ active: advancedMenuOpen }">
         <p @click="advancedMenuOpen = !advancedMenuOpen">Advanced Mode</p>
         <div class="textcontainer" v-if="advancedMenuOpen">
-          <textarea
-            v-model="inputAdvanced"
-            :placeholder="placeholders"
-            spellcheck="false"
-          ></textarea>
+          <textarea v-model="inputAdvanced" :placeholder="placeholders" spellcheck="false"></textarea>
         </div>
       </div>
       <button ref="confirmRequest" @click="confirmRequest" class="confirm">
@@ -74,11 +48,7 @@
       <ul class="navbar-nav">
         <li>
           <select v-model="selectedOption">
-            <option
-              v-for="(option, index) in options"
-              :key="index"
-              :value="option.value"
-            >
+            <option v-for="(option, index) in options" :key="index" :value="option.value">
               {{ option.label }}
             </option>
           </select>
@@ -88,13 +58,8 @@
         </li>
         <li class="adddataButton">
           <button @click="addData">Add Data</button>
-          <input
-            type="file"
-            ref="fileInput"
-            style="display: none"
-            accept="application/geojson"
-            @change="handleFileInput"
-          />
+          <input type="file" ref="fileInput" style="display: none" accept="application/geojson"
+            @change="handleFileInput" />
         </li>
         <li class="confirmButton">
           <button @click="confirmRequest" class="confirm">
@@ -108,8 +73,10 @@
 
 <script>
 import $ from "jquery";
+import { $ajax } from '../services/api';
 import RDFData from "./RDFData.vue";
 import Dataset from "./Dataset.vue";
+import { cookies } from "../services/login";
 
 $.ajaxSetup({
   xhrFields: {
@@ -274,7 +241,7 @@ export default {
         queryString.includes("conformance") ||
         queryString === "/"
       ) {
-        $.ajax({
+        $ajax({
           url:
             import.meta.env.VITE_APP_API_BASE_URL +
             "/api/spalodWFS" +
@@ -289,17 +256,17 @@ export default {
             if (fileUrl.endsWith(".json")) {
               let parts = queryString.split("/");
               let datasetID = parts.pop();
-              const url = import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-select";
+              const url = import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-query/";
               const data = {
-                query: "SELECT ?itemID ?coordinates WHERE {  spalod:"+datasetID+" spalod:hasFeature ?itemID. ?itemID geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . }",
+                query: "SELECT ?itemID ?coordinates WHERE {  spalod:" + datasetID + " spalod:hasFeature ?itemID. ?itemID geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . }",
                 triplestore: import.meta.env.VITE_APP_GRAPH_DB + "/repositories/Spalod",
               };
               this.postJSON(url, data, this.handleResponse);
               //TODO download the file but crash the view of data
               //window.location.href = fileUrl; 
 
-            } 
-            
+            }
+
           },
           error: (xhr, textStatus, errorThrown) => {
             console.log(error);
@@ -345,7 +312,7 @@ export default {
         operation: operation,
         tripleData: tripleData,
       };
-      $.ajax({
+      $ajax({
         url: import.meta.env.VITE_APP_API_BASE_URL + "/api/update",
         type: "POST",
         data: JSON.stringify(addOperation),
@@ -377,7 +344,7 @@ export default {
       const formData = new FormData();
       formData.append("file", file);
 
-      $.ajax({
+      $ajax({
         url: import.meta.env.VITE_APP_API_BASE_URL + "/api/uplift",
         type: "POST",
         data: formData,
@@ -398,7 +365,7 @@ export default {
       if (response == "[]") {
         alert("Ontology enriched successfully!");
 
-        // $.ajax({
+        // $ajax({
         //   url: import.meta.env.VITE_APP_API_BASE_URL + "/api/enrich",
         //   type: "POST",
         //   data: formData,
@@ -419,7 +386,7 @@ export default {
       }
     },
     post_checkont(url, data, callback) {
-      $.ajax({
+      $ajax({
         url: url,
         type: "POST",
         data: data,
@@ -438,13 +405,13 @@ export default {
       formData.append("file", file);
       this.post_checkont(
         import.meta.env.VITE_APP_API_BASE_URL + "/api/check-ontology",
-        formData,this.seek_unknown
+        formData, this.seek_unknown
         //this.handleResponse
         // this.confirmRequest
       );
     },
     confirmRequest() {
-      const url = import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-select";
+      const url = import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-query/";
       const data = {
         query: this.inputAdvanced,
         triplestore: import.meta.env.VITE_APP_GRAPH_DB + "/repositories/Spalod",
@@ -458,10 +425,11 @@ export default {
     },
     postJSON(url, data, callback) {
       const vueInstance = this; // Store the Vue instance reference
-      $.ajax({
+      $ajax({
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          'X-CSRFToken': cookies()['csrftoken']
         },
         type: "POST",
         url: url,
@@ -469,7 +437,7 @@ export default {
         dataType: "json",
         success: callback,
         statusCode: {
-          401: function () {       
+          401: function () {
 
             vueInstance.$notify({
               title: "Unauthorized access.",
@@ -491,24 +459,24 @@ export default {
         error: (error) => {
           if (error.status === 0 && !error.statusText && !error.responseText) {
             this.$notify({
-                title: "Not Connected",
-                text: "Please log in or register to continue."  ,
-                group:"notLoggedIn",
-                type: 'error',
-                duration: 2000 // notification will disappear after 5 seconds
-              });
-          }else{
+              title: "Not Connected",
+              text: "Please log in or register to continue.",
+              group: "notLoggedIn",
+              type: 'error',
+              duration: 2000 // notification will disappear after 5 seconds
+            });
+          } else {
             this.$notify({
-                title: error.responseText,
-                text: "Please log in or register to continue."  ,
-                group:"notLoggedIn",
-                type: 'error',
-                duration: 2000 // notification will disappear after 5 seconds
-              });
+              title: error.responseText,
+              text: "Please log in or register to continue.",
+              group: "notLoggedIn",
+              type: 'error',
+              duration: 2000 // notification will disappear after 5 seconds
+            });
           }
           console.log(error);
 
-        },    
+        },
       });
     },
     extractCoordinates(wkt) {
@@ -842,16 +810,16 @@ button:hover {
   color: white;
 }
 
-.addfileButton > button {
+.addfileButton>button {
   width: 95%;
   margin-bottom: 10px;
 }
 
-.addfileButton > button:hover {
+.addfileButton>button:hover {
   background-color: rgb(241, 241, 241);
 }
 
-.user-actions.dark .addfileButton > button:hover {
+.user-actions.dark .addfileButton>button:hover {
   background-color: #1a202c;
   color: #fff;
 }

@@ -30,3 +30,4 @@ coverage
 *.sw?
 
 >>>>>>> faf8f21cf89be2695daaf5b6e83dd8160b9ace2d
+back/db.sqlite3

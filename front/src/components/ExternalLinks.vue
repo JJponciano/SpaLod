@@ -1,6 +1,6 @@
 <template>
-    <div class="link">
-        <ul class="link-list">
+  <div class="link">
+    <ul class="link-list">
       <li>
         <span class="link-title">i3mainz:</span>
         <a href="https://i3mainz.hs-mainz.de/" target="_blank" class="link-url">https://i3mainz.hs-mainz.de/</a>
@@ -22,22 +22,25 @@
         <a href="https://www.gdi-de.org/" target="_blank" class="link-url">https://www.gdi-de.org/</a>
       </li>
     </ul>
-      </div>
+  </div>
 </template>
 
 <script>
 </script>
 
 <style scoped>
-div{
-    left: 30%;
-    top: 45vh;
-    height: fit-content;
+div {
+  left: 30%;
+  top: 45vh;
+  height: fit-content;
 }
-p, ul{
-    font-size: 30px;
+
+p,
+ul {
+  font-size: 30px;
 }
-a{
-    color:rgb(27, 184, 184);
+
+a {
+  color: rgb(27, 184, 184);
 }
 </style>

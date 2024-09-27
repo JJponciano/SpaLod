@@ -16,8 +16,9 @@ from rest_framework import status
 from .serializers import UploadedFileSerializer
 from django.conf import settings
 from rdflib.namespace import Namespace
-from .utils.ontology_processing import OntologyProcessor
-from .utils.sparql_helpers import add_ontology_to_graphdb
+# from .utils.ontology_processing import OntologyProcessor
+# from .utils.sparql_helpers import add_ontology_to_graphdb
+
 class UpdateOntologyView(APIView):
     def post(self, request, *args, **kwargs):
         # Extract the mappings from the request body
@@ -165,3 +166,11 @@ class SparqlQueryAPIView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class User(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        return Response({
+            'username': user.username,
+            'email': user.email,
+        }, status=status.HTTP_200_OK)
+    
