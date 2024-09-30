@@ -43,37 +43,43 @@ Make sure to use the exact environment name from the `environment.yml` file.
 ## Project Setup
 
 1. With the environment activated, navigate to the project directory and run the migrations:
-   ```bash
-   python manage.py makemigrations spalod_app
-   python manage.py migrate
-   ```
+
+```bash
+python manage.py makemigrations spalod_app
+python manage.py migrate
+python manage.py createsuperuser
+```
 
 2. Start the Django development server:
-   ```bash
-   python manage.py runserver
-   ```
+
+```bash
+python manage.py runserver
+```
 
 ## GraphDB
 
 Ensure GraphDB is running and accessible at:
-   ```
-   http://localhost:7200/repositories/Spalod
-   ```
+
+```
+http://localhost:7200/repositories/Spalod
+```
 
 ## Authentication and SPARQL Query
 
 1. Log in to get an authentication token:
-   ```bash
-   curl -X POST http://127.0.0.1:8000/api/auth/login/ -d "username=Falk&password=GNybRXbC563"
-   ```
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/auth/login/ -d "username=Falk&password=GNybRXbC563"
+```
 
 2. Run a SPARQL query:
-   ```bash
-   curl -X POST http://127.0.0.1:8000/api/sparql-query/ \
-   -H "Content-Type: application/json" \
-   -H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78" \
-   -d '{"query": "SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 10"}'
-   ```
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/sparql-query/ \
+-H "Content-Type: application/json" \
+-H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78" \
+-d '{"query": "SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 10"}'
+```
 
 ## Update Ontology with Property Mappings
 
@@ -125,7 +131,9 @@ Then you can download :
 ```bash
 curl -O http://127.0.0.1:8000/media/uploads/04287a39-053d-435e-8064-a7664604edb9/04287a39-053d-435e-8064-a7664604edb9_map.html
 ```
+
 ## To update the ontology mapping
+
 ```bash
 curl -X POST http://127.0.0.1:8000/api/update-ontology/ \
 -H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78" \

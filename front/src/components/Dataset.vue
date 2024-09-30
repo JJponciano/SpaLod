@@ -11,7 +11,7 @@
 
 <script>
 import { ref, onMounted, watch } from "vue";
-import axios from "axios";
+import { $ajax } from '../services/api';
 
 export default {
   name: "ComboBox",
@@ -20,7 +20,7 @@ export default {
     const selected = ref(null);
 
     onMounted(async () => {
-      $.ajax({
+      $ajax({
         url:
           import.meta.env.VITE_APP_API_BASE_URL +
           "/api/spalodWFS/datasets",

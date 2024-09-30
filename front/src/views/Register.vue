@@ -1,26 +1,27 @@
 <template>
-    <div class="register-container">
-      <h2>Register</h2>
-      <form @submit.prevent="submitForm">
-        <div>
-          <label for="username">Username</label>
-          <input type="text" id="username" v-model="username" required>
-        </div>
-        <div>
-          <label for="password">Password</label>
-          <input type="password" id="password" v-model="password" required>
-        </div>
-        <div>
-          <label for="confirm-password">Confirm Password</label>
-          <input type="password" id="confirm-password" v-model="confirmPassword" required>
-        </div>
-        <button type="submit">Register</button>
-      </form>
-    </div>
+  <div class="register-container">
+    <h2>Register</h2>
+    <form @submit.prevent="submitForm">
+      <div>
+        <label for="username">Username</label>
+        <input type="text" id="username" v-model="username" required>
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" v-model="password" required>
+      </div>
+      <div>
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" v-model="confirmPassword" required>
+      </div>
+      <button type="submit">Register</button>
+    </form>
+  </div>
 </template>
 
 <script>
-import $ from "jquery";
+import { $ajax } from '../services/api';
+
 export default {
   data() {
     return {
@@ -32,20 +33,21 @@ export default {
   methods: {
     async submitForm() {
       if (this.password == this.confirmPassword) {
-        $.ajax({
-          url: import.meta.env.VITE_APP_API_BASE_URL +'/register',
+        $ajax({
+          url: import.meta.env.VITE_APP_API_BASE_URL + '/auth/registration/',
           method: 'POST',
           data: {
             username: this.username,
-            password: this.password
+            password1: this.password,
+            password2: this.confirmPassword
           },
           xhrFields: {
             withCredentials: true
           },
           success: (response) => {
             console.log(response)
-            $.ajax({
-              url: import.meta.env.VITE_APP_API_BASE_URL +'/login',
+            $ajax({
+              url: import.meta.env.VITE_APP_API_BASE_URL + '/auth/login/',
               method: 'POST',
               data: {
                 username: this.username,
@@ -56,8 +58,8 @@ export default {
               },
               success: (response) => {
                 console.log(response);
-                $.ajax({
-                  url: import.meta.env.VITE_APP_API_BASE_URL +'/uuid',
+                $ajax({
+                  url: import.meta.env.VITE_APP_API_BASE_URL + '/uuid',
                   method: 'GET',
                   data: {
                     username: this.username,
@@ -76,7 +78,7 @@ export default {
                     });
                     localStorage.setItem('username', this.username);
                     localStorage.setItem('uuid', response);
-                    localStorage.setItem('githubLog',false);
+                    localStorage.setItem('githubLog', false);
 
                     var tripleData = {
                       subject: 'https://spalod.northeurope.cloudapp.azure.com#' + response,
@@ -88,8 +90,8 @@ export default {
                       operation: "add",
                       tripleData: tripleData,
                     };
-                    $.ajax({
-                      url: import.meta.env.VITE_APP_API_BASE_URL +'/api/update',
+                    $ajax({
+                      url: import.meta.env.VITE_APP_API_BASE_URL + '/api/update',
                       type: 'POST',
                       data: JSON.stringify(addOperation),
                       contentType: 'application/json',
@@ -101,7 +103,8 @@ export default {
                       }
                     });
 
-
+                    window.history.pushState({}, '', '/admin')
+                    window.location.reload()
                   }
                 })
               },
@@ -138,20 +141,18 @@ export default {
   },
 };
 </script>
-  
+
 
 <style>
-
 .register-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width:100vw;
+  width: 100vw;
 }
 
-.register-container > h2 {
+.register-container>h2 {
   margin-bottom: 20px;
 }
-
 </style>
