@@ -89,11 +89,8 @@ export default {
 }
 
 .main {
-  display: flex;
-  flex-direction: row;
   flex: 1;
-  align-items: stretch;
-  justify-content: space-between;
+  display: flex;
 }
 
 .popup {

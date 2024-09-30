@@ -160,15 +160,11 @@ export default {
 
 <style>
 .map-view {
-  padding: 20px;
-  border-radius: 5px;
   background-color: #4A5568;
-  height: calc(100vh - 200px);
+  height: 100%;
   color: white;
   resize: both;
   overflow: hidden;
-  min-width: 500px;
-  min-height: 150px;
 }
 
 .h2 {

@@ -4,15 +4,13 @@
       @CSVSelected="onChooseCSV" @popupShow="onShowpopup" @popupCShow="onShowpopupC">
     </UserActions>
   </div>
-  <div class="right-container">
-    <div class="map-container">
-      <MapView :file="file"></MapView>
-    </div>
-    <div class="rdf-data-container">
-      <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData"
-        :username="username" :properties_unknown="properties_unknown">
-      </RDFData>
-    </div>
+  <div class="map-container">
+    <MapView :file="file"></MapView>
+  </div>
+  <div class="rdf-data-container">
+    <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData"
+      :username="username" :properties_unknown="properties_unknown">
+    </RDFData>
   </div>
 </template>
 
@@ -64,28 +62,28 @@ export default {
 
 <style>
 .user-actions-container {
-  flex: 0;
-  padding: 25px;
-  z-index: 3;
-}
-
-.right-container {
-  display: flex;
-  flex-direction: column;
-  flex: 2 0 auto;
-  align-items: stretch;
-  padding: 25px;
-  padding-left: 0px;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
   z-index: 2;
+  padding: 10px;
 }
 
 .map-container {
-  flex: 1;
-  margin: 0 0 20px 0;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 .rdf-data-container {
-  flex: 1;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  z-index: 2;
+  padding: 10px;
 }
 
 @media (max-width: 768px) {
@@ -98,10 +96,6 @@ export default {
     padding: 10px;
     height: fit-content;
     position: absolute;
-  }
-
-  .map-container {
-    margin-top: 120px;
   }
 }
 </style>

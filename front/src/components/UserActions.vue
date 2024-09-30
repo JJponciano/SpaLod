@@ -572,7 +572,7 @@ export default {
   flex-direction: column;
   display: flex;
   align-items: start;
-  height: calc(100vh - 100px);
+  max-height: calc(100vh - 200px);
   resize: horizontal;
   overflow: auto;
   width: 320px;

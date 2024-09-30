@@ -1262,10 +1262,10 @@ export default {
 .rdf-data {
   padding: 20px;
   border-radius: 5px;
-  resize: both;
   overflow: auto;
   min-width: 500px;
   min-height: 150px;
+  max-height: calc(100vh - 150px);
   max-width: calc(100vw - 380px);
   align-items: center;
 }
