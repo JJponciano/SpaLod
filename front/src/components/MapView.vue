@@ -166,7 +166,7 @@ export default {
   height: calc(100vh - 200px);
   color: white;
   resize: both;
-  overflow: auto;
+  overflow: hidden;
   min-width: 500px;
   min-height: 150px;
 }

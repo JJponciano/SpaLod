@@ -7,29 +7,44 @@
         <span></span>
       </button>
       <ul :class="['menuopen', menuAnimationClass]" @transitionend="onTransitionend">
-        <li><button @click="navigateTo('spalodWFS')" :class="{ active: activeTab === 'spalodwfs' }">SpaLod API</button>
+        <li><button v-if="isLogged()" @click="navigateTo('ogc-api')" :class="{ active: activeTab === 'ogc-api' }">SpaLod
+            API</button>
         </li>
         <li><button @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button> </li>
         <li><button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button>
         </li>
-        <li><button @click="navigateTo('admin')" :class="{ active: activeTab === 'admin' }">Admin</button></li>
-        <li><button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button></li>
-        <li><button @click="navigateTo('external_links')" :class="{ active: activeTab === 'external' }">External
+        <li><button v-if="isLogged()" @click="navigateTo('admin')"
+            :class="{ active: activeTab === 'admin' }">Admin</button></li>
+        <li><button @click="navigateTo('docs')" :class="{ active: activeTab === 'docs' }">Doc</button></li>
+        <li><button @click="navigateTo('external-links')" :class="{ active: activeTab === 'external-links' }">External
             Links</button></li>
       </ul>
     </div>
-    <button v-if="isAdmin" @click="logout()" class="navbar-title">Logout</button>
-    <button v-if="!isLoggedIn" @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button>
+    <button v-if="isLogged()" @click="logout()" class="navbar-title">Logout</button>
+    <button v-if="!isLogged()" @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">
+      Login
+    </button>
     <div class="computer">
-      <button @click="navigateTo('spalodWFS')" :class="{ active: activeTab === 'spalodwfs' }">SpaLod API</button>
-      <button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button>
-      <button @click="navigateTo('admin')" :class="{ active: activeTab === 'admin' }">Admin</button>
-      <button @click="navigateTo('doc')" :class="{ active: activeTab === 'doc' }">Doc</button>
-      <button @click="navigateTo('external_links')" :class="{ active: activeTab === 'external' }">External
-        Links</button>
-
+      <button v-if="isLogged()" @click="navigateTo('ogc-api')" :class="{ active: activeTab === 'ogc-api' }">
+        SpaLod API
+      </button>
+      <button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">
+        Register
+      </button>
+      <button v-if="isLogged()" @click="navigateTo('admin')" :class="{ active: activeTab === 'admin' }">
+        Admin
+      </button>
+      <button v-if="isLogged()" @click="navigateTo('docs')" :class="{ active: activeTab === 'docs' }">
+        Docs
+      </button>
+      <button v-if="isLogged()" @click="navigateTo('external-links')"
+        :class="{ active: activeTab === 'external-links' }">
+        External Links
+      </button>
     </div>
-
+    <div>
+      {{ getUsername() }}
+    </div>
   </div>
   <div>
 
@@ -38,6 +53,8 @@
 
 <script>
 import { $ajax } from '../services/api';
+import { logout, getUsername } from '../services/login';
+import { isLogged } from "../services/login";
 
 export default {
   data() {
@@ -56,10 +73,10 @@ export default {
     window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
       this.isDarkMode = event.matches;
     });
-    this.checkLoggedIn();
-    //this.checkRole(); Used to check if user is an admin or not
   },
   methods: {
+    isLogged,
+    getUsername,
     detectDarkMode() {
       this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     },
@@ -72,9 +89,7 @@ export default {
     },
     navigateTo(page) {
       this.activeTab = page;
-      window.history.pushState({}, '', `/${page}`);
-      this.currentPath = window.location.pathname;
-      window.location.reload();
+      this.$router.push(`/${page}`)
     },
     checkRole() {
       $ajax({
@@ -134,31 +149,11 @@ export default {
           console.error(error);
         }
       })
-    }, logout() {
-      // Call a function to remove the cookies
-      this.removeCookies();
-
-      // Redirect or perform any other actions after logout if needed
     },
-    removeCookies() {
-      $ajax({
-        url: import.meta.env.VITE_APP_API_BASE_URL + '/auth/logout/',
-        method: 'POST',
-        xhrFields: {
-          withCredentials: true,
-        },
-        success: () => {
-          this.isLoggedIn = false;
-          this.isAdmin = false; // Reset isAdmin if needed
-          // Any other logic to clean up after logout
-
-          window.location.href = '/login'
-        },
-        error: (error) => {
-          console.log(error);
-        },
-      });
-    }
+    async logout() {
+      await logout();
+      window.location.href = '/login';
+    },
   }
 };
 </script>
@@ -170,10 +165,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 }

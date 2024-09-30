@@ -74,7 +74,6 @@
 <script>
 import $ from "jquery";
 import { $ajax } from '../services/api';
-import RDFData from "./RDFData.vue";
 import Dataset from "./Dataset.vue";
 import { cookies } from "../services/login";
 
@@ -403,8 +402,9 @@ export default {
       const file = event.target.files[0];
       let formData = new FormData();
       formData.append("file", file);
+      formData.append("metadata", JSON.stringify({ "description": "This is a shapefile", "source": "Survey XYZ" }));
       this.post_checkont(
-        import.meta.env.VITE_APP_API_BASE_URL + "/api/check-ontology",
+        import.meta.env.VITE_APP_API_BASE_URL + "/api/upload-file/",
         formData, this.seek_unknown
         //this.handleResponse
         // this.confirmRequest
