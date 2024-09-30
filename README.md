@@ -115,10 +115,16 @@ curl -X POST http://127.0.0.1:8000/api/upload-file/ \
 -H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78" \
 -F "file=@/Volumes/poncianoCloud/workspace/data/bkg/bkg_map/radnetz_use_case/data/epsg_4326/part1/de_hh_up_freizeitroute2_EPSG_4326.json " \
 -F "metadata={\"description\": \"This is a shapefile\", \"source\": \"Survey XYZ\"}"
-
 ```
+ you get :
 
-
+ ```json
+ {"message":"File uploaded and ontology processed successfully.","uuid":"04287a39-053d-435e-8064-a7664604edb9","ontology_url":"/media/uploads/04287a39-053d-435e-8064-a7664604edb9/04287a39-053d-435e-8064-a7664604edb9_ontology.owl","map_url":"/media/uploads/04287a39-053d-435e-8064-a7664604edb9/04287a39-053d-435e-8064-a7664604edb9_map.html"}% 
+ ```
+Then you can download :
+```bash
+curl -O http://127.0.0.1:8000/media/uploads/04287a39-053d-435e-8064-a7664604edb9/04287a39-053d-435e-8064-a7664604edb9_map.html
+```
 ## To update the ontology mapping
 ```bash
 curl -X POST http://127.0.0.1:8000/api/update-ontology/ \

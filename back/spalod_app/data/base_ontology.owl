@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:ex="http://example.org/ns#"
+     xmlns:gdi="http://www.gdi-de.org/ontologies#"
+     xmlns:geo="http://www.opengis.net/ont/geosparql#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <Ontology/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.gdi-de.org/ontologies#beginntBeiKnoten -->
+
+    <ObjectProperty rdf:about="http://www.gdi-de.org/ontologies#beginntBeiKnoten">
+        <rdfs:comment>Indicates that the feature begins at a specific node (Knoten).</rdfs:comment>
+        <rdfs:label>beginntBeiKnoten</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.gdi-de.org/ontologies#endetBeiKnoten -->
+
+    <ObjectProperty rdf:about="http://www.gdi-de.org/ontologies#endetBeiKnoten">
+        <rdfs:comment>Indicates that the feature ends at a specific node (Knoten).</rdfs:comment>
+        <rdfs:label>endetBeiKnoten</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.gdi-de.org/ontologies#hasRoute -->
+
+    <ObjectProperty rdf:about="http://www.gdi-de.org/ontologies#hasRoute">
+        <rdfs:comment>Associates a feature with a specific route.</rdfs:comment>
+        <rdfs:label>hasRoute</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.gdi-de.org/ontologies#richtung -->
+
+    <ObjectProperty rdf:about="http://www.gdi-de.org/ontologies#richtung">
+        <rdfs:comment>Indicates the direction of the feature (e.g., &apos;Hinweg&apos;, &apos;Rückweg&apos;).</rdfs:comment>
+        <rdfs:label>richtung</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#hasGeometry -->
+
+    <ObjectProperty rdf:about="http://www.opengis.net/ont/geosparql#hasGeometry">
+        <rdfs:comment>Associates a geographic feature with its geometry.</rdfs:comment>
+        <rdfs:label>hasGeometry</rdfs:label>
+    </ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.gdi-de.org/ontologies#hasValue -->
+
+    <DatatypeProperty rdf:about="http://www.gdi-de.org/ontologies#hasValue">
+        <rdfs:comment>The value associated with a property, such as the length of a route.</rdfs:comment>
+        <rdfs:label>hasValue</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.gdi-de.org/ontologies#laenge -->
+
+    <DatatypeProperty rdf:about="http://www.gdi-de.org/ontologies#laenge">
+        <rdfs:comment>Indicates the length of the feature.</rdfs:comment>
+        <rdfs:label>laenge</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.gdi-de.org/ontologies#name -->
+
+    <DatatypeProperty rdf:about="http://www.gdi-de.org/ontologies#name">
+        <rdfs:comment>The name of the route or feature.</rdfs:comment>
+        <rdfs:label>name</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#asWKT -->
+
+    <DatatypeProperty rdf:about="http://www.opengis.net/ont/geosparql#asWKT">
+        <rdfs:comment>The Well-Known Text (WKT) representation of the geometry.</rdfs:comment>
+        <rdfs:label>asWKT</rdfs:label>
+    </DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://example.org/ns#Knoten -->
+
+    <Class rdf:about="http://example.org/ns#Knoten">
+        <rdfs:comment>Represents a node in a geographic network, such as the start or end of a route.</rdfs:comment>
+        <rdfs:label>Knoten</rdfs:label>
+    </Class>
+    
+
+
+    <!-- http://example.org/ns#MeasureType -->
+
+    <Class rdf:about="http://example.org/ns#MeasureType">
+        <rdfs:comment>A measurement, such as the length of a route.</rdfs:comment>
+        <rdfs:label>MeasureType</rdfs:label>
+    </Class>
+    
+
+
+    <!-- http://example.org/ns#Route -->
+
+    <Class rdf:about="http://example.org/ns#Route">
+        <rdfs:comment>A route that links multiple features or geometries.</rdfs:comment>
+        <rdfs:label>Route</rdfs:label>
+    </Class>
+    
+
+
+    <!-- http://example.org/ns#Streckenabschnitt -->
+
+    <Class rdf:about="http://example.org/ns#Streckenabschnitt">
+        <rdfs:comment>A section of a route.</rdfs:comment>
+        <rdfs:label>Streckenabschnitt</rdfs:label>
+    </Class>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#Feature -->
+
+    <Class rdf:about="http://www.opengis.net/ont/geosparql#Feature">
+        <rdfs:comment>A geographic feature.</rdfs:comment>
+        <rdfs:label>Feature</rdfs:label>
+    </Class>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#Geometry -->
+
+    <Class rdf:about="http://www.opengis.net/ont/geosparql#Geometry">
+        <rdfs:comment>A geometry associated with a geographic feature.</rdfs:comment>
+        <rdfs:label>Geometry</rdfs:label>
+    </Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+

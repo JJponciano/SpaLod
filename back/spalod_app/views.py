@@ -120,7 +120,7 @@ class FileUploadView(APIView):
             map_url = f'/media/uploads/{file_uuid}/{file_uuid}_map.html'
 
             try:
-                add_ontology_to_graphdb(ontology_file_path, file_uuid, ontology_url, map_url)
+                add_ontology_to_graphdb(ontology_file_path, file_uuid, ontology_url, map_url,metadata)
             except Exception as e:
                 return Response({'error': f'Failed to add ontology to GraphDB: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             data = {
