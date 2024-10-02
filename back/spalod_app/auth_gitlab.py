@@ -1,9 +1,6 @@
 from rest_framework.views import APIView
-from rest_framework import status
-import json
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
-from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.conf import settings
 import requests

@@ -43,4 +43,3 @@ dependencies:
       - social-auth-core==4.5.4
       - sparqlwrapper==2.0.0
       - urllib3==2.2.2
-prefix: /Volumes/poncianoCloud/miniconda3/envs/spalod_env
