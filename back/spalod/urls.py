@@ -21,7 +21,7 @@ from allauth.socialaccount.providers.gitlab.views import GitLabOAuth2Adapter
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from django.conf import settings
 from django.conf.urls.static import static
-from .auth_gitlab import Authorize, Redirect
+from spalod_app.auth_gitlab import Authorize, Redirect
 
 class GitLabLogin(SocialLoginView):
     adapter_class = GitLabOAuth2Adapter

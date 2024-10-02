@@ -244,6 +244,8 @@ export default {
     this.loadPredicates();
     // this.metadata['identifier'] = this.uuidv4();
 
+    return
+
     const fetchData = async () => {
       if (localStorage.getItem("githubLog") == null) {
         try {

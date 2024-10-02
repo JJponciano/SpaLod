@@ -176,3 +176,14 @@ SITE_ID = 1
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# Upload handler
+FILE_UPLOAD_HANDLERS = [
+    "spalod_app.flyvast_upload_handler.FlyvastUploadHandler",
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+]
+
+# Flyvast conf
+FLYVAST_API_URL = 'https://app.flyvast.com/flyvast/app/server/bll'

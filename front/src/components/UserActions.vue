@@ -2,11 +2,6 @@
   <div class="user-actions" :class="{ dark: isDarkMode }">
     <button class="navbar_button" @click="toggleNavBar">Menu</button>
     <div class="side_pannel">
-      <select v-model="selectedOption">
-        <option v-for="(option, index) in options" :key="index" :value="option.value">
-          {{ option.label }}
-        </option>
-      </select>
       <div class="filter" :class="{ active: showFilter }">
         <p @click="showFilter = !showFilter">Filter</p>
         <div class="filtercontainer" v-if="showFilter">
@@ -16,27 +11,31 @@
           <p>{{ rangeValue }}</p>
         </div>
       </div>
-      <div class="addfile" :class="{ active: showAddMenu }">
-        <p @click="showAddMenu = !showAddMenu">Add Data</p>
-        <div class="addfileButton" v-if="showAddMenu">
-          <button @click="addDataCSV">CSV to GeoJSON</button>
+      <!-- <div class="addfile" :class="{ active: showAddMenu }"> -->
+      <div>
+        <!-- <button @click="addDataCSV">CSV to GeoJSON</button>
           <button @click="addDataJSON">JSON to GeoJSON</button>
           <button @click="addDataGeo">Add GeoJSON</button>
           <input type="file" ref="fileInputGeo" style="display: none" accept=".json, .geojson"
-            @change="handleFileInputGeo" />
-          <button @click="addDataOwl">Add Owl</button>
-          <input type="file" ref="fileInputOwl" style="display: none" accept=".owl" @change="handleFileInputOwl" />
-        </div>
+            @change="handleFileInputGeo" /> -->
+        <button class="addfile" @click="addDataOwl">Add Data</button>
+        <input type="file" ref="fileInputOwl" style="display: none" accept=".owl, .json, .geojson, .las, .laz"
+          @change="handleFileInputOwl" />
       </div>
       <div class="advancedMenu" :class="{ active: advancedMenuOpen }">
         <p @click="advancedMenuOpen = !advancedMenuOpen">Advanced Mode</p>
         <div class="textcontainer" v-if="advancedMenuOpen">
+          <select v-model="selectedOption">
+            <option v-for="(option, index) in options" :key="index" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
           <textarea v-model="inputAdvanced" :placeholder="placeholders" spellcheck="false"></textarea>
+          <button ref="confirmRequest" @click="confirmRequest" class="confirm">
+            Confirm Request
+          </button>
         </div>
       </div>
-      <button ref="confirmRequest" @click="confirmRequest" class="confirm">
-        Confirm Request
-      </button>
       <!-- ---------------- DATASET--------------------------- -->
       <!-- <div id="app">
         <Dataset @change="handleChangeDataset" />

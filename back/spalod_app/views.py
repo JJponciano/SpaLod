@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from SPARQLWrapper import SPARQLWrapper, JSON, POST, URLENCODED
 from rest_framework import status
+
+from .flyvast.pointcloud import create_flyvast_pointcloud
 from .serializers import SparqlQuerySerializer ,UploadedFileSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -74,8 +76,6 @@ class PropertiesQueryView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
-
 class FileUploadView(APIView):
     def post(self, request, *args, **kwargs):
         print("::::::: FileUploadView :::::::")
@@ -89,6 +89,16 @@ class FileUploadView(APIView):
             metadata = json.loads(metadata)
         except ValueError:
             return Response({'error': 'Invalid JSON for metadata.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if file.name.endswith('las') or file.name.endswith('laz'):
+            
+            return Response(
+                {
+                    'message': 'File uploaded and pointcloud processed successfully.',
+                    'uuid': f"{file.pointcloud_id}{file.pointcloud_uuid}"
+                }, 
+                status=status.HTTP_201_CREATED
+            )
 
         if not file.name.endswith('json'):
             return Response({'error': 'Only GeoJSON files are accepted.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -166,11 +176,15 @@ class SparqlQueryAPIView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class User(APIView):
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        return Response({
-            'username': user.username,
-            'email': user.email,
-        }, status=status.HTTP_200_OK)
-    
+class CreatePointcloud(APIView):
+    def post(self, request, *args, **kwargs):
+        print("::::::: CreatePointcloud :::::::")
+        
+        try:
+            pointcloud_id = create_flyvast_pointcloud('test', 10)
+            print(pointcloud_id)
+            
+            return Response(status=status.HTTP_200_OK)
+        
+        except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
