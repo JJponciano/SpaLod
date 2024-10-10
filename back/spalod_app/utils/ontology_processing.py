@@ -16,21 +16,48 @@ class OntologyProcessor:
         self.ex = ex
         self.gdi = gdi
         self.graph = Graph()
+                   # Load base ontology
+        self.graph.parse(self.ontology_path, format="application/rdf+xml")
 
-    def process_geojson(self, geojson_path, map_output_path):
+       
+    def process(self,file, map_file_path):
+        if  file.endswith('json'):
+            try:
+                # Process GeoJSON file and add data to ontology
+                self.convert_geojson_to_ontology(file)
+            except Exception as e:
+                print(f"Error during GeoJSON processing: {str(e)}")
+                raise Exception(f"Ontology processing failed: {str(e)}")
+        elif file.endswith(('.ttl', '.rdf', '.owl', '.nt')):
+               # Determine the format based on the file extension
+            if file.endswith('.ttl'):
+                file_format = 'turtle'
+            elif file.endswith('.rdf'):
+                file_format = 'xml'
+            elif file.endswith('.owl'):
+                file_format = 'xml'  # OWL files are typically in RDF/XML format
+            elif file.endswith('.nt'):
+                file_format = 'nt'
+            else:
+                raise ValueError(f"Unsupported file format for {file}")
+            
+            # Parse the OWL file and add it to the self.graph
+            newowl = rdflib.Graph()
+            newowl.parse(file, format=file_format)
+
+            # Merge the newowl graph into the main graph
+            self.graph += newowl
+
+            print(f"OWL file {file} loaded successfully in {file_format} format.")
+        else:
+            raise ValueError(f"Unsupported file format for {file}")
+         # After processing, save the updated ontology
+        self.graph.serialize(destination=self.destination, format="turtle")
+        self.generate_map(output=map_file_path, need_transform=False)
+
+    def process_geojson(self, geojson_path):
         """Process the uploaded GeoJSON and update the ontology, then create the map."""
-        try:
-            # Load base ontology
-            self.graph.parse(self.ontology_path, format="application/rdf+xml")
-            # Process GeoJSON file and add data to ontology
-            self.convert_geojson_to_ontology(geojson_path)
-                        # After processing, save the updated ontology
-            self.graph.serialize(destination=self.destination, format="turtle")
-            # Generate the HTML map
-            self.display_map(output=map_output_path, need_transform=False)
-        except Exception as e:
-            print(f"Error during GeoJSON processing: {str(e)}")
-            raise Exception(f"Ontology processing failed: {str(e)}")
+       
         
     def convert_coordinates(self, coordinates):
         """Converts coordinates from [lon, lat, (optional) z] to [lat, lon], automatically handling 2D and 3D coordinates."""
@@ -148,6 +175,9 @@ class OntologyProcessor:
         self.graph.add((geom_uri, self.geo.asWKT, geom_literal))
         # Add properties
         for prop, value in properties.items():
+            if isinstance(value, str):
+                 value = value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+
             if prop == "length":
                 prop_uri = URIRef(self.gdi["hasValue"])
                 self.graph.add((measure_uri, prop_uri, Literal(value)))
@@ -186,7 +216,7 @@ class OntologyProcessor:
             self.graph.add((property_uri, RDF.type, property_type))
             self.graph.add((property_uri, RDFS.label, Literal(label)))
 
-    def display_map(self, output='map.html', need_transform=False, max_features=100000):
+    def generate_map(self, output='map.html', need_transform=False, max_features=100000):
         """Generates an interactive map using pydeck from the ontology data."""
         # Initialize Pydeck layer data
         line_data = []
