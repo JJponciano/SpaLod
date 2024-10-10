@@ -8,6 +8,8 @@ def add_ontology_to_graphdb(ontology_file_path, uuid, ontology_url, map_url, met
     """
     sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod/statements")
     sparql.setMethod(POST)
+    sparql.setRequestMethod("postdirectly")  # SPARQLWrapper uses this method for SPARQL update requests
+    sparql.addCustomHttpHeader("Content-Type", "application/sparql-update")
 
     graph = rdflib.Graph()
     graph.parse(ontology_file_path, format="turtle")
@@ -39,31 +41,61 @@ def add_ontology_to_graphdb(ontology_file_path, uuid, ontology_url, map_url, met
     }}
     """
 
+ 
+    # Serialize the ontology as plain N-Triples, which can be inserted directly into the SPARQL query
+    rdf_data = graph.serialize(format="nt")
+    
+    # Construct SPARQL query without Turtle prefixes
     try:
-        # Serialize the ontology as plain N-Triples, which can be inserted directly into the SPARQL query
-        rdf_data = graph.serialize(format="nt")
-
-        # Construct SPARQL query without Turtle prefixes
-        insert_query = f"""
-        INSERT DATA {{
-            GRAPH <{graph_iri}> {{
-                {rdf_data}
+        try:
+            insert_query = f"""
+            INSERT DATA {{
+                GRAPH <{graph_iri}> {{
+                    {rdf_data}
+                }}
             }}
-        }}
-        """
+            """
+    
+            # Debug: Print the query before sending it
+            print("SPARQL Query:", insert_query[:200])  # Print query to debug
+            sparql.setQuery(insert_query)
+            sparql.query()
+        except Exception as e:
+            print(f"Failed to add ontology to GraphDB: {str(e)}")
+            # Split the serialized RDF data into individual triples
+            rdf_triples = rdf_data.splitlines()
 
-        # Debug: Print the query before sending it
-        print("SPARQL Query:", insert_query)  # Print query to debug
-        sparql.setQuery(insert_query)
-        sparql.query()
+            # Remove any double periods and ensure each triple ends with a single period
+            rdf_triples_cleaned = [
+                triple.strip().rstrip('.') + ' .' for triple in rdf_triples[:100]
+            ]
 
+            # Join the triples back into a string
+            rdf_triples_limited = "\n".join(rdf_triples_cleaned)
+
+            # Construct the SPARQL INSERT DATA query
+            insert_query = f"""
+                INSERT DATA {{
+                    GRAPH <{graph_iri}> {{
+                        {rdf_triples_limited}
+                    }}
+                }}
+            """
+
+            # Print query for debugging purposes (optional)
+            print(insert_query)
+            sparql.setQuery(insert_query)
+            sparql.query()
         # Insert the hasHTML, hasOWL properties
+        print("Insert the hasHTML, hasOWL properties")
         sparql.setQuery(sparql_update_query)
         sparql.query()
 
         # Insert the metadata
+        print("Insert the metadata")
         sparql.setQuery(metadata_query)
         sparql.query()
-
     except Exception as e:
         raise Exception(f"Failed to add ontology to GraphDB: {str(e)}")
+
+    

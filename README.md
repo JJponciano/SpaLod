@@ -65,19 +65,26 @@ http://localhost:7200/repositories/Spalod
 ```
 
 ## Authentication and SPARQL Query
-
-1. Log in to get an authentication token:
+1. Register:
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/auth/login/ -d "username=Falk&password=GNybRXbC563"
+curl -X POST http://127.0.0.1:8000/auth/registration/ -d "username=JJ&password1=GNybRXbC563&password2=GNybRXbC563"
 ```
+2. Log in to get an authentication token:
 
-2. Run a SPARQL query:
+```bash
+curl -X POST http://127.0.0.1:8000/auth/login/ -d "username=JJ&password=GNybRXbC563"
+```
+You get something like:
+```bash
+{"key":"79f5571c8c44563a82ce13c395f1982e18d7be5d"}% 
+```
+3. Run a SPARQL query:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/sparql-query/ \
 -H "Content-Type: application/json" \
--H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78" \
+-H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
 -d '{"query": "SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 10"}'
 ```
 
@@ -118,7 +125,7 @@ To upload a file with associated metadata:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/upload-file/ \
--H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78" \
+-H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
 -F "file=@/Volumes/poncianoCloud/workspace/data/bkg/bkg_map/radnetz_use_case/data/epsg_4326/part1/de_hh_up_freizeitroute2_EPSG_4326.json " \
 -F "metadata={\"description\": \"This is a shapefile\", \"source\": \"Survey XYZ\"}"
 ```
@@ -151,3 +158,37 @@ curl -X POST http://127.0.0.1:8000/api/update-ontology/ \
       ]
     }'
 ```
+
+## GRAPHDB: get all graph with HTML and OWl
+```bash
+curl -X POST \
+  -H "Content-Type: application/sparql-query" \
+  --data-binary 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
+                 PREFIX spalod: <http://spalod/> 
+                 SELECT ?graph ?html_url ?owl_url 
+                 WHERE { 
+                   GRAPH ?graph { 
+                     ?graph spalod:hasHTML ?html_url ; 
+                            spalod:hasOWL ?owl_url . 
+                   } 
+                 }' \
+  http://localhost:7200/repositories/Spalod
+```
+
+## 
+```bash
+curl -X POST http://localhost:8000/api/sparql-query/ \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
+    -d '{
+        "query": "PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX ns2: <https://registry.gdi-de.org/id/hamburg/> PREFIX ex: <http://example.org/ns#> SELECT ?feature ?wkt WHERE { ?feature a geo:Feature ; geo:hasGeometry ?geom . ?geom geo:asWKT ?wkt . }",
+        "graph": "http://spalod/52688e21-0a69-456f-ab39-36b2fe36db1a"
+    }'
+    
+```bash
+curl -X POST http://localhost:8000/api/sparql-query/ \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
+    -d '{"query": "PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX ns2: <https://registry.gdi-de.org/id/hamburg/> PREFIX ex: <http://example.org/ns#> SELECT ?feature ?property ?value WHERE { ?feature a geo:Feature ; ?property ?value . }", "graph": "http://spalod/52688e21-0a69-456f-ab39-36b2fe36db1a"}'
+```
+
