@@ -1,14 +1,20 @@
 from django.urls import path
-from .views import PropertiesQueryView,UpdateOntologyView,FileUploadView,SparqlQueryAPIView,CreatePointcloud
 from django.conf import settings
 from django.conf.urls.static import static
 
+from .views.geo import GeoGetAllView, GeoGetFeature
+from .views.properties import PropertiesQueryView
+from .views.sparql_query import SparqlQueryAPIView
+from .views.upload import FileUploadView
+from .views.ontology import UpdateOntologyView
+
 urlpatterns = [
     path('sparql-query/', SparqlQueryAPIView.as_view(), name='sparql_query_api'),
-    path('upload-file/', FileUploadView.as_view(), name='file-upload'),
+    path('upload-file/', FileUploadView.as_view(), name='file_upload'),
     path('query-properties/', PropertiesQueryView.as_view(), name='query_properties'),
     path('update-ontology/', UpdateOntologyView.as_view(), name='update_ontology'),
-    path('create-pointcloud/', CreatePointcloud.as_view(), name='create_pointcloud'),
+    path('geo/all', GeoGetAllView.as_view(), name='geo-get-all'),
+    path('geo/feature', GeoGetFeature.as_view(), name='geo-get-feature'),
 ]
 
 if settings.DEBUG:

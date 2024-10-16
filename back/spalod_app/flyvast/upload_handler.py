@@ -1,12 +1,13 @@
 from django.core.files.uploadhandler import FileUploadHandler, StopFutureHandlers
 from django.core.files.uploadedfile import UploadedFile
-from .flyvast.pointcloud import create_flyvast_pointcloud
+from .pointcloud import create_flyvast_pointcloud
 from io import BytesIO
-import zipfile
 import requests
 import gzip
+import threading
 
 MAX_CHUNK_SIZE = 50 * 1024 * 1024
+task_pool = {}
 
 class FlyvastUploadHandler(FileUploadHandler):
     def handle_raw_input( self, input_data, META, content_length, boundary, encoding=None):
@@ -23,6 +24,8 @@ class FlyvastUploadHandler(FileUploadHandler):
             self.chunk = BytesIO()
             self.nb_chunk = 0
             
+            task_pool[self.flyvast_pointcloud["pointcloud_id"]] = []
+            
             raise StopFutureHandlers()
     
     def receive_data_chunk(self, raw_data, start):
@@ -36,16 +39,20 @@ class FlyvastUploadHandler(FileUploadHandler):
             return raw_data
         
     def process_chunk(self):
-        chunk_zipped = gzip.compress(self.chunk.getbuffer())
+        t = threading.Thread(
+            target=send_to_flyvast,
+            args=[
+                self.flyvast_pointcloud["upload_url"],
+                self.chunk.getbuffer(),
+                self.nb_chunk,
+                self.file_size,
+                self.file_name
+            ],
+            daemon=True,
+        )
+        t.start()
         
-        percentage = min(self.nb_chunk * MAX_CHUNK_SIZE / self.file_size, 1) * 100
-        upload_url = self.flyvast_pointcloud.get("upload_url")
-        size = len(chunk_zipped)
-        prefix = f"{self.nb_chunk}".zfill(10)
-        chunk_name = f"{prefix}-{self.file_name}"
-        
-        url = f"{upload_url}&name={chunk_name}&bytes={self.file_size}&percentage={percentage}&size={size}"
-        requests.post(url, chunk_zipped)
+        task_pool[self.flyvast_pointcloud["pointcloud_id"]].append(t)
             
         self.chunk = BytesIO()
         self.nb_chunk += 1
@@ -59,13 +66,40 @@ class FlyvastUploadHandler(FileUploadHandler):
         
         print("::::::: PointcloudUploaded :::::::")
         
-        requests.get(self.flyvast_pointcloud.get("treatment_url"))
+        t = threading.Thread(
+            target=request_flyvast_treatment,
+            args=[
+                self.flyvast_pointcloud["pointcloud_id"],
+                self.flyvast_pointcloud["treatment_url"]
+            ]
+        )
+        t.start()
         
         return FlyvastUploadedFile(
             name=self.file_name,
-            pointcloud_id=self.flyvast_pointcloud.get("pointcloud_id"),
-            pointcloud_uuid=self.flyvast_pointcloud.get("pointcloud_uuid")
+            pointcloud_id=self.flyvast_pointcloud["pointcloud_id"],
+            pointcloud_uuid=self.flyvast_pointcloud["pointcloud_uuid"]
         )
+        
+def send_to_flyvast(upload_url, buffer, index_chunk, file_size, file_name):
+    chunk_zipped = gzip.compress(buffer)
+        
+    percentage = min(index_chunk * MAX_CHUNK_SIZE / file_size, 1) * 100
+    size = len(chunk_zipped)
+    prefix = f"{index_chunk}".zfill(10)
+    chunk_name = f"{prefix}-{file_name}"
+    
+    url = f"{upload_url}&name={chunk_name}&bytes={file_size}&percentage={percentage}&size={size}"
+    requests.post(url, chunk_zipped)
+    
+def request_flyvast_treatment(pointcloud_id, treatment_url):
+    for t in task_pool[pointcloud_id]:
+        t.join()
+    
+    del task_pool[pointcloud_id]
+    
+    requests.get(treatment_url)
+    
     
 class FlyvastUploadedFile(UploadedFile):
     
