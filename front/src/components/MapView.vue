@@ -210,17 +210,17 @@ export default {
         mapObjList.push(mapObj);
       };
 
-      for (const { geo, type, id } of allGeos) {
+      for (const { geo, type, metadatas } of allGeos) {
         // TODO: handle other types
         if (type === "LINESTRING") {
           addPolyline(
-            id,
+            metadatas.feature,
             geo.map(([lat, lng]) => new L.LatLng(lat, lng))
           );
         } else if (type === "MULTILINESTRING") {
           for (const polyline of geo) {
             addPolyline(
-              id,
+              metadatas.feature,
               polyline.map(([lat, lng]) => new L.LatLng(lat, lng))
             );
           }
@@ -230,7 +230,11 @@ export default {
       this.map.fitBounds(mapObjList.map((x) => x.getBounds()).flat(1));
     },
     async displayFeature(featureId) {
-      this.feature = await getFeature(featureId);
+      const res = await getFeature(featureId);
+      this.feature = res.map(({ metadatas: { key, value } }) => ({
+        key,
+        value,
+      }));
     },
     closeFeature() {
       this.feature = null;
