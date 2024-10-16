@@ -385,19 +385,29 @@ export default {
     },
     post_checkont(url, data, callback) {
       $ajax({
-        url: url,
+        xhr: () => {
+          const xhr = new XMLHttpRequest();
+
+          xhr.upload.onprogress = ((event) => {
+            const percentage = Math.floor(event.loaded / event.total * 100) + '%'
+            console.log(percentage)
+          });
+
+          return xhr;
+        },
+        url,
         type: "POST",
-        data: data,
+        data,
         processData: false,
         contentType: false,
         success: callback,
-        error: function () {
+        error: () => {
           alert("Error while checking ontology!");
         },
       });
     },
 
-    handleFileInputOwl() {
+    handleFileInputOwl(event) {
       const file = event.target.files[0];
       let formData = new FormData();
       formData.append("file", file);

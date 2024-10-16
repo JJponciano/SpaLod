@@ -180,7 +180,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Upload handler
 FILE_UPLOAD_HANDLERS = [
-    "spalod_app.flyvast_upload_handler.FlyvastUploadHandler",
+    "spalod_app.flyvast.upload_handler.FlyvastUploadHandler",
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
 ]
