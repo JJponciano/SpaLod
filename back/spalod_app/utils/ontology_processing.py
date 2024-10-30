@@ -4,28 +4,48 @@ import json
 import pyproj
 import pydeck as pdk
 import rdflib
-from rdflib import Graph, URIRef, Literal, Namespace
+from rdflib import Graph, URIRef, Literal, Namespace, XSD
 from rdflib.namespace import RDF, RDFS, OWL
 import re
 import laspy
 from shapely.geometry import Polygon#
 from shapely.ops import transform
-
+from SPARQLWrapper import SPARQLWrapper, POST
 import numpy as np
 import sys
 
 class OntologyProcessor:
-    def __init__(self):
+    def __init__(self,file_uuid, ontology_url, map_url,metadata):
+        self.metadata=metadata
+        self.file_uuid=file_uuid
+        self.ontology_url=ontology_url
+        self.map_url=map_url
         self.ontology_path = os.path.join(os.path.dirname(__file__), '../data/base_ontology.owl')
         self.geo = Namespace("http://www.opengis.net/ont/geosparql#")
         self.ex =  Namespace("https://registry.gdi-de.org/id/hamburg/")
         #self.gdi = Namespace("https://registry.gdi-de.org/id/de.bund.balm.radnetz/")
         self.gdi = Namespace("https://registry.gdi-de.org/")
         self.flyvast = Namespace("https://flyvast.com/")
+        self.spalod = Namespace("http://spalod/")
         self.graph = Graph()
                    # Load base ontology
         self.graph.parse(self.ontology_path, format="application/rdf+xml")
 
+
+         # Prepare metadata triples
+        self.catalog_uri = URIRef(self.spalod[f"catalog_{file_uuid}"])
+        self.graph.add((self.catalog_uri, RDF.type, self.geo.Catalog))
+        self.ensure_property(self.spalod.hasHTML, OWL.DatatypeProperty, "hasHTML")
+        self.ensure_property(self.spalod.hasFeature, OWL.ObjectProperty, "hasFeature")
+        self.ensure_property(self.spalod.hasOWL, OWL.DatatypeProperty, "hasOWL")
+        self.graph.add((self.catalog_uri, self.spalod.hasHTML,Literal(map_url, datatype=XSD.string)))
+        self.graph.add((self.catalog_uri, self.spalod.hasOWL,Literal(ontology_url, datatype=XSD.string)))
+        for key, value in metadata.items():
+            self.ensure_property(self.spalod[key], OWL.DatatypeProperty, key)
+            self.graph.add((self.catalog_uri, self.spalod[key], Literal(value, datatype=XSD.string)))
+
+        
+      
     
     def get_wkt_polygon(self,file_path, utm_zone=32, northern_hemisphere=True):
         # Load the LAS file
@@ -91,6 +111,85 @@ class OntologyProcessor:
         self.graph.serialize(destination=destination, format="turtle")
         self.generate_map(output=map_file_path, need_transform=False)
 
+        # SAVE TO GRAPHDB
+        sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod/statements")
+        sparql.setMethod(POST)
+        sparql.setRequestMethod("postdirectly")  # SPARQLWrapper uses this method for SPARQL update requests
+        sparql.addCustomHttpHeader("Content-Type", "application/sparql-update")        
+        graph_iri = self.spalod.General
+        graph_specific = self.spalod[self.file_uuid]
+
+            # Add hasHTML and hasOWL properties (as strings)
+        sparql_update_query = f"""
+            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+            INSERT {{
+                GRAPH <{graph_iri}> {{
+                        <{self.catalog_uri}> <{self.spalod.hasHTML}> "{self.map_url}"^^xsd:string .
+                        <{self.catalog_uri}> <{self.spalod.hasOWL}> "{self.ontology_url}"^^xsd:string .
+                }}
+            }}WHERE {{}}
+        """
+        print(sparql_update_query)
+        sparql.setQuery(sparql_update_query)
+        sparql.query()
+        # Prepare metadata triples
+        metadata_triples = ""
+        for key, value in self.metadata.items():
+            metadata_triples += f'<{self.catalog_uri}> <{self.spalod[key]}> "{value}"^^xsd:string .\n'
+
+        metadata_query = f"""
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        INSERT DATA {{
+            GRAPH <{graph_iri}> {{
+                {metadata_triples}
+            }}
+        }}
+        """
+        print(metadata_query)
+        sparql.setQuery(metadata_query)
+        sparql.query()
+
+        # Serialize the ontology as plain N-Triples, which can be inserted directly into the SPARQL query
+        rdf_data = self.graph.serialize(format="nt")
+        
+        # Construct SPARQL query
+        try:
+            try:
+                insert_query = f"""
+                INSERT DATA {{
+                    GRAPH <{graph_specific}> {{
+                        {rdf_data}
+                    }}
+                }}
+                """
+                sparql.setQuery(insert_query)
+                sparql.query()
+            except Exception as e:
+                print(f"Failed to add ontology to GraphDB: {str(e)}")
+                # Split the serialized RDF data into individual triples
+                rdf_triples = rdf_data.splitlines()
+
+                # Remove any double periods and ensure each triple ends with a single period
+                rdf_triples_cleaned = [
+                    triple.strip().rstrip('.') + ' .' for triple in rdf_triples[:100]
+                ]
+
+                # Join the triples back into a string
+                rdf_triples_limited = "\n".join(rdf_triples_cleaned)
+
+                # Construct the SPARQL INSERT DATA query
+                insert_query = f"""
+                    INSERT DATA {{
+                        GRAPH <{graph_specific}> {{
+                            {rdf_triples_limited}
+                        }}
+                    }}
+                """
+                sparql.setQuery(insert_query)
+                sparql.query()
+        except Exception as e:
+            raise Exception(f"Failed to add ontology to GraphDB: {str(e)}")
+
     def convert_coordinates(self, coordinates):
         """Converts coordinates from [lon, lat, (optional) z] to [lat, lon], automatically handling 2D and 3D coordinates."""
         
@@ -127,6 +226,8 @@ class OntologyProcessor:
         self.graph.add((feature_uri, self.geo.hasPointcloud, pointcloud_uri))
         self.graph.add((feature_uri, RDF.type, self.geo.Feature))
         self.graph.add((feature_uri, self.geo.hasGeometry, geom_uri))
+        self.graph.add((self.catalog_uri, self.spalod.hasFeature, feature_uri))
+
         self.graph.add((geom_uri, RDF.type, self.geo.Geometry))
         wkt_string =self.get_wkt_polygon(file_path)
         print(f"WKT: {wkt_string}")
@@ -217,6 +318,7 @@ class OntologyProcessor:
         self.ensure_property(self.geo.hasGeometry, OWL.ObjectProperty, "hasGeometry")
 
         self.graph.add((feature_uri, RDF.type, self.geo.Feature))
+        self.graph.add((self.catalog_uri, self.spalod.hasFeature, feature_uri))
         self.graph.add((feature_uri, self.geo.hasGeometry, geom_uri))
         self.graph.add((route_uri, RDF.type, self.ex.Route))
         self.graph.add((knotena_uri, RDF.type, self.ex.Knoten))
