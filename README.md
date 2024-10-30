@@ -190,10 +190,21 @@ curl -X GET "http://127.0.0.1:8000/api/geo/catalog?id=http://spalod/catalog_acc5
 curl -X GET "http://127.0.0.1:8000/api/geo/catalog/delete?id=http://spalod/catalog_acc53514-6a2f-4521-afa5-40783906d4ba" \
     -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
 
-curl -X GET "http://127.0.0.1:8000/api/geo/feature?id=https://registry.gdi-de.org/id/hamburg/featured4b68797-93fd-4e13-9dc0-1c23ad4e9c41" \
+curl -X GET "http://127.0.0.1:8000/api/geo/feature?id=https://registry.gdi-de.org/id/hamburg/feature1cd3fd04-f40c-406d-8655-57df73b164e6" \
     -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
 
 curl -X GET "http://127.0.0.1:8000/api/geo/all" \
 -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
+
+
+```
+# Remove data
+```bash
+
+curl -X GET "http://127.0.0.1:8000/api/geo/catalog/delete?id=http://spalod/catalog_acc53514-6a2f-4521-afa5-40783906d4ba" \
+  -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
+  
+curl -X GET "http://127.0.0.1:8000/api/geo/feature/delete?id=https://registry.gdi-de.org/id/hamburg/feature1cd3fd04-f40c-406d-8655-57df73b164e6" \
+  -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
 ```
 
