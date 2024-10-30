@@ -53,8 +53,9 @@ class SparqlQueryAPIView(APIView):
                         for binding in result['results']['bindings']:
                             owl_url = binding['owl_url']['value']
                             results.append(process_owl_file(owl_url, sparql_query))
+                        flattened_array = [item for sublist in results for item in sublist]
 
-                        return Response(results, status=status.HTTP_200_OK)
+                        return Response(flattened_array, status=status.HTTP_200_OK)
 
                     except Exception as e:
                         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
