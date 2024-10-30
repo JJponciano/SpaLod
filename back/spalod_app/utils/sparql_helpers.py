@@ -3,6 +3,49 @@ import rdflib
 from rdflib import Graph
 import os
 from django.conf import settings
+def delete_ontology_entry(owl_url, sparql_delete_query):
+    """
+    Process an OWL file from a given URL, load it into an RDF graph, and apply a SPARQL DELETE query.
+
+    Args:
+        owl_url (str): The URL of the OWL file to be processed.
+        sparql_delete_query (str): The SPARQL DELETE query to be applied to the OWL file.
+
+    Returns:
+        str: A message indicating the success of the operation.
+
+    Raises:
+        FileNotFoundError: If the OWL file is not found at the specified path.
+        ValueError: If there is an error parsing the OWL file or executing the SPARQL query.
+    """
+    # Strip the MEDIA_URL from the owl_url to get the relative path
+    owl_relative_path = owl_url.replace(settings.MEDIA_URL, '')
+    owl_path = os.path.join(settings.MEDIA_ROOT, owl_relative_path)
+
+    if not os.path.exists(owl_path):
+        raise FileNotFoundError(f'OWL file not found at the specified path: {owl_path}')
+
+    # Load the OWL file using rdflib
+    owl_graph = Graph()
+    try:
+        owl_graph.parse(owl_path, format='turtle')
+    except Exception as parse_error:
+        raise ValueError(f'Error parsing the OWL file: {parse_error}')
+
+    # Apply the SPARQL DELETE query on the loaded OWL file
+    try:
+        owl_graph.update(sparql_delete_query)
+    except Exception as query_error:
+        raise ValueError(f'Error executing SPARQL DELETE query: {query_error}')
+
+    # Save the updated graph back to the file
+    try:
+        owl_graph.serialize(destination=owl_path, format='turtle')
+    except Exception as save_error:
+        raise ValueError(f'Error saving the updated OWL file: {save_error}')
+
+    return f'Ontology entry has been successfully deleted from {owl_path}.'
+
 
 def process_owl_file(owl_url, sparql_query):
     """

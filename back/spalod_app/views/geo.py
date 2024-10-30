@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rdflib import Graph, URIRef, Literal, Namespace, XSD
-from ..utils.sparql_helpers import process_owl_file
+from ..utils.sparql_helpers import process_owl_file,delete_ontology_entry
 from  .sparql_query import SparqlQueryAPIView
 from ..serializers import SparqlQuerySerializer
 
@@ -108,5 +108,44 @@ class GeoRemoveCatalog(APIView):
 
 class GeoRemoveFeature(APIView):
     def get(self, request, *args, **kwargs):
+            id = request.query_params.get('id')
             print("::::::: GeoRemoveFeature :::::::")
-        
+            sparql_delete_query = """
+                PREFIX spalod: <http://spalod/>
+                DELETE WHERE {
+                    <{id}> ?p ?o .
+                }
+            """
+            # graph_uri = serializer.validated_data.get('graph')
+            # Set up the SPARQL endpoint to query the graph and get the OWL file URI
+            sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
+            self.spalod = Namespace("http://spalod/")
+
+            graph_general = self.spalod.General
+
+            sparql.setQuery(f"""
+            PREFIX spalod: <http://spalod/>
+            SELECT ?catalog ?owl_url WHERE {{ 
+                GRAPH <{graph_general}> {{ 
+                    ?catalog spalod:hasOWL ?owl_url .
+                }} 
+            }}
+            """) 
+            
+            sparql.setReturnFormat(JSON)
+
+            # Execute the SPARQL query to get the OWL URLs
+            result = sparql.query().convert()
+            # Process the SPARQLResult object
+            
+            if result['results']['bindings']:
+                try:
+                    # Extract all OWL URLs from the result
+                    for binding in result['results']['bindings']:
+                        owl_url = binding['owl_url']['value']
+                        delete_ontology_entry(owl_url, sparql_delete_query)
+                    return Response({'message': f'Feature with ID {id} has been successfully deleted.'}, status=status.HTTP_200_OK)
+                except Exception as e:
+                    return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+                
