@@ -10,9 +10,12 @@ import re
 import laspy
 from shapely.geometry import Polygon#
 from shapely.ops import transform
-from SPARQLWrapper import SPARQLWrapper, POST
+from SPARQLWrapper import SPARQLWrapper, POST, URLENCODED
 import numpy as np
 import sys
+from django.conf import settings
+from django.http import JsonResponse
+from shapely import wkt as shapely_wkt
 
 class OntologyProcessor:
     def __init__(self,file_uuid, ontology_url, map_url,metadata):
@@ -40,6 +43,9 @@ class OntologyProcessor:
         self.ensure_property(self.spalod.hasHTML, OWL.DatatypeProperty, "hasHTML")
         self.ensure_property(self.spalod.hasFeature, OWL.ObjectProperty, "hasFeature")
         self.ensure_property(self.spalod.hasOWL, OWL.DatatypeProperty, "hasOWL")
+
+        self.ensure_property(self.geo.asWKT, OWL.DatatypeProperty, "asWKT")
+        self.ensure_property(self.geo.hasGeometry, OWL.ObjectProperty, "hasGeometry")
         self.graph.add((self.catalog_uri, self.spalod.hasHTML,Literal(map_url, datatype=XSD.string)))
         self.graph.add((self.catalog_uri, self.spalod.hasOWL,Literal(ontology_url, datatype=XSD.string)))
         for key, value in metadata.items():
@@ -80,7 +86,8 @@ class OntologyProcessor:
         if  file.endswith('json'):
             try:
                 # Process GeoJSON file and add data to ontology
-                self.convert_geojson_to_ontology(file)
+                #self.convert_geojson_to_ontology(file)
+                self.process_json_file(file)
             except Exception as e:
                 print(f"Error during GeoJSON processing: {str(e)}")
                 raise Exception(f"Ontology processing failed: {str(e)}")
@@ -131,7 +138,6 @@ class OntologyProcessor:
                 }}
             }}WHERE {{}}
         """
-        print(sparql_update_query)
         sparql.setQuery(sparql_update_query)
         sparql.query()
         # Prepare metadata triples
@@ -147,7 +153,6 @@ class OntologyProcessor:
             }}
         }}
         """
-        print(metadata_query)
         sparql.setQuery(metadata_query)
         sparql.query()
 
@@ -234,17 +239,16 @@ class OntologyProcessor:
 
         self.graph.add((geom_uri, RDF.type, self.geo.Geometry))
         wkt_string =self.get_wkt_polygon(file_path)
-        print(f"WKT: {wkt_string}")
         geom_literal = Literal(wkt_string, datatype=self.geo.wktLiteral)
         self.graph.add((geom_uri, self.geo.asWKT, geom_literal))
     
-    def convert_geojson_to_ontology(self, geojson_path):
+    def convert_geojson_to_ontology(self, geojson_path): #working with Radnets
         """Converts GeoJSON data to RDF and adds it to the ontology."""
         
         try:
             with open(geojson_path, 'r') as f:
                 data = json.load(f)
-
+            # in the case the file is GEOSPARQL
             for feature in data.get("features", []):
                 geometry = feature.get("geometry")
                 if geometry:
@@ -266,12 +270,77 @@ class OntologyProcessor:
                     else:
                         print("coords none")
         except Exception as e:
-            print(f"Error during convert_geojson_to_ontology processing: {str(e)}")
+            print(f"Error during JSON file processing: {str(e)}")
             raise Exception(f"Ontology processing failed: {str(e)}")
+        
+
+    def process_json_file(self, file_path):
+        """
+        Process an input file that can either be a GeoJSON or a JSON with geospatial data.
+
+        Args:
+            file_path (str): The path to the input file.
+
+        Returns:
+            str: A message indicating the success of the operation.
+        """
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+
+            # Determine the type of input file
+            if "features" in data:  # GeoJSON format
+                for feature in data.get("features", []):
+                    geometry = feature.get("geometry")
+                    if geometry:
+                        feature_type = geometry.get("type")
+                        coordinates = self.convert_coordinates(geometry.get("coordinates"))
+                        if feature_type and coordinates:
+                            random_uuid = uuid.uuid4()
+                            feature_uri = URIRef(self.gdi[f"feature{random_uuid}"])
+                            geom_uri = URIRef(self.gdi[f"geom{random_uuid}"])
+                            properties = {k: v for k, v in feature.get("properties", {}).items() if v is not None}
+                            wkt_string = self.convert_coordinates_to_wkt(feature_type, coordinates)
+                            self.add_individual(feature_uri, geom_uri, wkt_string, properties)
+            elif "head" in data and "results" in data:  # JSON from SPARQL endpoint
+                for binding in data.get("results", {}).get("bindings", []):
+                    random_uuid = uuid.uuid4()
+                    feature_uri = URIRef(self.gdi[f"feature{random_uuid}"])
+                    self.graph.add((feature_uri, RDF.type, self.geo.Feature))
+                    self.graph.add((self.catalog_uri, self.spalod.hasFeature, feature_uri))
+
+                    geom_uri = None
+                    wkt = None
+                    for k, v in binding.items():
+                        datatype = v.get("datatype")
+                        value = v.get("value")
+
+                        if datatype and "wktLiteral" in datatype:
+                            # If datatype is wktLiteral, extract its value for geometry
+                            geom_uri = URIRef(self.gdi[f"geom{random_uuid}"])
+                            wkt = value
+                            self.graph.add((feature_uri, self.geo.hasGeometry, geom_uri))
+                            self.graph.add((geom_uri, RDF.type, self.geo.Geometry))
+                            geom_literal = Literal(wkt, datatype=self.geo.wktLiteral)
+                            self.graph.add((geom_uri, self.geo.asWKT, geom_literal))
+                        else:
+                            # Otherwise, add it as a property
+                            if isinstance(value, str):
+                                value = value.replace("\\", "\\\\").replace('"', '\"').replace("\n", "\\n")
+                            prop_uri = URIRef(self.ex[k])
+                            self.graph.add((feature_uri, prop_uri, Literal(value)))
+                            self.ensure_property(prop_uri, OWL.DatatypeProperty, k)
+            else:
+                raise ValueError("Unsupported file format")
+
+            return "File processed successfully."
+
+        except Exception as e:
+            return f"Error during processing: {str(e)}"
+
         
     def convert_coordinates_to_wkt(self, feature_type, coordinates):
         """Converts coordinates to a valid WKT format, dynamically handling 2D and 3D coordinates."""
-        
         def format_coords(coord):
             """Format individual coordinates based on 2D or 3D structure."""
             if len(coord) == 3:  # Handle 3D coordinates dynamically
@@ -315,11 +384,25 @@ class OntologyProcessor:
         return wkt_string
 
 
-
-    def add_individual(self, feature_uri, route_uri, knotena_uri, knotenz_uri, measure_uri, geom_uri, feature_type, coordinates, properties):
+    def add_individual(self, feature_uri, geom_uri, wkt, properties):
         """Adds an individual feature and its geometry to the ontology."""
-        self.ensure_property(self.geo.asWKT, OWL.DatatypeProperty, "asWKT")
-        self.ensure_property(self.geo.hasGeometry, OWL.ObjectProperty, "hasGeometry")
+
+        self.graph.add((feature_uri, RDF.type, self.geo.Feature))
+        self.graph.add((self.catalog_uri, self.spalod.hasFeature, feature_uri))
+        self.graph.add((feature_uri, self.geo.hasGeometry, geom_uri))
+        self.graph.add((geom_uri, RDF.type, self.geo.Geometry))
+        geom_literal = Literal(wkt, datatype=self.geo.wktLiteral)
+        self.graph.add((geom_uri, self.geo.asWKT, geom_literal))
+        # Add properties
+        for prop, value in properties.items():
+            if isinstance(value, str):
+                 value = value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+            prop_uri = URIRef(self.ex[prop])
+            self.graph.add((feature_uri, prop_uri, Literal(value)))
+            self.ensure_property(prop_uri, OWL.DatatypeProperty, prop)
+
+    def add_individual_radnets(self, feature_uri, route_uri, knotena_uri, knotenz_uri, measure_uri, geom_uri, feature_type, coordinates, properties):
+        """Adds an individual feature and its geometry to the ontology."""
 
         self.graph.add((feature_uri, RDF.type, self.geo.Feature))
         self.graph.add((self.catalog_uri, self.spalod.hasFeature, feature_uri))
@@ -381,128 +464,7 @@ class OntologyProcessor:
             self.graph.add((property_uri, RDF.type, property_type))
             self.graph.add((property_uri, RDFS.label, Literal(label)))
 
-    def generate_map(self, output='map.html', need_transform=False, max_features=100000):
-        """Generates an interactive map using pydeck from the ontology data."""
-        # Initialize Pydeck layer data
-        line_data = []
-        point_data = []
-        # Iterate through features in the ontology
-        feature_count = 0
 
-        for feature in self.graph.subjects(RDF.type, self.geo.Feature):
-            if feature_count >= max_features:
-                break
-
-            # Get geometry
-            geom_uri = self.graph.value(subject=feature, predicate=self.geo.hasGeometry)
-            wkt_string = self.graph.value(subject=geom_uri, predicate=self.geo.asWKT)
-                    # Print the first 200 characters of wkt_string
-            if "[" in wkt_string or "]" in wkt_string:
-                    wkt_string = wkt_string.replace("[", "(").replace("]", ")")
-            # Get properties
-            properties = {}
-            for prop, value in self.graph.predicate_objects(subject=feature):
-                if isinstance(value, Literal):
-                    properties[str(prop.split('#')[-1])] = str(value)
-                else:   
-                    try:
-                        properties[str(prop.split('#')[-1])] = str(value)
-                    except Exception as e:
-                        print(f"Error in extracting property: {str(e)}")
-                        print(str(prop.split('#')[-1]))
-
-            pdisplay = ""
-            for cle, valeur in properties.items():
-                clestr = str(cle).replace("https://registry.gdi-de.org/id/de.bund.balm.radnetz/", "gdi:")
-                clestr = clestr.replace("http://www.opengis.net/ont/geosparql#", "geosparql:")
-                clestr = clestr.replace("https://registry.gdi-de.org/id/hamburg/", "hamburg:")
-                pdisplay += clestr + " = " + valeur + "</br>"
-                
-            
-            if self.ex in geom_uri:
-                line_color = [0, 0, 255, 255]  # Blue
-                line_width = 10  # Blue lines are wider
-                try:
-                    coords = self.parse_wkt(str(wkt_string))  # Assuming no Z-value
-                    if not coords:
-                        print(f"Warning: Parsed coordinates are empty for WKT: {wkt_string[:200]}")
-                except Exception as e:
-                    print(f":: Error during parse_wkt: {str(e)} for WKT: {wkt_string[:200]}")
-            else:
-                line_color = [255, 0, 0, 255]  # Red
-                line_width = 20
-                try:
-                    coords = self.parse_wkt(str(wkt_string)) 
-                    if not coords:
-                        print(f"Warning: Parsed coordinates are empty for WKT: {wkt_string[:200]}")
-                except Exception as e:
-                    print(f"Error during parse_wkt: {str(e)} for WKT: {wkt_string[:200]}")
-                    print(f"FAILED to parse WKT string for geometry URI: {geom_uri}")
-                    continue  # Skip this feature if it fails
-
-
-
-
-
-
-            # For LineString, add data to the line layer
-            if "LINESTRING" in wkt_string.upper() or "MULTILINESTRING" in wkt_string.upper():
-                try:
-                    line_data.append({
-                        "start": coords[0],
-                        "end": coords[-1],
-                        "path": coords,
-                        "properties": pdisplay,
-                        "get_color": line_color,  # Set the line color based on the condition
-                        "width_min_pixels": line_width  # Set the line width based on the condition
-                    })
-                    feature_count += 1
-                except Exception as e:
-                    print(f"Error in line_data append: {str(e)}")
-                    print(f"Feature has no defined coordinates in linestring: {feature}")
-            # For other geometries like Points, add data to point layer
-            else:
-                print(f"Not a line: ")
-                for coord in coords:
-                    point_data.append({
-                        "position": coord,
-                        "properties": properties
-                    })
-                feature_count += 1
-
-        # Debug: Line data and point data information
-        print(f"Total line data: {len(line_data)}")
-        print(f"Total point data: {len(point_data)}")
-
-        # Define Pydeck layers
-        line_layer = pdk.Layer(
-            'PathLayer',
-            line_data,
-            get_path="path",
-            width_scale=20,
-            get_color="get_color",  # Use the get_color field to specify line colors
-            get_width="width_min_pixels",  # Use the get_width field to specify line widths
-            pickable=True
-        )
-
-        point_layer = pdk.Layer(
-            'ScatterplotLayer',
-            point_data,
-            get_position="position",
-            get_radius=100,
-            get_color=[0, 0, 255, 255],  # Default blue color for points
-            pickable=True
-        )
-
-        # Define view state
-        view_state = pdk.ViewState(latitude=51.1657, longitude=10.4515, zoom=6)
-
-        # Create Pydeck deck
-        r = pdk.Deck(layers=[line_layer, point_layer], initial_view_state=view_state,
-                    tooltip={"html": "{properties}", "style": {"color": "white", "backgroundColor": "#f00"}})
-
-        # Render the deck to a standalone HTML file
-        r.to_html(output)
 
     def parse_wkt(self, wkt_string):
         """Parses WKT (Well-Known Text) for coordinates, automatically handling both 2D and 3D coordinates."""
@@ -558,6 +520,117 @@ class OntologyProcessor:
         dest_crs = pyproj.CRS("EPSG:4326")
         transformer = pyproj.Transformer.from_crs(source_crs, dest_crs, always_xy=True)
         return [transformer.transform(lon, lat) for lat, lon in coords]
+
+
+    def generate_map(self, output='map.html', need_transform=False, max_features=100000):
+        """Generates an interactive map using pydeck from the ontology data."""
+        # Initialize Pydeck layer data
+        line_data = []
+        point_data = []
+        # Iterate through features in the ontology
+        feature_count = 0
+
+        for feature in self.graph.subjects(RDF.type, self.geo.Feature):
+            if feature_count >= max_features:
+                break
+
+            # Get geometry
+            geom_uri = self.graph.value(subject=feature, predicate=self.geo.hasGeometry)
+            wkt_string = self.graph.value(subject=geom_uri, predicate=self.geo.asWKT)
+            if not wkt_string:
+                continue
+
+            try:
+                geometry = shapely_wkt.loads(wkt_string)
+            except Exception as e:
+                print(f"Warning: Unexpected WKT type or could not parse WKT string: {wkt_string[:200]}")
+                continue
+
+            # Get properties
+            properties = {}
+            for prop, value in self.graph.predicate_objects(subject=feature):
+                if isinstance(value, Literal):
+                    properties[str(prop.split('#')[-1])] = str(value)
+                else:
+                    try:
+                        properties[str(prop.split('#')[-1])] = str(value)
+                    except Exception as e:
+                        print(f"Error in extracting property: {str(e)}")
+                        print(str(prop.split('#')[-1]))
+
+            pdisplay = ""
+            for cle, valeur in properties.items():
+                clestr = str(cle).replace("https://registry.gdi-de.org/id/de.bund.balm.radnetz/", "gdi:")
+                clestr = clestr.replace("http://www.opengis.net/ont/geosparql#", "geosparql:")
+                clestr = clestr.replace("https://registry.gdi-de.org/id/hamburg/", "hamburg:")
+                pdisplay += clestr + " = " + valeur + "</br>"
+
+            # Handle different geometry types
+            line_color = [255, 0, 0, 255]  # Red
+            line_width = 20
+            if geometry.geom_type == "LineString":
+                line_data.append({
+                    # "start": geometry.coords[0],
+                    # "end": geometry.coords[-1],
+                    "path": [[coord[1], coord[0]] for coord in geometry.coords],
+                    "properties": pdisplay,
+                    "get_color": line_color,  # Set the line color based on the condition
+                    "width_min_pixels": line_width  # Set the line width based on the condition
+                    
+                })
+                feature_count += 1
+            elif geometry.geom_type == "MultiLineString":
+                for line in geometry:
+                    line_data.append({
+                        # "start": line.coords[0],
+                        # "end": line.coords[-1],
+                        "path": [[coord[1], coord[0]] for coord in line.coords],
+                        "properties": pdisplay,
+                        "get_color": line_color,  # Set the line color based on the condition
+                        "width_min_pixels": line_width  # Set the line width based on the condition
+                    
+                    })
+                feature_count += 1
+            elif geometry.geom_type == "Point":
+                point_data.append({
+                    "position": [geometry.x, geometry.y],
+                    "properties": pdisplay
+                })
+                feature_count += 1
+
+        # Debug: Line data and point data information
+        print(f"Total line data: {len(line_data)}")
+        print(f"Total point data: {len(point_data)}")
+
+        # Define Pydeck layers
+        line_layer = pdk.Layer(
+            'PathLayer',
+            line_data,
+            get_path="path",
+            width_scale=20,
+            get_color="get_color",  # Use the get_color field to specify line colors
+            get_width="width_min_pixels",  # Use the get_width field to specify line widths
+            pickable=True
+        )
+
+        point_layer = pdk.Layer(
+            'ScatterplotLayer',
+            point_data,
+            get_position="position",
+            get_radius=100,
+            get_color=[0, 0, 255, 255],  # Default blue color for points
+            pickable=True
+        )
+
+        # Define view state
+        view_state = pdk.ViewState(latitude=51.1657, longitude=10.4515, zoom=6)
+
+        # Create Pydeck deck
+        r = pdk.Deck(layers=[line_layer, point_layer], initial_view_state=view_state,
+                    tooltip={"html": "{properties}", "style": {"color": "white", "backgroundColor": "#f00"}})
+
+        # Render the deck to a standalone HTML file
+        r.to_html(output)
 def main():
     if len(sys.argv) != 2:
         print("Usage: python ontology_processing.py <path_to_las_file>")

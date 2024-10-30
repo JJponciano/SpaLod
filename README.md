@@ -130,6 +130,11 @@ curl -X POST http://127.0.0.1:8000/api/upload-file/ \
 -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
 -F "file=@/Volumes/poncianoCloud/workspace/data/bkg/bkg_map/radnetz_use_case/data/epsg_4326/part1/de_hh_up_freizeitroute2_EPSG_4326.json " \
 -F "metadata={\"description\": \"This is a shapefile\", \"source\": \"Survey XYZ\"}"
+
+curl -X POST http://127.0.0.1:8000/api/upload-file/ \
+-H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
+-F "file=@/Volumes/poncianoCloud/workspace/data/bkg/query.json" \
+-F "metadata={\"description\": \"This is a shapefile\", \"source\": \"wikidata\"}"
 ```
 
  you get :
