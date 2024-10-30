@@ -16,11 +16,12 @@ from ..serializers import SparqlQuerySerializer
 class GeoGetAllView(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGetAllView :::::::")
-
         sparql_query = """     
             PREFIX geo: <http://www.opengis.net/ont/geosparql#> 
+            PREFIX spalod: <http://spalod/> 
             SELECT ?catalog ?feature ?wkt 
             WHERE { 
+                ?catalog spalod:hasFeature ?feature . 
                 ?feature a geo:Feature ; geo:hasGeometry ?geom . 
                 ?geom geo:asWKT ?wkt . 
             }
@@ -76,3 +77,12 @@ class GeoGetFeature(APIView):
         # Instantiate SparqlQueryAPIView and directly call its `post` method
         sparql_view = SparqlQueryAPIView()
         return sparql_view.post(request, *args, **kwargs)
+        
+    class GeoRemoveCatalog(APIView):
+        def get(self, request, *args, **kwargs):
+            print("GeoRemoveFeature")
+            
+    class GeoRemoveFeature(APIView):
+        def get(self, request, *args, **kwargs):
+                print("::::::: GeoRemoveFeature :::::::")
+            
