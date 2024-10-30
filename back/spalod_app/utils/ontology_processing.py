@@ -21,6 +21,8 @@ class OntologyProcessor:
         self.ontology_url=ontology_url
         self.map_url=map_url
         self.ontology_path = os.path.join(os.path.dirname(__file__), '../data/base_ontology.owl')
+        #TODO if the metadata contains a catalog id that already exists, load the ontology, update metadata if necessary, reuse the URLS for owl and html 
+
         self.geo = Namespace("http://www.opengis.net/ont/geosparql#")
         self.ex =  Namespace("https://registry.gdi-de.org/id/hamburg/")
         #self.gdi = Namespace("https://registry.gdi-de.org/id/de.bund.balm.radnetz/")
