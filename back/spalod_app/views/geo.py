@@ -78,11 +78,35 @@ class GeoGetFeature(APIView):
         sparql_view = SparqlQueryAPIView()
         return sparql_view.post(request, *args, **kwargs)
         
-    class GeoRemoveCatalog(APIView):
-        def get(self, request, *args, **kwargs):
-            print("GeoRemoveFeature")
-            
-    class GeoRemoveFeature(APIView):
-        def get(self, request, *args, **kwargs):
-                print("::::::: GeoRemoveFeature :::::::")
-            
+class GeoRemoveCatalog(APIView):
+    def get(self, request, *args, **kwargs):
+        print("::::::: GeoDeleteCatalog :::::::")
+        id = request.query_params.get('id')
+        sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod/statements")  # GraphDB endpoint for updates
+        self.spalod = Namespace("http://spalod/")
+
+        graph_general = self.spalod.General
+
+        sparql.setQuery(f"""
+            PREFIX spalod: <http://spalod/>
+            DELETE WHERE {{
+                GRAPH <{graph_general}> {{ 
+                    <{id}> ?key ?value .
+                }}
+            }}
+        """)
+        # sparql.setMethod(POST)
+        # sparql.setReturnFormat(JSON)
+
+        try:
+            # Execute the SPARQL update to delete the catalog
+            sparql.query()
+            return Response({'message': f'Catalog with ID {id} has been successfully deleted.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GeoRemoveFeature(APIView):
+    def get(self, request, *args, **kwargs):
+            print("::::::: GeoRemoveFeature :::::::")
+        
