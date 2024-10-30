@@ -15,7 +15,7 @@ from ..serializers import SparqlQuerySerializer
 
 class GeoGetAllView(APIView):
     def get(self, request, *args, **kwargs):
-        print("::::::: PropertiesQueryView :::::::")
+        print("::::::: GeoGetAllView :::::::")
 
         sparql_query = """     
             PREFIX geo: <http://www.opengis.net/ont/geosparql#> 
@@ -35,9 +35,9 @@ class GeoGetAllView(APIView):
         
 
 class GeoGetCatalog(APIView):
-    print("::::::: GeoGetCatalog :::::::")
 
     def get(self, request, *args, **kwargs):
+        print("::::::: GeoGetCatalog :::::::")
         id = request.query_params.get('id')
         sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
         self.spalod = Namespace("http://spalod/")
@@ -61,8 +61,8 @@ class GeoGetCatalog(APIView):
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class GeoGetFeature(APIView):
-    print("::::::: GeoGetFeature :::::::")
     def get(self, request, *args, **kwargs):
+        print("::::::: GeoGetFeature :::::::")
         id = request.query_params.get('id')
         sparql_query=f"""     
             select ?key ?value
