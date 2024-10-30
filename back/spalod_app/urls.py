@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .views.geo import GeoGetAllView, GeoGetFeature
+from .views.geo import GeoGetAllView, GeoGetFeature,GeoGetCatalog
 from .views.properties import PropertiesQueryView
 from .views.sparql_query import SparqlQueryAPIView
 from .views.upload import FileUploadView
@@ -15,6 +15,7 @@ urlpatterns = [
     path('update-ontology/', UpdateOntologyView.as_view(), name='update_ontology'),
     path('geo/all', GeoGetAllView.as_view(), name='geo-get-all'),
     path('geo/feature', GeoGetFeature.as_view(), name='geo-get-feature'),
+    path('geo/catalog', GeoGetCatalog.as_view(), name='geo-get-catalog'),
 ]
 
 if settings.DEBUG:

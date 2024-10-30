@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
-from rdflib.namespace import Namespace
+from rdflib.namespace import Namespace # type: ignore
 
 from ..serializers import UploadedFileSerializer
 from ..utils.ontology_processing import OntologyProcessor
@@ -60,9 +60,10 @@ class FileUploadView(APIView):
 
             ontology_file_path = os.path.join(upload_dir, f'{file_uuid}_ontology.owl')
             map_file_path = os.path.join(upload_dir, f'{file_uuid}_map.html')
-            
+            ontology_url = f'/media/uploads/{file_uuid}/{file_uuid}_ontology.owl'
+            map_url = f'/media/uploads/{file_uuid}/{file_uuid}_map.html'
             try:
-                processor = OntologyProcessor()
+                processor = OntologyProcessor(file_uuid, ontology_url, map_url,metadata)
                 ## POINT CLOUD 
                 if file.name.endswith('las') or file.name.endswith('laz'):
                     processor.add_pointcloud(file_path,file.pointcloud_id,file.pointcloud_uuid)
@@ -72,13 +73,6 @@ class FileUploadView(APIView):
             except Exception as e:
                 return Response({'error': f'Ontology processing failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            ontology_url = f'/media/uploads/{file_uuid}/{file_uuid}_ontology.owl'
-            map_url = f'/media/uploads/{file_uuid}/{file_uuid}_map.html'
-
-            try:
-                add_ontology_to_graphdb(ontology_file_path, file_uuid, ontology_url, map_url,metadata)
-            except Exception as e:
-                return Response({'error': f'Failed to add ontology to GraphDB: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             data = {
                 'uuid': file_uuid,
                 'file_path': ontology_file_path,

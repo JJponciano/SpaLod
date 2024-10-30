@@ -153,6 +153,7 @@ curl -X POST http://127.0.0.1:8000/api/upload-file/ \
 ## To update the ontology mapping
 
 ```bash
+
 curl -X POST http://127.0.0.1:8000/api/update-ontology/ \
 -H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78" \
 -H "Content-Type: application/json" \
@@ -170,36 +171,27 @@ curl -X POST http://127.0.0.1:8000/api/update-ontology/ \
     }'
 ```
 
-## GRAPHDB: get all graph with HTML and OWl
-```bash
-curl -X POST \
-  -H "Content-Type: application/sparql-query" \
-  --data-binary 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
-                 PREFIX spalod: <http://spalod/> 
-                 SELECT ?graph ?html_url ?owl_url 
-                 WHERE { 
-                   GRAPH ?graph { 
-                     ?graph spalod:hasHTML ?html_url ; 
-                            spalod:hasOWL ?owl_url . 
-                   } 
-                 }' \
-  http://localhost:7200/repositories/Spalod
-```
+
 
 ## sparql-query
-```bash
-curl -X POST http://localhost:8000/api/sparql-query/ \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
-    -d '{
-        "query": "PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX ns2: <https://registry.gdi-de.org/id/hamburg/> PREFIX ex: <http://example.org/ns#> SELECT ?feature ?wkt WHERE { ?feature a geo:Feature ; geo:hasGeometry ?geom . ?geom geo:asWKT ?wkt . }",
-        "graph": "http://spalod/52688e21-0a69-456f-ab39-36b2fe36db1a"
-    }'
+
     
 ```bash
 curl -X POST http://localhost:8000/api/sparql-query/ \
     -H "Content-Type: application/json" \
     -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
-    -d '{"query": "PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX ns2: <https://registry.gdi-de.org/id/hamburg/> PREFIX ex: <http://example.org/ns#> SELECT ?feature ?property ?value WHERE { ?feature a geo:Feature ; ?property ?value . }", "graph": "http://spalod/52688e21-0a69-456f-ab39-36b2fe36db1a"}'
+    -d '{"query": "PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX ns2: <https://registry.gdi-de.org/id/hamburg/> PREFIX ex: <http://example.org/ns#> SELECT ?feature ?property ?value WHERE { ?feature a geo:Feature ; ?property ?value . }"}'
+```
+
+# GET TEST
+```bash
+curl -X GET "http://127.0.0.1:8000/api/geo/catalog?id=http://spalod/catalog_acc53514-6a2f-4521-afa5-40783906d4ba" \
+    -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
+
+curl -X GET "http://127.0.0.1:8000/api/geo/feature?id=https://registry.gdi-de.org/id/hamburg/featured4b68797-93fd-4e13-9dc0-1c23ad4e9c41" \
+    -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
+
+curl -X GET "http://127.0.0.1:8000/api/geo/all" \
+-H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
 ```
 

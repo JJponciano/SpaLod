@@ -1,5 +1,50 @@
 from SPARQLWrapper import SPARQLWrapper, POST
 import rdflib
+from rdflib import Graph
+import os
+from django.conf import settings
+
+def process_owl_file(owl_url, sparql_query):
+    """
+    Process an OWL file from a given URL, load it into an RDF graph, and apply a SPARQL query.
+
+    Args:
+        owl_url (str): The URL of the OWL file to be processed.
+        sparql_query (str): The SPARQL query to be applied to the OWL file.
+
+    Returns:
+        list: A list of dictionaries containing the query results.
+
+    Raises:
+        FileNotFoundError: If the OWL file is not found at the specified path.
+        ValueError: If there is an error parsing the OWL file or executing the SPARQL query.
+    """
+    # Strip the MEDIA_URL from the owl_url to get the relative path
+    owl_relative_path = owl_url.replace(settings.MEDIA_URL, '')
+    owl_path = os.path.join(settings.MEDIA_ROOT, owl_relative_path)
+
+    if not os.path.exists(owl_path):
+        raise FileNotFoundError(f'OWL file not found at the specified path: {owl_path}')
+
+    # Load the OWL file using rdflib
+    owl_graph = Graph()
+    try:
+        owl_graph.parse(owl_path, format='turtle')
+    except Exception as parse_error:
+        raise ValueError(f'Error parsing the OWL file: {parse_error}')
+
+    # Apply the SPARQL query on the loaded OWL file
+    try:
+        owl_results = owl_graph.query(sparql_query)
+    except Exception as query_error:
+        raise ValueError(f'Error executing SPARQL query: {query_error}')
+
+    results = []
+    for row in owl_results:
+        result_dict = {var: str(row[var]) for var in row.labels}
+        results.append(result_dict)
+
+    return results
 
 def add_ontology_to_graphdb(ontology_file_path, uuid, ontology_url, map_url, metadata):
     """
@@ -82,8 +127,6 @@ def add_ontology_to_graphdb(ontology_file_path, uuid, ontology_url, map_url, met
                 }}
             """
 
-            # Print query for debugging purposes (optional)
-            print(insert_query)
             sparql.setQuery(insert_query)
             sparql.query()
         # Insert the hasHTML, hasOWL properties
