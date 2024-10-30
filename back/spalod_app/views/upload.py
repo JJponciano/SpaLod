@@ -18,6 +18,8 @@ from ..serializers import UploadedFileSerializer
 from ..utils.ontology_processing import OntologyProcessor
 from ..utils.sparql_helpers import add_ontology_to_graphdb
 
+
+
 class FileUploadView(APIView):
     def post(self, request, *args, **kwargs):
         print("::::::: FileUploadView :::::::")
@@ -32,40 +34,41 @@ class FileUploadView(APIView):
         except ValueError:
             return Response({'error': 'Invalid JSON for metadata.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if file.name.endswith('las') or file.name.endswith('laz'):
-            
-            return Response(
-                {
-                    'message': 'File uploaded and pointcloud processed successfully.',
-                    'uuid': f"{file.pointcloud_id}{file.pointcloud_uuid}"
-                }, 
-                status=status.HTTP_201_CREATED
-            )
-
-        ## UPLOAD GIS FILE 
-
+        
         file_uuid = str(uuid.uuid4())
 
         upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads', file_uuid)
         os.makedirs(upload_dir, exist_ok=True)
-
+       
+        # TODO CHECK
         file_path = os.path.join(upload_dir, file.name)
         with open(file_path, 'wb+') as temp_file:
             for chunk in file.chunks():
                 temp_file.write(chunk)
+        # if file.name.endswith('las') or file.name.endswith('laz'):
+            
+        #     return Response(
+        #         {
+        #             'message': 'File uploaded and pointcloud processed successfully.',
+        #             'uuid': f"{file.pointcloud_id}{file.pointcloud_uuid}"
+        #         }, 
+        #         status=status.HTTP_201_CREATED
+        #     )
+        ## UPLOAD GIS FILE 
 
         try:
-
-            geo = Namespace("http://www.opengis.net/ont/geosparql#")
-            ex = Namespace("https://registry.gdi-de.org/id/hamburg/")
-            gdi = Namespace("https://registry.gdi-de.org/id/de.bund.balm.radnetz/")
 
             ontology_file_path = os.path.join(upload_dir, f'{file_uuid}_ontology.owl')
             map_file_path = os.path.join(upload_dir, f'{file_uuid}_map.html')
             
             try:
-                processor = OntologyProcessor(ontology_file_path, geo, ex, gdi)
-                processor.process(file_path, map_file_path)
+                processor = OntologyProcessor()
+                ## POINT CLOUD 
+                if file.name.endswith('las') or file.name.endswith('laz'):
+                    processor.add_pointcloud(file_path,file.pointcloud_id,file.pointcloud_uuid)
+                else:
+                    processor.process(file_path)
+                processor.save(ontology_file_path,map_file_path)
             except Exception as e:
                 return Response({'error': f'Ontology processing failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
