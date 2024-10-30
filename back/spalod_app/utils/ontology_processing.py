@@ -222,8 +222,10 @@ class OntologyProcessor:
         self.ensure_property(self.flyvast.pointcloud_id, OWL.DatatypeProperty, "pointcloud_id")
         self.ensure_property(self.flyvast.pointcloud_uuid, OWL.DatatypeProperty, "pointcloud_uuid")
         self.graph.add((pointcloud_uri, RDF.type, self.flyvast.Pointcloud))
-        self.graph.add((pointcloud_uri, self.flyvast.pointcloud_id, pointcloud_id))
-        self.graph.add((pointcloud_uri, self.flyvast.pointcloud_uuid, pointcloud_uuid))
+
+
+        self.graph.add((pointcloud_uri, self.flyvast.pointcloud_id, Literal(pointcloud_id, datatype=XSD.string)))
+        self.graph.add((pointcloud_uri, self.flyvast.pointcloud_uuid, Literal(pointcloud_uuid, datatype=XSD.string)))
         
         self.graph.add((feature_uri, self.geo.hasPointcloud, pointcloud_uri))
         self.graph.add((feature_uri, RDF.type, self.geo.Feature))
