@@ -7,20 +7,54 @@ import rdflib
 from rdflib import Graph, URIRef, Literal, Namespace
 from rdflib.namespace import RDF, RDFS, OWL
 import re
+import laspy
+from shapely.geometry import Polygon#
+from shapely.ops import transform
+
+import numpy as np
+import sys
 
 class OntologyProcessor:
-    def __init__(self, destination, geo, ex, gdi):
+    def __init__(self):
         self.ontology_path = os.path.join(os.path.dirname(__file__), '../data/base_ontology.owl')
-        self.destination = destination  # Where the final ontology will be saved
-        self.geo = geo
-        self.ex = ex
-        self.gdi = gdi
+        self.geo = Namespace("http://www.opengis.net/ont/geosparql#")
+        self.ex =  Namespace("https://registry.gdi-de.org/id/hamburg/")
+        #self.gdi = Namespace("https://registry.gdi-de.org/id/de.bund.balm.radnetz/")
+        self.gdi = Namespace("https://registry.gdi-de.org/")
+        self.flyvast = Namespace("https://flyvast.com/")
         self.graph = Graph()
                    # Load base ontology
         self.graph.parse(self.ontology_path, format="application/rdf+xml")
 
+    
+    def get_wkt_polygon(self,file_path, utm_zone=32, northern_hemisphere=True):
+        # Load the LAS file
+        with laspy.open(file_path) as las:
+            point_data = las.read()
+            
+        # Extract X and Y coordinates from the point cloud
+        x_coords = point_data.x
+        y_coords = point_data.y
+        
+        # Create a convex hull of the points to get the 2D boundary
+        points = np.vstack((x_coords, y_coords)).T
+        hull = Polygon(points).convex_hull
+        
+        # Define the projection transformation from UTM to WGS84 (latitude/longitude)
+        utm_crs = f"epsg:326{utm_zone}" if northern_hemisphere else f"epsg:327{utm_zone}"
+        project = pyproj.Transformer.from_crs(utm_crs, "epsg:4326", always_xy=True).transform
+        hull_latlon = transform(project, hull)
+        
+        # Swap latitude and longitude coordinates
+        hull_latlon_swapped = Polygon([(y, x) for x, y in hull_latlon.exterior.coords])
+        
+        # Return the WKT representation of the polygon in latitude/longitude
+        wkt_polygon = hull_latlon_swapped.wkt
+        return wkt_polygon
+
+
        
-    def process(self,file, map_file_path):
+    def process(self,file):
         if  file.endswith('json'):
             try:
                 # Process GeoJSON file and add data to ontology
@@ -51,14 +85,12 @@ class OntologyProcessor:
             print(f"OWL file {file} loaded successfully in {file_format} format.")
         else:
             raise ValueError(f"Unsupported file format for {file}")
+        
+    def save(self,destination,map_file_path):
          # After processing, save the updated ontology
-        self.graph.serialize(destination=self.destination, format="turtle")
+        self.graph.serialize(destination=destination, format="turtle")
         self.generate_map(output=map_file_path, need_transform=False)
 
-    def process_geojson(self, geojson_path):
-        """Process the uploaded GeoJSON and update the ontology, then create the map."""
-       
-        
     def convert_coordinates(self, coordinates):
         """Converts coordinates from [lon, lat, (optional) z] to [lat, lon], automatically handling 2D and 3D coordinates."""
         
@@ -74,6 +106,33 @@ class OntologyProcessor:
         
         # Return [lat, lon] regardless of 2D or 3D coordinates
         return [lat, lon]
+    def add_pointcloud(self,file_path,pointcloud_id,pointcloud_uuid):
+         #get the wkt
+        random_uuid = uuid.uuid4()
+        feature_uri = URIRef(self.ex[f"feature{random_uuid}"])
+        geom_uri = URIRef(self.ex[f"geom{random_uuid}"])
+        pointcloud_uri = URIRef(self.flyvast[pointcloud_uuid])
+
+        self.ensure_property(self.geo.asWKT, OWL.DatatypeProperty, "asWKT")
+        self.ensure_property(self.geo.hasGeometry, OWL.ObjectProperty, "hasGeometry")
+        self.ensure_property(self.geo.hasPointcloud, OWL.ObjectProperty, "hasPointcloud")
+
+        # Flyvast properties
+        self.ensure_property(self.flyvast.pointcloud_id, OWL.DatatypeProperty, "pointcloud_id")
+        self.ensure_property(self.flyvast.pointcloud_uuid, OWL.DatatypeProperty, "pointcloud_uuid")
+        self.graph.add((pointcloud_uri, RDF.type, self.flyvast.Pointcloud))
+        self.graph.add((pointcloud_uri, self.flyvast.pointcloud_id, pointcloud_id))
+        self.graph.add((pointcloud_uri, self.flyvast.pointcloud_uuid, pointcloud_uuid))
+        
+        self.graph.add((feature_uri, self.geo.hasPointcloud, pointcloud_uri))
+        self.graph.add((feature_uri, RDF.type, self.geo.Feature))
+        self.graph.add((feature_uri, self.geo.hasGeometry, geom_uri))
+        self.graph.add((geom_uri, RDF.type, self.geo.Geometry))
+        wkt_string =self.get_wkt_polygon(file_path)
+        print(f"WKT: {wkt_string}")
+        geom_literal = Literal(wkt_string, datatype=self.geo.wktLiteral)
+        self.graph.add((geom_uri, self.geo.asWKT, geom_literal))
+    
     def convert_geojson_to_ontology(self, geojson_path):
         """Converts GeoJSON data to RDF and adds it to the ontology."""
         
@@ -393,3 +452,14 @@ class OntologyProcessor:
         dest_crs = pyproj.CRS("EPSG:4326")
         transformer = pyproj.Transformer.from_crs(source_crs, dest_crs, always_xy=True)
         return [transformer.transform(lon, lat) for lat, lon in coords]
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python ontology_processing.py <path_to_las_file>")
+        sys.exit(1)
+    processor = OntologyProcessor()
+    file_path = sys.argv[1]
+    polygon_wkt = processor.get_wkt_polygon(file_path)
+    print(polygon_wkt)
+
+if __name__ == "__main__":
+    main()

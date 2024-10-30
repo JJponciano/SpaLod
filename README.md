@@ -26,6 +26,8 @@ conda env create -f environment.yml
 conda create -n spalod_env=3.10
 conda activate spalod_env
 pip install django djangorestframework dj-rest-auth social-auth-app-django django-allauth pydeck rdflib pyproj folium shapely
+pip install laspy shapely
+
 ```
 
 This will install all the dependencies, including Python and Django, as specified in the `environment.yml` file.
@@ -129,6 +131,7 @@ curl -X POST http://127.0.0.1:8000/api/upload-file/ \
 -F "file=@/Volumes/poncianoCloud/workspace/data/bkg/bkg_map/radnetz_use_case/data/epsg_4326/part1/de_hh_up_freizeitroute2_EPSG_4326.json " \
 -F "metadata={\"description\": \"This is a shapefile\", \"source\": \"Survey XYZ\"}"
 ```
+
  you get :
 
  ```json
@@ -137,6 +140,14 @@ curl -X POST http://127.0.0.1:8000/api/upload-file/ \
 Then you can download :
 ```bash
 curl -O http://127.0.0.1:8000/media/uploads/04287a39-053d-435e-8064-a7664604edb9/04287a39-053d-435e-8064-a7664604edb9_map.html
+```
+
+### Upload pointcloud
+```bash
+curl -X POST http://127.0.0.1:8000/api/upload-file/ \
+-H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
+-F "file=@/Volumes/poncianoCloud/workspace/data/bkg/DemodatenHackathon2024/1km_565_5934.las" \
+-F "metadata={\"description\": \"Poincloud\", \"source\": \"BKG\"}"
 ```
 
 ## To update the ontology mapping
@@ -175,7 +186,7 @@ curl -X POST \
   http://localhost:7200/repositories/Spalod
 ```
 
-## 
+## sparql-query
 ```bash
 curl -X POST http://localhost:8000/api/sparql-query/ \
     -H "Content-Type: application/json" \
