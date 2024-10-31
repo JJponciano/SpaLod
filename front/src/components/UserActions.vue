@@ -2,48 +2,51 @@
   <div class="user-actions" :class="{ dark: isDarkMode }">
     <button class="navbar_button" @click="toggleNavBar">Menu</button>
     <div class="side_pannel">
-      <div class="data" :class="{ active: showData }">
+      <div class="data-title" :class="{ active: showData }">
         <p @click="showData = !showData">Data</p>
-        <div class="data-container" v-if="showData">
-          <div class="catalog" v-for="catalog of catalogs">
-            <div class="title-container">
-              <div
-                class="arrow"
-                :class="{
-                  down: expandCatalogs[catalog.id],
-                  right: !expandCatalogs[catalog.id],
-                }"
-                @click="
-                  expandCatalogs[catalog.id] = !expandCatalogs[catalog.id]
-                "
-              ></div>
+      </div>
+      <div class="data" :class="{ active: showData }" v-if="showData">
+        <div class="catalog" v-for="catalog of catalogs">
+          <div class="title-container">
+            <div
+              class="arrow"
+              :class="{
+                down: expandCatalogs[catalog.id],
+                right: !expandCatalogs[catalog.id],
+              }"
+              @click="expandCatalogs[catalog.id] = !expandCatalogs[catalog.id]"
+            ></div>
+            <input
+              type="checkbox"
+              v-model="showCatalogs[catalog.id]"
+              @change="onCatalogVisibilityChange(catalog.id)"
+            />
+            <div
+              class="title"
+              @click="expandCatalogs[catalog.id] = !expandCatalogs[catalog.id]"
+            >
+              {{ catalog.id }}
+            </div>
+            <button @click="onClickCatalogMap(catalog.id)">🗺️</button>
+            <button
+              style="font-size: 12px"
+              @click="onClickCatalogOwl(catalog.id)"
+            >
+              owl
+            </button>
+            <button @click="onClickDeleteCatalog(catalog.id)">🗑</button>
+          </div>
+          <div class="feature-container" v-if="expandCatalogs[catalog.id]">
+            <div class="feature" v-for="feature of catalog.features">
               <input
                 type="checkbox"
-                v-model="showCatalogs[catalog.id]"
-                @change="onCatalogVisibilityChange(catalog.id)"
+                v-model="feature.visible"
+                @change="onFeatureVisibilityChange(feature)"
               />
-              <div
-                class="title"
-                @click="
-                  expandCatalogs[catalog.id] = !expandCatalogs[catalog.id]
-                "
-              >
-                {{ catalog.id }}
+              <div @click="onClickFeature(feature.id)">
+                {{ feature.id }}
               </div>
-              <button @click="onClickDeleteCatalog(catalog.id)">🗑</button>
-            </div>
-            <div class="feature-container" v-if="expandCatalogs[catalog.id]">
-              <div class="feature" v-for="feature of catalog.features">
-                <input
-                  type="checkbox"
-                  v-model="feature.visible"
-                  @change="onFeatureVisibilityChange(feature)"
-                />
-                <div @click="onClickFeature(feature.id)">
-                  {{ feature.id }}
-                </div>
-                <button @click="onClickDeleteFeature(feature.id)">🗑</button>
-              </div>
+              <button @click="onClickDeleteFeature(feature.id)">🗑</button>
             </div>
           </div>
         </div>
@@ -149,6 +152,8 @@
 .side_pannel {
   width: 100%;
   max-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
 }
 
 .user-actions {
@@ -163,9 +168,6 @@
   overflow: auto;
   width: 320px;
   min-width: 220px;
-}
-
-.user-actions {
   background-color: rgb(241, 241, 241);
   border-radius: 10px;
 }
@@ -219,11 +221,43 @@ button {
   text-align: left;
 }
 
-.data {
+.data-title {
   border-radius: 5px;
   border: none;
   background-color: none;
   margin-top: 5px;
+
+  &:hover {
+    background-color: #4a5568;
+  }
+
+  &.active {
+    background-color: #4a5568;
+    color: white;
+    transition: background-color 0.2s ease-in-out;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+  }
+
+  p {
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+  }
+}
+
+.data {
+  border-radius: 5px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  border: none;
+  background-color: none;
+  overflow: auto;
+  padding-bottom: 10px;
 
   &:hover {
     background-color: #4a5568;
@@ -579,7 +613,7 @@ import {
   triggerFeatureClick,
 } from "../services/map";
 import { ref } from "vue";
-import { removeFeature, removeCatalog } from "../services/geo";
+import { removeFeature, removeCatalog, getFeature } from "../services/geo";
 
 $.ajaxSetup({
   xhrFields: {
@@ -1109,6 +1143,22 @@ export default {
     onClickDeleteCatalog(catalogId) {
       setCatalogVisibility(catalogId, false, true);
       removeCatalog(catalogId);
+    },
+    async onClickCatalogMap(catalogId) {
+      const res = await getFeature(catalogId);
+      const mapUrl = res
+        .map((x) => x.metadatas)
+        .find((x) => x.key === "http://spalod/hasHTML")?.value;
+
+      window.open(mapUrl, "_blank");
+    },
+    async onClickCatalogOwl(catalogId) {
+      const res = await getFeature(catalogId);
+      const owlUrl = res
+        .map((x) => x.metadatas)
+        .find((x) => x.key === "http://spalod/hasOWL")?.value;
+
+      window.open(owlUrl, "_blank");
     },
   },
 };

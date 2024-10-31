@@ -137,6 +137,14 @@ export default {
           mapObj.spalodId = metadatas.feature;
 
           this.mapObjList.push(mapObj);
+        } else if (type === "POINT") {
+          const mapObj = new L.marker(new L.LatLng(geo[1], geo[0]));
+          mapObj.on("click", (event) => {
+            this.displayFeature(event.target.spalodId);
+          });
+          mapObj.spalodId = metadatas.feature;
+
+          this.mapObjList.push(mapObj);
         }
       }
     },
@@ -157,28 +165,47 @@ export default {
     },
 
     onFeatureVisibilityChange(features, remove) {
+      let doZoom = false;
+
       for (const feature of features) {
         const mapObj = this.mapObjList.find(
           ({ spalodId }) => spalodId === feature.id
         );
 
-        if (feature.visible && !remove) {
-          mapObj.addTo(this.map);
-          mapObj.visible = true;
-        } else {
-          mapObj.removeFrom(this.map);
-          mapObj.visible = false;
+        if (mapObj) {
+          if (feature.visible && !remove) {
+            mapObj.addTo(this.map);
+            mapObj.visible = true;
+          } else {
+            mapObj.removeFrom(this.map);
+            mapObj.visible = false;
 
-          if (remove) {
-            this.mapObjList.splice(this.mapObjList.indexOf(mapObj), 1);
+            if (remove) {
+              this.mapObjList.splice(this.mapObjList.indexOf(mapObj), 1);
+            }
           }
+
+          doZoom = true;
         }
       }
 
       const objs = this.mapObjList.filter((x) => x.visible);
-      if (objs.length > 0) {
+      if (doZoom && objs.length > 0) {
         this.map.options.maxZoom = 17;
-        this.fitBounds(objs.map((x) => x.getBounds()).flat(1));
+        this.fitBounds(
+          objs
+            .map((x) => {
+              if (typeof x.getBounds === "function") {
+                return x.getBounds();
+              } else if (typeof x.getLatLng === "function") {
+                const latLngs = [x.getLatLng()];
+                const markerBounds = L.latLngBounds(latLngs);
+                return markerBounds;
+              }
+              x.getBounds();
+            })
+            .flat(1)
+        );
       }
     },
 
