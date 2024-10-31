@@ -40,11 +40,7 @@ class FileUploadView(APIView):
         upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads', file_uuid)
         os.makedirs(upload_dir, exist_ok=True)
        
-        # TODO CHECK
-        file_path = os.path.join(upload_dir, file.name)
-        with open(file_path, 'wb+') as temp_file:
-            for chunk in file.chunks():
-                temp_file.write(chunk)
+        file_path = file.temporary_file_path()
         # if file.name.endswith('las') or file.name.endswith('laz'):
             
         #     return Response(

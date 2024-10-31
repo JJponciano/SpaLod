@@ -14,19 +14,17 @@ export async function getFeature(id) {
   return getGeoData(result);
 }
 
-export function getGeoData(sparqlResult) {
-  const headers = sparqlResult.head.vars;
-
+export async function getGeoData(results) {
   const res = [];
 
-  for (const binding of sparqlResult.results.bindings) {
+  for (const result of results) {
     const itemRes = {
       metadatas: {},
     };
-    for (const header of headers) {
-      if (binding[header].value.startsWith("LINESTRING")) {
+    for (const header of Object.keys(result)) {
+      if (result[header].startsWith("LINESTRING")) {
         itemRes.type = "LINESTRING";
-        itemRes.geo = binding[header].value.split(",").map((x) =>
+        itemRes.geo = result[header].split(",").map((x) =>
           x
             .trim()
             .replace("LINESTRING (", "")
@@ -34,9 +32,9 @@ export function getGeoData(sparqlResult) {
             .split(" ")
             .map((y) => Number(y))
         );
-      } else if (binding[header].value.startsWith("MULTILINESTRING")) {
+      } else if (result[header].startsWith("MULTILINESTRING")) {
         itemRes.type = "MULTILINESTRING";
-        itemRes.geo = binding[header].value.split(/\).*?,.*?\(/).map((x) =>
+        itemRes.geo = result[header].split(/\).*?,.*?\(/).map((x) =>
           x.split(",").map((y) =>
             y
               .trim()
@@ -46,12 +44,41 @@ export function getGeoData(sparqlResult) {
               .map((z) => Number(z))
           )
         );
+      } else if (result[header].startsWith("POLYGON")) {
+        itemRes.type = "POLYGON";
+        itemRes.geo = result[header].split(",").map((x) =>
+          x
+            .trim()
+            .replace("POLYGON ((", "")
+            .replace("))", "")
+            .split(" ")
+            .map((y) => Number(y))
+        );
       } else {
-        itemRes.metadatas[header] = binding[header].value;
+        itemRes.metadatas[header] = result[header];
       }
     }
 
     res.push(itemRes);
+  }
+
+  for (const metadatas of res.map((x) => x.metadatas)) {
+    if (metadatas.key?.includes("hasPointcloud")) {
+      const pointcloudResult = await getFeature(metadatas.value);
+      const pointcloudId = pointcloudResult
+        .map((x) => x.metadatas)
+        .filter((x) => x.key?.includes("pointcloud_id"))[0]?.value;
+      const pointcloudUuid = pointcloudResult
+        .map((x) => x.metadatas)
+        .filter((x) => x.key?.includes("pointcloud_uuid"))[0]?.value;
+      const pointcloudUrl = `${
+        import.meta.env.VITE_APP_FLYVAST_POINTCLOUD_VIEWER_BASE_URL
+      }${pointcloudId}/${pointcloudUuid}`;
+
+      res.push({
+        pointcloudUrl,
+      });
+    }
   }
 
   return res;

@@ -1,10 +1,11 @@
 from django.core.files.uploadhandler import FileUploadHandler, StopFutureHandlers
-from django.core.files.uploadedfile import UploadedFile
+from django.core.files.uploadedfile import UploadedFile, TemporaryUploadedFile
 from .pointcloud import create_flyvast_pointcloud
 from io import BytesIO
 import requests
 import gzip
 import threading
+import os
 
 MAX_CHUNK_SIZE = 50 * 1024 * 1024
 task_pool = {}
@@ -17,8 +18,9 @@ class FlyvastUploadHandler(FileUploadHandler):
     def new_file(self, *args, **kwargs):
         super().new_file(*args, **kwargs)
         
-        self.activated = self.file_name.endswith(".las") or self.file_name.endswith(".laz")
-        if self.activated:
+        self.flyvast_upload = self.file_name.endswith(".las") or self.file_name.endswith(".laz")
+        
+        if self.flyvast_upload:
             print("::::::: CreatePointcloud :::::::")
             self.flyvast_pointcloud = create_flyvast_pointcloud(self.file_name, self.file_size)
             self.chunk = BytesIO()
@@ -26,17 +28,34 @@ class FlyvastUploadHandler(FileUploadHandler):
             
             task_pool[self.flyvast_pointcloud["pointcloud_id"]] = []
             
-            raise StopFutureHandlers()
+            self.file = FlyvastUploadedFile(
+                self.file_name,
+                self.content_type,
+                0,
+                self.charset,
+                self.content_type_extra,
+                self.flyvast_pointcloud["pointcloud_id"],
+                self.flyvast_pointcloud["pointcloud_uuid"]
+            )
+        else:
+            self.file = TemporaryUploadedFile(
+                self.file_name,
+                self.content_type,
+                0,
+                self.charset,
+                self.content_type_extra
+            )
+            
+        raise StopFutureHandlers()
     
     def receive_data_chunk(self, raw_data, start):
-        if self.activated:
+        if self.flyvast_upload:
             self.chunk.write(raw_data)
             
             if self.chunk.getbuffer().nbytes > MAX_CHUNK_SIZE:
                 self.process_chunk()
             
-        else:
-            return raw_data
+        self.file.write(raw_data)
         
     def process_chunk(self):
         t = threading.Thread(
@@ -58,28 +77,35 @@ class FlyvastUploadHandler(FileUploadHandler):
         self.nb_chunk += 1
 
     def file_complete(self, file_size):
-        if not self.activated:
-            return
+        if self.flyvast_upload:
         
-        if self.chunk.getbuffer().nbytes > 0:
-            self.process_chunk()
+            if self.chunk.getbuffer().nbytes > 0:
+                self.process_chunk()
+            
+            print("::::::: PointcloudUploaded :::::::")
+            
+            t = threading.Thread(
+                target=request_flyvast_treatment,
+                args=[
+                    self.flyvast_pointcloud["pointcloud_id"],
+                    self.flyvast_pointcloud["treatment_url"]
+                ]
+            )
+            t.start()
+            
+        self.file.seek(0)
+        self.file.size = file_size
         
-        print("::::::: PointcloudUploaded :::::::")
-        
-        t = threading.Thread(
-            target=request_flyvast_treatment,
-            args=[
-                self.flyvast_pointcloud["pointcloud_id"],
-                self.flyvast_pointcloud["treatment_url"]
-            ]
-        )
-        t.start()
-        
-        return FlyvastUploadedFile(
-            name=self.file_name,
-            pointcloud_id=self.flyvast_pointcloud["pointcloud_id"],
-            pointcloud_uuid=self.flyvast_pointcloud["pointcloud_uuid"]
-        )
+        return self.file
+    
+    def upload_interrupted(self):
+        if hasattr(self, "file"):
+            temp_location = self.file.temporary_file_path()
+            try:
+                self.file.close()
+                os.remove(temp_location)
+            except FileNotFoundError:
+                pass
         
 def send_to_flyvast(upload_url, buffer, index_chunk, file_size, file_name):
     chunk_zipped = gzip.compress(buffer)
@@ -101,10 +127,10 @@ def request_flyvast_treatment(pointcloud_id, treatment_url):
     requests.get(treatment_url)
     
     
-class FlyvastUploadedFile(UploadedFile):
+class FlyvastUploadedFile(TemporaryUploadedFile):
     
-    def __init__(self, name, pointcloud_id, pointcloud_uuid):
-        super().__init__(None, name, None, None, None, None)
+    def __init__(self, name, content_type, size, charset, content_type_extra=None, pointcloud_id=None, pointcloud_uuid=None):
+        super().__init__(name, content_type, size, charset, content_type_extra)
         
         self.pointcloud_id = pointcloud_id
         self.pointcloud_uuid = pointcloud_uuid

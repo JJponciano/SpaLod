@@ -1,6 +1,9 @@
 <template>
   <div class="popup-overlay" v-if="isPopupVisible" @click="closePopup"></div>
-  <div v-bind:class="{ 'popup': true, 'visible': isPopupVisible }" :class="{ dark: isDarkMode }">
+  <div
+    v-bind:class="{ popup: true, visible: isPopupVisible }"
+    :class="{ dark: isDarkMode }"
+  >
     <div class="Title">
       <p>Please select the desired icon for this file</p>
     </div>
@@ -46,15 +49,19 @@
     <div class="ButtonSelect">
       <button @click="closePopup">Close</button>
       <button @click="onValid" class="choose">Choose</button>
-      <input type="file" ref="fileInput" style="display: none;" :accept="fileType" @change="handleFile">
+      <input
+        type="file"
+        ref="fileInput"
+        style="display: none"
+        :accept="fileType"
+        @change="handleFile"
+      />
     </div>
   </div>
 </template>
 
 <script>
-
 import Papa from "papaparse";
-
 
 export default {
   props: {
@@ -67,14 +74,14 @@ export default {
       if (newValue) {
         this.csv = true;
         this.fileType = "text/csv";
-        this.$emit('CSVBack');
+        this.$emit("CSVBack");
       }
     },
     chooseJson(newValue) {
       if (newValue) {
         this.json = true;
-        this.fileType = "application/json"
-        this.$emit('JsonBack');
+        this.fileType = "application/json";
+        this.$emit("JsonBack");
       }
     },
     popup(newValue) {
@@ -95,13 +102,15 @@ export default {
   },
   mounted() {
     this.detectDarkMode();
-    window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
+    window.matchMedia("(prefers-color-scheme: dark)").addListener((event) => {
       this.isDarkMode = event.matches;
     });
   },
   methods: {
     detectDarkMode() {
-      this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      this.isDarkMode = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
     },
     showPopup() {
       this.isPopupVisible = true;
@@ -110,14 +119,17 @@ export default {
       this.json = false;
       this.csv = false;
       this.isPopupVisible = false;
-      this.$emit('popupBack');
+      this.$emit("popupBack");
     },
     onValid() {
       this.$refs.fileInput.click();
     },
     uuidv4() {
-      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+        (
+          c ^
+          (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+        ).toString(16)
       );
     },
     handleFile() {
@@ -129,32 +141,38 @@ export default {
         fileReader.onload = () => {
           const jsonArray = JSON.parse(fileReader.result);
           const featureCollection = {
-            "type": "FeatureCollection",
-            "name": this.selectedOption,
-            "features": []
+            type: "FeatureCollection",
+            name: this.selectedOption,
+            features: [],
           };
 
           for (let i = 0; i < jsonArray.length; i++) {
             const obj = jsonArray[i];
             var feature = {
-              "type": "Feature",
-              "geometry": {
-                "type": "Point",
-                "coordinates": []
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [],
               },
-              "properties": {
-                itemID: 'spalod:' + this.uuidv4(),
-              }
+              properties: {
+                itemID: "spalod:" + this.uuidv4(),
+              },
             };
             if (obj.geo === undefined || obj.Koordinate === undefined) {
-              feature.geometry.coordinates = [parseFloat(obj.longitude) ?? parseFloat(obj['X Koordina']), parseFloat(obj.latitude) ?? parseFloat(obj['Y Koordina'])];
+              feature.geometry.coordinates = [
+                parseFloat(obj.longitude) ?? parseFloat(obj["X Koordina"]),
+                parseFloat(obj.latitude) ?? parseFloat(obj["Y Koordina"]),
+              ];
             } else {
               var coordinates = String(obj.geo).split("(")[1];
               if (coordinates === undefined) continue;
               coordinates = coordinates.split(")")[0].split(" ");
-              feature.geometry.coordinates = [parseFloat(coordinates[0]), parseFloat(coordinates[1])];
+              feature.geometry.coordinates = [
+                parseFloat(coordinates[0]),
+                parseFloat(coordinates[1]),
+              ];
             }
-            Object.keys(obj).forEach(key => {
+            Object.keys(obj).forEach((key) => {
               if (key !== "geo" && key !== "latitude" && key !== "longitude") {
                 feature.properties[key] = obj[key];
               }
@@ -163,14 +181,13 @@ export default {
           }
           const geoJSON = JSON.stringify(featureCollection);
           const url = window.URL.createObjectURL(new Blob([geoJSON]));
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
-          link.setAttribute('download', "geodata.json");
+          link.setAttribute("download", "geodata.json");
           document.body.appendChild(link);
           link.click();
         };
-      }
-      else if (this.csv) {
+      } else if (this.csv) {
         const file = event.target.files[0];
         const fileReader = new FileReader();
         fileReader.readAsText(file);
@@ -179,32 +196,38 @@ export default {
           const csv = fileReader.result;
           const jsonArray = Papa.parse(csv, { header: true }).data;
           const featureCollection = {
-            "type": "FeatureCollection",
-            "name": this.selectedOption,
-            "features": []
+            type: "FeatureCollection",
+            name: this.selectedOption,
+            features: [],
           };
 
           for (let i = 0; i < jsonArray.length; i++) {
             const obj = jsonArray[i];
             var feature = {
-              "type": "Feature",
-              "geometry": {
-                "type": "Point",
-                "coordinates": []
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [],
               },
-              "properties": {
-                itemID: 'spalod:' + this.uuidv4(),
-              }
+              properties: {
+                itemID: "spalod:" + this.uuidv4(),
+              },
             };
             if (obj.geo === undefined || obj.Koordinate === undefined) {
-              feature.geometry.coordinates = [parseFloat(obj.longitude) ?? parseFloat(obj['X Koordina']), parseFloat(obj.latitude) ?? parseFloat(obj['Y Koordina'])];
+              feature.geometry.coordinates = [
+                parseFloat(obj.longitude) ?? parseFloat(obj["X Koordina"]),
+                parseFloat(obj.latitude) ?? parseFloat(obj["Y Koordina"]),
+              ];
             } else {
               var coordinates = String(obj.geo).split("(")[1];
               if (coordinates === undefined) continue;
               coordinates = coordinates.split(")")[0].split(" ");
-              feature.geometry.coordinates = [parseFloat(coordinates[0]), parseFloat(coordinates[1])];
+              feature.geometry.coordinates = [
+                parseFloat(coordinates[0]),
+                parseFloat(coordinates[1]),
+              ];
             }
-            Object.keys(obj).forEach(key => {
+            Object.keys(obj).forEach((key) => {
               if (key !== "geo" && key !== "latitude" && key !== "longitude") {
                 feature.properties[key] = obj[key];
               }
@@ -214,15 +237,15 @@ export default {
 
           const geoJSON = JSON.stringify(featureCollection);
           const url = window.URL.createObjectURL(new Blob([geoJSON]));
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
-          link.setAttribute('download', "geodata.json");
+          link.setAttribute("download", "geodata.json");
           document.body.appendChild(link);
           link.click();
         };
       }
       this.closePopup();
-    }
+    },
   },
 };
 </script>
@@ -249,7 +272,7 @@ export default {
 }
 
 .popup.dark {
-  background-color: #1A202C;
+  background-color: #1a202c;
   color: white;
 }
 
@@ -270,9 +293,9 @@ export default {
   font-weight: bold;
   padding: 9px;
   width: 100%;
-  border: 2px solid #1A202C;
+  border: 2px solid #1a202c;
   border-radius: 5px;
-  background-color: #4A5568;
+  background-color: #4a5568;
   color: white;
   appearance: none;
   -webkit-appearance: none;
@@ -289,7 +312,7 @@ button {
   padding: 5px 10px 5px 10px;
   border: none;
   border-radius: 5px;
-  background-color: #EF4444;
+  background-color: #ef4444;
   color: inherit;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
@@ -306,6 +329,6 @@ button {
 }
 
 button:hover {
-  background-color: #4A5568;
+  background-color: #4a5568;
 }
 </style>

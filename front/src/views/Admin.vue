@@ -1,16 +1,31 @@
 <template>
   <div class="user-actions-container">
-    <UserActions @properties_unknown="onProperties_unknown" @file-selected="onFileSelected" @JsonSelected="onChooseJson"
-      @CSVSelected="onChooseCSV" @popupShow="onShowpopup" @popupCShow="onShowpopupC">
+    <UserActions
+      @properties_unknown="onProperties_unknown"
+      @file-selected="onFileSelected"
+      @JsonSelected="onChooseJson"
+      @CSVSelected="onChooseCSV"
+      @popupShow="onShowpopup"
+      @popupCShow="onShowpopupC"
+    >
     </UserActions>
   </div>
   <div class="map-container">
-    <MapView :file="file"></MapView>
+    <MapView :file="file" @fileSelected="onFileSelected"></MapView>
   </div>
-  <div class="rdf-data-container">
-    <RDFData @update="onFileSelected" @popupCShow="onShowpopupC" :file="file" :receivedData="receivedData"
-      :username="username" :properties_unknown="properties_unknown">
+  <!-- <div class="rdf-data-container">
+    <RDFData
+      @update="onFileSelected"
+      @popupCShow="onShowpopupC"
+      :file="file"
+      :receivedData="receivedData"
+      :username="username"
+      :properties_unknown="properties_unknown"
+    >
     </RDFData>
+  </div> -->
+  <div class="metadatas-container" v-show="file">
+    <Metadatas :file="file" @close="file = null"></Metadatas>
   </div>
 </template>
 
@@ -18,12 +33,14 @@
 import UserActions from "../components/UserActions.vue";
 import MapView from "../components/MapView.vue";
 import RDFData from "../components/RDFData.vue";
+import Metadatas from "../components/Metadatas.vue";
 
 export default {
   components: {
     UserActions,
     MapView,
-    RDFData
+    RDFData,
+    Metadatas,
   },
   data() {
     return {
@@ -35,7 +52,7 @@ export default {
       receivedData: null,
       properties_unknown: null,
       username: "",
-    }
+    };
   },
   methods: {
     onFileSelected(file) {
@@ -57,25 +74,29 @@ export default {
       this.popupC = true;
     },
   },
-}
+};
 </script>
 
-<style>
+<style scoped>
+:host {
+  display: flex;
+}
 .user-actions-container {
-  position: absolute;
+  /* position: absolute;
   left: 0px;
   bottom: 0px;
-  z-index: 2;
-  padding: 10px;
+  z-index: 2; */
+  /* padding: 10px; */
 }
 
 .map-container {
-  position: absolute;
+  /* position: absolute;
   top: 0px;
   left: 0px;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 1; */
+  flex: 1;
 }
 
 .rdf-data-container {
@@ -84,6 +105,19 @@ export default {
   bottom: 0px;
   z-index: 2;
   padding: 10px;
+}
+
+.metadatas-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 @media (max-width: 768px) {
