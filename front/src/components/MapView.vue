@@ -138,7 +138,7 @@ export default {
 
           this.mapObjList.push(mapObj);
         } else if (type === "POINT") {
-          const mapObj = new L.marker(new L.LatLng(geo[1], geo[0]));
+          const mapObj = new L.marker(new L.LatLng(geo[0], geo[1]));
           mapObj.on("click", (event) => {
             this.displayFeature(event.target.spalodId);
           });
