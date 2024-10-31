@@ -1,6 +1,12 @@
 <script>
 import L from "leaflet";
 import { getAllGeo, getFeature } from "../services/geo";
+import {
+  addFeatures,
+  subscribeFeatureVisibiltyChange,
+  clearFeatures,
+  subscribeFeatureClick,
+} from "../services/map";
 
 export default {
   props: {
@@ -8,6 +14,7 @@ export default {
   },
   watch: {
     file(newFile) {
+      return;
       const lecteur = new FileReader();
 
       this.dataArray = [];
@@ -53,6 +60,9 @@ export default {
       query: null,
       map: null,
       feature: null,
+      mapObjList: [],
+      unsubscribe: [],
+      pointcloudUrl: null,
     };
   },
   methods: {
@@ -192,7 +202,16 @@ export default {
     },
     async displayGeo() {
       const allGeos = await getAllGeo();
-      const mapObjList = [];
+
+      addFeatures(allGeos.map(({ metadatas: { feature } }) => feature));
+      this.unsubscribe.push(
+        ...[
+          subscribeFeatureVisibiltyChange(
+            this.onFeatureVisibilityChange.bind(this)
+          ),
+          subscribeFeatureClick(this.onFeatureClick.bind(this)),
+        ]
+      );
 
       const addPolyline = (id, pointList) => {
         const mapObj = new L.Polyline(pointList, {
@@ -201,13 +220,13 @@ export default {
           opacity: 0.5,
           smoothFactor: 1,
         });
-        mapObj.addTo(this.map);
         mapObj.on("click", (event) => {
           this.displayFeature(event.target.spalodId);
         });
         mapObj.spalodId = id;
+        mapObj.visible = false;
 
-        mapObjList.push(mapObj);
+        this.mapObjList.push(mapObj);
       };
 
       for (const { geo, type, metadatas } of allGeos) {
@@ -224,37 +243,106 @@ export default {
               polyline.map(([lat, lng]) => new L.LatLng(lat, lng))
             );
           }
+        } else if (type === "POLYGON") {
+          const mapObj = new L.Polygon(
+            geo.map(([lat, lng]) => new L.LatLng(lat, lng)),
+            {
+              color: "blue",
+              weight: 3,
+              opacity: 0.5,
+              smoothFactor: 1,
+            }
+          );
+          mapObj.on("click", (event) => {
+            this.displayFeature(event.target.spalodId);
+          });
+          mapObj.spalodId = metadatas.feature;
+
+          this.mapObjList.push(mapObj);
         }
       }
-
-      this.map.fitBounds(mapObjList.map((x) => x.getBounds()).flat(1));
     },
     async displayFeature(featureId) {
       const res = await getFeature(featureId);
-      this.feature = res.map(({ metadatas: { key, value } }) => ({
-        key,
-        value,
-      }));
+      this.feature = res
+        .filter((x) => x.metadatas?.key && x.metadatas?.value)
+        .map(({ metadatas: { key, value } }) => ({
+          key,
+          value,
+        }));
+
+      this.pointcloudUrl = res.filter((x) => x.pointcloudUrl)[0]?.pointcloudUrl;
     },
     closeFeature() {
       this.feature = null;
+      this.pointcloudUrl = null;
+    },
+
+    onFeatureVisibilityChange(feature) {
+      const mapObj = this.mapObjList.find(
+        ({ spalodId }) => spalodId === feature.id
+      );
+
+      if (feature.visible) {
+        mapObj.addTo(this.map);
+        mapObj.visible = true;
+      } else {
+        mapObj.removeFrom(this.map);
+        mapObj.visible = false;
+      }
+
+      const objs = this.mapObjList.filter((x) => x.visible);
+      if (objs.length > 0) {
+        this.map.options.maxZoom = 17;
+        this.fitBounds(objs.map((x) => x.getBounds()).flat(1));
+      }
+    },
+
+    onFeatureClick(featureId) {
+      const mapObj = this.mapObjList.find(
+        ({ spalodId }) => spalodId === featureId
+      );
+
+      this.fitBounds(mapObj.getBounds());
+    },
+
+    fitBounds(bounds) {
+      const previousZoom = this.map.options.maxZoom;
+      this.map.options.maxZoom = 15;
+      this.map.fitBounds(bounds);
+      this.map.options.maxZoom = previousZoom;
+    },
+
+    stopPropagation(event) {
+      event.stopPropagation();
     },
   },
   mounted() {
     this.initMap();
     this.displayGeo();
   },
+  unmounted() {
+    this.unsubscribe.forEach((x) => x());
+    clearFeatures();
+  },
 };
 </script>
 
 <template>
   <div class="map-view" id="map"></div>
-  <div class="feature-container" v-if="feature">
-    <div class="feature" v-for="item of feature">
-      <div>{{ item.key }}</div>
-      <div>{{ item.value }}</div>
+  <div class="popup-container" v-if="feature" @click="closeFeature()">
+    <div
+      class="feature-container"
+      @click="stopPropagation"
+      :class="{ 'has-pointcloud': pointcloudUrl }"
+    >
+      <div class="feature" v-for="item of feature">
+        <div>{{ item.key }}</div>
+        <div>{{ item.value }}</div>
+      </div>
+      <iframe v-if="pointcloudUrl" :src="pointcloudUrl"></iframe>
+      <div class="close" @click="closeFeature()"><button>Close</button></div>
     </div>
-    <div class="close" @click="closeFeature()"><button>Close</button></div>
   </div>
 </template>
 
@@ -269,22 +357,43 @@ export default {
   z-index: 1;
 }
 
-.feature-container {
-  background-color: white;
-  color: black;
+.popup-container {
   position: absolute;
   z-index: 1000;
-  top: 10px;
-  right: 10px;
-  border-radius: 5px;
-  padding: 20px;
-  box-shadow: 0px 0px 10px 0px #a3a3a3;
-  margin-left: 10px;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
 
-  .feature {
+  .feature-container {
+    background-color: white;
+    color: black;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px 0px #a3a3a3;
     display: flex;
+    flex-direction: column;
 
-    > div {
+    &.has-pointcloud {
+      width: calc(100% - 20px);
+      height: calc(100% - 20px);
+    }
+
+    .feature {
+      word-break: break-all;
+      display: flex;
+
+      > div {
+        flex: 1;
+      }
+    }
+
+    iframe {
+      border: none;
       flex: 1;
     }
   }

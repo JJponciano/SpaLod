@@ -21,6 +21,8 @@ def create_flyvast_pointcloud(name, size):
     upload_url = r.json().get("result").get("uploadUrl")
     treatment_url = r.json().get("result").get("treatmentUrl")
     
+    auth_request(requests.put)(f"{fv_api_url}/Pointcloud.php?method=changePointcloudPublic", json={"pointcloudId": pointcloud_id})
+    
     return {
         "pointcloud_id": pointcloud_id,
         "pointcloud_uuid": uuid,

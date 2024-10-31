@@ -1,16 +1,27 @@
 <template>
   <div class="popup-overlay" v-if="isPopupVisible" @click="closePopup"></div>
-  <div v-bind:class="{ 'popup': true, 'visible': isPopupVisible }" :class="{ dark: isDarkMode }">
+  <div
+    v-bind:class="{ popup: true, visible: isPopupVisible }"
+    :class="{ dark: isDarkMode }"
+  >
     <div class="Title">
       <p>Add a new Catalog</p>
     </div>
     <div class="Name">
       <p>Name</p>
-      <textarea v-model="inputName" :placeholder="placeholders" spellcheck="false"></textarea>
+      <textarea
+        v-model="inputName"
+        :placeholder="placeholders"
+        spellcheck="false"
+      ></textarea>
     </div>
     <div class="Description">
       <p>Description</p>
-      <textarea v-model="inputDesc" :placeholder="placeholdersDesc" spellcheck="false"></textarea>
+      <textarea
+        v-model="inputDesc"
+        :placeholder="placeholdersDesc"
+        spellcheck="false"
+      ></textarea>
     </div>
     <div class="buttons">
       <button @click="closePopup">Close</button>
@@ -20,9 +31,9 @@
 </template>
 
 <script>
-import { API_BASE_URL } from '@/config.js';
-import { GRAPH_DB } from '@/config.js';
-import { FRONT_BASE_URL } from '@/config.js';
+import { API_BASE_URL } from "@/config.js";
+import { GRAPH_DB } from "@/config.js";
+import { FRONT_BASE_URL } from "@/config.js";
 
 export default {
   props: {
@@ -32,8 +43,8 @@ export default {
     popupC(newValue) {
       if (newValue) {
         this.showPopup();
-        this.inputName = '';
-        this.inputDesc = '';
+        this.inputName = "";
+        this.inputDesc = "";
       }
     },
   },
@@ -43,44 +54,55 @@ export default {
       isPopupVisible: false,
       placeholders: "Name",
       placeholdersDesc: "Description",
-      inputName: '',
-      inputDesc: '',
+      inputName: "",
+      inputDesc: "",
     };
   },
   mounted() {
     this.detectDarkMode();
-    window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
+    window.matchMedia("(prefers-color-scheme: dark)").addListener((event) => {
       this.isDarkMode = event.matches;
     });
   },
   methods: {
     detectDarkMode() {
-      this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      this.isDarkMode = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
     },
     showPopup() {
       this.isPopupVisible = true;
     },
     closePopup() {
       this.isPopupVisible = false;
-      this.$emit('popupCBack')
+      this.$emit("popupCBack");
     },
     addCatalog() {
       var data = {
-        name: this.inputName.replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
-        desc: this.inputDesc.replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+        name: this.inputName
+          .replace(/ /g, "_")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, ""),
+        desc: this.inputDesc
+          .replace(/ /g, "_")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, ""),
         id: this.uuidv4(),
         publisher: localStorage.getItem("uuid") || "",
       };
-      this.$emit('Catalog-data', data);
+      this.$emit("Catalog-data", data);
       this.closePopup();
     },
     uuidv4() {
-      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+        (
+          c ^
+          (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+        ).toString(16)
       );
     },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -106,7 +128,7 @@ export default {
 }
 
 .popup.dark {
-  background-color: #1A202C;
+  background-color: #1a202c;
   color: white;
 }
 
@@ -145,6 +167,6 @@ export default {
 }
 
 .confirm:hover {
-  background-color: #4A5568;
+  background-color: #4a5568;
 }
 </style>
