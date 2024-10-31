@@ -2,15 +2,37 @@
   <div class="user-actions" :class="{ dark: isDarkMode }">
     <button class="navbar_button" @click="toggleNavBar">Menu</button>
     <div class="side_pannel">
-      <div class="filter" :class="{ active: showFilter }">
+      <div class="data" :class="{ active: showData }">
+        <p @click="showData = !showData">Data</p>
+        <div class="data-container" v-if="showData">
+          <div class="feature" v-for="feature of features">
+            <input
+              type="checkbox"
+              v-model="feature.visible"
+              @change="onFeatureVisibilityChange(feature)"
+            />
+            <div @click="onClickFeature(feature.id)">
+              {{ feature.id }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="filter" :class="{ active: showFilter }">
         <p @click="showFilter = !showFilter">Filter</p>
         <div class="filtercontainer" v-if="showFilter">
           <p>Max items number</p>
-          <input class="inputbar" type="range" :min="min" :max="max" :step="step" v-model="rangeValue"
-            @input="updateRange" />
+          <input
+            class="inputbar"
+            type="range"
+            :min="min"
+            :max="max"
+            :step="step"
+            v-model="rangeValue"
+            @input="updateRange"
+          />
           <p>{{ rangeValue }}</p>
         </div>
-      </div>
+      </div> -->
       <!-- <div class="addfile" :class="{ active: showAddMenu }"> -->
       <div>
         <!-- <button @click="addDataCSV">CSV to GeoJSON</button>
@@ -19,18 +41,31 @@
           <input type="file" ref="fileInputGeo" style="display: none" accept=".json, .geojson"
             @change="handleFileInputGeo" /> -->
         <button class="addfile" @click="addDataOwl">Add Data</button>
-        <input type="file" ref="fileInputOwl" style="display: none" accept=".owl, .json, .geojson, .las, .laz"
-          @change="handleFileInputOwl" />
+        <input
+          type="file"
+          ref="fileInputOwl"
+          style="display: none"
+          accept=".owl, .json, .geojson, .las, .laz"
+          @change="handleFileInputOwl"
+        />
       </div>
       <div class="advancedMenu" :class="{ active: advancedMenuOpen }">
         <p @click="advancedMenuOpen = !advancedMenuOpen">Advanced Mode</p>
         <div class="textcontainer" v-if="advancedMenuOpen">
           <select v-model="selectedOption">
-            <option v-for="(option, index) in options" :key="index" :value="option.value">
+            <option
+              v-for="(option, index) in options"
+              :key="index"
+              :value="option.value"
+            >
               {{ option.label }}
             </option>
           </select>
-          <textarea v-model="inputAdvanced" :placeholder="placeholders" spellcheck="false"></textarea>
+          <textarea
+            v-model="inputAdvanced"
+            :placeholder="placeholders"
+            spellcheck="false"
+          ></textarea>
           <button ref="confirmRequest" @click="confirmRequest" class="confirm">
             Confirm Request
           </button>
@@ -47,7 +82,11 @@
       <ul class="navbar-nav">
         <li>
           <select v-model="selectedOption">
-            <option v-for="(option, index) in options" :key="index" :value="option.value">
+            <option
+              v-for="(option, index) in options"
+              :key="index"
+              :value="option.value"
+            >
               {{ option.label }}
             </option>
           </select>
@@ -57,8 +96,13 @@
         </li>
         <li class="adddataButton">
           <button @click="addData">Add Data</button>
-          <input type="file" ref="fileInput" style="display: none" accept="application/geojson"
-            @change="handleFileInput" />
+          <input
+            type="file"
+            ref="fileInput"
+            style="display: none"
+            accept="application/geojson"
+            @change="handleFileInput"
+          />
         </li>
         <li class="confirmButton">
           <button @click="confirmRequest" class="confirm">
@@ -72,9 +116,15 @@
 
 <script>
 import $ from "jquery";
-import { $ajax } from '../services/api';
+import { $ajax } from "../services/api";
 import Dataset from "./Dataset.vue";
 import { cookies } from "../services/login";
+import {
+  getAllFeatures,
+  setFeatureVisibility,
+  triggerFeatureClick,
+} from "../services/map";
+import { ref } from "vue";
 
 $.ajaxSetup({
   xhrFields: {
@@ -87,20 +137,36 @@ export default {
   components: {
     Dataset,
   },
-  data() {
+  setup() {
+    const features = getAllFeatures();
+    const isDarkMode = ref(false);
+    const menuOpen = ref(false);
+    const showAddMenu = ref(false);
+    const showFilter = ref(false);
+    const showCatalog = ref(false);
+    const showData = ref(true);
+    const min = ref(100);
+    const max = ref(1000);
+    const rangeValue = ref(150);
+    const step = ref(50);
+    const inputAdvanced = ref("");
+    const inputCatalog = ref("");
+    const advancedMenuOpen = ref(false);
+
     return {
-      isDarkMode: false,
-      menuOpen: false,
-      showAddMenu: false,
-      showFilter: false,
-      showCatalog: true,
-      min: 100,
-      max: 1000,
-      rangeValue: 150,
-      step: 50,
-      inputAdvanced: "",
-      inputCatalog: "",
-      advancedMenuOpen: true,
+      isDarkMode,
+      menuOpen,
+      showAddMenu,
+      showFilter,
+      showCatalog,
+      showData,
+      min,
+      max,
+      rangeValue,
+      step,
+      inputAdvanced,
+      inputCatalog,
+      advancedMenuOpen,
       placeholders: "Write your custom request here",
       selectedOption: "default",
       options: [
@@ -207,6 +273,7 @@ export default {
         port: "Seehaefen",
         cities: "BotKon",
       },
+      features,
     };
   },
   watch: {
@@ -254,17 +321,20 @@ export default {
             if (fileUrl.endsWith(".json")) {
               let parts = queryString.split("/");
               let datasetID = parts.pop();
-              const url = import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-query/";
+              const url =
+                import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-query/";
               const data = {
-                query: "SELECT ?itemID ?coordinates WHERE {  spalod:" + datasetID + " spalod:hasFeature ?itemID. ?itemID geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . }",
-                triplestore: import.meta.env.VITE_APP_GRAPH_DB + "/repositories/Spalod",
+                query:
+                  "SELECT ?itemID ?coordinates WHERE {  spalod:" +
+                  datasetID +
+                  " spalod:hasFeature ?itemID. ?itemID geosparql:hasGeometry ?g. ?g geosparql:asWKT ?coordinates . }",
+                triplestore:
+                  import.meta.env.VITE_APP_GRAPH_DB + "/repositories/Spalod",
               };
               this.postJSON(url, data, this.handleResponse);
               //TODO download the file but crash the view of data
-              //window.location.href = fileUrl; 
-
+              //window.location.href = fileUrl;
             }
-
           },
           error: (xhr, textStatus, errorThrown) => {
             console.log(error);
@@ -377,7 +447,9 @@ export default {
         //   },
         // });
       } else {
-        alert("Ontology enriched successfully! Please indicate equivalent properties !");
+        alert(
+          "Ontology enriched successfully! Please indicate equivalent properties !"
+        );
 
         console.log(response);
         this.$emit("properties_unknown", response);
@@ -388,10 +460,11 @@ export default {
         xhr: () => {
           const xhr = new XMLHttpRequest();
 
-          xhr.upload.onprogress = ((event) => {
-            const percentage = Math.floor(event.loaded / event.total * 100) + '%'
-            console.log(percentage)
-          });
+          xhr.upload.onprogress = (event) => {
+            const percentage =
+              Math.floor((event.loaded / event.total) * 100) + "%";
+            console.log(percentage);
+          };
 
           return xhr;
         },
@@ -408,16 +481,7 @@ export default {
     },
 
     handleFileInputOwl(event) {
-      const file = event.target.files[0];
-      let formData = new FormData();
-      formData.append("file", file);
-      formData.append("metadata", JSON.stringify({ "description": "This is a shapefile", "source": "Survey XYZ" }));
-      this.post_checkont(
-        import.meta.env.VITE_APP_API_BASE_URL + "/api/upload-file/",
-        formData, this.seek_unknown
-        //this.handleResponse
-        // this.confirmRequest
-      );
+      this.$emit("fileSelected", event.target.files[0]);
     },
     confirmRequest() {
       const url = import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-query/";
@@ -438,7 +502,7 @@ export default {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          'X-CSRFToken': cookies()['csrftoken']
+          "X-CSRFToken": cookies()["csrftoken"],
         },
         type: "POST",
         url: url,
@@ -447,7 +511,6 @@ export default {
         success: callback,
         statusCode: {
           401: function () {
-
             vueInstance.$notify({
               title: "Unauthorized access.",
               group: "notLoggedIn",
@@ -471,20 +534,19 @@ export default {
               title: "Not Connected",
               text: "Please log in or register to continue.",
               group: "notLoggedIn",
-              type: 'error',
-              duration: 2000 // notification will disappear after 5 seconds
+              type: "error",
+              duration: 2000, // notification will disappear after 5 seconds
             });
           } else {
             this.$notify({
               title: error.responseText,
               text: "Please log in or register to continue.",
               group: "notLoggedIn",
-              type: 'error',
-              duration: 2000 // notification will disappear after 5 seconds
+              type: "error",
+              duration: 2000, // notification will disappear after 5 seconds
             });
           }
           console.log(error);
-
         },
       });
     },
@@ -501,7 +563,6 @@ export default {
       }
     },
     handleResponse(response) {
-
       // HERE THE FUNCTION CREATE A JSON OBJECT THAT  IS USED LATER IN RDFData (JJ)
       const geoJSON = {
         type: "FeatureCollection",
@@ -570,18 +631,29 @@ export default {
       const file = new File([blob], "data.json", { type: "application/json" });
       this.$emit("file-selected", file);
     },
+    onFeatureVisibilityChange(feature) {
+      setFeatureVisibility(feature.id, feature.visible);
+    },
+    onClickFeature(featureId) {
+      triggerFeatureClick(featureId);
+    },
   },
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.side_pannel {
+  width: 100%;
+}
+
 .user-actions {
   padding: 20px;
-  border-radius: 5px;
+  // border-radius: 5px;
   flex-direction: column;
   display: flex;
   align-items: start;
-  max-height: calc(100vh - 200px);
+  // max-height: calc(100vh - 200px);
+  height: 100%;
   resize: horizontal;
   overflow: auto;
   width: 320px;
@@ -642,25 +714,58 @@ button {
   text-align: left;
 }
 
+.data {
+  border-radius: 5px;
+  border: none;
+  background-color: none;
+  margin-top: 5px;
+
+  &:hover {
+    background-color: #4a5568;
+  }
+
+  &.active {
+    background-color: #4a5568;
+    color: white;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  p {
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+
+    > div {
+      cursor: pointer;
+      user-select: none;
+    }
+  }
+}
+
 .filter {
   border-radius: 5px;
   border: none;
   background-color: none;
   margin-top: 5px;
-}
 
-.filter p {
-  padding: 6px 20px;
-  border: none;
-  background-color: none;
-  color: inherit;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.filter:hover {
-  background-color: #dee1e6;
+  p {
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+  }
 }
 
 .user-actions.dark .filter:hover {
@@ -819,16 +924,16 @@ button:hover {
   color: white;
 }
 
-.addfileButton>button {
+.addfileButton > button {
   width: 95%;
   margin-bottom: 10px;
 }
 
-.addfileButton>button:hover {
+.addfileButton > button:hover {
   background-color: rgb(241, 241, 241);
 }
 
-.user-actions.dark .addfileButton>button:hover {
+.user-actions.dark .addfileButton > button:hover {
   background-color: #1a202c;
   color: #fff;
 }
