@@ -5,14 +5,45 @@
       <div class="data" :class="{ active: showData }">
         <p @click="showData = !showData">Data</p>
         <div class="data-container" v-if="showData">
-          <div class="feature" v-for="feature of features">
-            <input
-              type="checkbox"
-              v-model="feature.visible"
-              @change="onFeatureVisibilityChange(feature)"
-            />
-            <div @click="onClickFeature(feature.id)">
-              {{ feature.id }}
+          <div class="catalog" v-for="catalog of catalogs">
+            <div class="title-container">
+              <div
+                class="arrow"
+                :class="{
+                  down: expandCatalogs[catalog.id],
+                  right: !expandCatalogs[catalog.id],
+                }"
+                @click="
+                  expandCatalogs[catalog.id] = !expandCatalogs[catalog.id]
+                "
+              ></div>
+              <input
+                type="checkbox"
+                v-model="showCatalogs[catalog.id]"
+                @change="onCatalogVisibilityChange(catalog.id)"
+              />
+              <div
+                class="title"
+                @click="
+                  expandCatalogs[catalog.id] = !expandCatalogs[catalog.id]
+                "
+              >
+                {{ catalog.id }}
+              </div>
+              <button @click="onClickDeleteCatalog(catalog.id)">🗑</button>
+            </div>
+            <div class="feature-container" v-if="expandCatalogs[catalog.id]">
+              <div class="feature" v-for="feature of catalog.features">
+                <input
+                  type="checkbox"
+                  v-model="feature.visible"
+                  @change="onFeatureVisibilityChange(feature)"
+                />
+                <div @click="onClickFeature(feature.id)">
+                  {{ feature.id }}
+                </div>
+                <button @click="onClickDeleteFeature(feature.id)">🗑</button>
+              </div>
             </div>
           </div>
         </div>
@@ -114,6 +145,427 @@
   </div>
 </template>
 
+<style lang="scss" scoped>
+.side_pannel {
+  width: 100%;
+  max-height: calc(100vh - 100px);
+}
+
+.user-actions {
+  padding: 20px;
+  // border-radius: 5px;
+  flex-direction: column;
+  display: flex;
+  align-items: start;
+  // max-height: calc(100vh - 200px);
+  height: 100%;
+  resize: horizontal;
+  overflow: auto;
+  width: 320px;
+  min-width: 220px;
+}
+
+.user-actions {
+  background-color: rgb(241, 241, 241);
+  border-radius: 10px;
+}
+
+.user-actions.dark {
+  background-color: #1a202c;
+  color: #fff;
+}
+
+.user-actions.light {
+  background-color: #ffffff;
+  color: #1a202c;
+}
+
+select {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
+  width: 100%;
+  border: 2px solid #1a202c;
+  border-radius: 5px;
+  background-color: #4a5568;
+  color: white;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+.navbar_button {
+  display: none;
+}
+
+.navbar-menu {
+  display: none;
+}
+
+button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
+  width: 100%;
+  text-align: left;
+}
+
+.data {
+  border-radius: 5px;
+  border: none;
+  background-color: none;
+  margin-top: 5px;
+
+  &:hover {
+    background-color: #4a5568;
+  }
+
+  &.active {
+    background-color: #4a5568;
+    color: white;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  p {
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    padding-left: 10px;
+
+    > input {
+      margin-left: 10px;
+    }
+
+    > div {
+      cursor: pointer;
+      user-select: none;
+      margin-left: 10px;
+      word-break: break-all;
+      font-size: 12px;
+    }
+
+    > button {
+      width: auto;
+      padding: 0px 5px;
+
+      &:hover {
+        color: #ddd;
+      }
+    }
+  }
+
+  .catalog {
+    + .catalog {
+      margin-top: 10px;
+    }
+
+    .title-container {
+      display: flex;
+      align-items: center;
+
+      .arrow {
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 3px;
+        margin-right: 10px;
+        margin-left: 5px;
+        cursor: pointer;
+
+        &.right {
+          transform: rotate(-45deg);
+        }
+
+        &.down {
+          transform: rotate(45deg);
+        }
+      }
+
+      .title {
+        font-size: 12px;
+        word-break: break-all;
+        flex: 1;
+        cursor: pointer;
+        margin-left: 10px;
+        user-select: none;
+      }
+
+      button {
+        width: auto;
+        margin: 0px;
+        padding: 0px 5px;
+
+        &:hover {
+          color: #ddd;
+        }
+      }
+    }
+  }
+}
+
+.filter {
+  border-radius: 5px;
+  border: none;
+  background-color: none;
+  margin-top: 5px;
+
+  p {
+    padding: 6px 20px;
+    border: none;
+    background-color: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+  }
+}
+
+.user-actions.dark .filter:hover {
+  background-color: #4a5568;
+}
+
+.filter.active {
+  background-color: #dee1e6;
+}
+
+.user-actions.dark .filter.active {
+  background-color: #4a5568;
+  color: white;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.inputbar {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.filtercontainer {
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+}
+
+.filtercontainer :nth-child(1) {
+  font-weight: normal;
+  cursor: default;
+}
+
+.filtercontainer p {
+  text-align: center;
+  padding: 10px;
+  cursor: default;
+}
+
+.addfile {
+  border-radius: 5px;
+  border: none;
+  background-color: none;
+  margin-top: 5px;
+}
+
+.addfile.active {
+  background-color: #dee1e6;
+}
+
+.user-actions.dark .addfile.active {
+  background-color: #4a5568;
+}
+
+.user-actions.dark .filter.active {
+  background-color: #4a5568;
+  color: white;
+}
+
+.addfile p {
+  padding: 6px 20px;
+  border: none;
+  background-color: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.addfile:hover {
+  background-color: #dee1e6;
+}
+
+.user-actions.dark .addfile:hover {
+  background-color: #4a5568;
+  color: white;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.addfileButton {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+}
+
+.advancedMenu {
+  border-radius: 5px;
+  border: none;
+  background-color: none;
+  margin-top: 5px;
+}
+
+.advancedMenu p {
+  padding: 6px 20px;
+  border: none;
+  background-color: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.advancedMenu:hover {
+  background-color: #dee1e6;
+}
+
+.user-actions.dark .advancedMenu:hover {
+  background-color: #4a5568;
+  color: white;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.advancedMenu.active {
+  background-color: #dee1e6;
+}
+
+.user-actions.dark .advancedMenu.active {
+  background-color: #4a5568;
+  color: white;
+}
+
+.textcontainer {
+  width: 100%;
+}
+
+.advancedMenu textarea {
+  margin-top: 8px;
+  border-radius: 5px;
+  width: 100%;
+  min-height: 200px;
+  font-size: 15px;
+  resize: vertical;
+}
+
+.confirm {
+  background-color: #ef4444;
+  color: #fff;
+}
+
+.confirm:hover {
+  background-color: #4a5568;
+}
+
+.navbar_button:hover {
+  background-color: #81818a;
+  color: white;
+}
+
+button:hover {
+  background-color: #dee1e6;
+}
+
+.user-actions.dark button:hover {
+  background-color: #4a5568;
+  color: white;
+}
+
+.addfileButton > button {
+  width: 95%;
+  margin-bottom: 10px;
+}
+
+.addfileButton > button:hover {
+  background-color: rgb(241, 241, 241);
+}
+
+.user-actions.dark .addfileButton > button:hover {
+  background-color: #1a202c;
+  color: #fff;
+}
+
+@media screen and (max-width: 768px) {
+  .side_pannel {
+    display: none;
+  }
+
+  .user-actions {
+    resize: none;
+    display: contents;
+    flex: none;
+    width: fit-content;
+    min-width: 20px;
+    height: fit-content;
+    min-height: fit-content;
+    resize: none;
+    padding: 0px;
+  }
+
+  .user-actions.dark {
+    width: fit-content;
+  }
+
+  .navbar_button {
+    display: block;
+    margin-left: -100px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: rgba(194, 194, 194, 0.603);
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    font-size: 18px;
+    font-weight: lighter;
+    margin-top: 0px;
+    width: fit-content;
+  }
+
+  .navbar-menu.active {
+    padding: 15px 20px 15px 0px;
+    margin-left: -100px;
+    border-radius: 15px;
+    flex-direction: column;
+    display: flex;
+    align-items: start;
+    height: fit-content;
+    resize: horizontal;
+    overflow: auto;
+    background-color: white;
+  }
+
+  .navbar-menu.dark {
+    background-color: #1a202c;
+  }
+}
+</style>
+
 <script>
 import $ from "jquery";
 import { $ajax } from "../services/api";
@@ -121,10 +573,13 @@ import Dataset from "./Dataset.vue";
 import { cookies } from "../services/login";
 import {
   getAllFeatures,
+  getAllCatalogs,
   setFeatureVisibility,
+  setCatalogVisibility,
   triggerFeatureClick,
 } from "../services/map";
 import { ref } from "vue";
+import { removeFeature, removeCatalog } from "../services/geo";
 
 $.ajaxSetup({
   xhrFields: {
@@ -138,6 +593,7 @@ export default {
     Dataset,
   },
   setup() {
+    const catalogs = getAllCatalogs();
     const features = getAllFeatures();
     const isDarkMode = ref(false);
     const menuOpen = ref(false);
@@ -152,6 +608,9 @@ export default {
     const inputAdvanced = ref("");
     const inputCatalog = ref("");
     const advancedMenuOpen = ref(false);
+    const expandCatalogs = ref({});
+    const showCatalogs = ref({});
+    const selectedOption = ref("default");
 
     return {
       isDarkMode,
@@ -168,7 +627,7 @@ export default {
       inputCatalog,
       advancedMenuOpen,
       placeholders: "Write your custom request here",
-      selectedOption: "default",
+      selectedOption,
       options: [
         { label: "Default", value: "default" },
         { label: "Schule (Q3914)", value: "schools" },
@@ -274,6 +733,9 @@ export default {
         cities: "BotKon",
       },
       features,
+      catalogs,
+      expandCatalogs,
+      showCatalogs,
     };
   },
   watch: {
@@ -637,359 +1099,17 @@ export default {
     onClickFeature(featureId) {
       triggerFeatureClick(featureId);
     },
+    onClickDeleteFeature(featureId) {
+      setFeatureVisibility(featureId, false, true);
+      removeFeature(featureId);
+    },
+    onCatalogVisibilityChange(catalogId) {
+      setCatalogVisibility(catalogId, this.showCatalogs[catalogId]);
+    },
+    onClickDeleteCatalog(catalogId) {
+      setCatalogVisibility(catalogId, false, true);
+      removeCatalog(catalogId);
+    },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.side_pannel {
-  width: 100%;
-}
-
-.user-actions {
-  padding: 20px;
-  // border-radius: 5px;
-  flex-direction: column;
-  display: flex;
-  align-items: start;
-  // max-height: calc(100vh - 200px);
-  height: 100%;
-  resize: horizontal;
-  overflow: auto;
-  width: 320px;
-  min-width: 220px;
-}
-
-.user-actions {
-  background-color: rgb(241, 241, 241);
-  border-radius: 10px;
-}
-
-.user-actions.dark {
-  background-color: #1a202c;
-  color: #fff;
-}
-
-.user-actions.light {
-  background-color: #ffffff;
-  color: #1a202c;
-}
-
-select {
-  display: block;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 10px;
-  width: 100%;
-  border: 2px solid #1a202c;
-  border-radius: 5px;
-  background-color: #4a5568;
-  color: white;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  cursor: pointer;
-}
-
-.navbar_button {
-  display: none;
-}
-
-.navbar-menu {
-  display: none;
-}
-
-button {
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: none;
-  background-color: transparent;
-  color: inherit;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  font-size: 18px;
-  font-weight: bold;
-  margin-top: 10px;
-  width: 100%;
-  text-align: left;
-}
-
-.data {
-  border-radius: 5px;
-  border: none;
-  background-color: none;
-  margin-top: 5px;
-
-  &:hover {
-    background-color: #4a5568;
-  }
-
-  &.active {
-    background-color: #4a5568;
-    color: white;
-    transition: background-color 0.2s ease-in-out;
-  }
-
-  p {
-    padding: 6px 20px;
-    border: none;
-    background-color: none;
-    color: inherit;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  .feature {
-    display: flex;
-    align-items: center;
-
-    > div {
-      cursor: pointer;
-      user-select: none;
-    }
-  }
-}
-
-.filter {
-  border-radius: 5px;
-  border: none;
-  background-color: none;
-  margin-top: 5px;
-
-  p {
-    padding: 6px 20px;
-    border: none;
-    background-color: none;
-    color: inherit;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
-  }
-}
-
-.user-actions.dark .filter:hover {
-  background-color: #4a5568;
-}
-
-.filter.active {
-  background-color: #dee1e6;
-}
-
-.user-actions.dark .filter.active {
-  background-color: #4a5568;
-  color: white;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.inputbar {
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-.filtercontainer {
-  display: flex;
-  flex-direction: column;
-  cursor: default;
-}
-
-.filtercontainer :nth-child(1) {
-  font-weight: normal;
-  cursor: default;
-}
-
-.filtercontainer p {
-  text-align: center;
-  padding: 10px;
-  cursor: default;
-}
-
-.addfile {
-  border-radius: 5px;
-  border: none;
-  background-color: none;
-  margin-top: 5px;
-}
-
-.addfile.active {
-  background-color: #dee1e6;
-}
-
-.user-actions.dark .addfile.active {
-  background-color: #4a5568;
-}
-
-.user-actions.dark .filter.active {
-  background-color: #4a5568;
-  color: white;
-}
-
-.addfile p {
-  padding: 6px 20px;
-  border: none;
-  background-color: none;
-  color: inherit;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.addfile:hover {
-  background-color: #dee1e6;
-}
-
-.user-actions.dark .addfile:hover {
-  background-color: #4a5568;
-  color: white;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.addfileButton {
-  flex-direction: column;
-  display: flex;
-  align-items: center;
-}
-
-.advancedMenu {
-  border-radius: 5px;
-  border: none;
-  background-color: none;
-  margin-top: 5px;
-}
-
-.advancedMenu p {
-  padding: 6px 20px;
-  border: none;
-  background-color: none;
-  color: inherit;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.advancedMenu:hover {
-  background-color: #dee1e6;
-}
-
-.user-actions.dark .advancedMenu:hover {
-  background-color: #4a5568;
-  color: white;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.advancedMenu.active {
-  background-color: #dee1e6;
-}
-
-.user-actions.dark .advancedMenu.active {
-  background-color: #4a5568;
-  color: white;
-}
-
-.textcontainer {
-  width: 100%;
-}
-
-.advancedMenu textarea {
-  margin-top: 8px;
-  border-radius: 5px;
-  width: 100%;
-  min-height: 200px;
-  font-size: 15px;
-  resize: vertical;
-}
-
-.confirm {
-  background-color: #ef4444;
-  color: #fff;
-}
-
-.confirm:hover {
-  background-color: #4a5568;
-}
-
-.navbar_button:hover {
-  background-color: #81818a;
-  color: white;
-}
-
-button:hover {
-  background-color: #dee1e6;
-}
-
-.user-actions.dark button:hover {
-  background-color: #4a5568;
-  color: white;
-}
-
-.addfileButton > button {
-  width: 95%;
-  margin-bottom: 10px;
-}
-
-.addfileButton > button:hover {
-  background-color: rgb(241, 241, 241);
-}
-
-.user-actions.dark .addfileButton > button:hover {
-  background-color: #1a202c;
-  color: #fff;
-}
-
-@media screen and (max-width: 768px) {
-  .side_pannel {
-    display: none;
-  }
-
-  .user-actions {
-    resize: none;
-    display: contents;
-    flex: none;
-    width: fit-content;
-    min-width: 20px;
-    height: fit-content;
-    min-height: fit-content;
-    resize: none;
-    padding: 0px;
-  }
-
-  .user-actions.dark {
-    width: fit-content;
-  }
-
-  .navbar_button {
-    display: block;
-    margin-left: -100px;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    background-color: rgba(194, 194, 194, 0.603);
-    color: inherit;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-    font-size: 18px;
-    font-weight: lighter;
-    margin-top: 0px;
-    width: fit-content;
-  }
-
-  .navbar-menu.active {
-    padding: 15px 20px 15px 0px;
-    margin-left: -100px;
-    border-radius: 15px;
-    flex-direction: column;
-    display: flex;
-    align-items: start;
-    height: fit-content;
-    resize: horizontal;
-    overflow: auto;
-    background-color: white;
-  }
-
-  .navbar-menu.dark {
-    background-color: #1a202c;
-  }
-}
-</style>

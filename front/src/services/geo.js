@@ -83,3 +83,15 @@ export async function getGeoData(results) {
 
   return res;
 }
+
+export async function removeFeature(id) {
+  const req = await $fetch(`api/geo/feature/delete?id=${id}`);
+  const result = await req.json();
+  return result;
+}
+
+export async function removeCatalog(id) {
+  const req = await $fetch(`api/geo/catalog/delete?id=${id}`);
+  const result = await req.json();
+  return result;
+}
