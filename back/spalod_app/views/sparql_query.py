@@ -27,7 +27,20 @@ class SparqlQueryAPIView(APIView):
             # Set up the SPARQL endpoint to query the graph and get the OWL file URI
             sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
             self.spalod = Namespace("http://spalod/")
-
+            self.geo = Namespace("http://www.opengis.net/ont/geosparql#")
+            self.ex =  Namespace("https://registry.gdi-de.org/id/hamburg/")
+            self.gdi = Namespace("https://registry.gdi-de.org/")
+            self.flyvast = Namespace("https://flyvast.com/")
+            self.spalod = Namespace("http://spalod/")
+            prefixes = f"""
+                PREFIX spalod: <{self.spalod}>
+                PREFIX ex: <{self.ex}>
+                PREFIX geo: <{self.geo}>
+                PREFIX gdi: <{self.gdi}>
+                PREFIX flyvast: <{self.flyvast}>
+            """
+            # Combine the prefixes with your query
+            sparql_query = prefixes + sparql_query
             graph_general = self.spalod.General
 
             sparql.setQuery(f"""
