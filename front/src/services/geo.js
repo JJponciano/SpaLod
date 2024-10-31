@@ -22,37 +22,47 @@ export async function getGeoData(results) {
       metadatas: {},
     };
     for (const header of Object.keys(result)) {
-      if (result[header].startsWith("LINESTRING")) {
+      if (result[header].toUpperCase().startsWith("LINESTRING")) {
         itemRes.type = "LINESTRING";
         itemRes.geo = result[header].split(",").map((x) =>
           x
             .trim()
-            .replace("LINESTRING (", "")
+            .replace(/LINESTRING \(/i, "")
             .replace(")", "")
             .split(" ")
             .map((y) => Number(y))
         );
-      } else if (result[header].startsWith("MULTILINESTRING")) {
+      } else if (result[header].toUpperCase().startsWith("MULTILINESTRING")) {
         itemRes.type = "MULTILINESTRING";
         itemRes.geo = result[header].split(/\).*?,.*?\(/).map((x) =>
           x.split(",").map((y) =>
             y
               .trim()
-              .replace("MULTILINESTRING ((", "")
+              .replace(/MULTILINESTRING \(\(/i, "")
               .replace("))", "")
               .split(" ")
               .map((z) => Number(z))
           )
         );
-      } else if (result[header].startsWith("POLYGON")) {
+      } else if (result[header].toUpperCase().startsWith("POLYGON")) {
         itemRes.type = "POLYGON";
         itemRes.geo = result[header].split(",").map((x) =>
           x
             .trim()
-            .replace("POLYGON ((", "")
+            .replace(/POLYGON \(\(/i, "")
             .replace("))", "")
             .split(" ")
             .map((y) => Number(y))
+        );
+      } else if (result[header].toUpperCase().startsWith("POINT")) {
+        itemRes.type = "POINT";
+        itemRes.geo = result[header].split(" ").map((x) =>
+          Number(
+            x
+              .trim()
+              .replace(/POINT\(/i, "")
+              .replace(")", "")
+          )
         );
       } else {
         itemRes.metadatas[header] = result[header];
