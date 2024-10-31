@@ -58,9 +58,14 @@
   position: relative;
   font-weight: normal;
 }
+body, html {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
 
 body {
-  min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
   line-height: 1.6;

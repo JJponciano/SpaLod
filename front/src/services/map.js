@@ -1,6 +1,7 @@
 import { ref } from "vue";
 
 const features = ref([]);
+const catalogs = ref([]);
 const visibilityChangeSubscribers = [];
 const clickSubscribers = [];
 
@@ -8,22 +9,77 @@ export function getAllFeatures() {
   return features.value;
 }
 
-export function addFeatures(newFeatures) {
-  features.value.push(
-    ...newFeatures.map((x) => ({
-      visible: false,
-      id: x,
-    }))
-  );
+export function getAllCatalogs() {
+  return catalogs.value;
 }
 
-export function setFeatureVisibility(featureId, visible) {
-  const feature = features.value.find(({ id }) => id === featureId);
+export function addFeatures(metadatas) {
+  for (const { feature: featureId, catalog: catalogId } of metadatas) {
+    const feature = {
+      visible: false,
+      id: featureId,
+      catalogId,
+    };
+    features.value.push(feature);
 
-  if (feature) {
-    feature.visible = visible;
+    if (!catalogs.value.find(({ id }) => id === catalogId)) {
+      catalogs.value.push({
+        id: catalogId,
+        features: [],
+      });
+    }
 
-    visibilityChangeSubscribers.forEach((x) => x(feature));
+    catalogs.value.find(({ id }) => id === catalogId).features.push(feature);
+  }
+}
+
+export function setFeatureVisibility(featureIds, visible, remove = false) {
+  if (!Array.isArray(featureIds)) {
+    featureIds = [featureIds];
+  }
+
+  const tabFeatures = [];
+
+  for (const featureId of featureIds) {
+    const feature = features.value.find(({ id }) => id === featureId);
+
+    if (feature) {
+      feature.visible = visible && !remove;
+
+      if (remove) {
+        features.value.splice(features.value.indexOf(feature), 1);
+
+        const catalog = catalogs.value.find(
+          ({ id }) => id === feature.catalogId
+        );
+        catalog.features.splice(catalog.features.indexOf(feature), 1);
+      }
+
+      tabFeatures.push(feature);
+    }
+  }
+
+  visibilityChangeSubscribers.forEach((x) => x(tabFeatures, remove));
+}
+
+export function setCatalogVisibility(catalogId, visible, remove = false) {
+  const catalog = catalogs.value.find(({ id }) => id === catalogId);
+
+  if (catalog) {
+    visible = visible && !remove;
+
+    // catalog.features.forEach((feature) =>
+    //   setFeatureVisibility(feature.id, visible, remove)
+    // );
+    setFeatureVisibility(
+      catalog.features.map(({ id }) => id),
+      visible,
+      remove
+    );
+
+    if (remove) {
+      catalogs.value.splice(catalogs.value.indexOf(catalog));
+    }
   }
 }
 

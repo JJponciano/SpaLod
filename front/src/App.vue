@@ -39,10 +39,10 @@ export default {
       this.popupC = false;
     },
     goHome() {
-      this.$router.push('/admin')
+      this.$router.push("/admin");
     },
     goToLogin() {
-      this.$router.push('/login')
+      this.$router.push("/login");
     },
     handleCatalogUpdate(data) {
       this.receivedData = data;
@@ -64,17 +64,45 @@ export default {
     </div>
   </div>
   <div class="popup">
-    <PopUp :chooseCSV="chooseCSV" :chooseJson="chooseJson" :popup="popup" @CSVBack="onUnselectCSV"
-      @JsonBack="onUnselectJson" @popupBack="onClosepopUp"></PopUp>
+    <PopUp
+      :chooseCSV="chooseCSV"
+      :chooseJson="chooseJson"
+      :popup="popup"
+      @CSVBack="onUnselectCSV"
+      @JsonBack="onUnselectJson"
+      @popupBack="onClosepopUp"
+    ></PopUp>
   </div>
   <div class="popupC">
-    <PopUpC :popupC="popupC" @popupCBack="onClosepopUpC" @Catalog-data="handleCatalogUpdate"></PopUpC>
+    <PopUpC
+      :popupC="popupC"
+      @popupCBack="onClosepopUpC"
+      @Catalog-data="handleCatalogUpdate"
+    ></PopUpC>
   </div>
   <notifications />
   <notifications group="login-success" @click="goHome()" />
   <notifications group="register-success" @click="goToLogin()" />
   <notifications group="notLoggedIn" @click="goToLogin()" />
 </template>
+
+<style>
+button {
+  border: none;
+  cursor: pointer;
+  background-color: #ef4444;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #4a5568;
+  transition: background-color 0.5s ease;
+}
+</style>
 
 <style scoped lang="scss">
 .navbar {

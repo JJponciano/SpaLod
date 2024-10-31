@@ -2005,22 +2005,6 @@ th {
   background-color: #1a202c;
 }
 
-button {
-  border: none;
-  cursor: pointer;
-  background-color: #ef4444;
-  color: #fff;
-  font-size: 18px;
-  font-weight: bold;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-button:hover {
-  background-color: #4a5568;
-  transition: background-color 0.5s ease;
-}
-
 .download {
   text-align: right;
 }

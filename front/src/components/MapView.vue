@@ -9,55 +9,8 @@ import {
 } from "../services/map";
 
 export default {
-  props: {
-    file: File,
-  },
-  watch: {
-    file(newFile) {
-      return;
-      const lecteur = new FileReader();
-
-      this.dataArray = [];
-      lecteur.readAsText(newFile);
-      lecteur.onload = () => {
-        const contenu = lecteur.result;
-        const object = JSON.parse(contenu);
-
-        console.log(object);
-
-        object.features.forEach((feature) => {
-          let coordinates =
-            feature.properties.Koordinate ?? feature.geometry.coordinates;
-          console.log(coordinates);
-          if (coordinates.length > 0) {
-            if (coordinates.includes("(")) {
-              coordinates = coordinates.split("(")[1];
-              coordinates = coordinates.split(")")[0];
-              coordinates = coordinates
-                .split(" ")
-                .map((coord) => parseFloat(coord));
-            }
-            if (!feature.properties.itemID) return;
-            const label =
-              feature.properties.itemLabel ?? feature.properties.Objektname;
-            this.dataArray.push([
-              object.name,
-              decodeURIComponent(label).replace(/_/g, " "),
-              coordinates[1],
-              coordinates[0],
-            ]);
-          }
-        });
-        this.updateMap();
-      };
-    },
-  },
   data() {
     return {
-      dataArray: [],
-      sizeOfArray: 0,
-      path: null,
-      query: null,
       map: null,
       feature: null,
       mapObjList: [],
@@ -66,61 +19,20 @@ export default {
     };
   },
   methods: {
-    objectSize(obj) {
-      let size = 0,
-        key;
-      for (key in obj) {
-        if (obj.hasOwnProperty(key)) size++;
-      }
-      return size;
-    },
     initMap() {
-      // Path to where the files are hosted
-      this.path = "/pictures/signaturen/";
+      const mbAttr =
+        'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+      const mbUrl =
+        "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmVkZXJkaXNwaSIsImEiOiJjbGdreWlncHcwd3F0M2hsdnhscGg5Yzc1In0.Ud5vRdMf9cbtUUd5ufgKXQ";
 
-      // Creation of one layer of points
-      this.query = new L.layerGroup();
+      const rUrl = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
 
-      // Custom icon class
-      let MarkerIcon = L.Icon.extend({
-        options: {
-          iconSize: [20, 20],
-          shadowSize: [0, 0],
-          iconAnchor: [10, 10],
-          popupAnchor: [0, -10],
-        },
-      });
-      this.sizeOfArray = this.objectSize(this.dataArray);
-
-      for (let i = 0; i < this.sizeOfArray; i++) {
-        L.marker([this.dataArray[i][2], this.dataArray[i][3]], {
-          icon: new MarkerIcon({
-            iconUrl: this.path + this.dataArray[i][0] + ".png",
-          }),
-        })
-          .bindPopup(
-            this.dataArray[i][2] +
-              "," +
-              this.dataArray[i][3] +
-              " " +
-              this.dataArray[i][1]
-          )
-          .addTo(this.query);
-      }
-
-      let mbAttr =
-          'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-          'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        mbUrl =
-          "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmVkZXJkaXNwaSIsImEiOiJjbGdreWlncHcwd3F0M2hsdnhscGg5Yzc1In0.Ud5vRdMf9cbtUUd5ufgKXQ";
-
-      let rUrl = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
-
-      let topplusUrl = "http://sgx.geodatenzentrum.de/wms_topplus_web_open";
-      let topplusAttr =
+      const topplusUrl = "http://sgx.geodatenzentrum.de/wms_topplus_web_open";
+      const topplusAttr =
         '&copy Bundesamt für Kartographie und Geodäsie 2017, <a href="http://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf">Datenquellen</a>';
 
-      let grayscale = L.tileLayer(mbUrl, {
+      const grayscale = L.tileLayer(mbUrl, {
           id: "mapbox/light-v9",
           tileSize: 512,
           zoomOffset: -1,
@@ -150,60 +62,26 @@ export default {
         zoom: 6,
         minZoom: 2,
         fullscreenControl: true,
-        layers: [streets, this.query],
+        layers: [streets],
       });
 
       this.map.attributionControl.setPrefix(false);
 
       // Definition of layers
-      let baseLayers = {
+      const baseLayers = {
         Grayscale: grayscale,
         Streets: streets,
         Relief: relief,
         Topplus: topplus,
       };
 
-      // Definition of point layers
-      let overlays = {
-        Query: this.query,
-      };
-
       // Add layers and points layers to the map
-      L.control.layers(baseLayers, overlays).addTo(this.map);
-    },
-    updateMap() {
-      this.query.clearLayers();
-      this.sizeOfArray = this.objectSize(this.dataArray);
-
-      let MarkerIcon = L.Icon.extend({
-        options: {
-          iconSize: [20, 20],
-          shadowSize: [0, 0],
-          iconAnchor: [10, 10],
-          popupAnchor: [0, -10],
-        },
-      });
-
-      for (let i = 0; i < this.sizeOfArray; i++) {
-        L.marker([this.dataArray[i][2], this.dataArray[i][3]], {
-          icon: new MarkerIcon({
-            iconUrl: this.path + this.dataArray[i][0] + ".png",
-          }),
-        })
-          .bindPopup(
-            this.dataArray[i][2] +
-              "," +
-              this.dataArray[i][3] +
-              " " +
-              this.dataArray[i][1]
-          )
-          .addTo(this.query);
-      }
+      L.control.layers(baseLayers).addTo(this.map);
     },
     async displayGeo() {
       const allGeos = await getAllGeo();
 
-      addFeatures(allGeos.map(({ metadatas: { feature } }) => feature));
+      addFeatures(allGeos.map(({ metadatas }) => metadatas));
       this.unsubscribe.push(
         ...[
           subscribeFeatureVisibiltyChange(
@@ -278,17 +156,23 @@ export default {
       this.pointcloudUrl = null;
     },
 
-    onFeatureVisibilityChange(feature) {
-      const mapObj = this.mapObjList.find(
-        ({ spalodId }) => spalodId === feature.id
-      );
+    onFeatureVisibilityChange(features, remove) {
+      for (const feature of features) {
+        const mapObj = this.mapObjList.find(
+          ({ spalodId }) => spalodId === feature.id
+        );
 
-      if (feature.visible) {
-        mapObj.addTo(this.map);
-        mapObj.visible = true;
-      } else {
-        mapObj.removeFrom(this.map);
-        mapObj.visible = false;
+        if (feature.visible && !remove) {
+          mapObj.addTo(this.map);
+          mapObj.visible = true;
+        } else {
+          mapObj.removeFrom(this.map);
+          mapObj.visible = false;
+
+          if (remove) {
+            this.mapObjList.splice(this.mapObjList.indexOf(mapObj), 1);
+          }
+        }
       }
 
       const objs = this.mapObjList.filter((x) => x.visible);
@@ -393,9 +277,14 @@ export default {
     }
 
     iframe {
+      margin-top: 10px;
       border: none;
       flex: 1;
     }
+  }
+
+  .close {
+    margin-top: 10px;
   }
 }
 </style>

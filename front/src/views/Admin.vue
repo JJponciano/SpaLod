@@ -11,7 +11,7 @@
     </UserActions>
   </div>
   <div class="map-container">
-    <MapView :file="file" @fileSelected="onFileSelected"></MapView>
+    <MapView @fileSelected="onFileSelected"></MapView>
   </div>
   <!-- <div class="rdf-data-container">
     <RDFData
@@ -81,21 +81,8 @@ export default {
 :host {
   display: flex;
 }
-.user-actions-container {
-  /* position: absolute;
-  left: 0px;
-  bottom: 0px;
-  z-index: 2; */
-  /* padding: 10px; */
-}
 
 .map-container {
-  /* position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  z-index: 1; */
   flex: 1;
 }
 
