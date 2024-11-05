@@ -198,7 +198,7 @@ class OntologyProcessor:
             raise Exception(f"Failed to add ontology to GraphDB: {str(e)}")
 
     def convert_coordinates(self, coordinates):
-        """Converts coordinates from [lon, lat, (optional) z] to [lat, lon], automatically handling 2D and 3D coordinates."""
+        """Converts coordinates from [lon, lat, (optional) z] to [lon, lat], automatically handling 2D and 3D coordinates."""
         
         # If it's a nested structure (like LineString, Polygon, etc.)
         if isinstance(coordinates[0], list):  
@@ -210,8 +210,8 @@ class OntologyProcessor:
         else:
             lon, lat = coordinates[:2]  # Only consider lon, lat for 2D coordinates
         
-        # Return [lat, lon] regardless of 2D or 3D coordinates
-        return [lat, lon]
+        # Return [lon, lat] regardless of 2D or 3D coordinates
+        return [lon, lat]
     def add_pointcloud(self,file_path,pointcloud_id,pointcloud_uuid):
          #get the wkt
         random_uuid = uuid.uuid4()

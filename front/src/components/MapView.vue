@@ -112,18 +112,18 @@ export default {
         if (type === "LINESTRING") {
           addPolyline(
             metadatas.feature,
-            geo.map(([lat, lng]) => new L.LatLng(lat, lng))
+            geo.map(([lng, lat]) => new L.LatLng(lng, lat))
           );
         } else if (type === "MULTILINESTRING") {
           for (const polyline of geo) {
             addPolyline(
               metadatas.feature,
-              polyline.map(([lat, lng]) => new L.LatLng(lat, lng))
+              polyline.map(([lng, lat]) => new L.LatLng(lng, lat))
             );
           }
         } else if (type === "POLYGON") {
           const mapObj = new L.Polygon(
-            geo.map(([lat, lng]) => new L.LatLng(lat, lng)),
+            geo.map(([lng, lat]) => new L.LatLng(lng, lat)),
             {
               color: "blue",
               weight: 3,
@@ -138,7 +138,7 @@ export default {
 
           this.mapObjList.push(mapObj);
         } else if (type === "POINT") {
-          const mapObj = new L.marker(new L.LatLng(geo[0], geo[1]));
+          const mapObj = new L.marker(new L.LatLng(geo[1], geo[0]));
           mapObj.on("click", (event) => {
             this.displayFeature(event.target.spalodId);
           });
