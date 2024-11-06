@@ -74,7 +74,7 @@ class OntologyProcessor:
         hull_latlon = transform(project, hull)
         
         # Swap latitude and longitude coordinates
-        hull_latlon_swapped = Polygon([(y, x) for x, y in hull_latlon.exterior.coords])
+        hull_latlon_swapped = Polygon([(x, y) for x, y in hull_latlon.exterior.coords])
         
         # Return the WKT representation of the polygon in latitude/longitude
         wkt_polygon = hull_latlon_swapped.wkt
