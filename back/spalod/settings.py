@@ -187,5 +187,5 @@ FILE_UPLOAD_HANDLERS = [
 
 # Flyvast conf
 FLYVAST_API_URL = 'https://app.flyvast.com/flyvast/app/server/bll'
-FLYVAST_USER = 'poux@geovast3d.com'
-FLYVAST_PASSWORD = 'geovast'
+FLYVAST_USER = ''
+FLYVAST_PASSWORD = ''
