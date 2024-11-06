@@ -30,3 +30,4 @@ coverage
 *.sw?
 
 back/db.sqlite3
+back/spalod/settings.py
