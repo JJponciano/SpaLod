@@ -79,14 +79,14 @@ curl -X POST http://127.0.0.1:8000/auth/login/ -d "username=JJ&password=GNybRXbC
 ```
 You get something like:
 ```bash
-{"key":"79f5571c8c44563a82ce13c395f1982e18d7be5d"}% 
+{"key":"9b2b164be957dcfc9dcb399f91acc06d4b0f4228"}% 
 ```
 3. Run a SPARQL query:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/sparql-query/ \
 -H "Content-Type: application/json" \
--H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
+-H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228" \
 -d '{"query": "SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 10"}'
 ```
 
@@ -96,7 +96,7 @@ To update the ontology by linking new and old properties and adding validation t
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/update-ontology/ \
--H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78" \
+-H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228" \
 -H "Content-Type: application/json" \
 -d '{
       "mappings": [
@@ -118,7 +118,7 @@ To query all properties that either have a `hasBeenValidatedBy` status of "none"
 
 ```bash
 curl -X GET http://127.0.0.1:8000/api/query-properties/ \
--H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78"
+-H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228"
 ```
 
 ## File Upload with Metadata
@@ -127,12 +127,12 @@ To upload a file with associated metadata:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/upload-file/ \
--H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
+-H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228" \
 -F "file=@/Volumes/poncianoCloud/workspace/data/bkg/bkg_map/radnetz_use_case/data/epsg_4326/part1/de_hh_up_freizeitroute2_EPSG_4326.json " \
 -F "metadata={\"description\": \"This is a shapefile\", \"source\": \"Survey XYZ\"}"
 
 curl -X POST http://127.0.0.1:8000/api/upload-file/ \
--H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
+-H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228" \
 -F "file=@/Volumes/poncianoCloud/workspace/data/bkg/query.json" \
 -F "metadata={\"description\": \"This is a shapefile\", \"source\": \"wikidata\"}"
 ```
@@ -150,7 +150,7 @@ curl -O http://127.0.0.1:8000/media/uploads/04287a39-053d-435e-8064-a7664604edb9
 ### Upload pointcloud
 ```bash
 curl -X POST http://127.0.0.1:8000/api/upload-file/ \
--H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
+-H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228" \
 -F "file=@/Volumes/poncianoCloud/workspace/data/bkg/DemodatenHackathon2024/1km_565_5934.las" \
 -F "metadata={\"description\": \"Poincloud\", \"source\": \"BKG\"}"
 ```
@@ -160,7 +160,7 @@ curl -X POST http://127.0.0.1:8000/api/upload-file/ \
 ```bash
 
 curl -X POST http://127.0.0.1:8000/api/update-ontology/ \
--H "Authorization: Token 1a2926e119b4560da1faa48d3aead3a2ce1a5f78" \
+-H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228" \
 -H "Content-Type: application/json" \
 -d '{
       "mappings": [
@@ -184,32 +184,46 @@ curl -X POST http://127.0.0.1:8000/api/update-ontology/ \
 ```bash
 curl -X POST http://localhost:8000/api/sparql-query/ \
     -H "Content-Type: application/json" \
-    -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d" \
+    -H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228" \
     -d '{"query": "PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX ns2: <https://registry.gdi-de.org/id/hamburg/> PREFIX ex: <http://example.org/ns#> SELECT ?feature ?property ?value WHERE { ?feature a geo:Feature ; ?property ?value . }"}'
 ```
 
 # GET TEST
 ```bash
 curl -X GET "http://127.0.0.1:8000/api/geo/catalog?id=http://spalod/catalog_acc53514-6a2f-4521-afa5-40783906d4ba" \
-    -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
+    -H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228"
 curl -X GET "http://127.0.0.1:8000/api/geo/catalog/delete?id=http://spalod/catalog_acc53514-6a2f-4521-afa5-40783906d4ba" \
-    -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
+    -H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228"
+```
+ ## Get all features informaiton
+```bash
+curl -X GET "http://127.0.0.1:8000/api/geo/feature?id=https://registry.gdi-de.org/feature002755b6-8a27-4e58-a1e7-34635993696e&catalog_id=http://spalod/catalog_652579e3-1a45-4f6d-b55f-c4f1c1bfce20" \
+    -H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228"
+```
+ ## Get WKT of a feature
+```bash
+curl -X GET "http://127.0.0.1:8000/api/geo/getfeaturewkt?id=https://registry.gdi-de.org/feature002755b6-8a27-4e58-a1e7-34635993696e&catalog_id=http://spalod/catalog_652579e3-1a45-4f6d-b55f-c4f1c1bfce20" \
+    -H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228"
+```
+## Get all WKT of all catalog features
 
-curl -X GET "http://127.0.0.1:8000/api/geo/feature?id=https://registry.gdi-de.org/id/hamburg/feature1cd3fd04-f40c-406d-8655-57df73b164e6" \
-    -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
-
+```bash
+curl -X GET "http://127.0.0.1:8000/api/geo/getwkt?catalog_id=http://spalod/catalog_652579e3-1a45-4f6d-b55f-c4f1c1bfce20" \
+    -H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228"
+```
+## Get all catalogs
+```bash
 curl -X GET "http://127.0.0.1:8000/api/geo/all" \
--H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
-
+-H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228"
 
 ```
 # Remove data
 ```bash
 
 curl -X GET "http://127.0.0.1:8000/api/geo/catalog/delete?id=http://spalod/catalog_acc53514-6a2f-4521-afa5-40783906d4ba" \
-  -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
+  -H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228"
   
 curl -X GET "http://127.0.0.1:8000/api/geo/feature/delete?id=https://registry.gdi-de.org/id/hamburg/feature1cd3fd04-f40c-406d-8655-57df73b164e6" \
-  -H "Authorization: Token 79f5571c8c44563a82ce13c395f1982e18d7be5d"
+  -H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228"
 ```
 

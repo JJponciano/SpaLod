@@ -19,10 +19,10 @@ class SparqlQueryAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         print("::::::: SparqlQueryAPIView :::::::")
-
         serializer = SparqlQuerySerializer(data=request.data)
         if serializer.is_valid():
             sparql_query = serializer.validated_data['query']
+            catalog_id = serializer.validated_data['catalog_id']
             # graph_uri = serializer.validated_data.get('graph')
             # Set up the SPARQL endpoint to query the graph and get the OWL file URI
             sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
@@ -43,14 +43,25 @@ class SparqlQueryAPIView(APIView):
             sparql_query = prefixes + sparql_query
             graph_general = self.spalod.General
 
-            sparql.setQuery(f"""
-            PREFIX spalod: <http://spalod/>
-            SELECT ?catalog ?owl_url WHERE {{ 
-                GRAPH <{graph_general}> {{ 
-                    ?catalog spalod:hasOWL ?owl_url .
-                }} 
-            }}
-            """) 
+            if catalog_id:
+                print(f" Search only in {catalog_id}")
+                sparql.setQuery(f"""
+                PREFIX spalod: <http://spalod/>
+                SELECT ?catalog ?owl_url WHERE {{ 
+                    GRAPH <{graph_general}> {{ 
+                        <{catalog_id}> spalod:hasOWL ?owl_url .
+                    }} 
+                }}
+                """) 
+            else:
+                sparql.setQuery(f"""
+                PREFIX spalod: <http://spalod/>
+                SELECT ?catalog ?owl_url WHERE {{ 
+                    GRAPH <{graph_general}> {{ 
+                        ?catalog spalod:hasOWL ?owl_url .
+                    }} 
+                }}
+                """) 
             
             sparql.setReturnFormat(JSON)
 
