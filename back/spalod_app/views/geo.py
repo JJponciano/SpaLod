@@ -13,21 +13,48 @@ from ..utils.sparql_helpers import process_owl_file,delete_ontology_entry
 from  .sparql_query import SparqlQueryAPIView
 from ..serializers import SparqlQuerySerializer
 
-class GeoGetAllView(APIView):
+class GeoGetAllCatalogsView(APIView):
     def get(self, request, *args, **kwargs):
-        print("::::::: GeoGetAllView :::::::")
+    
+        print("::::::: GeoGetAllCatalogsView :::::::")
+        sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
+        self.spalod = Namespace("http://spalod/")
+
+        graph_general = self.spalod.General
+
+        sparql.setQuery(f"""
+            SELECT ?catalog
+            WHERE {{
+                GRAPH <{graph_general}> {{ 
+                    ?catalog <http://spalod/catalog> ?b .
+                }}
+            }}
+        """)
+        sparql.setReturnFormat(JSON)
+        
+        try:
+            results = sparql.query().convert()
+            return Response(results, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+class GeoGetAllFeaturesOfCatalogView(APIView):
+    def get(self, request, *args, **kwargs):
+        print("::::::: GeoGeGeoWKTbyCatalogtAllView :::::::")
+        catalog_id = request.query_params.get('catalog_id')
+
         sparql_query = """     
             PREFIX geo: <http://www.opengis.net/ont/geosparql#> 
             PREFIX spalod: <http://spalod/> 
-            SELECT ?catalog ?feature 
+            SELECT ?feature
             WHERE { 
-                ?catalog spalod:hasFeature ?feature . 
-                ?feature a geo:Feature ; geo:hasGeometry ?geom . 
+                ?feature a geo:Feature . 
             }
         """
 
         # Add the SPARQL query to request data for use in SparqlQueryAPIView
         request.data['query'] = sparql_query
+        request.data['catalog_id'] = catalog_id
 
         # Instantiate SparqlQueryAPIView and directly call its `post` method
         sparql_view = SparqlQueryAPIView()
@@ -82,6 +109,7 @@ class GeoWKT(APIView):
         # Instantiate SparqlQueryAPIView and directly call its `post` method
         sparql_view = SparqlQueryAPIView()
         return sparql_view.post(request, *args, **kwargs)
+    
 class GeoGetFeatureWKT(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGetFeature :::::::")

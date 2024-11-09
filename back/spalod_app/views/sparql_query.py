@@ -22,7 +22,10 @@ class SparqlQueryAPIView(APIView):
         serializer = SparqlQuerySerializer(data=request.data)
         if serializer.is_valid():
             sparql_query = serializer.validated_data['query']
-            catalog_id = serializer.validated_data['catalog_id']
+            try:
+                catalog_id = serializer.validated_data['catalog_id']
+            except:
+                catalog_id = None
             # graph_uri = serializer.validated_data.get('graph')
             # Set up the SPARQL endpoint to query the graph and get the OWL file URI
             sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")

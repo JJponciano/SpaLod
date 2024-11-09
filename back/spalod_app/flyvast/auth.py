@@ -1,13 +1,22 @@
 from django.conf import settings
 import requests
 import hashlib
+import os
 
 auth_token = ""
 
 def authenticate_flyvast():
     fv_api_url = settings.FLYVAST_API_URL
-    fv_user = settings.FLYVAST_USER
-    fv_password = settings.FLYVAST_PASSWORD
+    
+    try:
+        fv_user = settings.FLYVAST_USER
+    except:
+        fv_user = os.environ['FLYVAST_USER']
+        
+    try:
+        fv_password = settings.FLYVAST_PASSWORD
+    except:
+        fv_password = os.environ['FLYVAST_PASSWORD']
     
     r = requests.post(f'{fv_api_url}/Login.php', json={
         "email": fv_user,

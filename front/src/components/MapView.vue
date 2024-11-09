@@ -1,10 +1,8 @@
 <script>
 import L from "leaflet";
-import { getAllGeo, getFeature } from "../services/geo";
+import { getFeature } from "../services/api-geo";
 import {
-  addFeatures,
   subscribeFeatureVisibiltyChange,
-  clearFeatures,
   subscribeFeatureClick,
 } from "../services/map";
 
@@ -77,11 +75,7 @@ export default {
 
       // Add layers and points layers to the map
       L.control.layers(baseLayers).addTo(this.map);
-    },
-    async displayGeo() {
-      const allGeos = await getAllGeo();
 
-      addFeatures(allGeos.map(({ metadatas }) => metadatas));
       this.unsubscribe.push(
         ...[
           subscribeFeatureVisibiltyChange(
@@ -90,66 +84,9 @@ export default {
           subscribeFeatureClick(this.onFeatureClick.bind(this)),
         ]
       );
-
-      const addPolyline = (id, pointList) => {
-        const mapObj = new L.Polyline(pointList, {
-          color: "blue",
-          weight: 3,
-          opacity: 0.5,
-          smoothFactor: 1,
-        });
-        mapObj.on("click", (event) => {
-          this.displayFeature(event.target.spalodId);
-        });
-        mapObj.spalodId = id;
-        mapObj.visible = false;
-
-        this.mapObjList.push(mapObj);
-      };
-
-      for (const { geo, type, metadatas } of allGeos) {
-        // TODO: handle other types
-        if (type === "LINESTRING") {
-          addPolyline(
-            metadatas.feature,
-            geo.map(([lng, lat]) => new L.LatLng(lng, lat))
-          );
-        } else if (type === "MULTILINESTRING") {
-          for (const polyline of geo) {
-            addPolyline(
-              metadatas.feature,
-              polyline.map(([lng, lat]) => new L.LatLng(lng, lat))
-            );
-          }
-        } else if (type === "POLYGON") {
-          const mapObj = new L.Polygon(
-            geo.map(([lng, lat]) => new L.LatLng(lng, lat)),
-            {
-              color: "blue",
-              weight: 3,
-              opacity: 0.5,
-              smoothFactor: 1,
-            }
-          );
-          mapObj.on("click", (event) => {
-            this.displayFeature(event.target.spalodId);
-          });
-          mapObj.spalodId = metadatas.feature;
-
-          this.mapObjList.push(mapObj);
-        } else if (type === "POINT") {
-          const mapObj = new L.marker(new L.LatLng(geo[1], geo[0]));
-          mapObj.on("click", (event) => {
-            this.displayFeature(event.target.spalodId);
-          });
-          mapObj.spalodId = metadatas.feature;
-
-          this.mapObjList.push(mapObj);
-        }
-      }
     },
-    async displayFeature(featureId) {
-      const res = await getFeature(featureId);
+    async displayFeature(featureId, catalogId) {
+      const res = await getFeature(featureId, catalogId);
       this.feature = res
         .filter((x) => x.metadatas?.key && x.metadatas?.value)
         .map(({ metadatas: { key, value } }) => ({
@@ -164,13 +101,76 @@ export default {
       this.pointcloudUrl = null;
     },
 
+    createMapObj(feature) {
+      let mapObj;
+
+      if (feature.wkt.type === "LINESTRING") {
+        mapObj = new L.Polyline(
+          feature.wkt.geo.map(([lng, lat]) => new L.LatLng(lat, lng)),
+          {
+            color: "blue",
+            weight: 3,
+            opacity: 0.5,
+            smoothFactor: 1,
+          }
+        );
+      } else if (feature.wkt.type === "MULTILINESTRING") {
+        mapObj = new L.multiPolyline(
+          feature.wkt.geo.map((x) =>
+            x.map(([lng, lat]) => new L.LatLng(lat, lng))
+          ),
+          {
+            color: "blue",
+            weight: 3,
+            opacity: 0.5,
+            smoothFactor: 1,
+          }
+        );
+      } else if (feature.wkt.type === "POLYGON") {
+        mapObj = new L.Polygon(
+          feature.wkt.geo.map(([lng, lat]) => new L.LatLng(lat, lng)),
+          {
+            color: "blue",
+            weight: 3,
+            opacity: 0.5,
+            smoothFactor: 1,
+          }
+        );
+      } else if (feature.wkt.type === "POINT") {
+        mapObj = new L.marker(
+          new L.LatLng(feature.wkt.geo[1], feature.wkt.geo[0])
+        );
+      }
+
+      if (mapObj) {
+        mapObj.on("click", (event) => {
+          this.displayFeature(
+            event.target.spalodId,
+            event.target.spalodCatalogId
+          );
+        });
+        mapObj.spalodId = feature.id;
+        mapObj.spalodCatalogId = feature.catalogId;
+        mapObj.visible = false;
+
+        this.mapObjList.push(mapObj);
+        return mapObj;
+      } else {
+        throw new Error("Unkown feature type");
+      }
+    },
+
     onFeatureVisibilityChange(features, remove) {
       let doZoom = false;
 
       for (const feature of features) {
-        const mapObj = this.mapObjList.find(
+        let mapObj = this.mapObjList.find(
           ({ spalodId }) => spalodId === feature.id
         );
+
+        if (!mapObj && feature.wkt) {
+          mapObj = this.createMapObj(feature);
+        }
 
         if (mapObj) {
           if (feature.visible && !remove) {
@@ -230,11 +230,10 @@ export default {
   },
   mounted() {
     this.initMap();
-    this.displayGeo();
   },
   unmounted() {
     this.unsubscribe.forEach((x) => x());
-    clearFeatures();
+    // clearFeatures();
   },
 };
 </script>

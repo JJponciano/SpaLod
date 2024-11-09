@@ -1,20 +1,58 @@
 import { $fetch } from "./api";
 
 export async function getAllGeo() {
-  const req = await $fetch("api/geo/all");
+  const req = await $fetch("api/geo/all/catalog");
+  const result = await req.json();
+
+  return getGeoData(
+    result.results.bindings.map((x) => ({ catalog: x.catalog.value }))
+  );
+}
+
+export async function getAllCatalogFeatures(catalogId) {
+  const req = await $fetch(`api/geo/all/feature?catalog_id=${catalogId}`);
   const result = await req.json();
 
   return getGeoData(result);
 }
 
-export async function getFeature(id) {
-  const req = await $fetch(`api/geo/feature?id=${id}`);
+export async function getCatalogWkt(catalogId) {
+  const req = await $fetch(`api/geo/getwkt?catalog_id=${catalogId}`);
   const result = await req.json();
 
   return getGeoData(result);
 }
 
-export async function getGeoData(results) {
+export async function getFeatureWkt(featureId, catalogId) {
+  const req = await $fetch(
+    `api/geo/getfeaturewkt?id=${featureId}&catalog_id=${catalogId}`
+  );
+  const result = await req.json();
+
+  return getGeoData(result);
+}
+
+export async function getCatalog(catalogId) {
+  const req = await $fetch(`api/geo/catalog?id=${catalogId}`);
+  const result = await req.json();
+
+  return getGeoData(
+    result.results.bindings.map((x) => ({
+      key: x.key.value,
+      value: x.value.value,
+    })),
+    catalogId
+  );
+}
+
+export async function getFeature(id, catalogId) {
+  const req = await $fetch(`api/geo/feature?id=${id}&catalog_id=${catalogId}`);
+  const result = await req.json();
+
+  return getGeoData(result, catalogId);
+}
+
+export async function getGeoData(results, catalogId) {
   const res = [];
 
   for (const result of results) {
@@ -74,7 +112,7 @@ export async function getGeoData(results) {
 
   for (const metadatas of res.map((x) => x.metadatas)) {
     if (metadatas.key?.includes("hasPointcloud")) {
-      const pointcloudResult = await getFeature(metadatas.value);
+      const pointcloudResult = await getFeature(metadatas.value, catalogId);
       const pointcloudId = pointcloudResult
         .map((x) => x.metadatas)
         .filter((x) => x.key?.includes("pointcloud_id"))[0]?.value;

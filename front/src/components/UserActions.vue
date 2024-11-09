@@ -11,20 +11,17 @@
             <div
               class="arrow"
               :class="{
-                down: expandCatalogs[catalog.id],
-                right: !expandCatalogs[catalog.id],
+                down: catalog.expanded,
+                right: !catalog.expanded,
               }"
-              @click="expandCatalogs[catalog.id] = !expandCatalogs[catalog.id]"
+              @click="expandCatalog(catalog.id)"
             ></div>
             <input
               type="checkbox"
-              v-model="showCatalogs[catalog.id]"
-              @change="onCatalogVisibilityChange(catalog.id)"
+              v-model="catalog.visible"
+              @change="onCatalogVisibilityChange(catalog)"
             />
-            <div
-              class="title"
-              @click="expandCatalogs[catalog.id] = !expandCatalogs[catalog.id]"
-            >
+            <div class="title" @click="expandCatalog(catalog.id)">
               {{ catalog.id }}
             </div>
             <button @click="onClickCatalogMap(catalog.id)">🗺️</button>
@@ -36,7 +33,7 @@
             </button>
             <button @click="onClickDeleteCatalog(catalog.id)">🗑</button>
           </div>
-          <div class="feature-container" v-if="expandCatalogs[catalog.id]">
+          <div class="feature-container" v-if="catalog.expanded">
             <div class="feature" v-for="feature of catalog.features">
               <input
                 type="checkbox"
@@ -606,14 +603,14 @@ import { $ajax } from "../services/api";
 import Dataset from "./Dataset.vue";
 import { cookies } from "../services/login";
 import {
-  getAllFeatures,
   getAllCatalogs,
   setFeatureVisibility,
   setCatalogVisibility,
   triggerFeatureClick,
+  expandCatalog,
 } from "../services/map";
 import { ref } from "vue";
-import { removeFeature, removeCatalog, getFeature } from "../services/geo";
+import { removeFeature, removeCatalog, getCatalog } from "../services/api-geo";
 
 $.ajaxSetup({
   xhrFields: {
@@ -628,7 +625,6 @@ export default {
   },
   setup() {
     const catalogs = getAllCatalogs();
-    const features = getAllFeatures();
     const isDarkMode = ref(false);
     const menuOpen = ref(false);
     const showAddMenu = ref(false);
@@ -642,8 +638,6 @@ export default {
     const inputAdvanced = ref("");
     const inputCatalog = ref("");
     const advancedMenuOpen = ref(false);
-    const expandCatalogs = ref({});
-    const showCatalogs = ref({});
     const selectedOption = ref("default");
 
     return {
@@ -766,10 +760,7 @@ export default {
         port: "Seehaefen",
         cities: "BotKon",
       },
-      features,
       catalogs,
-      expandCatalogs,
-      showCatalogs,
     };
   },
   watch: {
@@ -1137,15 +1128,15 @@ export default {
       setFeatureVisibility(featureId, false, true);
       removeFeature(featureId);
     },
-    onCatalogVisibilityChange(catalogId) {
-      setCatalogVisibility(catalogId, this.showCatalogs[catalogId]);
+    onCatalogVisibilityChange(catalog) {
+      setCatalogVisibility(catalog.id, catalog.visible);
     },
     onClickDeleteCatalog(catalogId) {
       setCatalogVisibility(catalogId, false, true);
       removeCatalog(catalogId);
     },
     async onClickCatalogMap(catalogId) {
-      const res = await getFeature(catalogId);
+      const res = await getCatalog(catalogId);
       const mapUrl = res
         .map((x) => x.metadatas)
         .find((x) => x.key === "http://spalod/hasHTML")?.value;
@@ -1153,12 +1144,15 @@ export default {
       window.open(mapUrl, "_blank");
     },
     async onClickCatalogOwl(catalogId) {
-      const res = await getFeature(catalogId);
+      const res = await getCatalog(catalogId);
       const owlUrl = res
         .map((x) => x.metadatas)
         .find((x) => x.key === "http://spalod/hasOWL")?.value;
 
       window.open(owlUrl, "_blank");
+    },
+    expandCatalog(catalogId) {
+      expandCatalog(catalogId);
     },
   },
 };
