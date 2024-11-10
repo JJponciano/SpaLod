@@ -211,7 +211,7 @@ export default {
       formData.append("file", this.file);
       formData.append("metadata", JSON.stringify(this.metadata));
       this.post_checkont(
-        import.meta.env.VITE_APP_API_BASE_URL + "/api/upload-file/",
+        "/api/upload-file/",
         formData,
         this.seek_unknown
         //this.handleResponse
@@ -249,7 +249,7 @@ export default {
         console.log("toto");
 
         // $ajax({
-        //   url: import.meta.env.VITE_APP_API_BASE_URL + "/api/enrich",
+        //   url: "/api/enrich",
         //   type: "POST",
         //   data: formData,
         //   processData: false,

@@ -794,22 +794,17 @@ export default {
         queryString === "/"
       ) {
         $ajax({
-          url:
-            import.meta.env.VITE_APP_API_BASE_URL +
-            "/api/spalodWFS" +
-            queryString +
-            url.search,
+          url: "/api/spalodWFS" + queryString + url.search,
           type: "GET",
           // dataType: "json",
           processData: false,
           contentType: false,
           success: (response, textStatus, xhr) => {
-            const fileUrl = import.meta.env.VITE_APP_API_BASE_URL + response;
+            const fileUrl = response;
             if (fileUrl.endsWith(".json")) {
               let parts = queryString.split("/");
               let datasetID = parts.pop();
-              const url =
-                import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-query/";
+              const url = "/api/sparql-query/";
               const data = {
                 query:
                   "SELECT ?itemID ?coordinates WHERE {  spalod:" +
@@ -868,7 +863,7 @@ export default {
         tripleData: tripleData,
       };
       $ajax({
-        url: import.meta.env.VITE_APP_API_BASE_URL + "/api/update",
+        url: "/api/update",
         type: "POST",
         data: JSON.stringify(addOperation),
         contentType: "application/json",
@@ -900,14 +895,13 @@ export default {
       formData.append("file", file);
 
       $ajax({
-        url: import.meta.env.VITE_APP_API_BASE_URL + "/api/uplift",
+        url: "/api/uplift",
         type: "POST",
         data: formData,
         processData: false,
         contentType: false,
         success: (response, textStatus, xhr) => {
-          window.location.href =
-            import.meta.env.VITE_APP_API_BASE_URL + response;
+          window.location.href = response;
         },
         error: (xhr, textStatus, errorThrown) => {
           // Display an error message
@@ -921,7 +915,7 @@ export default {
         alert("Ontology enriched successfully!");
 
         // $ajax({
-        //   url: import.meta.env.VITE_APP_API_BASE_URL + "/api/enrich",
+        //   url: "/api/enrich",
         //   type: "POST",
         //   data: formData,
         //   processData: false,
@@ -971,7 +965,7 @@ export default {
       this.$emit("fileSelected", event.target.files[0]);
     },
     confirmRequest() {
-      const url = import.meta.env.VITE_APP_API_BASE_URL + "/api/sparql-query/";
+      const url = "/api/sparql-query/";
       const data = {
         query: this.inputAdvanced,
         triplestore: import.meta.env.VITE_APP_GRAPH_DB + "/repositories/Spalod",

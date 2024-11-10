@@ -4,11 +4,11 @@
     <form @submit.prevent="submitForm">
       <div>
         <label for="username">Username</label>
-        <input type="username" id="username" v-model="username" required>
+        <input type="username" id="username" v-model="username" required />
       </div>
       <div>
         <label for="password">Password</label>
-        <input type="password" id="password" v-model="password" required>
+        <input type="password" id="password" v-model="password" required />
       </div>
       <button type="submit">Login</button>
     </form>
@@ -21,10 +21,10 @@
 </template>
 
 <script>
-import { $ajax } from '../services/api';
+import { $ajax } from "../services/api";
 
 export default {
-  name: 'Login',
+  name: "Login",
   data() {
     return {
       username: "",
@@ -34,63 +34,63 @@ export default {
   methods: {
     async submitForm() {
       $ajax({
-        url: import.meta.env.VITE_APP_API_BASE_URL + '/auth/login/',
-        method: 'POST',
+        url: "/auth/login/",
+        method: "POST",
         data: {
           username: this.username,
-          password: this.password
+          password: this.password,
         },
         xhrFields: {
-          withCredentials: true
+          withCredentials: true,
         },
         success: (response) => {
           console.log(response);
           $ajax({
-            url: import.meta.env.VITE_APP_API_BASE_URL + '/uuid',
-            method: 'GET',
+            url: "/uuid",
+            method: "GET",
             data: {
               username: this.username,
             },
             xhrFields: {
-              withCredentials: true
+              withCredentials: true,
             },
             success: (response) => {
-              console.log(response)
+              console.log(response);
               this.$notify({
-                title: 'Login successful',
-                text: 'You have successfully logged in! Click here to go back to default page.',
-                type: 'success',
-                group: 'login-success',
+                title: "Login successful",
+                text: "You have successfully logged in! Click here to go back to default page.",
+                type: "success",
+                group: "login-success",
                 duration: 50000,
               });
               localStorage.clear();
-              localStorage.setItem('username', this.username);
-              localStorage.setItem('UUID', response);
-              localStorage.setItem('githubLog', false);
+              localStorage.setItem("username", this.username);
+              localStorage.setItem("UUID", response);
+              localStorage.setItem("githubLog", false);
 
-              window.history.pushState({}, '', '/admin')
-              window.location.reload()
-            }
-          })
+              window.history.pushState({}, "", "/admin");
+              window.location.reload();
+            },
+          });
         },
         error: (error) => {
           this.$notify({
-            title: 'Login failed',
-            text: 'Please check your credentials and try again.',
-            type: 'error',
-            duration: 5000 // notification will disappear after 5 seconds
+            title: "Login failed",
+            text: "Please check your credentials and try again.",
+            type: "error",
+            duration: 5000, // notification will disappear after 5 seconds
           });
           console.error(error);
-        }
-      })
+        },
+      });
     },
     oauthLogin() {
       localStorage.clear();
-      window.location.href = import.meta.env.VITE_APP_API_BASE_URL + "/oauth2/authorization/github";
+      window.location.href = "/oauth2/authorization/github";
     },
     signInGitlab() {
-      window.location.href = import.meta.env.VITE_APP_API_BASE_URL + "/auth/use/gitlab/";
-    }
+      window.location.href = "/auth/use/gitlab/";
+    },
   },
 };
 </script>
@@ -104,7 +104,7 @@ export default {
   width: 100vw;
 }
 
-.login-container>h2 {
+.login-container > h2 {
   margin-bottom: 20px;
 }
 </style>

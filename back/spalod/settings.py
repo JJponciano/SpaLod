@@ -25,9 +25,9 @@ SECRET_KEY = 'django-insecure-%=g@ry=4q8mauza^azmpwd(rw*w5y)6ywm0t=86h@@l-r$=!#b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', 'spalod.geovast3d.com']
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8080', 'http://localhost:8000', 'http://localhost']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8080', 'http://localhost:8000', 'http://localhost', 'https://spalod.geovast3d.com']
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:8080',
     'http://localhost:8000'
@@ -71,9 +71,12 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.gitlab.GitLabOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
+
 SOCIAL_AUTH_GITLAB_KEY = '404b08ce3f55a47545e7fcc60402af9e0e81879c9374a1ad0110a301b5c5fa0f'
 SOCIAL_AUTH_GITLAB_SECRET = 'gloas-b258242c5d6c0dd39d265a4e5bf4b3f05d56f5020825259cf1cb4b7238c16686'
-SOCIAL_AUTH_GITLAB_API_URL = 'https://gitlab.com'  
+SOCIAL_AUTH_GITLAB_REDIRECT_URI = 'http://localhost:8000/auth/gitlab/redirect/'
+SOCIAL_AUTH_GITLAB_FRONT_URL = 'http://localhost:8080'
+SOCIAL_AUTH_GITLAB_API_URL = 'https://gitlab.com'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

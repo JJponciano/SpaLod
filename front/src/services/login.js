@@ -6,7 +6,7 @@ let username = "";
 export async function checkLogin() {
   if (window.location.pathname.startsWith("/login/gitlab")) {
     const urlParams = new URLSearchParams(window.location.search);
-    $fetch(import.meta.env.VITE_APP_API_BASE_URL + "/auth/gitlab/", {
+    $fetch("/auth/gitlab/", {
       method: "POST",
       body: JSON.stringify({ access_token: urlParams.get("access_token") }),
       headers: { "content-type": "application/json" },
@@ -19,9 +19,7 @@ export async function checkLogin() {
       });
   } else {
     try {
-      const res = await fetch(
-        import.meta.env.VITE_APP_API_BASE_URL + "/auth/user/"
-      );
+      const res = await fetch("/auth/user/");
       if (res.status !== 200) {
         logged = false;
         throw "forbidden";
@@ -43,7 +41,7 @@ export async function checkLogin() {
 export async function logout() {
   return new Promise((resolve, reject) => {
     $ajax({
-      url: import.meta.env.VITE_APP_API_BASE_URL + "/auth/logout/",
+      url: "/auth/logout/",
       method: "POST",
       xhrFields: {
         withCredentials: true,
