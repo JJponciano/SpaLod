@@ -257,6 +257,10 @@ export default {
 </template>
 
 <style lang="scss">
+.leaflet-pane.leaflet-shadow-pane {
+  display: none;
+}
+
 .map-view {
   background-color: #4a5568;
   height: 100%;
