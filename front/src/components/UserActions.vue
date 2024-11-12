@@ -6,7 +6,7 @@
         <p @click="showData = !showData">Data</p>
       </div>
       <div class="data" :class="{ active: showData }" v-if="showData">
-        <div class="catalog" v-for="catalog of catalogs">
+        <div class="catalog" v-for="catalog of catalogs" :key="catalog.id">
           <div class="title-container">
             <div
               class="arrow"
@@ -47,7 +47,11 @@
             <button @click="onClickDeleteCatalog(catalog.id)">🗑</button>
           </div>
           <div class="feature-container" v-if="catalog.expanded">
-            <div class="feature" v-for="feature of catalog.features">
+            <div
+              class="feature"
+              v-for="feature of catalog.features"
+              :key="feature.id"
+            >
               <input
                 type="checkbox"
                 v-model="feature.visible"
@@ -1148,7 +1152,43 @@ export default {
       setCatalogVisibility(catalogId, false, true);
       removeCatalog(catalogId);
     },
-    onClickSparqlQueryCsv(catalog) {},
+    onClickSparqlQueryCsv(catalog) {
+      if (catalog.raw?.length > 0) {
+        const rows = [];
+
+        rows.push(Object.keys(catalog.raw[0].metadatas));
+        rows.push(...catalog.raw.map((x) => Object.values(x.metadatas)));
+
+        let csvContent = rows
+          .map((e) => e.map((x) => `"${x.replace(/"/g, '""')}"`).join(","))
+          .join("\n");
+
+        // var encodedUri = encodeURI(csvContent);
+        // var link = document.createElement("a");
+        // link.setAttribute("href", encodedUri);
+        // link.setAttribute("download", catalog.id);
+        // document.body.appendChild(link);
+
+        // link.click();
+
+        // document.body.removeChild(link);
+
+        var blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+        var link = document.createElement("a");
+        if (link.download !== undefined) {
+          // feature detection
+          // Browsers that support HTML5 download attribute
+          var url = URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", catalog.id);
+          link.style.visibility = "hidden";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
+    },
     async onClickCatalogMap(catalogId) {
       const res = await getCatalog(catalogId);
       const mapUrl = res

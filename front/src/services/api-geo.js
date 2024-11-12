@@ -117,9 +117,9 @@ export async function getGeoData(results, catalogId) {
               .replace(")", "")
           )
         );
-      } else {
-        itemRes.metadatas[header] = result[header];
       }
+
+      itemRes.metadatas[header] = result[header];
     }
 
     res.push(itemRes);

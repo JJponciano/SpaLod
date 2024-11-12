@@ -166,7 +166,7 @@ export async function setCatalogVisibility(catalogId, visible, remove = false) {
     );
 
     if (remove) {
-      catalogs.value.splice(catalogs.value.indexOf(catalog));
+      catalogs.value.splice(catalogs.value.indexOf(catalog), 1);
     }
   }
 }
