@@ -22,14 +22,27 @@
               @change="onCatalogVisibilityChange(catalog)"
             />
             <div class="title" @click="expandCatalog(catalog.id)">
-              {{ catalog.id }}
+              {{ displayLastPortion(catalog.id) }}
             </div>
-            <button @click="onClickCatalogMap(catalog.id)">🗺️</button>
+            <button
+              @click="onClickCatalogMap(catalog.id)"
+              v-if="catalog.type !== 'SPARQL_QUERY'"
+            >
+              🗺️
+            </button>
             <button
               style="font-size: 12px"
               @click="onClickCatalogOwl(catalog.id)"
+              v-if="catalog.type !== 'SPARQL_QUERY'"
             >
               owl
+            </button>
+            <button
+              style="font-size: 12px"
+              @click="onClickSparqlQueryCsv(catalog)"
+              v-if="catalog.type === 'SPARQL_QUERY'"
+            >
+              csv
             </button>
             <button @click="onClickDeleteCatalog(catalog.id)">🗑</button>
           </div>
@@ -40,8 +53,8 @@
                 v-model="feature.visible"
                 @change="onFeatureVisibilityChange(feature)"
               />
-              <div @click="onClickFeature(feature.id)">
-                {{ feature.id }}
+              <div class="title" @click="onClickFeature(feature.id)">
+                {{ displayLastPortion(feature.id) }}
               </div>
               <button @click="onClickDeleteFeature(feature.id)">🗑</button>
             </div>
@@ -213,7 +226,6 @@ button {
   transition: background-color 0.2s ease-in-out;
   font-size: 18px;
   font-weight: bold;
-  margin-top: 10px;
   width: 100%;
   text-align: left;
 }
@@ -293,6 +305,10 @@ button {
       margin-left: 10px;
       word-break: break-all;
       font-size: 12px;
+    }
+
+    > .title {
+      flex: 1;
     }
 
     > button {
@@ -608,9 +624,15 @@ import {
   setCatalogVisibility,
   triggerFeatureClick,
   expandCatalog,
+  addSparqlQueryResult,
 } from "../services/map";
 import { ref } from "vue";
-import { removeFeature, removeCatalog, getCatalog } from "../services/api-geo";
+import {
+  removeFeature,
+  removeCatalog,
+  getCatalog,
+  sparqlQuery,
+} from "../services/api-geo";
 
 $.ajaxSetup({
   xhrFields: {
@@ -964,13 +986,10 @@ export default {
     handleFileInputOwl(event) {
       this.$emit("fileSelected", event.target.files[0]);
     },
-    confirmRequest() {
-      const url = "/api/sparql-query/";
-      const data = {
-        query: this.inputAdvanced,
-        triplestore: import.meta.env.VITE_APP_GRAPH_DB + "/repositories/Spalod",
-      };
-      this.postJSON(url, data, this.handleResponse);
+    async confirmRequest() {
+      const result = await sparqlQuery(this.inputAdvanced);
+
+      addSparqlQueryResult(result);
     },
     detectDarkMode() {
       this.isDarkMode = window.matchMedia(
@@ -1129,6 +1148,7 @@ export default {
       setCatalogVisibility(catalogId, false, true);
       removeCatalog(catalogId);
     },
+    onClickSparqlQueryCsv(catalog) {},
     async onClickCatalogMap(catalogId) {
       const res = await getCatalog(catalogId);
       const mapUrl = res
@@ -1147,6 +1167,9 @@ export default {
     },
     expandCatalog(catalogId) {
       expandCatalog(catalogId);
+    },
+    displayLastPortion(str) {
+      return str.replace(/.*\//, "").replace(/.*#/, "");
     },
   },
 };

@@ -8,8 +8,12 @@ import {
 
 const features = ref([]);
 const catalogs = ref([]);
+const sparqlQueries = ref([]);
+
 const visibilityChangeSubscribers = [];
 const clickSubscribers = [];
+
+let nbSparqlQueries = 0;
 
 init();
 
@@ -54,6 +58,10 @@ export function getAllFeatures() {
 
 export function getAllCatalogs() {
   return catalogs.value;
+}
+
+export function getAllSparqlQueries() {
+  return sparqlQueries.value;
 }
 
 export function expandCatalog(catalogId) {
@@ -197,6 +205,46 @@ export function subscribeFeatureClick(func) {
   return unsubscribe;
 }
 
-export function clearFeatures() {
+export function addSparqlQueryResult(res) {
+  nbSparqlQueries++;
+
+  const catalogId = `sparql-query-${nbSparqlQueries}`;
+
+  const catalog = {
+    id: catalogId,
+    type: "SPARQL_QUERY",
+    raw: res,
+    features: [],
+    expanded: true,
+    visible: true,
+  };
+  catalogs.value.push(catalog);
+
+  const tabFeatures = [];
+
+  let i = 0;
+  for (const { geo, type } of res.filter((x) => x.geo)) {
+    i++;
+    const feature = {
+      id: `${nbSparqlQueries}-feature-${i}`,
+      wkt: { geo, type },
+      catalogId,
+      visible: true,
+    };
+
+    features.value.push(feature);
+    catalog.features.push(feature);
+    tabFeatures.push(feature);
+  }
+
+  visibilityChangeSubscribers.forEach((x) => x(tabFeatures));
+}
+
+export function reset() {
   features.value.splice(0, features.value.length);
+  catalogs.value.splice(0, catalogs.value.length);
+  sparqlQueries.value.splice(0, sparqlQueries.value.length);
+
+  clickSubscribers.splice(0, clickSubscribers.length);
+  visibilityChangeSubscribers.splice(0, visibilityChangeSubscribers.length);
 }

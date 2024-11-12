@@ -1,8 +1,7 @@
 import { $fetch } from "./api";
 
 export async function getAllGeo() {
-  const req = await $fetch("api/geo/all/catalog");
-  const result = await req.json();
+  const result = await $fetch("api/geo/all/catalog").then((x) => x.json());
 
   return getGeoData(
     result.results.bindings.map((x) => ({ catalog: x.catalog.value }))
@@ -10,31 +9,33 @@ export async function getAllGeo() {
 }
 
 export async function getAllCatalogFeatures(catalogId) {
-  const req = await $fetch(`api/geo/all/feature?catalog_id=${catalogId}`);
-  const result = await req.json();
+  const result = await $fetch(
+    `api/geo/all/feature?catalog_id=${catalogId}`
+  ).then((x) => x.json());
 
   return getGeoData(result);
 }
 
 export async function getCatalogWkt(catalogId) {
-  const req = await $fetch(`api/geo/getwkt?catalog_id=${catalogId}`);
-  const result = await req.json();
+  const result = await $fetch(`api/geo/getwkt?catalog_id=${catalogId}`).then(
+    (x) => x.json()
+  );
 
   return getGeoData(result);
 }
 
 export async function getFeatureWkt(featureId, catalogId) {
-  const req = await $fetch(
+  const result = await $fetch(
     `api/geo/getfeaturewkt?id=${featureId}&catalog_id=${catalogId}`
-  );
-  const result = await req.json();
+  ).then((x) => x.json());
 
   return getGeoData(result);
 }
 
 export async function getCatalog(catalogId) {
-  const req = await $fetch(`api/geo/catalog?id=${catalogId}`);
-  const result = await req.json();
+  const result = await $fetch(`api/geo/catalog?id=${catalogId}`).then((x) =>
+    x.json()
+  );
 
   return getGeoData(
     result.results.bindings.map((x) => ({
@@ -46,10 +47,24 @@ export async function getCatalog(catalogId) {
 }
 
 export async function getFeature(id, catalogId) {
-  const req = await $fetch(`api/geo/feature?id=${id}&catalog_id=${catalogId}`);
-  const result = await req.json();
+  const result = await $fetch(
+    `api/geo/feature?id=${id}&catalog_id=${catalogId}`
+  ).then((x) => x.json());
 
   return getGeoData(result, catalogId);
+}
+
+export async function sparqlQuery(query) {
+  const result = await $fetch("/api/sparql-query/", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query }),
+  }).then((x) => x.json());
+
+  return getGeoData(result);
 }
 
 export async function getGeoData(results, catalogId) {
@@ -133,13 +148,9 @@ export async function getGeoData(results, catalogId) {
 }
 
 export async function removeFeature(id) {
-  const req = await $fetch(`api/geo/feature/delete?id=${id}`);
-  const result = await req.json();
-  return result;
+  return $fetch(`api/geo/feature/delete?id=${id}`).then((x) => x.json());
 }
 
 export async function removeCatalog(id) {
-  const req = await $fetch(`api/geo/catalog/delete?id=${id}`);
-  const result = await req.json();
-  return result;
+  return $fetch(`api/geo/catalog/delete?id=${id}`).then((x) => x.json());
 }
