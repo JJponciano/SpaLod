@@ -87,6 +87,8 @@ export async function setFeatureVisibility(
     featureIds = [featureIds];
   }
 
+  let copyFeatures;
+
   const tabFeatures = [];
   let catalog = null;
   let allFeaturesVisible = true;
@@ -103,6 +105,10 @@ export async function setFeatureVisibility(
 
       if (!catalog) {
         catalog = catalogs.value.find(({ id }) => id === feature.catalogId);
+
+        if (remove) {
+          copyFeatures = catalog.features.slice();
+        }
       }
 
       if (!feature.visible && catalog.visible) {
@@ -120,14 +126,18 @@ export async function setFeatureVisibility(
 
       if (remove) {
         features.splice(features.indexOf(feature), 1);
-        catalog.features.splice(catalog.features.indexOf(feature), 1);
+        copyFeatures.splice(copyFeatures.indexOf(feature), 1);
       }
 
       tabFeatures.push(feature);
     }
   }
 
-  if (!catalog.visible && allFeaturesVisible) {
+  if (remove) {
+    catalog.features = copyFeatures;
+  }
+
+  if (!catalog.visible && catalog.features.every((x) => x.visible)) {
     catalog.visible = true;
   }
 
@@ -151,8 +161,10 @@ export async function setCatalogVisibility(catalogId, visible, remove = false) {
     ) {
       const catalogWkts = await getCatalogWkt(catalog.id);
 
+      const copyFeatures = catalog.features.slice();
+
       for (const catalogWkt of catalogWkts) {
-        const feature = catalog.features.find(
+        const feature = copyFeatures.find(
           ({ id }) => id === catalogWkt.metadatas.feature
         );
 
@@ -167,10 +179,12 @@ export async function setCatalogVisibility(catalogId, visible, remove = false) {
             catalogId: catalog.id,
             wkt: { geo: catalogWkt.geo, type: catalogWkt.type },
           };
-          catalog.features.push(feature);
+          copyFeatures.push(feature);
           features.push(feature);
         }
       }
+
+      catalog.features = copyFeatures;
     }
 
     setFeatureVisibility(

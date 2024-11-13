@@ -867,8 +867,9 @@ export default {
       setFeatureVisibility(featureId, false, true);
       removeFeature(featureId);
     },
-    onCatalogVisibilityChange(catalog) {
-      setCatalogVisibility(catalog.id, catalog.visible);
+    async onCatalogVisibilityChange(catalog) {
+      await setCatalogVisibility(catalog.id, catalog.visible);
+      this.$forceUpdate();
     },
     onClickDeleteCatalog(catalogId) {
       setCatalogVisibility(catalogId, false, true);
