@@ -1,17 +1,9 @@
 <template>
   <div class="user-actions-container">
-    <UserActions
-      @properties_unknown="onProperties_unknown"
-      @file-selected="onFileSelected"
-      @JsonSelected="onChooseJson"
-      @CSVSelected="onChooseCSV"
-      @popupShow="onShowpopup"
-      @popupCShow="onShowpopupC"
-    >
-    </UserActions>
+    <UserActions @file-selected="onFileSelected"> </UserActions>
   </div>
   <div class="map-container">
-    <MapView @fileSelected="onFileSelected"></MapView>
+    <MapView></MapView>
   </div>
   <div class="metadatas-container" v-show="file">
     <Metadatas :file="file" @close="file = null"></Metadatas>
@@ -44,21 +36,6 @@ export default {
   methods: {
     onFileSelected(file) {
       this.file = file;
-    },
-    onProperties_unknown(properties_unknown) {
-      this.properties_unknown = properties_unknown;
-    },
-    onChooseCSV() {
-      this.chooseCSV = true;
-    },
-    onChooseJson() {
-      this.chooseJson = true;
-    },
-    onShowpopup() {
-      this.popup = true;
-    },
-    onShowpopupC() {
-      this.popupC = true;
     },
   },
 };

@@ -6,7 +6,7 @@ import {
   getAllCatalogFeatures,
 } from "./api-geo";
 
-const features = ref([]);
+const features = [];
 const catalogs = ref([]);
 const sparqlQueries = ref([]);
 
@@ -48,14 +48,14 @@ async function addFeatures(catalog) {
       id: featureId,
       catalogId: catalog.id,
     };
-    features.value.push(feature);
+    features.push(feature);
 
     catalog.features.push(feature);
   }
 }
 
 export function getAllFeatures() {
-  return features.value;
+  return features;
 }
 
 export function getAllCatalogs() {
@@ -88,19 +88,25 @@ export async function setFeatureVisibility(
   }
 
   const tabFeatures = [];
+  let catalog = null;
+  let allFeaturesVisible = true;
+
+  const start = Date.now();
 
   for (const featureId of featureIds) {
-    const feature = features.value.find(({ id }) => id === featureId);
+    const feature = features.find(({ id }) => id === featureId);
 
     if (feature) {
       feature.visible = visible && !remove;
 
-      const catalog = catalogs.value.find(({ id }) => id === feature.catalogId);
+      allFeaturesVisible = allFeaturesVisible && feature.visible;
+
+      if (!catalog) {
+        catalog = catalogs.value.find(({ id }) => id === feature.catalogId);
+      }
 
       if (!feature.visible && catalog.visible) {
         catalog.visible = false;
-      } else if (!catalog.visible && catalog.features.every((x) => x.visible)) {
-        catalog.visible = true;
       }
 
       if (feature.visible && !feature.wkt) {
@@ -113,13 +119,19 @@ export async function setFeatureVisibility(
       }
 
       if (remove) {
-        features.value.splice(features.value.indexOf(feature), 1);
+        features.splice(features.indexOf(feature), 1);
         catalog.features.splice(catalog.features.indexOf(feature), 1);
       }
 
       tabFeatures.push(feature);
     }
   }
+
+  if (!catalog.visible && allFeaturesVisible) {
+    catalog.visible = true;
+  }
+
+  console.log("time elapsed: ", Date.now() - start);
 
   visibilityChangeSubscribers.forEach((x) => x(tabFeatures, remove));
 }
@@ -156,7 +168,7 @@ export async function setCatalogVisibility(catalogId, visible, remove = false) {
             wkt: { geo: catalogWkt.geo, type: catalogWkt.type },
           };
           catalog.features.push(feature);
-          features.value.push(feature);
+          features.push(feature);
         }
       }
     }
@@ -187,7 +199,7 @@ export function subscribeFeatureVisibiltyChange(func) {
 }
 
 export function triggerFeatureClick(featureId) {
-  const feature = features.value.find(({ id }) => id === featureId);
+  const feature = features.find(({ id }) => id === featureId);
 
   if (feature && feature.visible) {
     clickSubscribers.forEach((x) => x(featureId));
@@ -234,7 +246,7 @@ export function addSparqlQueryResult(res) {
       visible: true,
     };
 
-    features.value.push(feature);
+    features.push(feature);
     catalog.features.push(feature);
     tabFeatures.push(feature);
   }
@@ -243,7 +255,7 @@ export function addSparqlQueryResult(res) {
 }
 
 export function reset() {
-  features.value.splice(0, features.value.length);
+  features.splice(0, features.length);
   catalogs.value.splice(0, catalogs.value.length);
   sparqlQueries.value.splice(0, sparqlQueries.value.length);
 

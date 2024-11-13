@@ -56,6 +56,10 @@
             <button @click="onClickDeleteCatalog(catalog.id)">🗑</button>
           </div>
           <div class="feature-container" v-if="catalog.expanded">
+            <div class="feature alt" v-if="catalog.features.length === 0">
+              <div class="title alt">Loading features...</div>
+              <div class="loader"></div>
+            </div>
             <div
               class="feature"
               v-for="feature of catalog.features"
@@ -76,7 +80,16 @@
       </div>
 
       <div>
-        <button class="addfile" @click="addData">Add Data</button>
+        <button class="addfile" @click="addData" v-if="getProcess() === ''">
+          Add Data
+        </button>
+        <div class="addfile-alt" v-else>
+          <div class="title">Add Data</div>
+          <div class="progress">
+            {{ getProcess() }}
+          </div>
+          <div class="loader"></div>
+        </div>
       </div>
       <div class="advancedMenu" :class="{ active: advancedMenuOpen }">
         <p @click="advancedMenuOpen = !advancedMenuOpen">Advanced Mode</p>
@@ -155,6 +168,8 @@
 </template>
 
 <style lang="scss" scoped>
+@use "sass:color";
+
 .side_pannel {
   width: 100%;
   max-height: calc(100vh - 100px);
@@ -229,7 +244,7 @@ button {
     background-color: #ef4444;
 
     &:hover {
-      background-color: lighten(#ef4444, 10%);
+      background-color: color.scale(#ef4444, $lightness: 10%);
     }
   }
 }
@@ -299,6 +314,10 @@ button {
     border-left: 1px solid rgba(255, 255, 255, 0.5);
     padding-left: 10px;
 
+    &.alt {
+      justify-content: center;
+    }
+
     > input {
       margin-left: 10px;
     }
@@ -313,6 +332,10 @@ button {
 
     > .title {
       flex: 1;
+
+      &.alt {
+        flex: none;
+      }
     }
 
     > button {
@@ -322,6 +345,16 @@ button {
       &:hover {
         color: #ddd;
       }
+    }
+
+    .loader {
+      margin-left: 10px;
+      width: 18px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 3px solid white;
+      animation: l20-1 0.8s infinite linear alternate,
+        l20-2 1.6s infinite linear;
     }
   }
 
@@ -439,11 +472,34 @@ button {
   cursor: default;
 }
 
-.addfile {
+.addfile,
+.addfile-alt {
   border-radius: 5px;
   border: none;
   background-color: none;
   margin-top: 5px;
+}
+
+.addfile-alt {
+  padding: 6px 20px;
+  display: flex;
+  align-items: center;
+  cursor: default;
+
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+    flex: 1;
+  }
+
+  .loader {
+    margin-left: 10px;
+    width: 25px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 4px solid white;
+    animation: l20-1 0.8s infinite linear alternate, l20-2 1.6s infinite linear;
+  }
 }
 
 .addfile.active {
@@ -457,17 +513,6 @@ button {
 .user-actions.dark .filter.active {
   background-color: #4a5568;
   color: white;
-}
-
-.addfile p {
-  padding: 6px 20px;
-  border: none;
-  background-color: none;
-  color: inherit;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  font-size: 18px;
-  font-weight: bold;
 }
 
 .addfile:hover {
@@ -608,6 +653,92 @@ button:hover {
     background-color: #1a202c;
   }
 }
+
+@keyframes l20-1 {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%);
+  }
+  12.5% {
+    clip-path: polygon(
+      50% 50%,
+      0 0,
+      50% 0%,
+      100% 0%,
+      100% 0%,
+      100% 0%,
+      100% 0%
+    );
+  }
+  25% {
+    clip-path: polygon(
+      50% 50%,
+      0 0,
+      50% 0%,
+      100% 0%,
+      100% 100%,
+      100% 100%,
+      100% 100%
+    );
+  }
+  50% {
+    clip-path: polygon(
+      50% 50%,
+      0 0,
+      50% 0%,
+      100% 0%,
+      100% 100%,
+      50% 100%,
+      0% 100%
+    );
+  }
+  62.5% {
+    clip-path: polygon(
+      50% 50%,
+      100% 0,
+      100% 0%,
+      100% 0%,
+      100% 100%,
+      50% 100%,
+      0% 100%
+    );
+  }
+  75% {
+    clip-path: polygon(
+      50% 50%,
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      50% 100%,
+      0% 100%
+    );
+  }
+  100% {
+    clip-path: polygon(
+      50% 50%,
+      50% 100%,
+      50% 100%,
+      50% 100%,
+      50% 100%,
+      50% 100%,
+      0% 100%
+    );
+  }
+}
+@keyframes l20-2 {
+  0% {
+    transform: scaleY(1) rotate(0deg);
+  }
+  49.99% {
+    transform: scaleY(1) rotate(135deg);
+  }
+  50% {
+    transform: scaleY(-1) rotate(0deg);
+  }
+  100% {
+    transform: scaleY(-1) rotate(-135deg);
+  }
+}
 </style>
 
 <script>
@@ -628,6 +759,7 @@ import {
   sparqlQuery,
 } from "../services/api-geo";
 import { sparqlQueries } from "../services/constants";
+import { getProcess } from "../services/geo-upload";
 
 $.ajaxSetup({
   xhrFields: {
@@ -664,6 +796,7 @@ export default {
       options: sparqlQueries.options,
       queries: sparqlQueries.queries,
       catalogs,
+      getProcess,
     };
   },
   watch: {

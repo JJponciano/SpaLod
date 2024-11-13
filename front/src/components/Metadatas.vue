@@ -185,8 +185,7 @@ button:hover {
 
 <script>
 import { queryables } from "../services/constants";
-import { $ajax } from "../services/api";
-import { init as initGeo } from "../services/geo";
+import { uploadGeo } from "../services/geo-upload";
 
 export default {
   props: {
@@ -208,38 +207,8 @@ export default {
       if (!this.validateMetadatas()) {
         return;
       }
-      let formData = new FormData();
-      formData.append("file", this.file);
-      formData.append("metadata", JSON.stringify(this.metadata));
-      this.post_checkont("/api/upload-file/", formData);
+      uploadGeo(this.file, this.metadata);
       this.$emit("close");
-    },
-    post_checkont(url, data) {
-      $ajax({
-        xhr: () => {
-          const xhr = new XMLHttpRequest();
-
-          xhr.upload.onprogress = (event) => {
-            const percentage =
-              Math.floor((event.loaded / event.total) * 100) + "%";
-            console.log(percentage);
-          };
-
-          return xhr;
-        },
-        url,
-        type: "POST",
-        data,
-        processData: false,
-        contentType: false,
-        success: (response) => this.seek_unknown(response),
-        error: () => {
-          alert("Error while checking ontology!");
-        },
-      });
-    },
-    seek_unknown(response) {
-      initGeo();
     },
     validateMetadatas() {
       for (const { required, q } of this.queryables) {

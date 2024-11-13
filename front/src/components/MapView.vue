@@ -14,6 +14,12 @@
       <div class="close" @click="closeFeature()"><button>Close</button></div>
     </div>
   </div>
+  <div class="loader" v-if="total > 0">
+    <div class="title">Loading data</div>
+    <div class="container">
+      <div class="progress" :style="{ width: getProgressWidth() }"></div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
@@ -29,6 +35,36 @@
   overflow: hidden;
   position: relative;
   z-index: 1;
+}
+
+.loader {
+  position: absolute;
+  z-index: 1000;
+  bottom: 10px;
+  left: 10px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+
+  .title {
+    position: absolute;
+    left: 0px;
+    z-index: 1;
+    padding-left: 5px;
+  }
+
+  .container {
+    width: 200px;
+    padding: 2px;
+    height: 100%;
+
+    .progress {
+      background-color: transparentize($color: green, $amount: 0.5);
+      height: 100%;
+    }
+  }
 }
 
 .popup-container {
@@ -95,6 +131,8 @@ export default {
       mapObjList: [],
       unsubscribe: [],
       pointcloudUrl: null,
+      total: 0,
+      actual: 0,
     };
   },
   methods: {
@@ -241,10 +279,21 @@ export default {
       }
     },
 
-    onFeatureVisibilityChange(features, remove) {
-      let doZoom = false;
+    onFeatureVisibilityChange(
+      features,
+      remove,
+      doZoom = false,
+      firstCall = true
+    ) {
+      if (firstCall) {
+        this.total += features.length;
+      }
 
-      for (const feature of features) {
+      const chunkSize = 10;
+      const chunkFeatures = features.slice(0, chunkSize);
+      const remainingFeatures = features.slice(chunkSize);
+
+      for (const feature of chunkFeatures) {
         let mapObj = this.mapObjList.find(
           ({ spalodId }) => spalodId === feature.id
         );
@@ -270,23 +319,38 @@ export default {
         }
       }
 
-      const objs = this.mapObjList.filter((x) => x.visible);
-      if (doZoom && objs.length > 0) {
-        this.map.options.maxZoom = 17;
-        this.fitBounds(
-          objs
-            .map((x) => {
-              if (typeof x.getBounds === "function") {
-                return x.getBounds();
-              } else if (typeof x.getLatLng === "function") {
-                const latLngs = [x.getLatLng()];
-                const markerBounds = L.latLngBounds(latLngs);
-                return markerBounds;
-              }
-              x.getBounds();
-            })
-            .flat(1)
-        );
+      this.actual += chunkSize;
+
+      if (remainingFeatures.length > 0) {
+        setTimeout(() => {
+          this.onFeatureVisibilityChange(
+            remainingFeatures,
+            remove,
+            doZoom,
+            false
+          );
+        }, 10);
+      } else {
+        if (this.actual >= this.total) {
+          this.actual = 0;
+          this.total = 0;
+        }
+
+        const objs = this.mapObjList.filter((x) => x.visible);
+        if (doZoom && objs.length > 0) {
+          this.map.options.maxZoom = 17;
+          this.fitBounds(objs.map((x) => this.getObjBounds(x)).flat(1));
+        }
+      }
+    },
+
+    getObjBounds(obj) {
+      if (typeof obj.getBounds === "function") {
+        return obj.getBounds();
+      } else if (typeof obj.getLatLng === "function") {
+        const latLngs = [obj.getLatLng()];
+        const markerBounds = L.latLngBounds(latLngs);
+        return markerBounds;
       }
     },
 
@@ -295,7 +359,7 @@ export default {
         ({ spalodId }) => spalodId === featureId
       );
 
-      this.fitBounds(mapObj.getBounds());
+      this.fitBounds(this.getObjBounds(mapObj));
     },
 
     fitBounds(bounds) {
@@ -307,6 +371,10 @@ export default {
 
     stopPropagation(event) {
       event.stopPropagation();
+    },
+
+    getProgressWidth() {
+      return Math.floor((this.actual / this.total) * 100) + "%";
     },
   },
   mounted() {
