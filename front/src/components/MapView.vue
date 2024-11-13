@@ -22,7 +22,7 @@
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .leaflet-pane.leaflet-shadow-pane {
   display: none;
 }

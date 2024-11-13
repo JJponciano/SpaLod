@@ -38,8 +38,10 @@ export function uploadGeo(file, metadata) {
       progress.value = "";
       initGeo();
     },
-    error: () => {
+    error: (error) => {
+      console.error(error);
       alert("Error while checking ontology!");
+      progress.value = "";
     },
   });
 }
