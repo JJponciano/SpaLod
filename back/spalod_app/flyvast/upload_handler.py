@@ -58,20 +58,28 @@ class FlyvastUploadHandler(FileUploadHandler):
         self.file.write(raw_data)
         
     def process_chunk(self):
-        t = threading.Thread(
-            target=send_to_flyvast,
-            args=[
-                self.flyvast_pointcloud["upload_url"],
-                self.chunk.getbuffer(),
-                self.nb_chunk,
-                self.file_size,
-                self.file_name
-            ],
-            daemon=True,
-        )
-        t.start()
+        # t = threading.Thread(
+        #     target=send_to_flyvast,
+        #     args=[
+        #         self.flyvast_pointcloud["upload_url"],
+        #         self.chunk.getbuffer(),
+        #         self.nb_chunk,
+        #         self.file_size,
+        #         self.file_name
+        #     ],
+        #     daemon=True,
+        # )
+        # t.start()
         
-        task_pool[self.flyvast_pointcloud["pointcloud_id"]].append(t)
+        # task_pool[self.flyvast_pointcloud["pointcloud_id"]].append(t)
+        
+        send_to_flyvast(
+            self.flyvast_pointcloud["upload_url"],
+            self.chunk.getbuffer(),
+            self.nb_chunk,
+            self.file_size,
+            self.file_name
+        )
             
         self.chunk = BytesIO()
         self.nb_chunk += 1
