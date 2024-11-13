@@ -1,10 +1,91 @@
+<template>
+  <div class="map-view" id="map"></div>
+  <div class="popup-container" v-if="feature" @click="closeFeature()">
+    <div
+      class="feature-container"
+      @click="stopPropagation"
+      :class="{ 'has-pointcloud': pointcloudUrl }"
+    >
+      <div class="feature" v-for="item of feature">
+        <div>{{ item.key }}</div>
+        <div>{{ item.value }}</div>
+      </div>
+      <iframe v-if="pointcloudUrl" :src="pointcloudUrl"></iframe>
+      <div class="close" @click="closeFeature()"><button>Close</button></div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss">
+.leaflet-pane.leaflet-shadow-pane {
+  display: none;
+}
+
+.map-view {
+  background-color: #4a5568;
+  height: 100%;
+  color: white;
+  resize: both;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.popup-container {
+  position: absolute;
+  z-index: 1000;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  .feature-container {
+    background-color: white;
+    color: black;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px 0px #a3a3a3;
+    display: flex;
+    flex-direction: column;
+
+    &.has-pointcloud {
+      width: calc(100% - 20px);
+      height: calc(100% - 20px);
+    }
+
+    .feature {
+      word-break: break-all;
+      display: flex;
+
+      > div {
+        flex: 1;
+      }
+    }
+
+    iframe {
+      margin-top: 10px;
+      border: none;
+      flex: 1;
+    }
+  }
+
+  .close {
+    margin-top: 10px;
+  }
+}
+</style>
+
 <script>
 import L from "leaflet";
 import { getFeature } from "../services/api-geo";
 import {
   subscribeFeatureVisibiltyChange,
   subscribeFeatureClick,
-} from "../services/map";
+} from "../services/geo";
 
 export default {
   data() {
@@ -237,84 +318,3 @@ export default {
   },
 };
 </script>
-
-<template>
-  <div class="map-view" id="map"></div>
-  <div class="popup-container" v-if="feature" @click="closeFeature()">
-    <div
-      class="feature-container"
-      @click="stopPropagation"
-      :class="{ 'has-pointcloud': pointcloudUrl }"
-    >
-      <div class="feature" v-for="item of feature">
-        <div>{{ item.key }}</div>
-        <div>{{ item.value }}</div>
-      </div>
-      <iframe v-if="pointcloudUrl" :src="pointcloudUrl"></iframe>
-      <div class="close" @click="closeFeature()"><button>Close</button></div>
-    </div>
-  </div>
-</template>
-
-<style lang="scss">
-.leaflet-pane.leaflet-shadow-pane {
-  display: none;
-}
-
-.map-view {
-  background-color: #4a5568;
-  height: 100%;
-  color: white;
-  resize: both;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-}
-
-.popup-container {
-  position: absolute;
-  z-index: 1000;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
-
-  .feature-container {
-    background-color: white;
-    color: black;
-    border-radius: 5px;
-    padding: 20px;
-    box-shadow: 0px 0px 10px 0px #a3a3a3;
-    display: flex;
-    flex-direction: column;
-
-    &.has-pointcloud {
-      width: calc(100% - 20px);
-      height: calc(100% - 20px);
-    }
-
-    .feature {
-      word-break: break-all;
-      display: flex;
-
-      > div {
-        flex: 1;
-      }
-    }
-
-    iframe {
-      margin-top: 10px;
-      border: none;
-      flex: 1;
-    }
-  }
-
-  .close {
-    margin-top: 10px;
-  }
-}
-</style>

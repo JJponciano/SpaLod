@@ -13,17 +13,6 @@
   <div class="map-container">
     <MapView @fileSelected="onFileSelected"></MapView>
   </div>
-  <!-- <div class="rdf-data-container">
-    <RDFData
-      @update="onFileSelected"
-      @popupCShow="onShowpopupC"
-      :file="file"
-      :receivedData="receivedData"
-      :username="username"
-      :properties_unknown="properties_unknown"
-    >
-    </RDFData>
-  </div> -->
   <div class="metadatas-container" v-show="file">
     <Metadatas :file="file" @close="file = null"></Metadatas>
   </div>
@@ -32,14 +21,12 @@
 <script>
 import UserActions from "../components/UserActions.vue";
 import MapView from "../components/MapView.vue";
-import RDFData from "../components/RDFData.vue";
 import Metadatas from "../components/Metadatas.vue";
 
 export default {
   components: {
     UserActions,
     MapView,
-    RDFData,
     Metadatas,
   },
   data() {

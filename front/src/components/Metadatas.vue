@@ -186,6 +186,7 @@ button:hover {
 <script>
 import { queryables } from "../services/constants";
 import { $ajax } from "../services/api";
+import { init as initGeo } from "../services/geo";
 
 export default {
   props: {
@@ -210,16 +211,10 @@ export default {
       let formData = new FormData();
       formData.append("file", this.file);
       formData.append("metadata", JSON.stringify(this.metadata));
-      this.post_checkont(
-        "/api/upload-file/",
-        formData,
-        this.seek_unknown
-        //this.handleResponse
-        // this.confirmRequest
-      );
+      this.post_checkont("/api/upload-file/", formData);
       this.$emit("close");
     },
-    post_checkont(url, data, callback) {
+    post_checkont(url, data) {
       $ajax({
         xhr: () => {
           const xhr = new XMLHttpRequest();
@@ -237,33 +232,14 @@ export default {
         data,
         processData: false,
         contentType: false,
-        success: callback,
+        success: (response) => this.seek_unknown(response),
         error: () => {
           alert("Error while checking ontology!");
         },
       });
     },
     seek_unknown(response) {
-      if (response == "[]") {
-        alert("Ontology enriched successfully!");
-        console.log("toto");
-
-        // $ajax({
-        //   url: "/api/enrich",
-        //   type: "POST",
-        //   data: formData,
-        //   processData: false,
-        //   contentType: false,
-        //   success: function () {
-        //     alert("Ontology enriched successfully!");
-        //   },
-        //   error: function () {
-        //     alert("Error while enriching ontology!");
-        //   },
-        // });
-      } else {
-        location.reload();
-      }
+      initGeo();
     },
     validateMetadatas() {
       for (const { required, q } of this.queryables) {

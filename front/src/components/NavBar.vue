@@ -1,44 +1,110 @@
 <template>
-  <div class="navbar" :class="{ dark: isDarkMode }">
+  <div class="navbar dark">
     <div class="telefon">
       <button class="hamburger-button" @click="togglemenu">
         <span></span>
         <span></span>
         <span></span>
       </button>
-      <ul :class="['menuopen', menuAnimationClass]" @transitionend="onTransitionend">
-        <li><button v-if="isLogged()" @click="navigateTo('ogc-api')" :class="{ active: activeTab === 'ogc-api' }">SpaLod
-            API</button>
+      <ul
+        :class="['menuopen', menuAnimationClass]"
+        @transitionend="onTransitionend"
+      >
+        <li>
+          <button
+            v-if="isLogged()"
+            @click="navigateTo('ogc-api')"
+            :class="{ active: activeTab === 'ogc-api' }"
+          >
+            SpaLod API
+          </button>
         </li>
-        <li><button @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">Login</button> </li>
-        <li><button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">Register</button>
+        <li>
+          <button
+            @click="navigateTo('login')"
+            :class="{ active: activeTab === 'login' }"
+          >
+            Login
+          </button>
         </li>
-        <li><button v-if="isLogged()" @click="navigateTo('admin')"
-            :class="{ active: activeTab === 'admin' }">Admin</button></li>
-        <li><button @click="navigateTo('docs')" :class="{ active: activeTab === 'docs' }">Doc</button></li>
-        <li><button @click="navigateTo('external-links')" :class="{ active: activeTab === 'external-links' }">External
-            Links</button></li>
+        <li>
+          <button
+            @click="navigateTo('register')"
+            :class="{ active: activeTab === 'register' }"
+          >
+            Register
+          </button>
+        </li>
+        <li>
+          <button
+            v-if="isLogged()"
+            @click="navigateTo('admin')"
+            :class="{ active: activeTab === 'admin' }"
+          >
+            Admin
+          </button>
+        </li>
+        <li>
+          <button
+            @click="navigateTo('docs')"
+            :class="{ active: activeTab === 'docs' }"
+          >
+            Doc
+          </button>
+        </li>
+        <li>
+          <button
+            @click="navigateTo('external-links')"
+            :class="{ active: activeTab === 'external-links' }"
+          >
+            External Links
+          </button>
+        </li>
       </ul>
     </div>
-    <button v-if="isLogged()" @click="logout()" class="navbar-title">Logout</button>
-    <button v-if="!isLogged()" @click="navigateTo('login')" :class="{ active: activeTab === 'login' }">
+    <button v-if="isLogged()" @click="logout()" class="navbar-title">
+      Logout
+    </button>
+    <button
+      v-if="!isLogged()"
+      @click="navigateTo('login')"
+      :class="{ active: activeTab === 'login' }"
+    >
       Login
     </button>
     <div class="computer">
-      <button v-if="isLogged()" @click="navigateTo('ogc-api')" :class="{ active: activeTab === 'ogc-api' }">
+      <button
+        v-if="isLogged()"
+        @click="navigateTo('ogc-api')"
+        :class="{ active: activeTab === 'ogc-api' }"
+      >
         SpaLod API
       </button>
-      <button @click="navigateTo('register')" :class="{ active: activeTab === 'register' }">
+      <button
+        @click="navigateTo('register')"
+        :class="{ active: activeTab === 'register' }"
+      >
         Register
       </button>
-      <button v-if="isLogged()" @click="navigateTo('admin')" :class="{ active: activeTab === 'admin' }">
+      <button
+        v-if="isLogged()"
+        @click="navigateTo('admin')"
+        :class="{ active: activeTab === 'admin' }"
+      >
         Admin
       </button>
-      <button v-if="isLogged()" @click="navigateTo('docs')" :class="{ active: activeTab === 'docs' }">
+      <button
+        v-if="isLogged()"
+        @click="navigateTo('docs')"
+        :class="{ active: activeTab === 'docs' }"
+      >
         Docs
       </button>
-      <button v-if="isLogged()" @click="navigateTo('external-links')"
-        :class="{ active: activeTab === 'external-links' }">
+      <button
+        v-if="isLogged()"
+        @click="navigateTo('external-links')"
+        :class="{ active: activeTab === 'external-links' }"
+      >
         External Links
       </button>
     </div>
@@ -46,57 +112,49 @@
       {{ getUsername() }}
     </div>
   </div>
-  <div>
-
-  </div>
+  <div></div>
 </template>
 
 <script>
-import { $ajax } from '../services/api';
-import { logout, getUsername } from '../services/login';
+import { $ajax } from "../services/api";
+import { logout, getUsername } from "../services/login";
 import { isLogged } from "../services/login";
 
 export default {
   data() {
     return {
-      activeTab: 'admin',
+      activeTab: "admin",
       isDarkMode: false,
       menuOpen: "menu-closed",
       isAdmin: false,
       menuAnimationClass: "",
       isLoggedIn: false,
-      username: ""
+      username: "",
     };
   },
-  mounted() {
-    this.detectDarkMode();
-    window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
-      this.isDarkMode = event.matches;
-    });
-  },
+  mounted() {},
   methods: {
     isLogged,
     getUsername,
-    detectDarkMode() {
-      this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    },
     togglemenu() {
-      this.menuOpen = this.menuOpen === "menu-closed" ? "menu-open" : "menu-closed";;
-      this.menuAnimationClass = this.menuOpen === "menu-open" ? "slide-in-left" : "slide-out-left";
+      this.menuOpen =
+        this.menuOpen === "menu-closed" ? "menu-open" : "menu-closed";
+      this.menuAnimationClass =
+        this.menuOpen === "menu-open" ? "slide-in-left" : "slide-out-left";
     },
     closeMenu() {
       this.menuOpen = false;
     },
     navigateTo(page) {
       this.activeTab = page;
-      this.$router.push(`/${page}`)
+      this.$router.push(`/${page}`);
     },
     checkRole() {
       $ajax({
-        url: import.meta.env.VITE_APP_API_BASE_URL + '/admin',
-        method: 'GET',
+        url: "/admin",
+        method: "GET",
         xhrFields: {
-          withCredentials: true
+          withCredentials: true,
         },
         success: (response) => {
           this.isAdmin = true;
@@ -104,57 +162,30 @@ export default {
         error: (error) => {
           //console.error(error);
           console.log(error);
-        }
-      })
+        },
+      });
     },
     checkLoggedIn() {
       $ajax({
-        url: import.meta.env.VITE_APP_API_BASE_URL + '/status',
-        method: 'GET',
+        url: "/status",
+        method: "GET",
         xhrFields: {
-          withCredentials: true
+          withCredentials: true,
         },
         success: (response) => {
           this.isLoggedIn = true;
-          this.isAdmin = true; // Line to delete if we want to block normal users access
-          if (localStorage.getItem("githubLog") == null) {
-            this.getAccessToken();
-          }
+          this.isAdmin = true;
         },
         error: (error) => {
-          //console.error(error);
           console.log(error);
-        }
-      })
-    },
-    getAccessToken() {
-      $ajax({
-        url: import.meta.env.VITE_APP_API_BASE_URL + '/getGitUser',
-        method: 'GET',
-        xhrFields: {
-          withCredentials: true
         },
-        success: (response) => {
-          localStorage.setItem("uuid", response);
-          this.$emit('username-updated', response)
-        },
-        error: (error) => {
-          // this.$notify({
-          //     title: 'Session expired',
-          //     text: 'If you are connected with github, please reconnect.',
-          //     group:"notLoggedIn",
-          //     type: 'error',
-          //     duration: 2000 // notification will disappear after 5 seconds
-          //   });
-          console.error(error);
-        }
-      })
+      });
     },
     async logout() {
       await logout();
-      window.location.href = '/login';
+      window.location.href = "/login";
     },
-  }
+  },
 };
 </script>
 
@@ -170,19 +201,19 @@ export default {
 }
 
 .navbar.dark {
-  background-color: #1A202C;
+  background-color: #1a202c;
   color: #fff;
 }
 
 .navbar.light {
   background-color: #fff;
-  color: #1A202C;
+  color: #1a202c;
 }
 
 .navbar-title {
   border: none;
   cursor: pointer;
-  background-color: #EF4444;
+  background-color: #ef4444;
   color: #fff;
   font-size: 18px;
   font-weight: bold;
@@ -201,7 +232,7 @@ export default {
   cursor: pointer;
   background-color: transparent;
   font-size: 18px;
-  color: #1A202C;
+  color: #1a202c;
   font-weight: 750;
   padding: 5px 10px;
   border-radius: 5px;
@@ -218,7 +249,7 @@ export default {
 }
 
 .navbar.dark .computer button:hover {
-  background-color: #4A5568;
+  background-color: #4a5568;
   color: white;
 }
 
@@ -337,7 +368,7 @@ export default {
   }
 
   .navbar.dark ul {
-    background-color: #4A5568;
+    background-color: #4a5568;
   }
 
   .navbar.light ul {

@@ -49,8 +49,7 @@ export default {
           xhrFields: {
             withCredentials: true,
           },
-          success: (response) => {
-            console.log(response);
+          success: () => {
             $ajax({
               url: "/auth/login/",
               method: "POST",
@@ -61,8 +60,7 @@ export default {
               xhrFields: {
                 withCredentials: true,
               },
-              success: (response) => {
-                console.log(response);
+              success: () => {
                 $ajax({
                   url: "/uuid",
                   method: "GET",
@@ -73,7 +71,6 @@ export default {
                     withCredentials: true,
                   },
                   success: (response) => {
-                    console.log(response);
                     this.$notify({
                       title: "Login successful",
                       text: "You have successfully logged in! Click here to go back to default page.",
@@ -83,32 +80,6 @@ export default {
                     });
                     localStorage.setItem("username", this.username);
                     localStorage.setItem("uuid", response);
-                    localStorage.setItem("githubLog", false);
-
-                    var tripleData = {
-                      subject:
-                        "https://spalod.northeurope.cloudapp.azure.com#" +
-                        response,
-                      predicate: "https://xmlns.com/foaf/0.1/:name",
-                      object: this.username,
-                    };
-
-                    const addOperation = {
-                      operation: "add",
-                      tripleData: tripleData,
-                    };
-                    $ajax({
-                      url: "/api/update",
-                      type: "POST",
-                      data: JSON.stringify(addOperation),
-                      contentType: "application/json",
-                      success: (response) => {
-                        console.log(response);
-                      },
-                      error: function (error) {
-                        console.log(error);
-                      },
-                    });
 
                     window.history.pushState({}, "", "/admin");
                     window.location.reload();

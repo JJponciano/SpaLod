@@ -572,7 +572,7 @@ class OntologyProcessor:
                 line_data.append({
                     # "start": geometry.coords[0],
                     # "end": geometry.coords[-1],
-                    "path": [[coord[1], coord[0]] for coord in geometry.coords],
+                    "path": [[coord[0], coord[1]] for coord in geometry.coords],
                     "properties": pdisplay,
                     "get_color": line_color,  # Set the line color based on the condition
                     "width_min_pixels": line_width  # Set the line width based on the condition
@@ -584,7 +584,7 @@ class OntologyProcessor:
                     line_data.append({
                         # "start": line.coords[0],
                         # "end": line.coords[-1],
-                        "path": [[coord[1], coord[0]] for coord in line.coords],
+                        "path": [[coord[0], coord[1]] for coord in line.coords],
                         "properties": pdisplay,
                         "get_color": line_color,  # Set the line color based on the condition
                         "width_min_pixels": line_width  # Set the line width based on the condition

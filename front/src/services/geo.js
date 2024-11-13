@@ -17,7 +17,7 @@ let nbSparqlQueries = 0;
 
 init();
 
-async function init() {
+export async function init() {
   const allGeos = await getAllGeo();
 
   addCatalogs(allGeos.map(({ metadatas }) => metadatas));
@@ -25,13 +25,15 @@ async function init() {
 
 async function addCatalogs(metadatas) {
   for (const { catalog: catalogId } of metadatas) {
-    const catalog = {
-      id: catalogId,
-      features: [],
-      expanded: false,
-      visible: false,
-    };
-    catalogs.value.push(catalog);
+    if (!catalogs.value.find(({ id }) => id === catalogId)) {
+      const catalog = {
+        id: catalogId,
+        features: [],
+        expanded: false,
+        visible: false,
+      };
+      catalogs.value.push(catalog);
+    }
   }
 }
 

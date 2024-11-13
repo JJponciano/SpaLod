@@ -352,3 +352,84 @@ export const queryables = [
     literal: false,
   },
 ];
+
+export const sparqlQueries = {
+  options: [
+    { label: "Default", value: "default" },
+    { label: "Schule (Q3914)", value: "schools" },
+    { label: "20 biggest cities in Germany", value: "twentyBiggestCities" },
+    {
+      label: "10 biggest football stadiums in Germany",
+      value: "tenBiggestStadiums",
+    },
+    { label: "Krankenhaus (Q16917)", value: "hospitals" },
+    { label: "Polizeistation (Q861951)", value: "policeStations" },
+    { label: "Feuerwache (Q1195942)", value: "fireStations" },
+    { label: "Supermarkt (Q180846)", value: "supermarkets" },
+    { label: "Museen (Q33506)", value: "museums" },
+    { label: "Bibliotheken (Q7075)", value: "libraries" },
+    { label: "Bahnhöfe (Q55488)", value: "trainStations" },
+    { label: "Banken (Q22687)", value: "banks" },
+    { label: "Restaurants (Q11707)", value: "restaurants" },
+    { label: "Kinos (Q41253)", value: "cinemas" },
+    { label: "Denkmäler (Q4989906)", value: "monuments" },
+    { label: "Hotels (Q27686)", value: "hotels" },
+    { label: "Flughäfen (Q1248784)", value: "airports" },
+    { label: "Stadien (Q483110)", value: "stadiums" },
+    { label: "Schwimmbäder (Q200023)", value: "swimmingPools" },
+    { label: "Tankstellen (Q205495)", value: "serviceStation" },
+    { label: "Wetterstationen (Q190107)", value: "weatherStation" },
+    {
+      label: "Forschungslaboratorien (Q483242)",
+      value: "researchLaboratory",
+    },
+    { label: "Häfen (Q44782)", value: "port" },
+    { label: "Städte (Q515)", value: "cities" },
+  ],
+  queries: {
+    default: "SELECT\n  ?s ?p ?o\nWHERE {\n  ?s ?p ?o .\n}\nLIMIT ",
+    schools:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q3914> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    twentyBiggestCities:
+      'SELECT DISTINCT ?city ?cityLabel ?latitude ?longitude ?instanceOfCity ?population WHERE {\n SERVICE wikibase:label { bd:serviceParam wikibase:language "de". } \n VALUES ?instanceOfCity { \n wd:Q515 \n  } \n  ?city (wdt:P31/(wdt:P279*)) ?instanceOfCity; \n wdt:P17 wd:Q183;\n  p:P625 ?statement. \n ?statement psv:P625 ?coordinate_node. \n ?coordinate_node wikibase:geoLatitude ?latitude; \n wikibase:geoLongitude ?longitude.\nOPTIONAL { ?city wdt:P1082 ?population. } \n } \nORDER BY DESC (?population) \nLIMIT 20',
+    hospitals:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q16917> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    policeStations:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q861951> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    fireStations:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q1195942> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    supermarkets:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q180846> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    museums:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q33506> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    libraries:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q7075> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    trainStations:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q55488> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    banks:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q22687> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    restaurants:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q11707> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    cinemas:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q41253> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    monuments:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q4989906> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    hotels:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q27686> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    airports:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q1248784> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    stadiums:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q483110> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    swimmingPools:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q200023> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    serviceStation:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q205495> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    weatherStation:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q190107> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    researchLaboratory:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q483242> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    port: "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q44782> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+    cities:
+      "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q515> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
+  },
+};

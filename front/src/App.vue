@@ -1,14 +1,10 @@
 <script>
 import NavBar from "./components/NavBar.vue";
-import PopUp from "./components/PopUp.vue";
-import PopUpC from "./components/PopUpC.vue";
 import { checkLogin } from "./services/login";
 
 export default {
   components: {
     NavBar,
-    PopUp,
-    PopUpC,
   },
   data() {
     return {
@@ -63,30 +59,13 @@ export default {
       <RouterView />
     </div>
   </div>
-  <div class="popup">
-    <PopUp
-      :chooseCSV="chooseCSV"
-      :chooseJson="chooseJson"
-      :popup="popup"
-      @CSVBack="onUnselectCSV"
-      @JsonBack="onUnselectJson"
-      @popupBack="onClosepopUp"
-    ></PopUp>
-  </div>
-  <div class="popupC">
-    <PopUpC
-      :popupC="popupC"
-      @popupCBack="onClosepopUpC"
-      @Catalog-data="handleCatalogUpdate"
-    ></PopUpC>
-  </div>
   <notifications />
   <notifications group="login-success" @click="goHome()" />
   <notifications group="register-success" @click="goToLogin()" />
   <notifications group="notLoggedIn" @click="goToLogin()" />
 </template>
 
-<style>
+<style lang="scss">
 button {
   border: none;
   cursor: pointer;
@@ -99,7 +78,7 @@ button {
 }
 
 button:hover {
-  background-color: #4a5568;
+  background-color: lighten($color: #ef4444, $amount: 10%);
   transition: background-color 0.5s ease;
 }
 </style>
