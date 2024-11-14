@@ -13,12 +13,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
 from rdflib.namespace import Namespace # type: ignore
+import threading
+from io import BytesIO
+import requests
+import gzip
 
 from ..serializers import UploadedFileSerializer
 from ..utils.ontology_processing import OntologyProcessor
 from ..utils.sparql_helpers import add_ontology_to_graphdb
 
-
+MAX_CHUNK_SIZE = 50 * 1024 * 1024
 
 class FileUploadView(APIView):
     def post(self, request, *args, **kwargs):
@@ -41,16 +45,6 @@ class FileUploadView(APIView):
         os.makedirs(upload_dir, exist_ok=True)
        
         file_path = file.temporary_file_path()
-        # if file.name.endswith('las') or file.name.endswith('laz'):
-            
-        #     return Response(
-        #         {
-        #             'message': 'File uploaded and pointcloud processed successfully.',
-        #             'uuid': f"{file.pointcloud_id}{file.pointcloud_uuid}"
-        #         }, 
-        #         status=status.HTTP_201_CREATED
-        #     )
-        ## UPLOAD GIS FILE 
 
         try:
 
@@ -62,7 +56,17 @@ class FileUploadView(APIView):
                 processor = OntologyProcessor(file_uuid, ontology_url, map_url,metadata)
                 ## POINT CLOUD 
                 if file.name.endswith('las') or file.name.endswith('laz'):
-                    processor.add_pointcloud(file_path,file.pointcloud_id,file.pointcloud_uuid)
+                    t = threading.Thread(
+                        target=send_to_flyvast,
+                        args=[file],
+                        daemon=True,
+                    )
+                    t.start()
+                    processor.add_pointcloud(
+                        file_path,
+                        file.flyvast_pointcloud["pointcloud_id"],
+                        file.flyvast_pointcloud["pointcloud_uuid"]
+                    )
                 else:
                     processor.process(file_path)
                 processor.save(ontology_file_path,map_file_path)
@@ -89,3 +93,30 @@ class FileUploadView(APIView):
 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+def send_to_flyvast(file):
+    with open(file.temporary_file_path(), 'rb') as f:
+        
+        def read_in_chunks(file_object):
+            while True:
+                data = file_object.read(MAX_CHUNK_SIZE)
+                if not data:
+                    break
+                yield data
+        
+        index_chunk = 0
+        for chunk in read_in_chunks(f):
+            chunk_zipped = gzip.compress(chunk)
+        
+            percentage = min(index_chunk * MAX_CHUNK_SIZE / file.size, 1) * 100
+            size = len(chunk_zipped)
+            prefix = f"{index_chunk}".zfill(10)
+            chunk_name = f"{prefix}-{file.name}"
+            upload_url = file.flyvast_pointcloud["upload_url"]
+            
+            url = f"{upload_url}&name={chunk_name}&bytes={file.size}&percentage={percentage}&size={size}"
+            requests.post(url, chunk_zipped)
+            
+            index_chunk += 1
+            
+    requests.get(file.flyvast_pointcloud["treatment_url"])
