@@ -140,9 +140,14 @@ Example file upload with associated metadata:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/upload-file/ \
--H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228" \
--F "file=@/path/to/your/file.json" \
--F "metadata={\"description\": \"This is a shapefile\", \"source\": \"Survey XYZ\"}"
+-H "Authorization: Token b9208365e4bbd3500888a6deb7dcb3e6d05c05a3" \
+-F "file=@/Volumes/poncianoCloud/workspace/2025/data/bkg/test.geojson" \
+-F "metadata={\"catalog\": \"catalog_name_TEST-KEV\", \"title\": \"dataset titel \", \"description\": \"des\", \"distribution\": \"distri\", \"publisher\": \"publi\"}"
+
+curl -X POST http://127.0.0.1:8000/api/upload-file/ \
+-H "Authorization: Token b9208365e4bbd3500888a6deb7dcb3e6d05c05a3" \
+-F "file=@/Volumes/poncianoCloud/workspace/2025/data/bkg/spalod_test_01/query.json " \
+-F "metadata={\"catalog\": \"catalog_name_TEST\", \"title\": \"dataset titel \", \"description\": \"des\", \"distribution\": \"distri\", \"publisher\": \"publi\"}"
 ```
 
 Response:

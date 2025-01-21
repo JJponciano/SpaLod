@@ -190,3 +190,6 @@ FILE_UPLOAD_HANDLERS = [
 
 # Flyvast conf
 FLYVAST_API_URL = 'https://app.flyvast.com/flyvast/app/server/bll'
+GRAPH_DB_STATEMENTS="http://localhost:7200/repositories/Spalod/statements"
+GRAPH_DB="http://localhost:7200/repositories/Spalod"
+

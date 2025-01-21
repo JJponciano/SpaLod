@@ -8,7 +8,7 @@ from rdflib import Graph, URIRef, Literal, Namespace, XSD
 from rdflib.namespace import RDF, RDFS, OWL
 import re
 import laspy
-from shapely.geometry import Polygon#
+from shapely.geometry import Polygon
 from shapely.ops import transform
 from SPARQLWrapper import SPARQLWrapper, POST, URLENCODED
 import numpy as np
@@ -16,6 +16,146 @@ import sys
 from django.conf import settings
 from django.http import JsonResponse
 from shapely import wkt as shapely_wkt
+import os
+from rdflib import Graph, URIRef, Literal, Namespace
+from rdflib.namespace import RDF, RDFS
+from SPARQLWrapper import SPARQLWrapper, POST, JSON, SPARQLExceptions
+
+class KnowledgeProcessor:
+    def __init__(self, file_uuid, ontology_url, file_url, metadata):
+        self.sparql = SPARQLWrapper(settings.GRAPH_DB)
+        self.file_uuid = file_uuid
+        self.ontology_url = ontology_url
+        self.file_url = file_url
+        self.metadata = metadata
+
+        # Generate URIs as class attributes
+        catalog_name = self.metadata.get("catalog")
+        self.catalog_uri = URIRef(f"{settings.gdi_uri}catalog/{catalog_name}")
+        self.dataset_uri = URIRef(f"{settings.gdi_uri}dataset/{self.file_uuid}")
+
+        # Load ontology into an RDFlib graph
+        ontology_path = os.path.join(os.path.dirname(__file__), '../data/spalod.owl')
+        self.graph = Graph()
+        self.graph.parse(ontology_path, format="application/rdf+xml")
+
+        # Define namespaces
+        self.NS = {
+            "GEOSPARQL": Namespace(settings.hasGeometry.rsplit('#', 1)[0] + "#"),
+            "SPALOD": Namespace(settings.hasFeature.rsplit('#', 1)[0] + "#"),
+            "DCAT": Namespace(settings.dcat_dataset_uri.rsplit('#', 1)[0] + "#"),
+            "DCTERMS": Namespace(settings.dcterms),
+            "GDI": Namespace(settings.gdi_uri)
+        }
+
+        self.graph.bind("dcat", self.NS["DCAT"])
+        self.graph.bind("dcterms", self.NS["DCTERMS"])
+        self.graph.bind("geo", self.NS["GEOSPARQL"])
+        self.graph.bind("spalod", self.NS["SPALOD"])
+        self.process_catalog_and_dataset()
+
+
+    def process_catalog_and_dataset(self):
+        catalog_name = self.metadata.get("catalog")
+        dataset_title = self.metadata.get("title")
+
+        # Check if catalog exists in GraphDB
+        if not self.catalog_exists():
+            self.create_catalog(catalog_name)
+
+        # Create dataset
+        self.create_dataset(dataset_title)
+
+    def save(self):  
+        self.graph.serialize(destination=self.ontology_url, format="application/rdf+xml")
+        print(f"Ontology updated and saved to {self.ontology_url}")
+
+    def catalog_exists(self):
+        query = f"""
+        ASK {{
+            <{self.catalog_uri}> a <{self.NS["DCAT"].Catalog}> .
+        }}
+        """
+        self.sparql.setQuery(query)
+        self.sparql.setReturnFormat(JSON)
+        try:
+            result = self.sparql.query().convert()
+            return result.get("boolean", False)
+        except SPARQLExceptions.SPARQLWrapperException as e:
+            print(f"SPARQL Query Error: {e}")
+            return False
+
+    def create_catalog(self, catalog_name):
+        catalog_data = [
+            (self.catalog_uri, RDF.type, self.NS["DCAT"].Catalog),
+            (self.catalog_uri, RDFS.label, Literal(catalog_name)),
+        ]
+        for triple in catalog_data:
+            self.graph.add(triple)
+
+        self.upload_to_graphdb(catalog_data)
+
+    def create_dataset(self, title):
+        dataset_data = [
+            (self.dataset_uri, RDF.type, self.NS["DCAT"].Dataset),
+            (self.dataset_uri, RDFS.label, Literal(title)),
+            (self.catalog_uri, self.NS["DCAT"].dataset, self.dataset_uri)
+        ]
+
+        # Add additional metadata from DCTERMS
+        for key, value in self.metadata.items():
+            if key not in ["catalog", "title"]:  # Exclude mandatory fields already handled
+                dataset_data.append((self.dataset_uri, self.NS["DCTERMS"][key], Literal(value)))
+
+        for triple in dataset_data:
+            self.graph.add(triple)
+
+        self.upload_to_graphdb(dataset_data)
+
+    def upload_to_graphdb(self, triples):
+        # Prepare SPARQL Update query for GraphDB
+        update_query = "INSERT DATA { "
+        for s, p, o in triples:
+            if isinstance(o, URIRef):
+                update_query += f"<{s}> <{p}> <{o}> . "
+            else:
+                update_query += f"<{s}> <{p}> \"{o}\" . "
+        update_query += " }"
+
+        # Execute SPARQL Update
+        self.sparql.setMethod(POST)
+        self.sparql.setQuery(update_query)
+        self.sparql.setReturnFormat(JSON)
+        try:
+            self.sparql.query()
+            print(f"Data successfully uploaded to GraphDB.")
+        except SPARQLExceptions.SPARQLWrapperException as e:
+            print(f"Error uploading to GraphDB: {e}")
+
+    def get_wkt_polygon(self,file_path, utm_zone=32, northern_hemisphere=True):
+        # Load the LAS file
+        with laspy.open(file_path) as las:
+            point_data = las.read()
+            
+        # Extract X and Y coordinates from the point cloud
+        x_coords = point_data.x
+        y_coords = point_data.y
+        
+        # Create a convex hull of the points to get the 2D boundary
+        points = np.vstack((x_coords, y_coords)).T
+        hull = Polygon(points).convex_hull
+        
+        # Define the projection transformation from UTM to WGS84 (latitude/longitude)
+        utm_crs = f"epsg:326{utm_zone}" if northern_hemisphere else f"epsg:327{utm_zone}"
+        project = pyproj.Transformer.from_crs(utm_crs, "epsg:4326", always_xy=True).transform
+        hull_latlon = transform(project, hull)
+        
+        # Swap latitude and longitude coordinates
+        hull_latlon_swapped = Polygon([(x, y) for x, y in hull_latlon.exterior.coords])
+        
+        # Return the WKT representation of the polygon in latitude/longitude
+        wkt_polygon = hull_latlon_swapped.wkt
+        return wkt_polygon
 
 class OntologyProcessor:
     def __init__(self,file_uuid, ontology_url, map_url,metadata):
@@ -80,8 +220,103 @@ class OntologyProcessor:
         wkt_polygon = hull_latlon_swapped.wkt
         return wkt_polygon
 
+    def add_pointcloud(self,file_path,pointcloud_id,pointcloud_uuid):
+         #get the wkt
+        random_uuid = uuid.uuid4()
+        feature_uri = URIRef(self.ex[f"feature{random_uuid}"])
+        geom_uri = URIRef(self.ex[f"geom{random_uuid}"])
+        pointcloud_uri = URIRef(self.flyvast[pointcloud_uuid])
 
-       
+        self.ensure_property(self.geo.asWKT, OWL.DatatypeProperty, "asWKT")
+        self.ensure_property(self.geo.hasGeometry, OWL.ObjectProperty, "hasGeometry")
+        self.ensure_property(self.geo.hasPointcloud, OWL.ObjectProperty, "hasPointcloud")
+
+        # Flyvast properties
+        self.ensure_property(self.flyvast.pointcloud_id, OWL.DatatypeProperty, "pointcloud_id")
+        self.ensure_property(self.flyvast.pointcloud_uuid, OWL.DatatypeProperty, "pointcloud_uuid")
+        self.graph.add((pointcloud_uri, RDF.type, self.flyvast.Pointcloud))
+
+
+        self.graph.add((pointcloud_uri, self.flyvast.pointcloud_id, Literal(pointcloud_id, datatype=XSD.string)))
+        self.graph.add((pointcloud_uri, self.flyvast.pointcloud_uuid, Literal(pointcloud_uuid, datatype=XSD.string)))
+        
+        self.graph.add((feature_uri, self.geo.hasPointcloud, pointcloud_uri))
+        self.graph.add((feature_uri, RDF.type, self.geo.Feature))
+        self.graph.add((feature_uri, self.geo.hasGeometry, geom_uri))
+        self.graph.add((self.catalog_uri, self.spalod.hasFeature, feature_uri))
+
+        self.graph.add((geom_uri, RDF.type, self.geo.Geometry))
+        wkt_string =self.get_wkt_polygon(file_path)
+        geom_literal = Literal(wkt_string, datatype=self.geo.wktLiteral)
+        self.graph.add((geom_uri, self.geo.asWKT, geom_literal))
+    
+    def process_json_file(self, file_path):
+        """
+        Process an input file that can either be a GeoJSON or a JSON with geospatial data.
+
+        Args:
+            file_path (str): The path to the input file.
+
+        Returns:
+            str: A message indicating the success of the operation.
+        """
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+
+            # Determine the type of input file
+            if "features" in data:  # GeoJSON format
+                for feature in data.get("features", []):
+                    geometry = feature.get("geometry")
+                    if geometry:
+                        feature_type = geometry.get("type")
+                        coordinates =geometry.get("coordinates")
+                        if feature_type and coordinates:
+                            random_uuid = uuid.uuid4()
+                            feature_uri = URIRef(self.gdi[f"feature{random_uuid}"])
+
+                            geom_uri = URIRef(self.gdi[f"geom{random_uuid}"])
+                            properties = {k: v for k, v in feature.get("properties", {}).items() if v is not None}
+                            wkt_string = self.convert_coordinates_to_wkt(feature_type, coordinates)
+                            
+                            self.add_individual(feature_uri, geom_uri, wkt_string, properties)
+            elif "head" in data and "results" in data:  # JSON from SPARQL endpoint
+                for binding in data.get("results", {}).get("bindings", []):
+                    random_uuid = uuid.uuid4()
+                    feature_uri = URIRef(self.gdi[f"feature{random_uuid}"])
+                    self.graph.add((feature_uri, RDF.type, self.geo.Feature))
+                    self.graph.add((self.catalog_uri, self.spalod.hasFeature, feature_uri))
+
+                    geom_uri = None
+                    wkt = None
+                    for k, v in binding.items():
+                        datatype = v.get("datatype")
+                        value = v.get("value")
+
+                        if datatype and "wktLiteral" in datatype:
+                            # If datatype is wktLiteral, extract its value for geometry
+                            geom_uri = URIRef(self.gdi[f"geom{random_uuid}"])
+                            wkt = value
+                            self.graph.add((feature_uri, self.geo.hasGeometry, geom_uri))
+                            self.graph.add((geom_uri, RDF.type, self.geo.Geometry))
+                            geom_literal = Literal(wkt, datatype=self.geo.wktLiteral)
+                            self.graph.add((geom_uri, self.geo.asWKT, geom_literal))
+                        else:
+                            # Otherwise, add it as a property
+                            if isinstance(value, str):
+                                value = value.replace("\\", "\\\\").replace('"', '\"').replace("\n", "\\n")
+                            prop_uri = URIRef(self.ex[k])
+                            self.graph.add((feature_uri, prop_uri, Literal(value)))
+                            self.ensure_property(prop_uri, OWL.DatatypeProperty, k)
+            else:
+                raise ValueError("Unsupported file format")
+
+            return "File processed successfully."
+
+        except Exception as e:
+            return f"Error during processing: {str(e)}"
+
+        
     def process(self,file):
         if  file.endswith('json'):
             try:
@@ -212,36 +447,7 @@ class OntologyProcessor:
         
         # Return [lon, lat] regardless of 2D or 3D coordinates
         return [lon, lat]
-    def add_pointcloud(self,file_path,pointcloud_id,pointcloud_uuid):
-         #get the wkt
-        random_uuid = uuid.uuid4()
-        feature_uri = URIRef(self.ex[f"feature{random_uuid}"])
-        geom_uri = URIRef(self.ex[f"geom{random_uuid}"])
-        pointcloud_uri = URIRef(self.flyvast[pointcloud_uuid])
 
-        self.ensure_property(self.geo.asWKT, OWL.DatatypeProperty, "asWKT")
-        self.ensure_property(self.geo.hasGeometry, OWL.ObjectProperty, "hasGeometry")
-        self.ensure_property(self.geo.hasPointcloud, OWL.ObjectProperty, "hasPointcloud")
-
-        # Flyvast properties
-        self.ensure_property(self.flyvast.pointcloud_id, OWL.DatatypeProperty, "pointcloud_id")
-        self.ensure_property(self.flyvast.pointcloud_uuid, OWL.DatatypeProperty, "pointcloud_uuid")
-        self.graph.add((pointcloud_uri, RDF.type, self.flyvast.Pointcloud))
-
-
-        self.graph.add((pointcloud_uri, self.flyvast.pointcloud_id, Literal(pointcloud_id, datatype=XSD.string)))
-        self.graph.add((pointcloud_uri, self.flyvast.pointcloud_uuid, Literal(pointcloud_uuid, datatype=XSD.string)))
-        
-        self.graph.add((feature_uri, self.geo.hasPointcloud, pointcloud_uri))
-        self.graph.add((feature_uri, RDF.type, self.geo.Feature))
-        self.graph.add((feature_uri, self.geo.hasGeometry, geom_uri))
-        self.graph.add((self.catalog_uri, self.spalod.hasFeature, feature_uri))
-
-        self.graph.add((geom_uri, RDF.type, self.geo.Geometry))
-        wkt_string =self.get_wkt_polygon(file_path)
-        geom_literal = Literal(wkt_string, datatype=self.geo.wktLiteral)
-        self.graph.add((geom_uri, self.geo.asWKT, geom_literal))
-    
     def convert_geojson_to_ontology(self, geojson_path): #working with Radnets
         """Converts GeoJSON data to RDF and adds it to the ontology."""
         
@@ -274,71 +480,7 @@ class OntologyProcessor:
             raise Exception(f"Ontology processing failed: {str(e)}")
         
 
-    def process_json_file(self, file_path):
-        """
-        Process an input file that can either be a GeoJSON or a JSON with geospatial data.
-
-        Args:
-            file_path (str): The path to the input file.
-
-        Returns:
-            str: A message indicating the success of the operation.
-        """
-        try:
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-
-            # Determine the type of input file
-            if "features" in data:  # GeoJSON format
-                for feature in data.get("features", []):
-                    geometry = feature.get("geometry")
-                    if geometry:
-                        feature_type = geometry.get("type")
-                        coordinates = self.convert_coordinates(geometry.get("coordinates"))
-                        if feature_type and coordinates:
-                            random_uuid = uuid.uuid4()
-                            feature_uri = URIRef(self.gdi[f"feature{random_uuid}"])
-                            geom_uri = URIRef(self.gdi[f"geom{random_uuid}"])
-                            properties = {k: v for k, v in feature.get("properties", {}).items() if v is not None}
-                            wkt_string = self.convert_coordinates_to_wkt(feature_type, coordinates)
-                            self.add_individual(feature_uri, geom_uri, wkt_string, properties)
-            elif "head" in data and "results" in data:  # JSON from SPARQL endpoint
-                for binding in data.get("results", {}).get("bindings", []):
-                    random_uuid = uuid.uuid4()
-                    feature_uri = URIRef(self.gdi[f"feature{random_uuid}"])
-                    self.graph.add((feature_uri, RDF.type, self.geo.Feature))
-                    self.graph.add((self.catalog_uri, self.spalod.hasFeature, feature_uri))
-
-                    geom_uri = None
-                    wkt = None
-                    for k, v in binding.items():
-                        datatype = v.get("datatype")
-                        value = v.get("value")
-
-                        if datatype and "wktLiteral" in datatype:
-                            # If datatype is wktLiteral, extract its value for geometry
-                            geom_uri = URIRef(self.gdi[f"geom{random_uuid}"])
-                            wkt = value
-                            self.graph.add((feature_uri, self.geo.hasGeometry, geom_uri))
-                            self.graph.add((geom_uri, RDF.type, self.geo.Geometry))
-                            geom_literal = Literal(wkt, datatype=self.geo.wktLiteral)
-                            self.graph.add((geom_uri, self.geo.asWKT, geom_literal))
-                        else:
-                            # Otherwise, add it as a property
-                            if isinstance(value, str):
-                                value = value.replace("\\", "\\\\").replace('"', '\"').replace("\n", "\\n")
-                            prop_uri = URIRef(self.ex[k])
-                            self.graph.add((feature_uri, prop_uri, Literal(value)))
-                            self.ensure_property(prop_uri, OWL.DatatypeProperty, k)
-            else:
-                raise ValueError("Unsupported file format")
-
-            return "File processed successfully."
-
-        except Exception as e:
-            return f"Error during processing: {str(e)}"
-
-        
+ 
     def convert_coordinates_to_wkt(self, feature_type, coordinates):
         """Converts coordinates to a valid WKT format, dynamically handling 2D and 3D coordinates."""
         def format_coords(coord):

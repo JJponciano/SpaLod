@@ -26,24 +26,6 @@
     
 
 
-    <!-- http://www.gdi-de.org/ontologies#beginntBeiKnoten -->
-
-    <ObjectProperty rdf:about="http://www.gdi-de.org/ontologies#beginntBeiKnoten">
-        <rdfs:comment>Indicates that the feature begins at a specific node (Knoten).</rdfs:comment>
-        <rdfs:label>beginntBeiKnoten</rdfs:label>
-    </ObjectProperty>
-    
-
-
-    <!-- http://www.gdi-de.org/ontologies#endetBeiKnoten -->
-
-    <ObjectProperty rdf:about="http://www.gdi-de.org/ontologies#endetBeiKnoten">
-        <rdfs:comment>Indicates that the feature ends at a specific node (Knoten).</rdfs:comment>
-        <rdfs:label>endetBeiKnoten</rdfs:label>
-    </ObjectProperty>
-    
-
-
     <!-- http://www.gdi-de.org/ontologies#hasRoute -->
 
     <ObjectProperty rdf:about="http://www.gdi-de.org/ontologies#hasRoute">
@@ -53,21 +35,27 @@
     
 
 
-    <!-- http://www.gdi-de.org/ontologies#richtung -->
+    <!-- http://www.opengis.net/ont/geosparql#hasGeometry -->
 
-    <ObjectProperty rdf:about="http://www.gdi-de.org/ontologies#richtung">
-        <rdfs:comment>Indicates the direction of the feature (e.g., &apos;Hinweg&apos;, &apos;Rückweg&apos;).</rdfs:comment>
-        <rdfs:label>richtung</rdfs:label>
-    </ObjectProperty>
+    <ObjectProperty rdf:about="http://www.opengis.net/ont/geosparql#hasGeometry"/>
     
 
 
-    <!-- http://www.opengis.net/ont/geosparql#hasGeometry -->
+    <!-- https://geovast3d.com/ontologies/spalod#hasFeature -->
 
-    <ObjectProperty rdf:about="http://www.opengis.net/ont/geosparql#hasGeometry">
-        <rdfs:comment>Associates a geographic feature with its geometry.</rdfs:comment>
-        <rdfs:label>hasGeometry</rdfs:label>
-    </ObjectProperty>
+    <ObjectProperty rdf:about="https://geovast3d.com/ontologies/spalod#hasFeature"/>
+    
+
+
+    <!-- https://geovast3d.com/ontologies/spalod#hasFile -->
+
+    <ObjectProperty rdf:about="https://geovast3d.com/ontologies/spalod#hasFile"/>
+    
+
+
+    <!-- https://geovast3d.com/ontologies/spalod#hasOWL -->
+
+    <ObjectProperty rdf:about="https://geovast3d.com/ontologies/spalod#hasOWL"/>
     
 
 
@@ -111,10 +99,7 @@
 
     <!-- http://www.opengis.net/ont/geosparql#asWKT -->
 
-    <DatatypeProperty rdf:about="http://www.opengis.net/ont/geosparql#asWKT">
-        <rdfs:comment>The Well-Known Text (WKT) representation of the geometry.</rdfs:comment>
-        <rdfs:label>asWKT</rdfs:label>
-    </DatatypeProperty>
+    <DatatypeProperty rdf:about="http://www.opengis.net/ont/geosparql#asWKT"/>
     
 
 

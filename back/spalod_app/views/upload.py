@@ -19,7 +19,7 @@ import requests
 import gzip
 
 from ..serializers import UploadedFileSerializer
-from ..utils.ontology_processing import OntologyProcessor
+from ..utils.ontology_processor import OntologyProcessor
 from ..utils.sparql_helpers import add_ontology_to_graphdb
 
 MAX_CHUNK_SIZE = 50 * 1024 * 1024
@@ -45,15 +45,21 @@ class FileUploadView(APIView):
         os.makedirs(upload_dir, exist_ok=True)
        
         file_path = file.temporary_file_path()
-
+         # Extract the original file extension
+        file_extension = os.path.splitext(file.name)[1] 
         try:
 
             ontology_file_path = os.path.join(upload_dir, f'{file_uuid}_ontology.owl')
-            map_file_path = os.path.join(upload_dir, f'{file_uuid}_map.html')
+            original_file_path = os.path.join(upload_dir, f'{file_uuid}{file_extension}')
+
             ontology_url = f'/media/uploads/{file_uuid}/{file_uuid}_ontology.owl'
-            map_url = f'/media/uploads/{file_uuid}/{file_uuid}_map.html'
+            original_url = f'/media/uploads/{file_uuid}/{file_uuid}{file_extension}'
+            # Save the file to the constructed path
+            with open(original_file_path, 'wb') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
             try:
-                processor = OntologyProcessor(file_uuid, ontology_url, map_url,metadata)
+                processor = OntologyProcessor(file_uuid, ontology_url, original_url,metadata)
                 ## POINT CLOUD 
                 if file.name.endswith('las') or file.name.endswith('laz'):
                     t = threading.Thread(
@@ -68,15 +74,17 @@ class FileUploadView(APIView):
                         file.flyvast_pointcloud["pointcloud_uuid"]
                     )
                 else:
+                    print("start to process ",file_path)
                     processor.process(file_path)
-                processor.save(ontology_file_path,map_file_path)
+                print("Saving ",ontology_file_path) 
+                processor.save(ontology_file_path)
             except Exception as e:
                 return Response({'error': f'Ontology processing failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             data = {
                 'uuid': file_uuid,
-                'file_path': ontology_file_path,
-                'map_path': map_file_path,
+                'owl_path': ontology_file_path,
+                'map_path': original_file_path,
                 'metadata': metadata
             }
             # Save in Database
@@ -88,7 +96,7 @@ class FileUploadView(APIView):
                 'message': 'File uploaded and ontology processed successfully.',
                 'uuid': file_uuid,
                 'ontology_url': ontology_url,
-                'map_url': map_url
+                'map_url': original_url
             }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
