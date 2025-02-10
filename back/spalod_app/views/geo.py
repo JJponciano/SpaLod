@@ -144,23 +144,11 @@ class GeoGetFeatureWKT(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGetFeature :::::::")
         id = request.query_params.get('id')
-        sparql_query=f"""     
-            select ?key ?value ?wkt
-            where {{
-                <{id}> a geosparql:Feature ; geosparql:hasGeometry ?geom . 
-                ?geom geosparql:asWKT ?wkt . 
-            }}
-        """
-        dataset_id = request.query_params.get('dataset_id')
         sparql_query = f"""     
-             SELECT ?feature ?label ?wkt WHERE {{
-                geosparql:{id}  geosparql:hasFeatureCollection ?fc. 
-                ?fc  geosparql:hasFeature ?feature .
-                ?feature  geosparql:hasGeometry ?geom . 
+             SELECT ?wkt WHERE {{
+                geosparql:{id} geosparql:hasGeometry ?geom . 
                 ?geom geosparql:asWKT ?wkt . 
-                OPTIONAL {{ ?feature rdfs:label ?label  }} 
             }}
-            
         """
         try:
             user_id = request.user.id

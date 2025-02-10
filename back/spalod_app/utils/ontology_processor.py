@@ -321,8 +321,8 @@ class OntologyProcessor:
 
                     # Generate unique URIs
                     random_uuid = uuid.uuid4()
-                    feature_uri = URIRef(self.NS["GDI"][f"feature{random_uuid}"])
-                    geom_uri = URIRef(self.NS["GDI"][f"geom{random_uuid}"])
+                    feature_uri = URIRef(self.NS["GEOSPARQL"][f"feature{random_uuid}"])
+                    geom_uri = URIRef(self.NS["GEOSPARQL"][f"geom{random_uuid}"])
 
                     # Convert geometry to WKT format
                     wkt_string = self.convert_coordinates_to_wkt(feature_type, coordinates)
