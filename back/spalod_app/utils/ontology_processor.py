@@ -34,13 +34,14 @@ gdi_uri="https://registry.gdi-de.org/"
 dcterms = "http://purl.org/dc/terms/"
 spalod="https://geovast3d.com/ontologies/spalod#"
 class OntologyProcessor:
-    def __init__(self, file_uuid, ontology_url, file_url, metadata):
+    def __init__(self, file_uuid, ontology_url, file_url, metadata,user_id):
         self.sparql = SPARQLWrapper(settings.GRAPH_DB)
         self.sparql_statements = SPARQLWrapper(settings.GRAPH_DB_STATEMENTS)
         self.file_uuid = file_uuid
         self.ontology_url = ontology_url
         self.file_url = file_url
         self.metadata = metadata
+        self.graph_iri = f"https://geovast3d.com/ontologies/spalod#graph_{user_id}"
          # Define namespaces
         self.NS = {
             "GEOSPARQL": Namespace(hasGeometry.rsplit('#', 1)[0] + "#"),
@@ -126,10 +127,10 @@ class OntologyProcessor:
         self.upload_to_graphdb(dataset_data)
 
     def upload_to_graphdb(self, triples):
-        graph_iri = self.NS['SPALOD'].Global
+        
         # Prepare SPARQL Update query for GraphDB
         update_query = "PREFIX dc: <http://purl.org/dc/elements/1.1/> \n INSERT DATA" 
-        update_query +=f"{{ GRAPH <{graph_iri}> {{"
+        update_query +=f"{{ GRAPH <{self.graph_iri }> {{"
         for s, p, o in triples:
             if isinstance(o, URIRef):
                 update_query += f"<{s}> <{p}> <{o}> . "
@@ -155,55 +156,9 @@ class OntologyProcessor:
             print(f"Error uploading to GraphDB: {e}")
             raise
 
+    
 
-    def add_individual(self, feature_uri, geom_uri, wkt, properties):
-        """Adds an individual feature and its geometry to the ontology and GraphDB."""
-        start_time = time.time()
-
-        # Add feature and geometry to ontology
-        t1 = time.time()
-        self.graph.add((feature_uri, RDF.type, self.NS["GEOSPARQL"].Feature))
-        self.graph.add((self.catalog_uri, self.NS['SPALOD'].hasFeature, feature_uri))
-        self.graph.add((feature_uri, self.NS["GEOSPARQL"].hasGeometry, geom_uri))
-        self.graph.add((geom_uri, RDF.type, self.NS["GEOSPARQL"].Geometry))
-        geom_literal = Literal(wkt, datatype=self.NS["GEOSPARQL"].asWKT)
-        self.graph.add((geom_uri, self.NS["GEOSPARQL"].asWKT, geom_literal))
-        t2 = time.time()
-        print(f"Graph insertion took: {t2 - t1:.4f} seconds")
-
-        # Add properties to ontology
-        t3 = time.time()
-        for prop, value in properties.items():
-            prop_uri = URIRef(f"{self.NS['SPALOD']}{prop}")
-            self.graph.add((feature_uri, prop_uri, Literal(value)))
-        t4 = time.time()
-        print(f"Property addition took: {t4 - t3:.4f} seconds")
-
-        # Prepare data for GraphDB
-        t5 = time.time()
-        triples = [
-            (feature_uri, RDF.type, self.NS["GEOSPARQL"].Feature),
-            (self.catalog_uri, self.NS['SPALOD'].hasFeature, feature_uri),
-            (feature_uri, self.NS["GEOSPARQL"].hasGeometry, geom_uri),
-            (geom_uri, RDF.type, self.NS["GEOSPARQL"].Geometry),
-            (geom_uri, self.NS["GEOSPARQL"].asWKT, geom_literal)
-        ]
-
-        for prop, value in properties.items():
-            prop_uri = URIRef(f"{self.NS['SPALOD']}{prop}")
-            triples.append((feature_uri, prop_uri, Literal(value)))
-        t6 = time.time()
-        print(f"Triple preparation took: {t6 - t5:.4f} seconds")
-
-        # Upload to GraphDB
-        t7 = time.time()
-        self.upload_to_graphdb(triples)
-        t8 = time.time()
-        print(f"GraphDB upload took: {t8 - t7:.4f} seconds")
-
-        total_time = time.time() - start_time
-        print(f"Total function execution time: {total_time:.4f} seconds")
-
+    
     def convert_coordinates_to_wkt(self, feature_type, coordinates):
         """Converts coordinates to a valid WKT format, dynamically handling 2D and 3D coordinates."""
         def format_coords(coord):

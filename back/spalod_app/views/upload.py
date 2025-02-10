@@ -20,16 +20,17 @@ import gzip
 
 from ..serializers import UploadedFileSerializer
 from ..utils.ontology_processor import OntologyProcessor
-from ..utils.sparql_helpers import add_ontology_to_graphdb
+from ..utils.GraphDBManager import add_ontology_to_graphdb
 
-MAX_CHUNK_SIZE = 50 * 1024 * 1024
+MAX_CHUNK_SIZE = 50 * 1024 * 1024 
 
 class FileUploadView(APIView):
     def post(self, request, *args, **kwargs):
         print("::::::: FileUploadView :::::::")
         file = request.FILES.get('file')  # Access the file
         metadata = request.data.get('metadata')  # Access the metadata as JSON
-
+        user_id = request.user.id
+        print(f"Uploading file for User ID: {user_id}")
         if not file or not metadata:
             return Response({'error': 'File and metadata are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -59,7 +60,7 @@ class FileUploadView(APIView):
                 for chunk in file.chunks():
                     destination.write(chunk)
             try:
-                processor = OntologyProcessor(file_uuid, ontology_url, original_url,metadata)
+                processor = OntologyProcessor(file_uuid, ontology_url, original_url,metadata,user_id)
                 ## POINT CLOUD 
                 if file.name.endswith('las') or file.name.endswith('laz'):
                     t = threading.Thread(

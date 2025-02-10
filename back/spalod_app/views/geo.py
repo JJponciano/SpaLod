@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rdflib import Graph, URIRef, Literal, Namespace, XSD
-from ..utils.sparql_helpers import process_owl_file,delete_ontology_entry
+from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry
 from  .sparql_query import SparqlQueryAPIView
 from ..serializers import SparqlQuerySerializer
 
