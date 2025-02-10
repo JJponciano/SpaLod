@@ -15,7 +15,7 @@ from ..serializers import SparqlQuerySerializer
 
 class GeoGetAllCatalogsView(APIView):
     def get(self, request, *args, **kwargs):
-    
+
         print("::::::: GeoGetAllCatalogsView :::::::")
         user_id = request.user.id
         graph_manager = GraphDBManager(user_id)
@@ -28,11 +28,26 @@ class GeoGetAllCatalogsView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
+class GeoGetDatasetOfCatalogView(APIView):
+    def get(self, request, *args, **kwargs):
+        print("::::::: GeoGeGeoWKTbyCatalogtAllView :::::::")
+        catalog_id = request.query_params.get('catalog_id')
+        user_id = request.user.id
+        graph_manager = GraphDBManager(user_id)
+        sparql_query=f"""
+            SELECT ?dataset ?label WHERE {{ spalod:{catalog_id}  dcat:dataset ?dataset. OPTIONAL {{ ?dataset rdfs:label ?label  }} }}
+        """
+        try:
+            results = graph_manager.query_graphdb(sparql_query)
+            return Response(results, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
 class GeoGetAllFeaturesOfCatalogView(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGeGeoWKTbyCatalogtAllView :::::::")
         catalog_id = request.query_params.get('catalog_id')
-
+        
         sparql_query = """     
             PREFIX geo: <http://www.opengis.net/ont/geosparql#> 
             PREFIX spalod: <http://spalod/> 
