@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .views.geo import GeoGetAllCatalogsView,GeoGetAllFeaturesOfDatasetView, GeoGetFeature,GeoGetCatalog,GeoGetDatasetOfCatalogView,GeoRemoveCatalog,GeoRemoveFeature,GeoWKT,GeoGetFeatureWKT,GeoGetAllFeaturesOfCatalogView
+from .views.geo import GeoGetAllCatalogsView,GeoGetAllFeaturesOfDatasetView, GeoGetFeature,GeoGetCatalog,GeoGetDatasetOfCatalogView,GeoRemoveCatalog,GeoRemoveFeature,GeoWKT,GeoGetFeatureWKT
 from .views.properties import PropertiesQueryView
 from .views.sparql_query import SparqlQueryAPIView
 from .views.upload import FileUploadView

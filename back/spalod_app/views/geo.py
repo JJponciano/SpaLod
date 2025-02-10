@@ -56,27 +56,30 @@ class GeoGetAllFeaturesOfDatasetView(APIView):
             return Response(results, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-class GeoGetAllFeaturesOfCatalogView(APIView):
-    def get(self, request, *args, **kwargs):
-        print("::::::: GeoGeGeoWKTbyCatalogtAllView :::::::")
-        catalog_id = request.query_params.get('catalog_id')
         
-        sparql_query = """     
-            PREFIX geo: <http://www.opengis.net/ont/geosparql#> 
-            PREFIX spalod: <http://spalod/> 
-            SELECT ?feature
-            WHERE { 
-                ?feature a geo:Feature . 
-            }
-        """
 
-        # Add the SPARQL query to request data for use in SparqlQueryAPIView
-        request.data['query'] = sparql_query
-        request.data['catalog_id'] = catalog_id
 
-        # Instantiate SparqlQueryAPIView and directly call its `post` method
-        sparql_view = SparqlQueryAPIView()
-        return sparql_view.post(request, *args, **kwargs)
+# class GeoGetAllFeaturesOfCatalogView(APIView):
+#     def get(self, request, *args, **kwargs):
+#         print("::::::: GeoGeGeoWKTbyCatalogtAllView :::::::")
+#         catalog_id = request.query_params.get('catalog_id')
+        
+#         sparql_query = """     
+#             PREFIX geosparql: <http://www.opengis.net/ont/geosparql#> 
+#             PREFIX spalod: <http://spalod/> 
+#             SELECT ?feature
+#             WHERE { 
+#                 ?feature a geosparql:Feature . 
+#             }
+#         """
+
+#         # Add the SPARQL query to request data for use in SparqlQueryAPIView
+#         request.data['query'] = sparql_query
+#         request.data['catalog_id'] = catalog_id
+
+#         # Instantiate SparqlQueryAPIView and directly call its `post` method
+#         sparql_view = SparqlQueryAPIView()
+#         return sparql_view.post(request, *args, **kwargs)
         
 
 class GeoGetCatalog(APIView):
@@ -84,71 +87,99 @@ class GeoGetCatalog(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGetCatalog :::::::")
         id = request.query_params.get('id')
-        sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
-        self.spalod = Namespace("http://spalod/")
+        return Response({'error':"Not yet implemented"}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
-        graph_general = self.spalod.General
+        # sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
+        # self.spalod = Namespace("http://spalod/")
 
-        sparql.setQuery(f"""     
-            SELECT ?key ?value
-            WHERE {{
-                GRAPH <{graph_general}> {{ 
-                    <{id}> ?key ?value .
-                }}
-            }}
-        """)
-        sparql.setReturnFormat(JSON)
+        # graph_general = self.spalod.General
+
+        # sparql.setQuery(f"""     
+        #     SELECT ?key ?value
+        #     WHERE {{
+        #         GRAPH <{graph_general}> {{ 
+        #             <{id}> ?key ?value .
+        #         }}
+        #     }}
+        # """)
+        # sparql.setReturnFormat(JSON)
         
-        try:
-            results = sparql.query().convert()
-            return Response(results, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        # try:
+        #     results = sparql.query().convert()
+        #     return Response(results, status=status.HTTP_200_OK)
+        # except Exception as e:
+        #     return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class GeoWKT(APIView):
     def get(self, request, *args, **kwargs):
-        print("::::::: GeoGeGeoWKTbyCatalogtAllView :::::::")
-        catalog_id = request.query_params.get('catalog_id')
-
-        sparql_query = """     
-            PREFIX geo: <http://www.opengis.net/ont/geosparql#> 
-            PREFIX spalod: <http://spalod/> 
-            SELECT  ?feature ?wkt 
-            WHERE { 
-                ?feature a geo:Feature ; geo:hasGeometry ?geom . 
-                ?geom geo:asWKT ?wkt . 
-            }
+        print("::::::: GeoWKT :::::::")
+        dataset_id = request.query_params.get('dataset_id')
+        sparql_query = f"""     
+             SELECT ?feature ?label ?wkt WHERE {{
+                spalod:{dataset_id}  geosparql:hasFeatureCollection ?fc. 
+                ?fc  geosparql:hasFeature ?feature .
+                ?feature geosparql:hasGeometry ?geom . 
+                ?geom geosparql:asWKT ?wkt . 
+                OPTIONAL {{ ?feature rdfs:label ?label  }} 
+            }}
+            
         """
+        try:
+            user_id = request.user.id
+            graph_manager = GraphDBManager(user_id)
+            results = graph_manager.query_graphdb(sparql_query)
+            return Response(results, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # # Add the SPARQL query to request data for use in SparqlQueryAPIView
+        # request.data['query'] = sparql_query
+        # request.data['dataset_id'] = dataset_id
 
-        # Add the SPARQL query to request data for use in SparqlQueryAPIView
-        request.data['query'] = sparql_query
-        request.data['catalog_id'] = catalog_id
-
-        # Instantiate SparqlQueryAPIView and directly call its `post` method
-        sparql_view = SparqlQueryAPIView()
-        return sparql_view.post(request, *args, **kwargs)
+        # # Instantiate SparqlQueryAPIView and directly call its `post` method
+        # sparql_view = SparqlQueryAPIView()
+        # return sparql_view.post(request, *args, **kwargs)
     
 class GeoGetFeatureWKT(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGetFeature :::::::")
         id = request.query_params.get('id')
-        catalog_id = request.query_params.get('catalog_id')
-        print(f"id: {id}, catalog_id: {catalog_id}")
-
         sparql_query=f"""     
             select ?key ?value ?wkt
             where {{
-                <{id}> a geo:Feature ; geo:hasGeometry ?geom . 
-                ?geom geo:asWKT ?wkt . 
+                <{id}> a geosparql:Feature ; geosparql:hasGeometry ?geom . 
+                ?geom geosparql:asWKT ?wkt . 
             }}
         """
-        # Add the SPARQL query to request data for use in SparqlQueryAPIView
-        request.data['query'] = sparql_query
-        request.data['catalog_id'] = catalog_id
+        dataset_id = request.query_params.get('dataset_id')
+        sparql_query = f"""     
+             SELECT ?feature ?label ?wkt WHERE {{
+                geosparql:{id}  geosparql:hasFeatureCollection ?fc. 
+                ?fc  geosparql:hasFeature ?feature .
+                ?feature  geosparql:hasGeometry ?geom . 
+                ?geom geosparql:asWKT ?wkt . 
+                OPTIONAL {{ ?feature rdfs:label ?label  }} 
+            }}
+            
+        """
+        try:
+            user_id = request.user.id
+            graph_manager = GraphDBManager(user_id)
+            results = graph_manager.query_graphdb(sparql_query)
+            return Response(results, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
 
-        # Instantiate SparqlQueryAPIView and directly call its `post` method
-        sparql_view = SparqlQueryAPIView()
-        return sparql_view.post(request, *args, **kwargs)
+        # user_id = request.user.id
+        # graph_manager = GraphDBManager(user_id)
+        # # Add the SPARQL query to request data for use in SparqlQueryAPIView
+        # request.data['query'] = sparql_query
+        # request.data['catalog_id'] = catalog_id
+
+        # # Instantiate SparqlQueryAPIView and directly call its `post` method
+        # sparql_view = SparqlQueryAPIView()
+        # return sparql_view.post(request, *args, **kwargs)
     
 class GeoGetFeature(APIView):
     def get(self, request, *args, **kwargs):
