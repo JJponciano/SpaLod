@@ -172,138 +172,70 @@ class GeoGetFeatureWKT(APIView):
 class GeoGetFeature(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGetFeature :::::::")
+        
         id = request.query_params.get('id')
-        catalog_id = request.query_params.get('catalog_id')
-        print(f"id: {id}, catalog_id: {catalog_id}")
+        
+        sparql_query = f"""     
+             SELECT ?key ?value ?label WHERE {{
+                geosparql:{id} ?key ?value . 
+                OPTIONAL {{ geosparql:{id} rdfs:label ?label  }} 
 
-        sparql_query=f"""     
-            select ?key ?value
-            where {{
-                <{id}> ?key ?value .
             }}
         """
-        # Add the SPARQL query to request data for use in SparqlQueryAPIView
-        request.data['query'] = sparql_query
-        request.data['catalog_id'] = catalog_id
-
-        # Instantiate SparqlQueryAPIView and directly call its `post` method
-        sparql_view = SparqlQueryAPIView()
-        return sparql_view.post(request, *args, **kwargs)
-    
-class GeoGetFeature_graphdb_only(APIView):
-    def get(self, request, *args, **kwargs):
-        print("::::::: GeoGetFeature :::::::")
-        id = request.query_params.get('id')
-        catalog_id = request.query_params.get('catalog_id')
-
-        if catalog_id:
-            # If catalog_id is provided, query within the specific graph.
-            sparql_query = f"""     
-                select ?key ?value
-                where {{
-                    GRAPH <{catalog_id}> {{ 
-                        <{id}> ?key ?value .
-                    }}
-                }}
-            """
-        else:
-            # If catalog_id is not provided, query across all graphs.
-            sparql_query = f"""     
-                select ?key ?value
-                where {{
-                    <{id}> ?key ?value .
-                }}
-            """
-
-        sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
-        self.spalod = Namespace("http://spalod/")
-        sparql.setQuery(sparql_query)
-        sparql.setReturnFormat(JSON)
-        
         try:
-            results = sparql.query().convert()
-            print(results)
+            user_id = request.user.id
+            graph_manager = GraphDBManager(user_id)
+            results = graph_manager.query_graphdb(sparql_query)
             return Response(results, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-class GeoRemoveCatalog(APIView):
+        
+    
+# class GeoGetFeature_graphdb_only(APIView):
+#     def get(self, request, *args, **kwargs):
+#         print("::::::: GeoGetFeature :::::::")
+#         id = request.query_params.get('id')
+#         catalog_id = request.query_params.get('catalog_id')
+
+#         if catalog_id:
+#             # If catalog_id is provided, query within the specific graph.
+#             sparql_query = f"""     
+#                 select ?key ?value
+#                 where {{
+#                     GRAPH <{catalog_id}> {{ 
+#                         <{id}> ?key ?value .
+#                     }}
+#                 }}
+#             """
+#         else:
+#             # If catalog_id is not provided, query across all graphs.
+#             sparql_query = f"""     
+#                 select ?key ?value
+#                 where {{
+#                     <{id}> ?key ?value .
+#                 }}
+#             """
+
+#         sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
+#         self.spalod = Namespace("http://spalod/")
+#         sparql.setQuery(sparql_query)
+#         sparql.setReturnFormat(JSON)
+        
+#         try:
+#             results = sparql.query().convert()
+#             print(results)
+#             return Response(results, status=status.HTTP_200_OK)
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+class GeoRemoveID(APIView):
     def get(self, request, *args, **kwargs):
-        print("::::::: GeoDeleteCatalog :::::::")
+        print("::::::: GeoRemoveID :::::::")
         id = request.query_params.get('id')
-        sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod/statements")  # GraphDB endpoint for updates
-        self.spalod = Namespace("http://spalod/")
-
-        graph_general = self.spalod.General
-
-        sparql.setQuery(f"""
-            DELETE WHERE {{
-                GRAPH <{graph_general}> {{ 
-                    <{id}> ?key ?value .
-                }}
-            }}
-        """)
-        # sparql.setMethod(POST)
-        # sparql.setReturnFormat(JSON)
-
+        user_id = request.user.id
+        graph_manager = GraphDBManager(user_id)
         try:
-            # Execute the SPARQL update to delete the catalog
-            sparql.query()
-            return Response({'message': f'Catalog with ID {id} has been successfully deleted.'}, status=status.HTTP_200_OK)
+            response=graph_manager.delete_all(id)
+            print(response)
+            return Response({'message': f'Elements with ID {id} has been successfully deleted.'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class GeoRemoveFeature(APIView):
-    def get(self, request, *args, **kwargs):
-            id = request.query_params.get('id')
-            print("::::::: GeoRemoveFeature :::::::")
-            sparql_delete_query = f"""
-                DELETE WHERE {{
-                    ?s ?p <{id}> .
-                }};
-                DELETE WHERE {{
-                    <{id}> ?p ?o .
-                }}
-            """
-            # graph_uri = serializer.validated_data.get('graph')
-            # Set up the SPARQL endpoint to query the graph and get the OWL file URI
-            sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
-            self.spalod = Namespace("http://spalod/")
-
-            graph_general = self.spalod.General
-
-            sparql.setQuery(f"""
-            PREFIX spalod: <http://spalod/>
-            SELECT ?catalog ?owl_url WHERE {{ 
-                GRAPH <{graph_general}> {{ 
-                    ?catalog spalod:hasOWL ?owl_url .
-                }} 
-            }}
-            """) 
-            
-            sparql.setReturnFormat(JSON)
-
-            # Execute the SPARQL query to get the OWL URLs
-            result = sparql.query().convert()
-            # Process the SPARQLResult object
-            
-            if result['results']['bindings']:
-                try:
-                    # Extract all OWL URLs from the result
-                    for binding in result['results']['bindings']:
-                        owl_url = binding['owl_url']['value']
-                        delete_ontology_entry(owl_url, sparql_delete_query)
-                except Exception as e:
-                    return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)                    
-            print(sparql_delete_query)
-            # Now we work on statements
-            sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod/statements")  # GraphDB endpoint for updates
-            sparql.setQuery(sparql_delete_query)
-            try:
-                # Execute the SPARQL update to delete the catalog
-                sparql.query()
-                return Response({'message': f'Feature with ID {id} has been successfully deleted.'}, status=status.HTTP_200_OK)
-            except Exception as e:
-                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)  
-
-                

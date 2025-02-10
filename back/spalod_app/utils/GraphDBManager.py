@@ -270,6 +270,34 @@ class GraphDBManager:
             print("QUERY:\n")
             print(select_query)
             raise
+    def delete_all(self,id):
+       # Set up SPARQLWrapper for updates
+       # If the user has a specific graph
+        if self.graph_iri is not None:
+            exec_query = self.prefixes + f"""
+            DELETE WHERE {{
+                GRAPH <{self.graph_iri}> {{
+                    <{id}> ?key ?value .
+                }}
+            }}
+            """
+        else:
+            exec_query  = self.prefixes + f"""
+            DELETE WHERE {{
+                    <{id}> ?key ?value .
+                }}
+            }}
+            """
+        self.sparql_statements.setMethod(POST)
+        self.sparql_statements.setQuery(exec_query.encode("utf-8"))
+        self.sparql_statements.setReturnFormat(JSON)
+
+        try:
+            response = self.sparql_statements.query()
+            return response
+        except Exception as e:
+            print(f"SPARQL update failed: {e}")
+            raise
 
     def construct_graphdb(self, construct_query):
         """Executes a SPARQL CONSTRUCT query only within the user's named graph (if user_id is set)."""
