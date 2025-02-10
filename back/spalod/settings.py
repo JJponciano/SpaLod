@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-%=g@ry=4q8mauza^azmpwd(rw*w5y)6ywm0t=86h@@l-r$=!#b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'spalod.geovast3d.com']
+ALLOWED_HOSTS = ['localhost', 'spalod.geovast3d.com','127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8080', 'http://localhost:8000', 'http://localhost', 'https://spalod.geovast3d.com']
 CORS_ORIGIN_WHITELIST = [

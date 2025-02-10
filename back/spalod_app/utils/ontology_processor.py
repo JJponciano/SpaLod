@@ -17,6 +17,11 @@ from django.conf import settings
 from django.http import JsonResponse
 from shapely import wkt as shapely_wkt
 from SPARQLWrapper import SPARQLWrapper, POST, JSON, SPARQLExceptions
+import uuid
+import time
+from rdflib import URIRef, Literal, RDF
+
+BATCH_SIZE = 5000  # Adjust batch size to balance speed and memory usage
 #PROPERTIES AND CLASS URIs
 hasGeometry="http://www.opengis.net/ont/geosparql#hasGeometry"
 asWKT="http://www.opengis.net/ont/geosparql#asWKT"
@@ -150,22 +155,32 @@ class OntologyProcessor:
             print(f"Error uploading to GraphDB: {e}")
             raise
 
+
     def add_individual(self, feature_uri, geom_uri, wkt, properties):
         """Adds an individual feature and its geometry to the ontology and GraphDB."""
+        start_time = time.time()
+
         # Add feature and geometry to ontology
+        t1 = time.time()
         self.graph.add((feature_uri, RDF.type, self.NS["GEOSPARQL"].Feature))
         self.graph.add((self.catalog_uri, self.NS['SPALOD'].hasFeature, feature_uri))
         self.graph.add((feature_uri, self.NS["GEOSPARQL"].hasGeometry, geom_uri))
         self.graph.add((geom_uri, RDF.type, self.NS["GEOSPARQL"].Geometry))
         geom_literal = Literal(wkt, datatype=self.NS["GEOSPARQL"].asWKT)
         self.graph.add((geom_uri, self.NS["GEOSPARQL"].asWKT, geom_literal))
+        t2 = time.time()
+        print(f"Graph insertion took: {t2 - t1:.4f} seconds")
 
         # Add properties to ontology
+        t3 = time.time()
         for prop, value in properties.items():
             prop_uri = URIRef(f"{self.NS['SPALOD']}{prop}")
             self.graph.add((feature_uri, prop_uri, Literal(value)))
+        t4 = time.time()
+        print(f"Property addition took: {t4 - t3:.4f} seconds")
 
         # Prepare data for GraphDB
+        t5 = time.time()
         triples = [
             (feature_uri, RDF.type, self.NS["GEOSPARQL"].Feature),
             (self.catalog_uri, self.NS['SPALOD'].hasFeature, feature_uri),
@@ -177,7 +192,17 @@ class OntologyProcessor:
         for prop, value in properties.items():
             prop_uri = URIRef(f"{self.NS['SPALOD']}{prop}")
             triples.append((feature_uri, prop_uri, Literal(value)))
+        t6 = time.time()
+        print(f"Triple preparation took: {t6 - t5:.4f} seconds")
+
+        # Upload to GraphDB
+        t7 = time.time()
         self.upload_to_graphdb(triples)
+        t8 = time.time()
+        print(f"GraphDB upload took: {t8 - t7:.4f} seconds")
+
+        total_time = time.time() - start_time
+        print(f"Total function execution time: {total_time:.4f} seconds")
 
     def convert_coordinates_to_wkt(self, feature_type, coordinates):
         """Converts coordinates to a valid WKT format, dynamically handling 2D and 3D coordinates."""
@@ -269,84 +294,150 @@ class OntologyProcessor:
 
         self.upload_to_graphdb(triples)
 
+
+    def format_time(self, seconds):
+        """Formats time into hours, minutes, and seconds for readability."""
+        if seconds >= 3600:
+            return f"{int(seconds // 3600)}h {int((seconds % 3600) // 60)}m {int(seconds % 60)}s"
+        elif seconds >= 60:
+            return f"{int(seconds // 60)}m {int(seconds % 60)}s"
+        else:
+            return f"{int(seconds)}s"
+
+
     def process_json_file(self, file_path):
-        print("PROCESSING OF THE JSON ",file_path)
-        """Processes GeoJSON or JSON files to add features and geometries."""
+        """Processes a GeoJSON file, validates structure, and uploads in batches to GraphDB."""
+        print(f"PROCESSING JSON: {file_path}")
+
+        start_time = time.time()
+        processed_count = 0
+        last_display_time = start_time
+        batched_triples = []  # Stores triples before batch upload
+
         try:
+            # Load JSON file
             with open(file_path, 'r') as f:
                 data = json.load(f)
-            if "features" in data:  # GeoJSON
-                for feature in data.get("features", []):
-                    geometry = feature.get("geometry")
-                    if geometry:
-                        feature_type = geometry.get("type")
-                        coordinates = geometry.get("coordinates")
-                        if feature_type and coordinates:
-                            random_uuid = uuid.uuid4()
-                            feature_uri = URIRef(self.NS["GDI"][f"feature{random_uuid}"])
-                            geom_uri = URIRef(self.NS["GDI"][f"geom{random_uuid}"])
-                            properties = feature.get("properties", {})
-                            wkt_string = self.convert_coordinates_to_wkt(feature_type, coordinates)
-                            self.add_individual(feature_uri, geom_uri, wkt_string, properties)
 
-            elif "head" in data and "results" in data:  # SPARQL JSON
+            # Validate JSON structure
+            if not isinstance(data, dict) or "type" not in data or data["type"] != "FeatureCollection":
+                raise ValueError("Invalid JSON structure: 'type' must be 'FeatureCollection'.")
 
-                        #TODO il faut aussi sauvegarder dans GRAPHDB
+            if "name" not in data:
+                raise ValueError("Invalid JSON structure: Missing 'name' field.")
 
+            if "features" not in data or not isinstance(data["features"], list):
+                raise ValueError("Invalid JSON structure: Missing or incorrect 'features' field (must be a list).")
 
-                for binding in data.get("results", {}).get("bindings", []):
+            # Create FeatureCollection in RDF and link it to dataset
+            feature_collection_uri = URIRef(self.NS["GEOSPARQL"][f"FeatureCollection/{data['name']}"])
+            collection_label = Literal(data["name"])
+
+            batched_triples.extend([
+                (feature_collection_uri, RDF.type, self.NS["GEOSPARQL"].FeatureCollection),
+                (feature_collection_uri, RDFS.label, collection_label),
+                (self.dataset_uri, self.NS["GEOSPARQL"].hasFeatureCollection, feature_collection_uri)  # Link dataset to collection
+            ])
+
+            # Process each feature
+            total_features = len(data["features"])
+            print(f"Detected {total_features} features in collection '{data['name']}'.")
+
+            for i, feature in enumerate(data["features"]):
+                try:
+                    # Validate feature structure
+                    if not isinstance(feature, dict) or "type" not in feature or feature["type"] != "Feature":
+                        raise ValueError(f"Feature {i} is invalid: Missing or incorrect 'type' (must be 'Feature').")
+
+                    if "properties" not in feature or not isinstance(feature["properties"], dict):
+                        raise ValueError(f"Feature {i} is invalid: Missing or incorrect 'properties' field (must be a dictionary).")
+
+                    if "geometry" not in feature or not isinstance(feature["geometry"], dict):
+                        raise ValueError(f"Feature {i} is invalid: Missing or incorrect 'geometry' field (must be a dictionary).")
+
+                    # Extract geometry and properties
+                    geometry = feature["geometry"]
+                    feature_type = geometry.get("type")
+                    coordinates = geometry.get("coordinates")
+                    properties = feature.get("properties", {})
+
+                    if not feature_type or not coordinates:
+                        raise ValueError(f"Feature {i} is invalid: Missing 'geometry' type or coordinates.")
+
+                    # Generate unique URIs
                     random_uuid = uuid.uuid4()
                     feature_uri = URIRef(self.NS["GDI"][f"feature{random_uuid}"])
-                    
-                    # Initialize triples list for GraphDB
-                    triples = [
+                    geom_uri = URIRef(self.NS["GDI"][f"geom{random_uuid}"])
+
+                    # Convert geometry to WKT format
+                    wkt_string = self.convert_coordinates_to_wkt(feature_type, coordinates)
+                    geom_literal = Literal(wkt_string, datatype=self.NS["GEOSPARQL"].asWKT)
+
+                    # Prioritize rdfs:label assignment
+                    rdfs_label = None
+                    if "label" in properties:
+                        rdfs_label = Literal(properties["label"])
+                    elif "name" in properties:
+                        rdfs_label = Literal(properties["name"])
+                    elif "item" in properties:
+                        rdfs_label = Literal(properties["item"])
+
+                    # Collect RDF triples
+                    batched_triples.extend([
                         (feature_uri, RDF.type, self.NS["GEOSPARQL"].Feature),
-                        (self.catalog_uri, self.NS['SPALOD'].hasFeature, feature_uri)
-                    ]
+                        (feature_collection_uri, self.NS["GEOSPARQL"].hasFeature, feature_uri),  # Link feature to FeatureCollection
+                        (feature_uri, self.NS["GEOSPARQL"].hasGeometry, geom_uri),
+                        (geom_uri, RDF.type, self.NS["GEOSPARQL"].Geometry),
+                        (geom_uri, self.NS["GEOSPARQL"].asWKT, geom_literal)
+                    ])
 
-                    # Add the same triples to the local ontology
-                    self.graph.add((feature_uri, RDF.type, self.NS["GEOSPARQL"].Feature))
-                    self.graph.add((self.catalog_uri, self.NS['SPALOD'].hasFeature, feature_uri))
+                    # Add rdfs:label if available
+                    if rdfs_label:
+                        batched_triples.append((feature_uri, RDFS.label, rdfs_label))
 
-                    geom_uri = None
-                    wkt = None
-                    for k, v in binding.items():
-                        datatype = v.get("datatype")
-                        value = v.get("value")
+                    # Add other properties as triples
+                    spalod_ns = self.NS['SPALOD']
+                    batched_triples.extend([
+                        (feature_uri, URIRef(spalod_ns + prop), Literal(value))
+                        for prop, value in properties.items()
+                    ])
 
-                        if datatype and "wktLiteral" in datatype:
-                            geom_uri = URIRef(self.NS["GDI"][f"geom{random_uuid}"])
-                            wkt = value
-                            geom_literal = Literal(wkt, datatype=self.NS["GEOSPARQL"].asWKT)
+                    processed_count += 1
 
-                            # Add geometry-related triples to GraphDB list
-                            triples.extend([
-                                (feature_uri, self.NS["GEOSPARQL"].hasGeometry, geom_uri),
-                                (geom_uri, RDF.type, self.NS["GEOSPARQL"].Geometry),
-                                (geom_uri, self.NS["GEOSPARQL"].asWKT, geom_literal)
-                            ])
+                    # Display progress every second
+                    current_time = time.time()
+                    if current_time - last_display_time >= 1:
+                        elapsed_time = current_time - start_time
+                        estimated_total_time = (elapsed_time / max(processed_count, 1)) * total_features
+                        remaining_time = estimated_total_time - elapsed_time
 
-                            # Add geometry-related triples to the local ontology
-                            self.graph.add((feature_uri, self.NS["GEOSPARQL"].hasGeometry, geom_uri))
-                            self.graph.add((geom_uri, RDF.type, self.NS["GEOSPARQL"].Geometry))
-                            self.graph.add((geom_uri, self.NS["GEOSPARQL"].asWKT, geom_literal))
-                        else:
-                            prop_uri = URIRef(self.NS['SPALOD'][k])
-                            literal_value = Literal(value)
+                        print(f"Processed {processed_count}/{total_features} features "
+                            f"({(processed_count / total_features) * 100:.2f}%) "
+                            f"| Estimated remaining: {self.format_time(remaining_time)}")
 
-                            # Add property-related triples to GraphDB list
-                            triples.append((feature_uri, prop_uri, literal_value))
+                        last_display_time = current_time  # Reset display timer
 
-                            # Add property-related triples to the local ontology
-                            self.graph.add((feature_uri, prop_uri, literal_value))
+                    # Upload batch when limit is reached
+                    if len(batched_triples) >= BATCH_SIZE:
+                        self.upload_to_graphdb(batched_triples)
+                        batched_triples = []  # Clear batch
 
-                    # Upload the collected triples to GraphDB
-                    self.upload_to_graphdb(triples)
+                except Exception as fe:
+                    print(f"Error processing feature {i}: {fe}")
 
-            
+            # Final batch upload for remaining triples
+            if batched_triples:
+                self.upload_to_graphdb(batched_triples)
+
+            total_time = time.time() - start_time
+            print(f"Processing completed in {self.format_time(total_time)}.")
+
         except Exception as e:
-            return f"Error during processing: {str(e)}"
+            print(f"Error during processing: {str(e)}")
+            raise ValueError(f"File processing failed: {e}")
 
+   
+   
     def process(self, file):
             """Processes files based on their format."""
             if file.endswith('json'):
