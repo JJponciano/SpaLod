@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rdflib import Graph, URIRef, Literal, Namespace, XSD
-from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry
+from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager
 from  .sparql_query import SparqlQueryAPIView
 from ..serializers import SparqlQuerySerializer
 
@@ -17,23 +17,13 @@ class GeoGetAllCatalogsView(APIView):
     def get(self, request, *args, **kwargs):
     
         print("::::::: GeoGetAllCatalogsView :::::::")
-        sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
-        self.spalod = Namespace("http://spalod/")
-
-        graph_general = self.spalod.General
-
-        sparql.setQuery(f"""
-            SELECT ?catalog
-            WHERE {{
-                GRAPH <{graph_general}> {{ 
-                    ?catalog <http://spalod/catalog> ?b .
-                }}
-            }}
-        """)
-        sparql.setReturnFormat(JSON)
-        
+        user_id = request.user.id
+        graph_manager = GraphDBManager(user_id)
+        sparql_query="""
+            SELECT ?catalog ?label WHERE { ?catalog a dcat:Catalog . OPTIONAL { ?catalog rdfs:label ?label  } }
+        """
         try:
-            results = sparql.query().convert()
+            results = graph_manager.query_graphdb(sparql_query)
             return Response(results, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
