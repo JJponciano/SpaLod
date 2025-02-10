@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .views.geo import GeoGetAllCatalogsView, GeoGetFeature,GeoGetCatalog,GeoGetDatasetOfCatalogView,GeoRemoveCatalog,GeoRemoveFeature,GeoWKT,GeoGetFeatureWKT,GeoGetAllFeaturesOfCatalogView
+from .views.geo import GeoGetAllCatalogsView,GeoGetAllFeaturesOfDatasetView, GeoGetFeature,GeoGetCatalog,GeoGetDatasetOfCatalogView,GeoRemoveCatalog,GeoRemoveFeature,GeoWKT,GeoGetFeatureWKT,GeoGetAllFeaturesOfCatalogView
 from .views.properties import PropertiesQueryView
 from .views.sparql_query import SparqlQueryAPIView
 from .views.upload import FileUploadView
@@ -15,7 +15,8 @@ urlpatterns = [
     path('update-ontology/', UpdateOntologyView.as_view(), name='update_ontology'),
     path('geo/all/catalog', GeoGetAllCatalogsView.as_view(), name='geo-get-all-catalog'),
     path('geo/all/dataset', GeoGetDatasetOfCatalogView.as_view(), name='geo-get-all-dataset'),
-    path('geo/all/feature', GeoGetAllFeaturesOfCatalogView.as_view(), name='geo-get-all-feature'),
+    # path('geo/all/feature', GeoGetAllFeaturesOfCatalogView.as_view(), name='geo-get-all-feature'),
+    path('geo/all/feature', GeoGetAllFeaturesOfDatasetView.as_view(), name='geo-get-all-feature'),
     path('geo/feature', GeoGetFeature.as_view(), name='geo-get-feature'),
     path('geo/catalog', GeoGetCatalog.as_view(), name='geo-get-catalog'),
     path('geo/getwkt', GeoWKT.as_view(), name='geo-get-wkt'),

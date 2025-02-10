@@ -30,7 +30,7 @@ class GeoGetAllCatalogsView(APIView):
     
 class GeoGetDatasetOfCatalogView(APIView):
     def get(self, request, *args, **kwargs):
-        print("::::::: GeoGeGeoWKTbyCatalogtAllView :::::::")
+        print("::::::: GeoGetDatasetOfCatalogView :::::::")
         catalog_id = request.query_params.get('catalog_id')
         user_id = request.user.id
         graph_manager = GraphDBManager(user_id)
@@ -42,7 +42,20 @@ class GeoGetDatasetOfCatalogView(APIView):
             return Response(results, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+class GeoGetAllFeaturesOfDatasetView(APIView):
+    def get(self, request, *args, **kwargs):
+        print("::::::: GeoGetAllFeaturesOfDatasetView :::::::")
+        dataset_id = request.query_params.get('dataset_id')
+        user_id = request.user.id
+        graph_manager = GraphDBManager(user_id)
+        sparql_query=f"""
+            SELECT ?feature ?label WHERE {{ spalod:{dataset_id}  geosparql:hasFeatureCollection ?fc. ?fc  geosparql:hasFeature ?feature . OPTIONAL {{ ?feature rdfs:label ?label  }} }}
+        """
+        try:
+            results = graph_manager.query_graphdb(sparql_query)
+            return Response(results, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 class GeoGetAllFeaturesOfCatalogView(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGeGeoWKTbyCatalogtAllView :::::::")
