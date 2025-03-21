@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .views.geo import GeoGetAllCatalogsView,GeoGetAllFeaturesOfDatasetView, GeoGetFeature,GeoGetCatalog,GeoGetDatasetOfCatalogView,GeoRemoveID,GeoWKT,GeoGetFeatureWKT
+from .views.geo import *
 from .views.properties import PropertiesQueryView
 from .views.sparql_query import SparqlQueryAPIView
 from .views.upload import FileUploadView
@@ -13,15 +13,17 @@ urlpatterns = [
     path('upload-file/', FileUploadView.as_view(), name='file_upload'),
     path('query-properties/', PropertiesQueryView.as_view(), name='query_properties'),
     path('update-ontology/', UpdateOntologyView.as_view(), name='update_ontology'),
-    path('geo/all/catalog', GeoGetAllCatalogsView.as_view(), name='geo-get-all-catalog'),
-    path('geo/all/dataset', GeoGetDatasetOfCatalogView.as_view(), name='geo-get-all-dataset'),
-    # path('geo/all/feature', GeoGetAllFeaturesOfCatalogView.as_view(), name='geo-get-all-feature'),
-    path('geo/all/feature', GeoGetAllFeaturesOfDatasetView.as_view(), name='geo-get-all-feature'),
-    path('geo/feature', GeoGetFeature.as_view(), name='geo-get-feature'),
-    path('geo/catalog', GeoGetCatalog.as_view(), name='geo-get-catalog'),
-    path('geo/getwkt', GeoWKT.as_view(), name='geo-get-wkt'),
-    path('geo/getfeaturewkt', GeoGetFeatureWKT.as_view(), name='geo-get-feature-wkt'),
-    path('geo/delete', GeoRemoveID.as_view(), name='geo-remove-catalog'),
+    path('geo/catalog', GeoGetCatalog.as_view(), name='geo-catalog'),
+    path('geo/catalog/all', GeoGetAllCatalogsView.as_view(), name='geo-catalog-all'),
+    path('geo/catalog/all/wkt', GeoCatalogWKT.as_view(), name='geo-catalog-all-wkt'),
+    path('geo/catalog/delete', GeoRemoveID.as_view(), name='geo-catalog-delete'),
+    path('geo/dataset/all', GeoGetDatasetOfCatalogView.as_view(), name='geo-dataset-all'),
+    path('geo/dataset/all/wkt', GeoDatasetWKT.as_view(), name='geo-dataset-all-wkt'),
+    path('geo/dataset/delete', GeoRemoveID.as_view(), name='geo-dataset-remove'),
+    path('geo/feature', GeoGetFeature.as_view(), name='geo-feature'),
+    path('geo/feature/all', GeoGetAllFeaturesOfDatasetView.as_view(), name='geo-feature-all'),
+    path('geo/feature/wkt', GeoGetFeatureWKT.as_view(), name='geo-feature-wkt'),
+    path('geo/feature/delete', GeoRemoveID.as_view(), name='geo-feature-delete'),
 ]
 
 if settings.DEBUG:

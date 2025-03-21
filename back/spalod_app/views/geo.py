@@ -35,7 +35,7 @@ class GeoGetDatasetOfCatalogView(APIView):
         user_id = request.user.id
         graph_manager = GraphDBManager(user_id)
         sparql_query=f"""
-            SELECT ?dataset ?label WHERE {{ spalod:{catalog_id}  dcat:dataset ?dataset. OPTIONAL {{ ?dataset rdfs:label ?label  }} }}
+            SELECT ?dataset ?label WHERE {{ <{catalog_id}>  dcat:dataset ?dataset. OPTIONAL {{ ?dataset rdfs:label ?label  }} }}
         """
         try:
             results = graph_manager.query_graphdb(sparql_query)
@@ -49,7 +49,7 @@ class GeoGetAllFeaturesOfDatasetView(APIView):
         user_id = request.user.id
         graph_manager = GraphDBManager(user_id)
         sparql_query=f"""
-            SELECT ?feature ?label WHERE {{ spalod:{dataset_id}  geosparql:hasFeatureCollection ?fc. ?fc  geosparql:hasFeature ?feature . OPTIONAL {{ ?feature rdfs:label ?label  }} }}
+            SELECT ?feature ?label WHERE {{ <{dataset_id}>  geosparql:hasFeatureCollection ?fc. ?fc  geosparql:hasFeature ?feature . OPTIONAL {{ ?feature rdfs:label ?label  }} }}
         """
         try:
             results = graph_manager.query_graphdb(sparql_query)
@@ -110,13 +110,13 @@ class GeoGetCatalog(APIView):
         # except Exception as e:
         #     return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class GeoWKT(APIView):
+class GeoDatasetWKT(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoWKT :::::::")
         dataset_id = request.query_params.get('dataset_id')
         sparql_query = f"""     
              SELECT ?feature ?label ?wkt WHERE {{
-                spalod:{dataset_id}  geosparql:hasFeatureCollection ?fc. 
+                <{dataset_id}>  geosparql:hasFeatureCollection ?fc. 
                 ?fc  geosparql:hasFeature ?feature .
                 ?feature geosparql:hasGeometry ?geom . 
                 ?geom geosparql:asWKT ?wkt . 
@@ -132,13 +132,28 @@ class GeoWKT(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
-        # # Add the SPARQL query to request data for use in SparqlQueryAPIView
-        # request.data['query'] = sparql_query
-        # request.data['dataset_id'] = dataset_id
-
-        # # Instantiate SparqlQueryAPIView and directly call its `post` method
-        # sparql_view = SparqlQueryAPIView()
-        # return sparql_view.post(request, *args, **kwargs)
+class GeoCatalogWKT(APIView):
+    def get(self, request, *args, **kwargs):
+        print("::::::: GeoWKT :::::::")
+        catalog_id = request.query_params.get('catalog_id')
+        sparql_query = f"""     
+             SELECT ?feature ?label ?wkt ?dataset WHERE {{
+                <{catalog_id}> dcat:dataset ?dataset. 
+                ?dataset geosparql:hasFeatureCollection ?fc. 
+                ?fc  geosparql:hasFeature ?feature .
+                ?feature geosparql:hasGeometry ?geom . 
+                ?geom geosparql:asWKT ?wkt . 
+                OPTIONAL {{ ?feature rdfs:label ?label  }} 
+            }}
+            
+        """
+        try:
+            user_id = request.user.id
+            graph_manager = GraphDBManager(user_id)
+            results = graph_manager.query_graphdb(sparql_query)
+            return Response(results, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 class GeoGetFeatureWKT(APIView):
     def get(self, request, *args, **kwargs):
@@ -146,7 +161,7 @@ class GeoGetFeatureWKT(APIView):
         id = request.query_params.get('id')
         sparql_query = f"""     
              SELECT ?wkt WHERE {{
-                geosparql:{id} geosparql:hasGeometry ?geom . 
+                <{id}> geosparql:hasGeometry ?geom . 
                 ?geom geosparql:asWKT ?wkt . 
             }}
         """
@@ -177,8 +192,8 @@ class GeoGetFeature(APIView):
         
         sparql_query = f"""     
              SELECT ?key ?value ?label WHERE {{
-                geosparql:{id} ?key ?value . 
-                OPTIONAL {{ geosparql:{id} rdfs:label ?label  }} 
+                <{id}> ?key ?value . 
+                OPTIONAL {{ <{id}> rdfs:label ?label  }} 
 
             }}
         """

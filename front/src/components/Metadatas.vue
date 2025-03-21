@@ -8,14 +8,23 @@
           <!-- <button @click="addNewCatalog">+</button> -->
         </h3>
         <div class="metadata-input">
-          <input
+          <!-- <input
             type="text"
             v-model="metadata.catalog"
             class="metadata-textbox"
             placeholder="The name of the catalog"
             @focus="$event.target.select()"
             spellcheck="false"
-          />
+          /> -->
+
+          <AutoComplete
+            placeholder="The name of the catalog"
+            v-model="metadata.catalog"
+            :suggestions="items"
+            @complete="search"
+            completeOnFocus="true"
+          ></AutoComplete>
+
           <!-- <select v-model="selectedOption">
             <option value="" disabled selected hidden>Choose a Catalog</option>
             <option v-for="option in options">
@@ -186,8 +195,13 @@ button:hover {
 <script>
 import { queryables } from "../services/constants";
 import { uploadGeo } from "../services/geo-upload";
+import AutoComplete from "primevue/autocomplete";
+import { getAllCatalogs } from "../services/geo";
 
 export default {
+  components: {
+    AutoComplete,
+  },
   props: {
     file: File,
   },
@@ -197,6 +211,7 @@ export default {
       metadata: {},
       options: [],
       selectedOption: "",
+      items: [],
     };
   },
   methods: {
@@ -217,6 +232,13 @@ export default {
         }
       }
       return true;
+    },
+    search(event) {
+      this.items = getAllCatalogs()
+        .map(({ label }) => label)
+        .filter((label) =>
+          label.toLowerCase().startsWith(event.query.toLowerCase())
+        );
     },
   },
 };

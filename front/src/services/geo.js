@@ -1,12 +1,8 @@
 import { ref } from "vue";
-import {
-  getAllGeo,
-  getCatalogWkt,
-  getFeatureWkt,
-  getAllCatalogFeatures,
-} from "./api-geo";
+import * as ApiGeo from "./api-geo";
 
 const features = [];
+const datasets = [];
 const catalogs = ref([]);
 const sparqlQueries = ref([]);
 
@@ -18,17 +14,18 @@ let nbSparqlQueries = 0;
 init();
 
 export async function init() {
-  const allGeos = await getAllGeo();
+  const allGeos = await ApiGeo.getAllCatalogs();
 
   addCatalogs(allGeos.map(({ metadatas }) => metadatas));
 }
 
 async function addCatalogs(metadatas) {
-  for (const { catalog: catalogId } of metadatas) {
+  for (const { catalog: catalogId, label } of metadatas) {
     if (!catalogs.value.find(({ id }) => id === catalogId)) {
       const catalog = {
         id: catalogId,
-        features: [],
+        label,
+        datasets: [],
         expanded: false,
         visible: false,
       };
@@ -37,20 +34,42 @@ async function addCatalogs(metadatas) {
   }
 }
 
-async function addFeatures(catalog) {
-  const catalogFeatures = await getAllCatalogFeatures(catalog.id);
+async function addDatasets(catalog) {
+  const catalogDatasets = await ApiGeo.getAllDatasets(catalog.id);
 
   for (const {
-    metadatas: { feature: featureId },
+    metadatas: { dataset: datasetId, label },
+  } of catalogDatasets) {
+    const dataset = {
+      id: datasetId,
+      catalogId: catalog.id,
+      label,
+      features: [],
+      expanded: false,
+      visible: false,
+    };
+    datasets.push(dataset);
+
+    catalog.datasets.push(dataset);
+  }
+}
+
+async function addFeatures(dataset) {
+  const catalogFeatures = await ApiGeo.getAllFeatures(dataset.id);
+
+  for (const {
+    metadatas: { feature: featureId, label },
   } of catalogFeatures) {
     const feature = {
-      visible: false,
       id: featureId,
-      catalogId: catalog.id,
+      label,
+      visible: false,
+      datasetId: dataset.id,
+      catalogId: dataset.catalogId,
     };
     features.push(feature);
 
-    catalog.features.push(feature);
+    dataset.features.push(feature);
   }
 }
 
@@ -72,8 +91,20 @@ export function expandCatalog(catalogId) {
   if (catalog) {
     catalog.expanded = !catalog.expanded;
 
-    if (catalog.expanded && catalog.features.length === 0) {
-      addFeatures(catalog);
+    if (catalog.expanded && catalog.datasets.length === 0) {
+      addDatasets(catalog);
+    }
+  }
+}
+
+export async function expandDataset(datasetId) {
+  const dataset = datasets.find(({ id }) => id === datasetId);
+
+  if (dataset) {
+    dataset.expanded = !dataset.expanded;
+
+    if (dataset.expanded && dataset.features.length === 0) {
+      await addFeatures(dataset);
     }
   }
 }
@@ -87,28 +118,38 @@ export async function setFeatureVisibility(
     featureIds = [featureIds];
   }
 
-  let copyFeatures;
-
   const tabFeatures = [];
-  let catalog = null;
+  let featureDataset = {};
   let allFeaturesVisible = true;
+  let catalog = null;
 
-  const start = Date.now();
+  // const start = Date.now();
 
   for (const featureId of featureIds) {
     const feature = features.find(({ id }) => id === featureId);
+
+    if (!catalog) {
+      catalog = catalogs.value.find(({ id }) => id === feature.catalogId);
+    }
 
     if (feature) {
       feature.visible = visible && !remove;
 
       allFeaturesVisible = allFeaturesVisible && feature.visible;
 
-      if (!catalog) {
-        catalog = catalogs.value.find(({ id }) => id === feature.catalogId);
+      if (!featureDataset[feature.datasetId]) {
+        featureDataset[feature.datasetId] = datasets.find(
+          ({ id }) => id === feature.datasetId
+        );
 
         if (remove) {
-          copyFeatures = catalog.features.slice();
+          featureDataset[feature.datasetId].copyFeatures =
+            featureDataset[feature.datasetId].features.slice();
         }
+      }
+
+      if (!feature.visible && featureDataset[feature.datasetId].visible) {
+        featureDataset[feature.datasetId].visible = false;
       }
 
       if (!feature.visible && catalog.visible) {
@@ -116,7 +157,10 @@ export async function setFeatureVisibility(
       }
 
       if (feature.visible && !feature.wkt) {
-        const featureWkt = await getFeatureWkt(feature.id, feature.catalogId);
+        const featureWkt = await ApiGeo.getFeatureWkt(
+          feature.id,
+          feature.catalogId
+        );
 
         feature.wkt = {
           geo: featureWkt[0].geo,
@@ -126,7 +170,10 @@ export async function setFeatureVisibility(
 
       if (remove) {
         features.splice(features.indexOf(feature), 1);
-        copyFeatures.splice(copyFeatures.indexOf(feature), 1);
+        featureDataset[feature.datasetId].copyFeatures.splice(
+          featureDataset[feature.datasetId].copyFeatures.indexOf(feature),
+          1
+        );
       }
 
       tabFeatures.push(feature);
@@ -134,16 +181,88 @@ export async function setFeatureVisibility(
   }
 
   if (remove) {
-    catalog.features = copyFeatures;
+    for (const datasetId of Object.keys(featureDataset)) {
+      featureDataset[datasetId].features =
+        featureDataset[datasetId].copyFeatures;
+    }
   }
 
-  if (!catalog.visible && catalog.features.every((x) => x.visible)) {
+  for (const datasetId of Object.keys(featureDataset)) {
+    if (
+      !featureDataset[datasetId].visible &&
+      featureDataset[datasetId].features.every((x) => x.visible)
+    ) {
+      featureDataset[datasetId].visible = true;
+    }
+  }
+
+  if (catalog && !catalog.visible && catalog.datasets.every((x) => x.visible)) {
     catalog.visible = true;
   }
 
-  console.log("time elapsed: ", Date.now() - start);
+  // console.log("time elapsed: ", Date.now() - start);
 
   visibilityChangeSubscribers.forEach((x) => x(tabFeatures, remove));
+}
+
+export async function setDatasetVisibility(datasetId, visible, remove = false) {
+  const dataset = datasets.find(({ id }) => id === datasetId);
+
+  if (dataset) {
+    visible = visible && !remove;
+
+    dataset.visible = visible;
+
+    if (
+      visible &&
+      (dataset.features.length === 0 ||
+        dataset.features.some(({ wkt }) => wkt === undefined))
+    ) {
+      const datasetWkts = await ApiGeo.getAllDatasetWkt(dataset.id);
+
+      const copyFeatures = dataset.features.slice();
+
+      for (const datasetWkt of datasetWkts) {
+        const feature = copyFeatures.find(
+          ({ id }) => id === datasetWkt.metadatas.feature
+        );
+
+        if (feature) {
+          feature.wkt = {
+            geo: datasetWkt.geo,
+            type: datasetWkt.type,
+          };
+        } else {
+          const feature = {
+            id: datasetWkt.metadatas.feature,
+            datasetId: dataset.id,
+            catalogId: dataset.catalogId,
+            wkt: { geo: datasetWkt.geo, type: datasetWkt.type },
+          };
+          copyFeatures.push(feature);
+          features.push(feature);
+        }
+      }
+
+      dataset.features = copyFeatures;
+    }
+
+    setFeatureVisibility(
+      dataset.features.map(({ id }) => id),
+      visible,
+      remove
+    );
+
+    if (remove) {
+      datasets.splice(datasets.indexOf(dataset), 1);
+
+      const catalog = catalogs.value.find(({ id }) => id === dataset.catalogId);
+
+      if (catalog) {
+        catalog.datasets.splice(catalog.datasets.indexOf(dataset), 1);
+      }
+    }
+  }
 }
 
 export async function setCatalogVisibility(catalogId, visible, remove = false) {
@@ -154,41 +273,62 @@ export async function setCatalogVisibility(catalogId, visible, remove = false) {
 
     catalog.visible = visible;
 
-    if (
-      visible &&
-      (catalog.features.length === 0 ||
-        catalog.features.some(({ wkt }) => !wkt))
-    ) {
-      const catalogWkts = await getCatalogWkt(catalog.id);
+    if (visible) {
+      const catalogFeatures = catalog.datasets
+        .map(({ features }) => features)
+        .flat();
 
-      const copyFeatures = catalog.features.slice();
+      if (
+        catalogFeatures.length === 0 ||
+        catalogFeatures.some(({ wkt }) => !wkt)
+      ) {
+        const featureWkts = await ApiGeo.getAllCatalogWkt(catalog.id);
 
-      for (const catalogWkt of catalogWkts) {
-        const feature = copyFeatures.find(
-          ({ id }) => id === catalogWkt.metadatas.feature
-        );
+        for (const featureWkt of featureWkts) {
+          const feature = features.find(
+            ({ id }) => id === featureWkt.metadatas.feature
+          );
 
-        if (feature) {
-          feature.wkt = {
-            geo: catalogWkt.geo,
-            type: catalogWkt.type,
-          };
-        } else {
-          const feature = {
-            id: catalogWkt.metadatas.feature,
-            catalogId: catalog.id,
-            wkt: { geo: catalogWkt.geo, type: catalogWkt.type },
-          };
-          copyFeatures.push(feature);
-          features.push(feature);
+          if (feature) {
+            feature.wkt = {
+              geo: featureWkt.geo,
+              type: featureWkt.type,
+            };
+          } else {
+            let dataset = datasets.find(
+              ({ id }) => id === featureWkt.metadatas.dataset
+            );
+
+            if (!dataset) {
+              dataset = {
+                id: featureWkt.metadatas.dataset,
+                catalogId: catalog.id,
+                features: [],
+                expanded: false,
+                visible: true,
+              };
+              datasets.push(dataset);
+
+              catalog.datasets.push(dataset);
+            }
+
+            const feature = {
+              id: featureWkt.metadatas.feature,
+              datasetId: featureWkt.metadatas.dataset,
+              catalogId: catalog.id,
+              wkt: { geo: featureWkt.geo, type: featureWkt.type },
+            };
+            features.push(feature);
+            dataset.features.push(feature);
+          }
         }
       }
-
-      catalog.features = copyFeatures;
     }
 
     setFeatureVisibility(
-      catalog.features.map(({ id }) => id),
+      catalog.datasets
+        .map(({ features }) => features.map(({ id }) => id))
+        .flat(),
       visible,
       remove
     );

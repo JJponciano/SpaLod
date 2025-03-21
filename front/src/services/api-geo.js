@@ -1,41 +1,57 @@
 import { $fetch } from "./api";
 
-export async function getAllGeo() {
-  const result = await $fetch("api/geo/all/catalog").then((x) => x.json());
+export async function getAllCatalogs() {
+  const result = await $fetch("api/geo/catalog/all").then((x) => x.json());
 
-  return getGeoData(
-    result.results.bindings.map((x) => ({ catalog: x.catalog.value }))
-  );
+  return getGeoData(result);
 }
 
-export async function getAllCatalogFeatures(catalogId) {
+export async function getAllDatasets(catalogId) {
   const result = await $fetch(
-    `api/geo/all/feature?catalog_id=${catalogId}`
+    `api/geo/dataset/all?catalog_id=${encodeURIComponent(catalogId)}`
   ).then((x) => x.json());
 
   return getGeoData(result);
 }
 
-export async function getCatalogWkt(catalogId) {
-  const result = await $fetch(`api/geo/getwkt?catalog_id=${catalogId}`).then(
-    (x) => x.json()
-  );
+export async function getAllFeatures(datasetId) {
+  const result = await $fetch(
+    `api/geo/feature/all?dataset_id=${encodeURIComponent(datasetId)}`
+  ).then((x) => x.json());
+
+  return getGeoData(result);
+}
+
+export async function getAllCatalogWkt(catalogId) {
+  const result = await $fetch(
+    `api/geo/catalog/all/wkt?catalog_id=${encodeURIComponent(catalogId)}`
+  ).then((x) => x.json());
+
+  return getGeoData(result);
+}
+
+export async function getAllDatasetWkt(datasetId) {
+  const result = await $fetch(
+    `api/geo/dataset/all/wkt?dataset_id=${encodeURIComponent(datasetId)}`
+  ).then((x) => x.json());
 
   return getGeoData(result);
 }
 
 export async function getFeatureWkt(featureId, catalogId) {
   const result = await $fetch(
-    `api/geo/getfeaturewkt?id=${featureId}&catalog_id=${catalogId}`
+    `api/geo/feature/wkt?id=${encodeURIComponent(
+      featureId
+    )}&catalog_id=${encodeURIComponent(catalogId)}`
   ).then((x) => x.json());
 
   return getGeoData(result);
 }
 
 export async function getCatalog(catalogId) {
-  const result = await $fetch(`api/geo/catalog?id=${catalogId}`).then((x) =>
-    x.json()
-  );
+  const result = await $fetch(
+    `api/geo/catalog?id=${encodeURIComponent(catalogId)}`
+  ).then((x) => x.json());
 
   return getGeoData(
     result.results.bindings.map((x) => ({
@@ -46,9 +62,11 @@ export async function getCatalog(catalogId) {
   );
 }
 
-export async function getFeature(id, catalogId) {
+export async function getFeature(featureId, catalogId) {
   const result = await $fetch(
-    `api/geo/feature?id=${id}&catalog_id=${catalogId}`
+    `api/geo/feature?id=${encodeURIComponent(
+      featureId
+    )}&catalog_id=${encodeURIComponent(catalogId)}`
   ).then((x) => x.json());
 
   return getGeoData(result, catalogId);
@@ -75,9 +93,10 @@ export async function getGeoData(results, catalogId) {
       metadatas: {},
     };
     for (const header of Object.keys(result)) {
-      if (result[header].toUpperCase().startsWith("LINESTRING")) {
+      const property = result[header].value;
+      if (property.toUpperCase().startsWith("LINESTRING")) {
         itemRes.type = "LINESTRING";
-        itemRes.geo = result[header].split(",").map((x) =>
+        itemRes.geo = property.split(",").map((x) =>
           x
             .trim()
             .replace(/LINESTRING \(/i, "")
@@ -85,9 +104,9 @@ export async function getGeoData(results, catalogId) {
             .split(" ")
             .map((y) => Number(y))
         );
-      } else if (result[header].toUpperCase().startsWith("MULTILINESTRING")) {
+      } else if (property.toUpperCase().startsWith("MULTILINESTRING")) {
         itemRes.type = "MULTILINESTRING";
-        itemRes.geo = result[header].split(/\).*?,.*?\(/).map((x) =>
+        itemRes.geo = property.split(/\).*?,.*?\(/).map((x) =>
           x.split(",").map((y) =>
             y
               .trim()
@@ -97,9 +116,9 @@ export async function getGeoData(results, catalogId) {
               .map((z) => Number(z))
           )
         );
-      } else if (result[header].toUpperCase().startsWith("POLYGON")) {
+      } else if (property.toUpperCase().startsWith("POLYGON")) {
         itemRes.type = "POLYGON";
-        itemRes.geo = result[header].split(",").map((x) =>
+        itemRes.geo = property.split(",").map((x) =>
           x
             .trim()
             .replace(/POLYGON \(\(/i, "")
@@ -107,9 +126,9 @@ export async function getGeoData(results, catalogId) {
             .split(" ")
             .map((y) => Number(y))
         );
-      } else if (result[header].toUpperCase().startsWith("POINT")) {
+      } else if (property.toUpperCase().startsWith("POINT")) {
         itemRes.type = "POINT";
-        itemRes.geo = result[header].split(" ").map((x) =>
+        itemRes.geo = property.split(" ").map((x) =>
           Number(
             x
               .trim()
@@ -119,7 +138,7 @@ export async function getGeoData(results, catalogId) {
         );
       }
 
-      itemRes.metadatas[header] = result[header];
+      itemRes.metadatas[header] = property;
     }
 
     res.push(itemRes);
@@ -148,9 +167,19 @@ export async function getGeoData(results, catalogId) {
 }
 
 export async function removeFeature(id) {
-  return $fetch(`api/geo/feature/delete?id=${id}`).then((x) => x.json());
+  return $fetch(`api/geo/feature/delete?id=${encodeURIComponent(id)}`).then(
+    (x) => x.json()
+  );
+}
+
+export async function removeDataset(id) {
+  return $fetch(`api/geo/dataset/delete?id=${encodeURIComponent(id)}`).then(
+    (x) => x.json()
+  );
 }
 
 export async function removeCatalog(id) {
-  return $fetch(`api/geo/catalog/delete?id=${id}`).then((x) => x.json());
+  return $fetch(`api/geo/catalog/delete?id=${encodeURIComponent(id)}`).then(
+    (x) => x.json()
+  );
 }

@@ -16,7 +16,7 @@
                   right: !catalog.expanded,
                 }"
                 v-if="
-                  catalog.type !== 'SPARQL_QUERY' || catalog.features.length > 0
+                  catalog.type !== 'SPARQL_QUERY' || catalog.datasets.length > 0
                 "
               ></div>
             </div>
@@ -26,12 +26,12 @@
                 v-model="catalog.visible"
                 @change="onCatalogVisibilityChange(catalog)"
                 v-if="
-                  catalog.type !== 'SPARQL_QUERY' || catalog.features.length > 0
+                  catalog.type !== 'SPARQL_QUERY' || catalog.datasets.length > 0
                 "
               />
             </div>
             <div class="title" @click="expandCatalog(catalog.id)">
-              {{ displayLastPortion(catalog.id) }}
+              {{ displayItem(catalog) }}
             </div>
             <button
               @click="onClickCatalogMap(catalog.id)"
@@ -55,25 +55,59 @@
             </button>
             <button @click="onClickDeleteCatalog(catalog.id)">🗑</button>
           </div>
-          <div class="feature-container" v-if="catalog.expanded">
-            <div class="feature alt" v-if="catalog.features.length === 0">
-              <div class="title alt">Loading features...</div>
+          <div class="dataset-container" v-if="catalog.expanded">
+            <div class="dataset alt" v-if="catalog.datasets.length === 0">
+              <div class="title alt">Loading datasets...</div>
               <div class="loader"></div>
             </div>
             <div
-              class="feature"
-              v-for="feature of catalog.features"
-              :key="feature.id"
+              class="dataset"
+              v-for="dataset of catalog.datasets"
+              :key="dataset.id"
             >
-              <input
-                type="checkbox"
-                v-model="feature.visible"
-                @change="onFeatureVisibilityChange(feature)"
-              />
-              <div class="title" @click="onClickFeature(feature.id)">
-                {{ displayLastPortion(feature.id) }}
+              <div class="title-container">
+                <div class="arrow-container" @click="expandDataset(dataset.id)">
+                  <div
+                    class="arrow"
+                    :class="{
+                      down: dataset.expanded,
+                      right: !dataset.expanded,
+                    }"
+                  ></div>
+                </div>
+                <div class="checkbox-container">
+                  <input
+                    type="checkbox"
+                    v-model="dataset.visible"
+                    @change="onDatasetVisibilityChange(dataset)"
+                  />
+                </div>
+                <div class="title" @click="onClickDataset(dataset.id)">
+                  {{ displayItem(dataset) }}
+                </div>
+                <button @click="onClickDeleteDataset(dataset.id)">🗑</button>
               </div>
-              <button @click="onClickDeleteFeature(feature.id)">🗑</button>
+              <div class="feature-container" v-if="dataset.expanded">
+                <div class="feature alt" v-if="dataset.features.length === 0">
+                  <div class="title alt">Loading features...</div>
+                  <div class="loader"></div>
+                </div>
+                <div
+                  class="feature"
+                  v-for="feature of dataset.features"
+                  :key="feature.id"
+                >
+                  <input
+                    type="checkbox"
+                    v-model="feature.visible"
+                    @change="onFeatureVisibilityChange(feature)"
+                  />
+                  <div class="title" @click="onClickFeature(feature.id)">
+                    {{ displayItem(feature) }}
+                  </div>
+                  <button @click="onClickDeleteFeature(feature.id)">🗑</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -344,6 +378,7 @@ button {
 
       &:hover {
         color: #ddd;
+        background-color: transparent;
       }
     }
 
@@ -362,6 +397,66 @@ button {
     + .catalog {
       margin-top: 10px;
     }
+
+    .title-container {
+      display: flex;
+      align-items: center;
+
+      .arrow-container {
+        width: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        .arrow {
+          border: solid white;
+          border-width: 0 3px 3px 0;
+          display: inline-block;
+          padding: 3px;
+
+          &.right {
+            transform: rotate(-45deg);
+          }
+
+          &.down {
+            transform: rotate(45deg);
+          }
+        }
+      }
+
+      .checkbox-container {
+        width: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .title {
+        font-size: 12px;
+        word-break: break-all;
+        flex: 1;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      button {
+        width: auto;
+        margin: 0px;
+        padding: 0px 5px;
+
+        &:hover {
+          color: #ddd;
+          background-color: transparent;
+        }
+      }
+    }
+  }
+
+  .dataset {
+    margin-left: 10px;
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    padding-left: 10px;
 
     .title-container {
       display: flex;
@@ -747,14 +842,17 @@ import {
   getAllCatalogs,
   setFeatureVisibility,
   setCatalogVisibility,
+  setDatasetVisibility,
   triggerFeatureClick,
   expandCatalog,
   addSparqlQueryResult,
+  expandDataset,
 } from "../services/geo";
 import { ref } from "vue";
 import {
   removeFeature,
   removeCatalog,
+  removeDataset,
   getCatalog,
   sparqlQuery,
 } from "../services/api-geo";
@@ -857,23 +955,35 @@ export default {
         alert("The query fetch no data");
       }
     },
-    onFeatureVisibilityChange(feature) {
-      setFeatureVisibility(feature.id, feature.visible);
+    async onFeatureVisibilityChange(feature) {
+      await setFeatureVisibility(feature.id, feature.visible);
+      this.$forceUpdate();
     },
     onClickFeature(featureId) {
       triggerFeatureClick(featureId);
     },
-    onClickDeleteFeature(featureId) {
+    async onClickDeleteFeature(featureId) {
       setFeatureVisibility(featureId, false, true);
-      removeFeature(featureId);
+      await removeFeature(featureId);
+      this.$forceUpdate();
     },
     async onCatalogVisibilityChange(catalog) {
       await setCatalogVisibility(catalog.id, catalog.visible);
       this.$forceUpdate();
     },
-    onClickDeleteCatalog(catalogId) {
+    async onDatasetVisibilityChange(dataset) {
+      await setDatasetVisibility(dataset.id, dataset.visible);
+      this.$forceUpdate();
+    },
+    async onClickDeleteCatalog(catalogId) {
       setCatalogVisibility(catalogId, false, true);
-      removeCatalog(catalogId);
+      await removeCatalog(catalogId);
+      this.$forceUpdate();
+    },
+    async onClickDeleteDataset(datasetId) {
+      setDatasetVisibility(datasetId, false, true);
+      await removeDataset(datasetId);
+      this.$forceUpdate();
     },
     onClickSparqlQueryCsv(catalog) {
       if (catalog.raw?.length > 0) {
@@ -921,8 +1031,18 @@ export default {
     expandCatalog(catalogId) {
       expandCatalog(catalogId);
     },
-    displayLastPortion(str) {
-      return str.replace(/.*\//, "").replace(/.*#/, "");
+    async expandDataset(datasetId) {
+      await expandDataset(datasetId);
+      this.$forceUpdate();
+    },
+    displayItem(item) {
+      if (item.label) {
+        return item.label;
+      } else if (item.id) {
+        return item.id.replace(/.*\//, "").replace(/.*#/, "");
+      } else {
+        return item;
+      }
     },
   },
 };

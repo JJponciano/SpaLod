@@ -279,7 +279,7 @@ class OntologyProcessor:
                 raise ValueError("Invalid JSON structure: 'type' must be 'FeatureCollection'.")
 
             if "name" not in data:
-                raise ValueError("Invalid JSON structure: Missing 'name' field.")
+                data["name"] = "UntitledCollection"
 
             if "features" not in data or not isinstance(data["features"], list):
                 raise ValueError("Invalid JSON structure: Missing or incorrect 'features' field (must be a list).")

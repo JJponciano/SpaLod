@@ -81,6 +81,34 @@ button:hover {
   background-color: lighten($color: #ef4444, $amount: 10%);
   transition: background-color 0.5s ease;
 }
+.p-autocomplete-overlay {
+  background-color: white !important;
+  color: black !important;
+  box-shadow: 0px 10px 15px 2px #0005 !important;
+  min-width: 270px !important;
+  transform: translateX(-10px) !important;
+
+  .p-autocomplete-list-container {
+    ul {
+      li {
+        padding: 5px 10px;
+      }
+    }
+  }
+}
+.p-autocomplete-input {
+  border: none !important;
+  border-radius: 5px !important;
+  padding: 11px !important;
+  margin: 0px 15px !important;
+  width: 250px !important;
+  font-size: 14px !important;
+  font-family: revert !important;
+
+  &::placeholder {
+    opacity: 0.7;
+  }
+}
 </style>
 
 <style scoped lang="scss">

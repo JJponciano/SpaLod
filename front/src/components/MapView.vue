@@ -6,10 +6,12 @@
       @click="stopPropagation"
       :class="{ 'has-pointcloud': pointcloudUrl }"
     >
-      <div class="feature" v-for="item of feature">
-        <div>{{ item.key }}</div>
-        <div>{{ item.value }}</div>
-      </div>
+      <table>
+        <tr class="feature" v-for="item of feature">
+          <td class="title">{{ displayLastPortion(item.key) }}</td>
+          <td>{{ item.value }}</td>
+        </tr>
+      </table>
       <iframe v-if="pointcloudUrl" :src="pointcloudUrl"></iframe>
       <div class="close" @click="closeFeature()"><button>Close</button></div>
     </div>
@@ -95,12 +97,28 @@
       height: calc(100% - 20px);
     }
 
-    .feature {
-      word-break: break-all;
-      display: flex;
+    table {
+      border-spacing: 0px;
 
-      > div {
-        flex: 1;
+      .feature {
+        word-break: break-all;
+
+        &:nth-child(odd) {
+          background-color: #f2f2f2;
+        }
+
+        .title {
+          // width: 20%;
+          padding-right: 30px;
+          padding-left: 10px;
+          padding-top: 5px;
+          padding-bottom: 5px;
+        }
+
+        td {
+          margin: 0;
+          border: none;
+        }
       }
     }
 
@@ -377,6 +395,9 @@ export default {
 
     getProgressWidth() {
       return Math.floor((this.actual / this.total) * 100) + "%";
+    },
+    displayLastPortion(item) {
+      return item.replace(/.*\//, "").replace(/.*#/, "");
     },
   },
   mounted() {

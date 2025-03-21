@@ -4,6 +4,7 @@ import "./assets/main.css";
 import "leaflet/dist/leaflet.css";
 import Notifications from "@kyvg/vue3-notification";
 import { createWebHistory, createRouter } from "vue-router";
+import PrimeVue from "primevue/config";
 
 import Admin from "./views/Admin.vue";
 import Docs from "./views/Docs.vue";
@@ -42,5 +43,5 @@ router.beforeEach(async (to, from) => {
 });
 
 checkLogin().then(() => {
-  createApp(App).use(Notifications).use(router).mount("#app");
+  createApp(App).use(Notifications).use(PrimeVue).use(router).mount("#app");
 });

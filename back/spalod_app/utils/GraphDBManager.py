@@ -274,25 +274,42 @@ class GraphDBManager:
        # Set up SPARQLWrapper for updates
        # If the user has a specific graph
         if self.graph_iri is not None:
-            exec_query = self.prefixes + f"""
+            exec_query1 = self.prefixes + f"""
             DELETE WHERE {{
                 GRAPH <{self.graph_iri}> {{
                     <{id}> ?key ?value .
                 }}
             }}
             """
+            exec_query2 = self.prefixes + f"""
+            DELETE WHERE {{
+                GRAPH <{self.graph_iri}> {{
+                    ?key ?value <{id}> .
+                }}
+            }}
+            """
         else:
-            exec_query  = self.prefixes + f"""
+            exec_query1  = self.prefixes + f"""
             DELETE WHERE {{
                     <{id}> ?key ?value .
                 }}
             }}
             """
+            exec_query2  = self.prefixes + f"""
+            DELETE WHERE {{
+                    ?key ?value <{id}> .
+                }}
+            }}
+            """
+            
         self.sparql_statements.setMethod(POST)
-        self.sparql_statements.setQuery(exec_query.encode("utf-8"))
         self.sparql_statements.setReturnFormat(JSON)
 
         try:
+            self.sparql_statements.setQuery(exec_query1.encode("utf-8"))
+            self.sparql_statements.query()
+            
+            self.sparql_statements.setQuery(exec_query2.encode("utf-8"))
             response = self.sparql_statements.query()
             return response
         except Exception as e:
