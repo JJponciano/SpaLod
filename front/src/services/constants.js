@@ -387,7 +387,8 @@ export const sparqlQueries = {
     { label: "Städte (Q515)", value: "cities" },
   ],
   queries: {
-    default: "SELECT\n  ?s ?p ?o\nWHERE {\n  ?s ?p ?o .\n}\nLIMIT ",
+    default:
+      "SELECT\n  ?s ?o\nWHERE {\n  ?s <http://www.opengis.net/ont/geosparql#asWKT> ?o .\n}\nLIMIT ",
     schools:
       "SELECT ?item ?itemLabel ?coordinates ?category WHERE {\n ?item <spalod:category> <http://www.wikidata.org/entity/Q3914> .\n  ?item <spalod:itemLabel> ?itemLabel .\n  ?item <spalod:coordinates> ?coordinates .\n ?item <spalod:category> ?category .} LIMIT ",
     twentyBiggestCities:

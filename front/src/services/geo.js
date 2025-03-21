@@ -16,10 +16,18 @@ init();
 export async function init() {
   const allGeos = await ApiGeo.getAllCatalogs();
 
-  addCatalogs(allGeos.map(({ metadatas }) => metadatas));
+  const needRefresh = addCatalogs(allGeos.map(({ metadatas }) => metadatas));
+
+  if (needRefresh) {
+    // need to refresh the datasets of the catalogs
+    for (const catalog of catalogs.value) {
+      await addDatasets(catalog);
+    }
+  }
 }
 
 async function addCatalogs(metadatas) {
+  let needRefresh = true;
   for (const { catalog: catalogId, label } of metadatas) {
     if (!catalogs.value.find(({ id }) => id === catalogId)) {
       const catalog = {
@@ -30,8 +38,10 @@ async function addCatalogs(metadatas) {
         visible: false,
       };
       catalogs.value.push(catalog);
+      needRefresh = false;
     }
   }
+  return needRefresh;
 }
 
 async function addDatasets(catalog) {
@@ -40,17 +50,19 @@ async function addDatasets(catalog) {
   for (const {
     metadatas: { dataset: datasetId, label },
   } of catalogDatasets) {
-    const dataset = {
-      id: datasetId,
-      catalogId: catalog.id,
-      label,
-      features: [],
-      expanded: false,
-      visible: false,
-    };
-    datasets.push(dataset);
+    if (!datasets.find(({ id }) => id === datasetId)) {
+      const dataset = {
+        id: datasetId,
+        catalogId: catalog.id,
+        label,
+        features: [],
+        expanded: false,
+        visible: false,
+      };
+      datasets.push(dataset);
 
-    catalog.datasets.push(dataset);
+      catalog.datasets.push(dataset);
+    }
   }
 }
 
@@ -373,20 +385,37 @@ export function subscribeFeatureClick(func) {
   return unsubscribe;
 }
 
-export function addSparqlQueryResult(res) {
+export function addSparqlQueryResult(res, queryName) {
   nbSparqlQueries++;
 
-  const catalogId = `sparql-query-${nbSparqlQueries}`;
+  let queriesCatalog = catalogs.value.find(({ id }) => id === `custom-queries`);
 
-  const catalog = {
-    id: catalogId,
+  if (!queriesCatalog) {
+    queriesCatalog = {
+      id: `custom-queries`,
+      label: "Custom queries",
+      type: "SPARQL_QUERY",
+      datasets: [],
+      expanded: true,
+      visible: true,
+    };
+    catalogs.value.push(queriesCatalog);
+  }
+
+  const datasetId = `sparql-query-${nbSparqlQueries}`;
+
+  const dataset = {
+    id: datasetId,
     type: "SPARQL_QUERY",
+    label: queryName || `Custom Query ${nbSparqlQueries}`,
     raw: res,
     features: [],
+    catalogId: queriesCatalog.id,
     expanded: true,
     visible: true,
   };
-  catalogs.value.push(catalog);
+  datasets.push(dataset);
+  queriesCatalog.datasets.push(dataset);
 
   const tabFeatures = [];
 
@@ -396,12 +425,13 @@ export function addSparqlQueryResult(res) {
     const feature = {
       id: `${nbSparqlQueries}-feature-${i}`,
       wkt: { geo, type },
-      catalogId,
+      datasetId,
+      catalogId: queriesCatalog.id,
       visible: true,
     };
 
     features.push(feature);
-    catalog.features.push(feature);
+    dataset.features.push(feature);
     tabFeatures.push(feature);
   }
 

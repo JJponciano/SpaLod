@@ -46,17 +46,15 @@
             >
               owl
             </button>
-            <button
-              style="font-size: 12px"
-              @click="onClickSparqlQueryCsv(catalog)"
-              v-if="catalog.type === 'SPARQL_QUERY'"
-            >
-              csv
-            </button>
-            <button @click="onClickDeleteCatalog(catalog.id)">🗑</button>
+            <button @click="onClickDeleteCatalog(catalog)">🗑</button>
           </div>
           <div class="dataset-container" v-if="catalog.expanded">
-            <div class="dataset alt" v-if="catalog.datasets.length === 0">
+            <div
+              class="dataset alt"
+              v-if="
+                catalog.type !== 'SPARQL_QUERY' && catalog.datasets.length === 0
+              "
+            >
               <div class="title alt">Loading datasets...</div>
               <div class="loader"></div>
             </div>
@@ -66,7 +64,14 @@
               :key="dataset.id"
             >
               <div class="title-container">
-                <div class="arrow-container" @click="expandDataset(dataset.id)">
+                <div
+                  class="arrow-container"
+                  @click="expandDataset(dataset.id)"
+                  v-if="
+                    dataset.type !== 'SPARQL_QUERY' ||
+                    dataset.features.length > 0
+                  "
+                >
                   <div
                     class="arrow"
                     :class="{
@@ -85,9 +90,20 @@
                 <div class="title" @click="onClickDataset(dataset.id)">
                   {{ displayItem(dataset) }}
                 </div>
-                <button @click="onClickDeleteDataset(dataset.id)">🗑</button>
+
+                <button
+                  style="font-size: 12px"
+                  @click="onClickSparqlQueryCsv(dataset)"
+                  v-if="dataset.type === 'SPARQL_QUERY'"
+                >
+                  csv
+                </button>
+                <button @click="onClickDeleteDataset(dataset)">🗑</button>
               </div>
-              <div class="feature-container" v-if="dataset.expanded">
+              <div
+                class="feature-container"
+                v-if="dataset.expanded && dataset.features.length > 0"
+              >
                 <div class="feature alt" v-if="dataset.features.length === 0">
                   <div class="title alt">Loading features...</div>
                   <div class="loader"></div>
@@ -128,6 +144,11 @@
       <div class="advancedMenu" :class="{ active: advancedMenuOpen }">
         <p @click="advancedMenuOpen = !advancedMenuOpen">Advanced Mode</p>
         <div class="textcontainer" v-if="advancedMenuOpen">
+          <input
+            v-model="queryName"
+            placeholder="Name of the query"
+            spellcheck="false"
+          />
           <select v-model="selectedOption">
             <option
               v-for="(option, index) in options"
@@ -141,7 +162,7 @@
             v-model="inputAdvanced"
             placeholder="Write your custom request here"
             spellcheck="false"
-            @change="updateRange"
+            @change="updateRange(true)"
           ></textarea>
           <div class="filter">
             <div class="filtercontainer">
@@ -153,9 +174,8 @@
                 max="1000"
                 step="1"
                 v-model="rangeValue"
-                @input="updateRange"
+                @input="updateRange(false)"
               />
-              <p>{{ rangeValue }}</p>
             </div>
           </div>
           <button ref="confirmRequest" @click="confirmRequest" class="confirm">
@@ -655,6 +675,17 @@ button {
     resize: vertical;
   }
 
+  input {
+    margin-top: 8px;
+    border-radius: 5px;
+    margin: 0px 10px;
+    width: calc(100% - 20px);
+    font-size: 15px;
+    padding: 5px 10px;
+    margin-bottom: 8px;
+    border: none;
+  }
+
   select {
     background-color: white;
     color: black;
@@ -879,6 +910,7 @@ export default {
     const inputCatalog = ref("");
     const advancedMenuOpen = ref(false);
     const selectedOption = ref("default");
+    const queryName = ref("");
 
     return {
       menuOpen,
@@ -891,6 +923,7 @@ export default {
       inputCatalog,
       advancedMenuOpen,
       selectedOption,
+      queryName,
       options: sparqlQueries.options,
       queries: sparqlQueries.queries,
       catalogs,
@@ -916,20 +949,35 @@ export default {
     closeNavBar() {
       this.menuOpen = false;
     },
-    updateRange() {
-      const match = this.inputAdvanced.match(/LIMIT\s+(\d+)$/);
+    updateRange(fromTextarea) {
+      const regex = /LIMIT\s+(\d+)\s*$/;
+      const match = this.inputAdvanced.match(regex);
       if (this.inputAdvanced.endsWith("LIMIT ")) {
         this.inputAdvanced += this.rangeValue;
       } else if (this.inputAdvanced.endsWith("LIMIT")) {
         this.inputAdvanced += " ";
         this.inputAdvanced += this.rangeValue;
       } else if (match) {
-        const number = parseInt(match[1]);
-        const newInput = this.inputAdvanced.replace(
-          `LIMIT ${number}`,
-          `LIMIT ${this.rangeValue}`
-        );
-        this.inputAdvanced = newInput;
+        let number = parseInt(match[1]);
+
+        if (fromTextarea) {
+          if (number >= 1000) {
+            number = 1000;
+
+            const newInput = this.inputAdvanced.replace(
+              regex,
+              `LIMIT ${number}`
+            );
+            this.inputAdvanced = newInput;
+          }
+          this.rangeValue = number;
+        } else {
+          const newInput = this.inputAdvanced.replace(
+            regex,
+            `LIMIT ${this.rangeValue}`
+          );
+          this.inputAdvanced = newInput;
+        }
       } else {
         this.inputAdvanced = this.inputAdvanced.concat(
           "\n LIMIT ",
@@ -948,9 +996,8 @@ export default {
     },
     async confirmRequest() {
       const result = await sparqlQuery(this.inputAdvanced);
-
       if (result.length > 0) {
-        addSparqlQueryResult(result);
+        addSparqlQueryResult(result, this.queryName);
       } else {
         alert("The query fetch no data");
       }
@@ -975,15 +1022,20 @@ export default {
       await setDatasetVisibility(dataset.id, dataset.visible);
       this.$forceUpdate();
     },
-    async onClickDeleteCatalog(catalogId) {
-      setCatalogVisibility(catalogId, false, true);
-      await removeCatalog(catalogId);
-      this.$forceUpdate();
+    async onClickDeleteCatalog(catalog) {
+      setCatalogVisibility(catalog.id, false, true);
+
+      if (catalog.type !== "SPARQL_QUERY") {
+        await removeCatalog(catalog.id);
+        this.$forceUpdate();
+      }
     },
-    async onClickDeleteDataset(datasetId) {
-      setDatasetVisibility(datasetId, false, true);
-      await removeDataset(datasetId);
-      this.$forceUpdate();
+    async onClickDeleteDataset(dataset) {
+      setDatasetVisibility(dataset.id, false, true);
+      if (dataset.type !== "SPARQL_QUERY") {
+        await removeDataset(dataset.id);
+        this.$forceUpdate();
+      }
     },
     onClickSparqlQueryCsv(catalog) {
       if (catalog.raw?.length > 0) {
