@@ -57,19 +57,16 @@ export async function getCatalog(catalogId) {
     result.results.bindings.map((x) => ({
       key: x.key.value,
       value: x.value.value,
-    })),
-    catalogId
+    }))
   );
 }
 
-export async function getFeature(featureId, catalogId) {
+export async function getFeature(featureId) {
   const result = await $fetch(
-    `api/geo/feature?id=${encodeURIComponent(
-      featureId
-    )}&catalog_id=${encodeURIComponent(catalogId)}`
+    `api/geo/feature?id=${encodeURIComponent(featureId)}`
   ).then((x) => x.json());
 
-  return getGeoData(result, catalogId);
+  return getGeoData(result);
 }
 
 export async function sparqlQuery(query) {
@@ -85,7 +82,7 @@ export async function sparqlQuery(query) {
   return getGeoData(result);
 }
 
-export async function getGeoData(results, catalogId) {
+export async function getGeoData(results) {
   const res = [];
 
   for (const result of results) {
@@ -146,7 +143,7 @@ export async function getGeoData(results, catalogId) {
 
   for (const metadatas of res.map((x) => x.metadatas)) {
     if (metadatas.key?.includes("hasPointcloud")) {
-      const pointcloudResult = await getFeature(metadatas.value, catalogId);
+      const pointcloudResult = await getFeature(metadatas.value);
       const pointcloudId = pointcloudResult
         .map((x) => x.metadatas)
         .filter((x) => x.key?.includes("pointcloud_id"))[0]?.value;
@@ -182,4 +179,13 @@ export async function removeCatalog(id) {
   return $fetch(`api/geo/catalog/delete?id=${encodeURIComponent(id)}`).then(
     (x) => x.json()
   );
+}
+
+export async function updateFeature(id, key, value, needInsert = false) {
+  const verb = needInsert ? "insert" : "update";
+  return $fetch(
+    `api/geo/feature/${verb}?id=${encodeURIComponent(
+      id
+    )}&key=${encodeURIComponent(key)}&value=${encodeURIComponent(value)}`
+  ).then((x) => x.json());
 }

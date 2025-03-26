@@ -12,6 +12,7 @@ from rdflib import Graph, URIRef, Literal, Namespace, XSD
 from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager
 from  .sparql_query import SparqlQueryAPIView
 from ..serializers import SparqlQuerySerializer
+import re
 
 class GeoGetAllCatalogsView(APIView):
     def get(self, request, *args, **kwargs):
@@ -20,7 +21,11 @@ class GeoGetAllCatalogsView(APIView):
         user_id = request.user.id
         graph_manager = GraphDBManager(user_id)
         sparql_query="""
-            SELECT ?catalog ?label WHERE { ?catalog a dcat:Catalog . OPTIONAL { ?catalog rdfs:label ?label  } }
+            SELECT ?catalog ?label
+            WHERE { 
+                ?catalog a dcat:Catalog . 
+                OPTIONAL { ?catalog rdfs:label ?label  } 
+            }
         """
         try:
             results = graph_manager.query_graphdb(sparql_query)
@@ -35,7 +40,11 @@ class GeoGetDatasetOfCatalogView(APIView):
         user_id = request.user.id
         graph_manager = GraphDBManager(user_id)
         sparql_query=f"""
-            SELECT ?dataset ?label WHERE {{ <{catalog_id}>  dcat:dataset ?dataset. OPTIONAL {{ ?dataset rdfs:label ?label  }} }}
+            SELECT ?dataset ?label
+            WHERE {{ 
+                <{catalog_id}>  dcat:dataset ?dataset.
+                OPTIONAL {{ ?dataset rdfs:label ?label }} 
+            }}
         """
         try:
             results = graph_manager.query_graphdb(sparql_query)
@@ -49,7 +58,12 @@ class GeoGetAllFeaturesOfDatasetView(APIView):
         user_id = request.user.id
         graph_manager = GraphDBManager(user_id)
         sparql_query=f"""
-            SELECT ?feature ?label WHERE {{ <{dataset_id}>  geosparql:hasFeatureCollection ?fc. ?fc  geosparql:hasFeature ?feature . OPTIONAL {{ ?feature rdfs:label ?label  }} }}
+            SELECT ?feature ?label
+            WHERE {{ 
+                <{dataset_id}> geosparql:hasFeatureCollection ?fc.
+                ?fc  geosparql:hasFeature ?feature . 
+                OPTIONAL {{ ?feature rdfs:label ?label  }} 
+            }}
         """
         try:
             results = graph_manager.query_graphdb(sparql_query)
@@ -201,6 +215,49 @@ class GeoGetFeature(APIView):
             user_id = request.user.id
             graph_manager = GraphDBManager(user_id)
             results = graph_manager.query_graphdb(sparql_query)
+            return Response(results, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class GeoUpdateFeatureItem(APIView):
+    def get(self, request, *args, **kwargs):
+        print("::::::: GeoUpdateFeatureItem :::::::")
+        
+        id = request.query_params.get('id')
+        key = request.query_params.get('key')
+        value = request.query_params.get('value')
+        
+        sparql_query = f"""     
+            DELETE {{
+                <{id}> <{key}> ?value .
+            }}
+            INSERT {{
+                <{id}> <{key}> "{value}" .
+            }}
+            WHERE {{
+                <{id}> <{key}> ?value .
+            }}
+        """
+        try:
+            user_id = request.user.id
+            graph_manager = GraphDBManager(user_id)
+            results = graph_manager.update_graphdb(sparql_query)
+            return Response(results, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class GeoInsertFeatureItem(APIView):
+    def get(self, request, *args, **kwargs):
+        print("::::::: GeoInsertFeatureItem :::::::")
+        
+        id = request.query_params.get('id')
+        key = request.query_params.get('key')
+        value = request.query_params.get('value')
+        
+        try:
+            user_id = request.user.id
+            graph_manager = GraphDBManager(user_id)
+            results = graph_manager.insert_graphdb(id, key, value)
             return Response(results, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

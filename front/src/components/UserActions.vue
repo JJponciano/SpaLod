@@ -118,7 +118,11 @@
                     v-model="feature.visible"
                     @change="onFeatureVisibilityChange(feature)"
                   />
-                  <div class="title" @click="onClickFeature(feature.id)">
+                  <div
+                    class="title"
+                    @click="onClickFeature(feature.id)"
+                    @dblclick="onDoubleClickFeature(feature.id)"
+                  >
                     {{ displayItem(feature) }}
                   </div>
                   <button @click="onClickDeleteFeature(feature.id)">🗑</button>
@@ -875,9 +879,11 @@ import {
   setCatalogVisibility,
   setDatasetVisibility,
   triggerFeatureClick,
+  triggerFeatureDoubleClick,
   expandCatalog,
   addSparqlQueryResult,
   expandDataset,
+  subscribeLabelChange,
 } from "../services/geo";
 import { ref } from "vue";
 import {
@@ -911,6 +917,7 @@ export default {
     const advancedMenuOpen = ref(false);
     const selectedOption = ref("default");
     const queryName = ref("");
+    const unsubscribeLabelChange = null;
 
     return {
       menuOpen,
@@ -928,6 +935,7 @@ export default {
       queries: sparqlQueries.queries,
       catalogs,
       getProcess,
+      unsubscribeLabelChange,
     };
   },
   watch: {
@@ -938,9 +946,13 @@ export default {
   mounted() {
     window.addEventListener("resize", this.closeNavBar);
     this.inputAdvanced = this.queries[this.selectedOption] + this.rangeValue;
+    this.unsubscribeLabelChange = subscribeLabelChange(() => {
+      this.$forceUpdate();
+    });
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.closeNavBar);
+    this.unsubscribeLabelChange();
   },
   methods: {
     toggleNavBar() {
@@ -1008,6 +1020,9 @@ export default {
     },
     onClickFeature(featureId) {
       triggerFeatureClick(featureId);
+    },
+    onDoubleClickFeature(featureId) {
+      triggerFeatureDoubleClick(featureId);
     },
     async onClickDeleteFeature(featureId) {
       setFeatureVisibility(featureId, false, true);
@@ -1080,8 +1095,9 @@ export default {
 
       window.open(owlUrl, "_blank");
     },
-    expandCatalog(catalogId) {
-      expandCatalog(catalogId);
+    async expandCatalog(catalogId) {
+      await expandCatalog(catalogId);
+      this.$forceUpdate();
     },
     async expandDataset(datasetId) {
       await expandDataset(datasetId);

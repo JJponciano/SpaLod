@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import { $ajax } from "./api";
-import { init as initGeo } from "./geo";
+import { refreshGeoData } from "./geo";
 
 const progress = ref("");
 
@@ -34,9 +34,10 @@ export function uploadGeo(file, metadata) {
     data: formData,
     processData: false,
     contentType: false,
-    success: () => {
+    success: async () => {
       progress.value = "";
-      initGeo();
+      await refreshGeoData();
+      this.$forceUpdate();
     },
     error: (error) => {
       console.error(error);

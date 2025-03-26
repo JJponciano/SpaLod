@@ -8,6 +8,8 @@ const sparqlQueries = ref([]);
 
 const visibilityChangeSubscribers = [];
 const clickSubscribers = [];
+const doubleClickSubscribers = [];
+const labelChangeSubscribers = [];
 
 let nbSparqlQueries = 0;
 
@@ -16,18 +18,18 @@ init();
 export async function init() {
   const allGeos = await ApiGeo.getAllCatalogs();
 
-  const needRefresh = addCatalogs(allGeos.map(({ metadatas }) => metadatas));
+  addCatalogs(allGeos.map(({ metadatas }) => metadatas));
+}
 
-  if (needRefresh) {
-    // need to refresh the datasets of the catalogs
-    for (const catalog of catalogs.value) {
+export async function refreshGeoData() {
+  for (const catalog of catalogs.value) {
+    if (catalog.expanded) {
       await addDatasets(catalog);
     }
   }
 }
 
 async function addCatalogs(metadatas) {
-  let needRefresh = true;
   for (const { catalog: catalogId, label } of metadatas) {
     if (!catalogs.value.find(({ id }) => id === catalogId)) {
       const catalog = {
@@ -38,10 +40,8 @@ async function addCatalogs(metadatas) {
         visible: false,
       };
       catalogs.value.push(catalog);
-      needRefresh = false;
     }
   }
-  return needRefresh;
 }
 
 async function addDatasets(catalog) {
@@ -50,18 +50,23 @@ async function addDatasets(catalog) {
   for (const {
     metadatas: { dataset: datasetId, label },
   } of catalogDatasets) {
-    if (!datasets.find(({ id }) => id === datasetId)) {
-      const dataset = {
+    let dataset = datasets.find(({ id }) => id === datasetId);
+
+    if (!dataset) {
+      dataset = {
         id: datasetId,
         catalogId: catalog.id,
-        label,
+        label: label || "",
         features: [],
         expanded: false,
         visible: false,
       };
       datasets.push(dataset);
-
       catalog.datasets.push(dataset);
+    }
+
+    if (dataset.label === undefined) {
+      dataset.label = label || "";
     }
   }
 }
@@ -72,16 +77,23 @@ async function addFeatures(dataset) {
   for (const {
     metadatas: { feature: featureId, label },
   } of catalogFeatures) {
-    const feature = {
-      id: featureId,
-      label,
-      visible: false,
-      datasetId: dataset.id,
-      catalogId: dataset.catalogId,
-    };
-    features.push(feature);
+    let feature = features.find(({ id }) => id === featureId);
 
-    dataset.features.push(feature);
+    if (!feature) {
+      feature = {
+        id: featureId,
+        label,
+        visible: false,
+        datasetId: dataset.id,
+        catalogId: dataset.catalogId,
+      };
+      features.push(feature);
+      dataset.features.push(feature);
+    }
+
+    if (feature.label === undefined) {
+      feature.label = label || "";
+    }
   }
 }
 
@@ -97,14 +109,18 @@ export function getAllSparqlQueries() {
   return sparqlQueries.value;
 }
 
-export function expandCatalog(catalogId) {
+export async function expandCatalog(catalogId) {
   const catalog = catalogs.value.find(({ id }) => id === catalogId);
 
   if (catalog) {
     catalog.expanded = !catalog.expanded;
 
-    if (catalog.expanded && catalog.datasets.length === 0) {
-      addDatasets(catalog);
+    if (
+      catalog.expanded &&
+      (catalog.datasets.length === 0 ||
+        catalog.datasets.some(({ label }) => label === undefined))
+    ) {
+      await addDatasets(catalog);
     }
   }
 }
@@ -115,7 +131,12 @@ export async function expandDataset(datasetId) {
   if (dataset) {
     dataset.expanded = !dataset.expanded;
 
-    if (dataset.expanded && dataset.features.length === 0) {
+    if (
+      dataset.expanded &&
+      (dataset.features.length === 0 ||
+        (dataset.type !== "SPARQL_QUERY" &&
+          dataset.features.some(({ label }) => label === undefined)))
+    ) {
       await addFeatures(dataset);
     }
   }
@@ -372,12 +393,46 @@ export function triggerFeatureClick(featureId) {
   }
 }
 
+export function triggerFeatureDoubleClick(featureId) {
+  const feature = features.find(({ id }) => id === featureId);
+
+  if (feature && feature.visible) {
+    doubleClickSubscribers.forEach((x) => x(featureId));
+  }
+}
+
 export function subscribeFeatureClick(func) {
   clickSubscribers.push(func);
 
   const unsubscribe = () => {
     clickSubscribers.splice(
       clickSubscribers.indexOf((x) => x === func),
+      1
+    );
+  };
+
+  return unsubscribe;
+}
+
+export function subscribeFeatureDoubleClick(func) {
+  doubleClickSubscribers.push(func);
+
+  const unsubscribe = () => {
+    doubleClickSubscribers.splice(
+      doubleClickSubscribers.indexOf((x) => x === func),
+      1
+    );
+  };
+
+  return unsubscribe;
+}
+
+export function subscribeLabelChange(func) {
+  labelChangeSubscribers.push(func);
+
+  const unsubscribe = () => {
+    labelChangeSubscribers.splice(
+      labelChangeSubscribers.indexOf((x) => x === func),
       1
     );
   };
@@ -438,11 +493,60 @@ export function addSparqlQueryResult(res, queryName) {
   visibilityChangeSubscribers.forEach((x) => x(tabFeatures));
 }
 
+const featureUdates = {};
+
+export function updateFeature(featureId, key, value, needInsert = false) {
+  const feature = features.find(({ id }) => id === featureId);
+
+  if (feature) {
+    if (
+      key === "rdfs:label" ||
+      key === "http://www.w3.org/2000/01/rdf-schema#label"
+    ) {
+      feature.label = value;
+      labelChangeSubscribers.forEach((x) => x());
+    }
+
+    if (!featureUdates[featureId]) {
+      featureUdates[featureId] = {};
+    }
+    if (needInsert) {
+      ((featureId) => {
+        featureUdates[featureId].pendingInsert = true;
+        ApiGeo.updateFeature(featureId, key, value, true).then(() => {
+          featureUdates[featureId].pendingInsert = false;
+        });
+      })(featureId);
+    } else {
+      const updateFeatureDelayed = (featureId) => {
+        if (featureUdates[featureId]) {
+          clearTimeout(featureUdates[featureId]);
+        }
+
+        featureUdates[featureId] = setTimeout(() => {
+          if (featureUdates[featureId].pendingInsert) {
+            updateFeatureDelayed(featureId);
+            return;
+          }
+
+          ApiGeo.updateFeature(featureId, key, value, needInsert);
+
+          featureUdates[featureId] = null;
+        }, 200);
+      };
+
+      updateFeatureDelayed(featureId);
+    }
+  }
+}
+
 export function reset() {
   features.splice(0, features.length);
+  datasets.splice(0, datasets.length);
   catalogs.value.splice(0, catalogs.value.length);
   sparqlQueries.value.splice(0, sparqlQueries.value.length);
 
   clickSubscribers.splice(0, clickSubscribers.length);
   visibilityChangeSubscribers.splice(0, visibilityChangeSubscribers.length);
+  labelChangeSubscribers.splice(0, labelChangeSubscribers.length);
 }

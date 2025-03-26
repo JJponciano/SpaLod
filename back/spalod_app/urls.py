@@ -24,6 +24,8 @@ urlpatterns = [
     path('geo/feature/all', GeoGetAllFeaturesOfDatasetView.as_view(), name='geo-feature-all'),
     path('geo/feature/wkt', GeoGetFeatureWKT.as_view(), name='geo-feature-wkt'),
     path('geo/feature/delete', GeoRemoveID.as_view(), name='geo-feature-delete'),
+    path('geo/feature/update', GeoUpdateFeatureItem.as_view(), name='geo-feature-update'),
+    path('geo/feature/insert', GeoInsertFeatureItem.as_view(), name='geo-feature-insert'),
 ]
 
 if settings.DEBUG:

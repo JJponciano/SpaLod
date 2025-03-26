@@ -7,13 +7,33 @@
       :class="{ 'has-pointcloud': pointcloudUrl }"
     >
       <table>
-        <tr class="feature" v-for="item of feature">
+        <tr class="feature" v-for="item of feature.items">
           <td class="title">{{ displayLastPortion(item.key) }}</td>
-          <td>{{ item.value }}</td>
+          <td>
+            <div
+              :id="'div-' + item.key"
+              v-if="!item.hasFocus"
+              @click="setItemInput(item)"
+            >
+              {{ item.value }}
+            </div>
+            <input
+              v-else
+              :id="'btn-' + item.key"
+              type="text"
+              v-model="item.value"
+              @blur="item.hasFocus = false"
+              :style="getInputStyle()"
+              @input="changeObject(item)"
+            />
+          </td>
         </tr>
       </table>
       <iframe v-if="pointcloudUrl" :src="pointcloudUrl"></iframe>
-      <div class="close" @click="closeFeature()"><button>Close</button></div>
+      <div class="insert" v-if="showAddLabel()">
+        <button @click="addLabel()">Add Label</button>
+      </div>
+      <div class="close"><button @click="closeFeature()">Close</button></div>
     </div>
   </div>
   <div class="loader" v-if="total > 0">
@@ -118,6 +138,16 @@
         td {
           margin: 0;
           border: none;
+
+          div {
+            min-height: 24px;
+          }
+
+          input {
+            padding: 5px;
+            font-size: 15px;
+            margin: 0;
+          }
         }
       }
     }
@@ -129,8 +159,14 @@
     }
   }
 
-  .close {
+  .insert {
     margin-top: 10px;
+  }
+
+  .close {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
   }
 }
 </style>
@@ -141,6 +177,8 @@ import { getFeature } from "../services/api-geo";
 import {
   subscribeFeatureVisibiltyChange,
   subscribeFeatureClick,
+  subscribeFeatureDoubleClick,
+  updateFeature,
 } from "../services/geo";
 
 export default {
@@ -153,6 +191,7 @@ export default {
       pointcloudUrl: null,
       total: 0,
       actual: 0,
+      inputMinWidth: 0,
     };
   },
   methods: {
@@ -221,17 +260,21 @@ export default {
             this.onFeatureVisibilityChange.bind(this)
           ),
           subscribeFeatureClick(this.onFeatureClick.bind(this)),
+          subscribeFeatureDoubleClick(this.displayFeature.bind(this)),
         ]
       );
     },
     async displayFeature(featureId, catalogId) {
       const res = await getFeature(featureId, catalogId);
-      this.feature = res
-        .filter((x) => x.metadatas?.key && x.metadatas?.value)
-        .map(({ metadatas: { key, value } }) => ({
-          key,
-          value,
-        }));
+      this.feature = {
+        id: featureId,
+        items: res
+          .filter((x) => x.metadatas?.key && x.metadatas?.value)
+          .map(({ metadatas: { key, value } }) => ({
+            key,
+            value,
+          })),
+      };
 
       this.pointcloudUrl = res.filter((x) => x.pointcloudUrl)[0]?.pointcloudUrl;
     },
@@ -254,7 +297,7 @@ export default {
           }
         );
       } else if (feature.wkt.type === "MULTILINESTRING") {
-        mapObj = new L.multiPolyline(
+        mapObj = new L.Polyline(
           feature.wkt.geo.map((x) =>
             x.map(([lng, lat]) => new L.LatLng(lat, lng))
           ),
@@ -398,6 +441,43 @@ export default {
     },
     displayLastPortion(item) {
       return item.replace(/.*\//, "").replace(/.*#/, "");
+    },
+
+    setItemInput(item) {
+      item.hasFocus = true;
+      this.inputMinWidth = document.getElementById(
+        `div-${item.key}`
+      ).offsetWidth;
+      setTimeout(() => {
+        document.getElementById(`btn-${item.key}`).focus();
+      });
+    },
+
+    getInputStyle() {
+      return {
+        "min-width": this.inputMinWidth + "px",
+      };
+    },
+
+    changeObject(item) {
+      updateFeature(this.feature.id, item.key, item.value, item.new);
+      item.new = false;
+    },
+
+    showAddLabel() {
+      return !this.feature?.items?.some(
+        (x) =>
+          x.key === "rdfs:label" ||
+          x.key === "http://www.w3.org/2000/01/rdf-schema#label"
+      );
+    },
+
+    addLabel() {
+      this.feature.items.push({
+        key: "http://www.w3.org/2000/01/rdf-schema#label",
+        value: "",
+        new: true,
+      });
     },
   },
   mounted() {

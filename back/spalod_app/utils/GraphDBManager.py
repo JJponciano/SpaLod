@@ -240,7 +240,7 @@ class GraphDBManager:
         self.sparql_statements.setReturnFormat(JSON)
 
         try:
-            response = self.sparql_statements.query()
+            self.sparql_statements.query()
             print(f"Data uploaded successfully to Graph: {self.graph_iri}")
         except Exception as e:
             print(f"SPARQL update failed: {e}")
@@ -270,6 +270,60 @@ class GraphDBManager:
             print("QUERY:\n")
             print(select_query)
             raise
+
+    def update_graphdb(self, select_query):
+        """Executes a SPARQL SELECT query only within the user's named graph (if user_id is set)."""
+        
+        if self.graph_iri is not None:
+            select_query=self.prefixes+f"""
+                WITH <{self.graph_iri}>
+                {select_query}
+            """
+
+        self.sparql_statements.setMethod(POST)
+        self.sparql_statements.setQuery(select_query.encode("utf-8"))
+        self.sparql_statements.setReturnFormat(JSON)
+
+        try:
+            response = self.sparql_statements.query()
+            return response
+        except Exception as e:
+            print(f"SPARQL SELECT query failed: {e}")
+            print("QUERY:\n")
+            print(select_query)
+            raise
+        
+    def insert_graphdb(self, s, p, o):
+        """Executes a SPARQL SELECT query only within the user's named graph (if user_id is set)."""
+        
+        if self.graph_iri is not None:
+            insert_query = f"""
+                INSERT DATA {{
+                    GRAPH <{self.graph_iri}> {{
+                        <{s}> <{p}> "{o}" .
+                    }}
+                }}
+            """
+        else:
+            insert_query = f"""
+                INSERT DATA {{
+                    <{s}> <{p}> "{o}" .
+                }}
+            """
+
+        self.sparql_statements.setMethod(POST)
+        self.sparql_statements.setQuery(insert_query)
+        self.sparql_statements.setReturnFormat(JSON)
+
+        try:
+            response = self.sparql_statements.query()
+            return response
+        except Exception as e:
+            print(f"SPARQL SELECT query failed: {e}")
+            print("QUERY:\n")
+            print(insert_query)
+            raise
+        
     def delete_all(self,id):
        # Set up SPARQLWrapper for updates
        # If the user has a specific graph
