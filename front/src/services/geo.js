@@ -534,6 +534,7 @@ export function addSparqlQueryResult(res, queryName) {
     i++;
     const feature = {
       id: `${nbSparqlQueries}-feature-${i}`,
+      label: `feature-${i}`,
       wkt: { geo, type },
       datasetId,
       catalogId: queriesCatalog.id,

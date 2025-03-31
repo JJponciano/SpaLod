@@ -187,6 +187,7 @@ export default {
       map: null,
       feature: null,
       mapObjList: {},
+      featuresToDisplay: {},
       unsubscribe: [],
       pointcloudUrl: null,
       total: 0,
@@ -349,21 +350,54 @@ export default {
       }
     },
 
-    onFeatureVisibilityChange(
-      features,
-      remove,
-      zoomObjs = [],
-      firstCall = true
-    ) {
-      if (firstCall) {
-        this.total += features.length;
+    onFeatureVisibilityChange(features, remove, zoomObjs = []) {
+      if (features.length > 0) {
+        features
+          .filter(({ visible }) => visible)
+          .forEach((feature) => {
+            if (!this.featuresToDisplay[feature.id]) {
+              this.featuresToDisplay[feature.id] = feature;
+              this.total += 1;
+            } else {
+              delete this.featuresToDisplay[feature.id];
+              this.total -= 1;
+            }
+          });
+
+        features
+          .filter(({ visible }) => !visible)
+          .forEach((feature) => {
+            if (this.featuresToDisplay[feature.id]) {
+              delete this.featuresToDisplay[feature.id];
+              this.total -= 1;
+            } else {
+              this.featuresToDisplay[feature.id] = feature;
+              this.total += 1;
+            }
+          });
       }
 
       const chunkSize = 100;
-      const chunkFeatures = features.slice(0, chunkSize);
-      const remainingFeatures = features.slice(chunkSize);
+      const chunkFeatures = Object.keys(this.featuresToDisplay)
+        .map((x) => this.featuresToDisplay[x])
+        .slice(0, chunkSize);
+
+      if (chunkFeatures.length === 0) {
+        if (this.actual >= this.total) {
+          this.actual = 0;
+          this.total = 0;
+        }
+
+        if (zoomObjs.length > 0) {
+          this.map.options.maxZoom = 17;
+          this.fitBounds(zoomObjs.map((x) => this.getObjBounds(x)).flat(1));
+        }
+
+        return;
+      }
 
       for (const feature of chunkFeatures) {
+        this.actual += 1;
         let mapObj = this.mapObjList[feature.id];
 
         if (!mapObj && feature.wkt) {
@@ -383,31 +417,13 @@ export default {
               delete this.mapObjList[feature.id];
             }
           }
+          delete this.featuresToDisplay[feature.id];
         }
       }
 
-      this.actual += chunkSize;
-
-      if (remainingFeatures.length > 0) {
-        setTimeout(() => {
-          this.onFeatureVisibilityChange(
-            remainingFeatures,
-            remove,
-            zoomObjs,
-            false
-          );
-        }, 10);
-      } else {
-        if (this.actual >= this.total) {
-          this.actual = 0;
-          this.total = 0;
-        }
-
-        if (zoomObjs.length > 0) {
-          this.map.options.maxZoom = 17;
-          this.fitBounds(zoomObjs.map((x) => this.getObjBounds(x)).flat(1));
-        }
-      }
+      setTimeout(() => {
+        this.onFeatureVisibilityChange([], remove, zoomObjs);
+      }, 10);
     },
 
     getObjBounds(obj) {
