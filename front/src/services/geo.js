@@ -443,8 +443,16 @@ export function triggerFeatureClick(featureId) {
 export function triggerFeatureDoubleClick(featureId) {
   const feature = features[featureId];
 
-  if (feature && feature.visible) {
+  if (feature) {
     doubleClickSubscribers.forEach((x) => x(featureId));
+  }
+}
+
+export function triggerDatasetDoubleClick(datasetId) {
+  const dataset = datasets.find(({ id }) => id === datasetId);
+
+  if (dataset) {
+    doubleClickSubscribers.forEach((x) => x(datasetId));
   }
 }
 

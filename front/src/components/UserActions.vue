@@ -101,7 +101,10 @@
                     @change="onDatasetVisibilityChange(geoItem.item)"
                   />
                 </div>
-                <div class="title" @click="onClickDataset(geoItem.item.id)">
+                <div
+                  class="title"
+                  @dblclick="onDoubleClickDataset(geoItem.item.id)"
+                >
                   {{ displayItem(geoItem.item) }}
                 </div>
 
@@ -830,6 +833,7 @@ import {
   setDatasetVisibility,
   triggerFeatureClick,
   triggerFeatureDoubleClick,
+  triggerDatasetDoubleClick,
   expandCatalog,
   addSparqlQueryResult,
   expandDataset,
@@ -838,13 +842,7 @@ import {
   init as initGeo,
 } from "../services/geo";
 import { ref } from "vue";
-import {
-  removeFeature,
-  removeCatalog,
-  removeDataset,
-  getDataset,
-  sparqlQuery,
-} from "../services/api-geo";
+import { removeFeature, getDataset, sparqlQuery } from "../services/api-geo";
 import { sparqlQueries } from "../services/constants";
 import { getProcess } from "../services/geo-upload";
 
@@ -981,6 +979,9 @@ export default {
     },
     onClickFeature(featureId) {
       triggerFeatureClick(featureId);
+    },
+    onDoubleClickDataset(datasetId) {
+      triggerDatasetDoubleClick(datasetId);
     },
     onDoubleClickFeature(featureId) {
       triggerFeatureDoubleClick(featureId);
