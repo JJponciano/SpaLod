@@ -186,7 +186,7 @@ export default {
     return {
       map: null,
       feature: null,
-      mapObjList: [],
+      mapObjList: {},
       unsubscribe: [],
       pointcloudUrl: null,
       total: 0,
@@ -239,6 +239,7 @@ export default {
         minZoom: 2,
         fullscreenControl: true,
         layers: [streets],
+        preferCanvas: true,
       });
 
       this.map.attributionControl.setPrefix(false);
@@ -319,8 +320,14 @@ export default {
           }
         );
       } else if (feature.wkt.type === "POINT") {
-        mapObj = new L.marker(
-          new L.LatLng(feature.wkt.geo[1], feature.wkt.geo[0])
+        // mapObj = new L.marker(
+        //   new L.LatLng(feature.wkt.geo[1], feature.wkt.geo[0])
+        // );
+        mapObj = L.circleMarker(
+          new L.LatLng(feature.wkt.geo[1], feature.wkt.geo[0]),
+          {
+            color: "#3388ff",
+          }
         );
       }
 
@@ -335,7 +342,7 @@ export default {
         mapObj.spalodCatalogId = feature.catalogId;
         mapObj.visible = false;
 
-        this.mapObjList.push(mapObj);
+        this.mapObjList[mapObj.spalodId] = mapObj;
         return mapObj;
       } else {
         throw new Error("Unkown feature type");
@@ -345,21 +352,19 @@ export default {
     onFeatureVisibilityChange(
       features,
       remove,
-      doZoom = false,
+      zoomObjs = [],
       firstCall = true
     ) {
       if (firstCall) {
         this.total += features.length;
       }
 
-      const chunkSize = 10;
+      const chunkSize = 100;
       const chunkFeatures = features.slice(0, chunkSize);
       const remainingFeatures = features.slice(chunkSize);
 
       for (const feature of chunkFeatures) {
-        let mapObj = this.mapObjList.find(
-          ({ spalodId }) => spalodId === feature.id
-        );
+        let mapObj = this.mapObjList[feature.id];
 
         if (!mapObj && feature.wkt) {
           mapObj = this.createMapObj(feature);
@@ -369,16 +374,15 @@ export default {
           if (feature.visible && !remove) {
             mapObj.addTo(this.map);
             mapObj.visible = true;
+            zoomObjs.push(mapObj);
           } else {
             mapObj.removeFrom(this.map);
             mapObj.visible = false;
 
             if (remove) {
-              this.mapObjList.splice(this.mapObjList.indexOf(mapObj), 1);
+              delete this.mapObjList[feature.id];
             }
           }
-
-          doZoom = true;
         }
       }
 
@@ -389,7 +393,7 @@ export default {
           this.onFeatureVisibilityChange(
             remainingFeatures,
             remove,
-            doZoom,
+            zoomObjs,
             false
           );
         }, 10);
@@ -399,10 +403,9 @@ export default {
           this.total = 0;
         }
 
-        const objs = this.mapObjList.filter((x) => x.visible);
-        if (doZoom && objs.length > 0) {
+        if (zoomObjs.length > 0) {
           this.map.options.maxZoom = 17;
-          this.fitBounds(objs.map((x) => this.getObjBounds(x)).flat(1));
+          this.fitBounds(zoomObjs.map((x) => this.getObjBounds(x)).flat(1));
         }
       }
     },
@@ -418,9 +421,7 @@ export default {
     },
 
     onFeatureClick(featureId) {
-      const mapObj = this.mapObjList.find(
-        ({ spalodId }) => spalodId === featureId
-      );
+      const mapObj = this.mapObjList[featureId];
 
       this.fitBounds(this.getObjBounds(mapObj));
     },

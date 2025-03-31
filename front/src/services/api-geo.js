@@ -53,12 +53,15 @@ export async function getCatalog(catalogId) {
     `api/geo/catalog?id=${encodeURIComponent(catalogId)}`
   ).then((x) => x.json());
 
-  return getGeoData(
-    result.results.bindings.map((x) => ({
-      key: x.key.value,
-      value: x.value.value,
-    }))
-  );
+  return getGeoData(result);
+}
+
+export async function getDataset(datasetId) {
+  const result = await $fetch(
+    `api/geo/dataset?id=${encodeURIComponent(datasetId)}`
+  ).then((x) => x.json());
+
+  return getGeoData(result);
 }
 
 export async function getFeature(featureId) {
@@ -125,14 +128,17 @@ export async function getGeoData(results) {
         );
       } else if (property.toUpperCase().startsWith("POINT")) {
         itemRes.type = "POINT";
-        itemRes.geo = property.split(" ").map((x) =>
-          Number(
-            x
-              .trim()
-              .replace(/POINT\(/i, "")
-              .replace(")", "")
-          )
-        );
+        itemRes.geo = /POINT\s*?\((-?[\d\.]+) (-?[\d\.]+)\)/i
+          .exec(property)
+          .slice(1);
+        // itemRes.geo = property.split(" ").map((x) =>
+        //   Number(
+        //     x
+        //       .trim()
+        //       .replace(/POINT\s*?\(/i, "")
+        //       .replace(")", "")
+        //   )
+        // );
       }
 
       itemRes.metadatas[header] = property;

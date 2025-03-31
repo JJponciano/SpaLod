@@ -2,151 +2,165 @@
   <div class="user-actions dark">
     <button class="navbar_button" @click="toggleNavBar">Menu</button>
     <div class="side_pannel">
-      <div class="data-title" :class="{ active: showData }">
-        <p @click="showData = !showData">Data</p>
-      </div>
-      <div class="data" :class="{ active: showData }" v-if="showData">
-        <div class="catalog" v-for="catalog of catalogs" :key="catalog.id">
-          <div class="title-container">
-            <div class="arrow-container" @click="expandCatalog(catalog.id)">
-              <div
-                class="arrow"
-                :class="{
-                  down: catalog.expanded,
-                  right: !catalog.expanded,
-                }"
-                v-if="
-                  catalog.type !== 'SPARQL_QUERY' || catalog.datasets.length > 0
-                "
-              ></div>
-            </div>
-            <div class="checkbox-container">
-              <input
-                type="checkbox"
-                v-model="catalog.visible"
-                @change="onCatalogVisibilityChange(catalog)"
-                v-if="
-                  catalog.type !== 'SPARQL_QUERY' || catalog.datasets.length > 0
-                "
-              />
-            </div>
-            <div class="title" @click="expandCatalog(catalog.id)">
-              {{ displayItem(catalog) }}
-            </div>
-            <button
-              @click="onClickCatalogMap(catalog.id)"
-              v-if="catalog.type !== 'SPARQL_QUERY'"
-            >
-              🗺️
-            </button>
-            <button
-              style="font-size: 12px"
-              @click="onClickCatalogOwl(catalog.id)"
-              v-if="catalog.type !== 'SPARQL_QUERY'"
-            >
-              owl
-            </button>
-            <button @click="onClickDeleteCatalog(catalog)">🗑</button>
+      <button
+        class="data-title"
+        @click="showData = !showData"
+        :class="{ active: showData }"
+      >
+        <div>Data</div>
+
+        <button class="addfile" @click="addData" v-if="getProcess() === ''">
+          Add
+        </button>
+        <div class="addfile-alt" v-else>
+          <div class="progress">
+            {{ getProcess() }}
           </div>
-          <div class="dataset-container" v-if="catalog.expanded">
-            <div
-              class="dataset alt"
-              v-if="
-                catalog.type !== 'SPARQL_QUERY' && catalog.datasets.length === 0
-              "
-            >
-              <div class="title alt">Loading datasets...</div>
-              <div class="loader"></div>
-            </div>
-            <div
-              class="dataset"
-              v-for="dataset of catalog.datasets"
-              :key="dataset.id"
-            >
-              <div class="title-container">
+          <div class="loader"></div>
+        </div>
+      </button>
+      <div class="data" :class="{ active: showData }" v-if="showData">
+        <VirtualScroller
+          :items="getGeoItems()"
+          :itemSize="24"
+          style="height: 100%"
+        >
+          <template v-slot:item="{ item: geoItem, options }">
+            <div class="geo-item">
+              <div
+                class="catalog title-container"
+                v-if="geoItem.type === 'catalog'"
+              >
                 <div
                   class="arrow-container"
-                  @click="expandDataset(dataset.id)"
+                  @click="expandCatalog(geoItem.item.id)"
+                >
+                  <div
+                    class="arrow"
+                    :class="{
+                      down: geoItem.item.expanded,
+                      right: !geoItem.item.expanded,
+                    }"
+                    v-if="
+                      geoItem.item.type !== 'SPARQL_QUERY' ||
+                      geoItem.item.datasets.length > 0
+                    "
+                  ></div>
+                </div>
+                <div class="checkbox-container">
+                  <input
+                    type="checkbox"
+                    v-model="geoItem.item.visible"
+                    @change="onCatalogVisibilityChange(geoItem.item)"
+                    v-if="
+                      geoItem.item.type !== 'SPARQL_QUERY' ||
+                      geoItem.item.datasets.length > 0
+                    "
+                  />
+                </div>
+                <div class="title" @click="expandCatalog(geoItem.item.id)">
+                  {{ displayItem(geoItem.item) }}
+                </div>
+                <button @click="onClickDeleteCatalog(geoItem.item)">🗑</button>
+              </div>
+
+              <!-- <div
+            class="dataset alt"
+            v-if="
+              catalog.type !== 'SPARQL_QUERY' && catalog.datasets.length === 0
+            "
+          >
+            <div class="title alt">Loading datasets...</div>
+            <div class="loader"></div>
+          </div> -->
+
+              <div
+                class="dataset title-container"
+                v-if="geoItem.type === 'dataset'"
+              >
+                <div
+                  class="arrow-container"
+                  @click="expandDataset(geoItem.item.id)"
                   v-if="
-                    dataset.type !== 'SPARQL_QUERY' ||
-                    dataset.features.length > 0
+                    geoItem.item.type !== 'SPARQL_QUERY' ||
+                    geoItem.item.features.length > 0
                   "
                 >
                   <div
                     class="arrow"
                     :class="{
-                      down: dataset.expanded,
-                      right: !dataset.expanded,
+                      down: geoItem.item.expanded,
+                      right: !geoItem.item.expanded,
                     }"
                   ></div>
                 </div>
                 <div class="checkbox-container">
                   <input
                     type="checkbox"
-                    v-model="dataset.visible"
-                    @change="onDatasetVisibilityChange(dataset)"
+                    v-model="geoItem.item.visible"
+                    @change="onDatasetVisibilityChange(geoItem.item)"
                   />
                 </div>
-                <div class="title" @click="onClickDataset(dataset.id)">
-                  {{ displayItem(dataset) }}
+                <div class="title" @click="onClickDataset(geoItem.item.id)">
+                  {{ displayItem(geoItem.item) }}
                 </div>
 
                 <button
                   style="font-size: 12px"
-                  @click="onClickSparqlQueryCsv(dataset)"
-                  v-if="dataset.type === 'SPARQL_QUERY'"
+                  @click="onClickSparqlQueryCsv(geoItem.item)"
+                  v-if="geoItem.item.type === 'SPARQL_QUERY'"
                 >
                   csv
                 </button>
-                <button @click="onClickDeleteDataset(dataset)">🗑</button>
-              </div>
-              <div
-                class="feature-container"
-                v-if="dataset.expanded && dataset.features.length > 0"
-              >
-                <div class="feature alt" v-if="dataset.features.length === 0">
-                  <div class="title alt">Loading features...</div>
-                  <div class="loader"></div>
-                </div>
-                <div
-                  class="feature"
-                  v-for="feature of dataset.features"
-                  :key="feature.id"
+
+                <button
+                  @click="onClickDatasetMap(geoItem.item.id)"
+                  v-if="geoItem.item.type !== 'SPARQL_QUERY'"
                 >
-                  <input
-                    type="checkbox"
-                    v-model="feature.visible"
-                    @change="onFeatureVisibilityChange(feature)"
-                  />
-                  <div
-                    class="title"
-                    @click="onClickFeature(feature.id)"
-                    @dblclick="onDoubleClickFeature(feature.id)"
-                  >
-                    {{ displayItem(feature) }}
-                  </div>
-                  <button @click="onClickDeleteFeature(feature.id)">🗑</button>
+                  🗺️
+                </button>
+
+                <button
+                  style="font-size: 12px"
+                  @click="onClickDatasetOwl(geoItem.item.id)"
+                  v-if="geoItem.item.type !== 'SPARQL_QUERY'"
+                >
+                  owl
+                </button>
+                <button @click="onClickDeleteDataset(geoItem.item)">🗑</button>
+              </div>
+
+              <!-- <div class="feature alt" v-if="dataset.features.length === 0">
+            <div class="title alt">Loading features...</div>
+            <div class="loader"></div>
+          </div> -->
+
+              <div class="feature" v-if="geoItem.type === 'feature'">
+                <input
+                  type="checkbox"
+                  v-model="geoItem.item.visible"
+                  @change="onFeatureVisibilityChange(geoItem.item)"
+                />
+                <div
+                  class="title"
+                  @click="onClickFeature(geoItem.item.id)"
+                  @dblclick="onDoubleClickFeature(geoItem.item.id)"
+                >
+                  {{ displayItem(geoItem.item) }}
                 </div>
+                <button @click="onClickDeleteFeature(geoItem.item.id)">
+                  🗑
+                </button>
               </div>
             </div>
-          </div>
-        </div>
+          </template>
+        </VirtualScroller>
       </div>
 
-      <div>
-        <button class="addfile" @click="addData" v-if="getProcess() === ''">
-          Add Data
-        </button>
-        <div class="addfile-alt" v-else>
-          <div class="title">Add Data</div>
-          <div class="progress">
-            {{ getProcess() }}
-          </div>
-          <div class="loader"></div>
-        </div>
-      </div>
       <div class="advancedMenu" :class="{ active: advancedMenuOpen }">
-        <p @click="advancedMenuOpen = !advancedMenuOpen">Advanced Mode</p>
+        <button @click="advancedMenuOpen = !advancedMenuOpen">
+          Advanced Mode
+        </button>
         <div class="textcontainer" v-if="advancedMenuOpen">
           <input
             v-model="queryName"
@@ -230,14 +244,13 @@
 
 .side_pannel {
   width: 100%;
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 57px);
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .user-actions {
-  padding: 20px;
-  // border-radius: 5px;
   flex-direction: column;
   display: flex;
   align-items: start;
@@ -248,7 +261,6 @@
   width: 320px;
   min-width: 220px;
   background-color: rgb(241, 241, 241);
-  border-radius: 10px;
 }
 
 .user-actions.dark {
@@ -286,8 +298,8 @@ select {
 }
 
 button {
-  padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 0px;
+  padding: 10px;
   border: none;
   background-color: transparent;
   color: inherit;
@@ -298,8 +310,14 @@ button {
   width: 100%;
   text-align: left;
 
+  &:hover {
+    background-color: #4a5568;
+    color: white;
+  }
+
   &.confirm {
     background-color: #ef4444;
+    border-radius: 5px;
 
     &:hover {
       background-color: color.scale(#ef4444, $lightness: 10%);
@@ -308,10 +326,10 @@ button {
 }
 
 .data-title {
-  border-radius: 5px;
   border: none;
   background-color: none;
-  margin-top: 5px;
+  display: flex;
+  align-items: center;
 
   &:hover {
     background-color: #4a5568;
@@ -325,25 +343,66 @@ button {
     border-bottom-left-radius: 0px;
   }
 
-  p {
-    padding: 6px 20px;
-    border: none;
-    background-color: none;
-    color: inherit;
-    cursor: pointer;
-    font-size: 18px;
+  > div:first-child {
+    flex: 1;
     font-weight: bold;
+    font-size: 18px;
+  }
+
+  > button {
+    margin-top: 0px;
+    padding: 5px 10px;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    background-color: #ef4444;
+    font-weight: normal;
+    font-size: 14px;
+
+    &:hover {
+      background-color: lighten(#ef4444, 20%);
+    }
+  }
+
+  .addfile,
+  .addfile-alt {
+    display: flex;
+    align-items: center;
+
+    .title {
+      font-size: 18px;
+      font-weight: bold;
+      flex: 1;
+    }
+
+    .loader {
+      margin-left: 10px;
+      width: 25px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 4px solid white;
+      animation: l20-1 0.8s infinite linear alternate,
+        l20-2 1.6s infinite linear;
+    }
   }
 }
 
 .data {
-  border-radius: 5px;
   border-top-right-radius: 0px;
   border-top-left-radius: 0px;
   border: none;
   background-color: none;
   overflow: auto;
   padding-bottom: 10px;
+  flex: 1;
+
+  .geo-item {
+    &:last-child {
+      margin-bottom: 30px;
+    }
+  }
 
   &:hover {
     background-color: #4a5568;
@@ -368,24 +427,36 @@ button {
   .feature {
     display: flex;
     align-items: center;
-    margin-left: 10px;
+    margin-left: 31px;
     border-left: 1px solid rgba(255, 255, 255, 0.5);
-    padding-left: 10px;
+    padding-left: 9px;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: -22px;
+      height: 100%;
+      width: 1px;
+      background-color: rgba(255, 255, 255, 0.5);
+    }
 
     &.alt {
       justify-content: center;
     }
 
     > input {
-      margin-left: 10px;
+      width: 25px;
     }
 
     > div {
       cursor: pointer;
       user-select: none;
-      margin-left: 10px;
-      word-break: break-all;
       font-size: 12px;
+      overflow: hidden;
+      word-break: break-all;
+      height: 24px;
+      line-height: 24px;
     }
 
     > .title {
@@ -418,61 +489,55 @@ button {
   }
 
   .catalog {
-    + .catalog {
-      margin-top: 10px;
-    }
+    display: flex;
+    align-items: center;
 
-    .title-container {
+    .arrow-container {
+      width: 20px;
       display: flex;
       align-items: center;
+      justify-content: center;
+      cursor: pointer;
 
-      .arrow-container {
-        width: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
+      .arrow {
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 3px;
 
-        .arrow {
-          border: solid white;
-          border-width: 0 3px 3px 0;
-          display: inline-block;
-          padding: 3px;
+        &.right {
+          transform: rotate(-45deg);
+        }
 
-          &.right {
-            transform: rotate(-45deg);
-          }
-
-          &.down {
-            transform: rotate(45deg);
-          }
+        &.down {
+          transform: rotate(45deg);
         }
       }
+    }
 
-      .checkbox-container {
-        width: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    .checkbox-container {
+      width: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .title {
-        font-size: 12px;
-        word-break: break-all;
-        flex: 1;
-        cursor: pointer;
-        user-select: none;
-      }
+    .title {
+      font-size: 12px;
+      word-break: break-all;
+      flex: 1;
+      cursor: pointer;
+      user-select: none;
+    }
 
-      button {
-        width: auto;
-        margin: 0px;
-        padding: 0px 5px;
+    button {
+      width: auto;
+      margin: 0px;
+      padding: 0px 5px;
 
-        &:hover {
-          color: #ddd;
-          background-color: transparent;
-        }
+      &:hover {
+        color: #ddd;
+        background-color: transparent;
       }
     }
   }
@@ -481,65 +546,61 @@ button {
     margin-left: 10px;
     border-left: 1px solid rgba(255, 255, 255, 0.5);
     padding-left: 10px;
+    display: flex;
+    align-items: center;
 
-    .title-container {
+    .arrow-container {
+      width: 20px;
       display: flex;
       align-items: center;
+      justify-content: center;
+      cursor: pointer;
 
-      .arrow-container {
-        width: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
+      .arrow {
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 3px;
 
-        .arrow {
-          border: solid white;
-          border-width: 0 3px 3px 0;
-          display: inline-block;
-          padding: 3px;
+        &.right {
+          transform: rotate(-45deg);
+        }
 
-          &.right {
-            transform: rotate(-45deg);
-          }
-
-          &.down {
-            transform: rotate(45deg);
-          }
+        &.down {
+          transform: rotate(45deg);
         }
       }
+    }
 
-      .checkbox-container {
-        width: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    .checkbox-container {
+      width: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .title {
-        font-size: 12px;
-        word-break: break-all;
-        flex: 1;
-        cursor: pointer;
-        user-select: none;
-      }
+    .title {
+      font-size: 12px;
+      word-break: break-all;
+      flex: 1;
+      cursor: pointer;
+      user-select: none;
+    }
 
-      button {
-        width: auto;
-        margin: 0px;
-        padding: 0px 5px;
+    button {
+      width: auto;
+      margin: 0px;
+      padding: 0px 5px;
 
-        &:hover {
-          color: #ddd;
-          background-color: transparent;
-        }
+      &:hover {
+        color: #ddd;
+        background-color: transparent;
       }
     }
   }
 }
 
 .filter {
-  border-radius: 5px;
   border: none;
   background-color: none;
   margin-top: 5px;
@@ -553,120 +614,18 @@ button {
     font-size: 18px;
     font-weight: bold;
   }
-}
-
-.user-actions.dark .filter:hover {
-  background-color: #4a5568;
-}
-
-.filter.active {
-  background-color: #dee1e6;
-}
-
-.user-actions.dark .filter.active {
-  background-color: #4a5568;
-  color: white;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.inputbar {
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-.filtercontainer {
-  display: flex;
-  flex-direction: column;
-  cursor: default;
-}
-
-.filtercontainer :nth-child(1) {
-  font-weight: normal;
-  cursor: default;
-}
-
-.filtercontainer p {
-  text-align: center;
-  padding: 10px;
-  cursor: default;
-}
-
-.addfile,
-.addfile-alt {
-  border-radius: 5px;
-  border: none;
-  background-color: none;
-  margin-top: 5px;
-}
-
-.addfile-alt {
-  padding: 6px 20px;
-  display: flex;
-  align-items: center;
-  cursor: default;
-
-  .title {
-    font-size: 18px;
-    font-weight: bold;
-    flex: 1;
-  }
-
-  .loader {
-    margin-left: 10px;
-    width: 25px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 4px solid white;
-    animation: l20-1 0.8s infinite linear alternate, l20-2 1.6s infinite linear;
-  }
-}
-
-.addfile.active {
-  background-color: #dee1e6;
-}
-
-.user-actions.dark .addfile.active {
-  background-color: #4a5568;
-}
-
-.user-actions.dark .filter.active {
-  background-color: #4a5568;
-  color: white;
-}
-
-.addfile:hover {
-  background-color: #dee1e6;
-}
-
-.user-actions.dark .addfile:hover {
-  background-color: #4a5568;
-  color: white;
-  transition: background-color 0.2s ease-in-out;
 }
 
 .advancedMenu {
-  border-radius: 5px;
   border: none;
   background-color: none;
   margin-top: 5px;
 
-  &:hover {
-    background-color: #dee1e6;
-  }
-
   &.active {
-    background-color: #dee1e6;
-  }
-
-  p {
-    padding: 6px 20px;
-    border: none;
-    background-color: none;
-    color: inherit;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-    font-size: 18px;
-    font-weight: bold;
+    background-color: #4a5568;
+    color: white;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
   }
 
   textarea {
@@ -703,17 +662,11 @@ button {
     background-position-x: 100%;
     background-position-y: 5px;
   }
-}
 
-.user-actions.dark .advancedMenu:hover {
-  background-color: #4a5568;
-  color: white;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.user-actions.dark .advancedMenu.active {
-  background-color: #4a5568;
-  color: white;
+  .confirm {
+    margin: 0px 10px 10px 10px;
+    width: calc(100% - 20px);
+  }
 }
 
 .textcontainer {
@@ -723,10 +676,6 @@ button {
 .navbar_button:hover {
   background-color: #81818a;
   color: white;
-}
-
-button:hover {
-  background-color: #dee1e6;
 }
 
 @media screen and (max-width: 768px) {
@@ -873,6 +822,7 @@ button:hover {
 
 <script>
 import $ from "jquery";
+import VirtualScroller from "primevue/virtualscroller";
 import {
   getAllCatalogs,
   setFeatureVisibility,
@@ -884,13 +834,15 @@ import {
   addSparqlQueryResult,
   expandDataset,
   subscribeLabelChange,
+  getGeoItems,
+  init as initGeo,
 } from "../services/geo";
 import { ref } from "vue";
 import {
   removeFeature,
   removeCatalog,
   removeDataset,
-  getCatalog,
+  getDataset,
   sparqlQuery,
 } from "../services/api-geo";
 import { sparqlQueries } from "../services/constants";
@@ -903,6 +855,9 @@ $.ajaxSetup({
 });
 
 export default {
+  components: {
+    VirtualScroller,
+  },
   name: "User action",
   setup() {
     const catalogs = getAllCatalogs();
@@ -936,6 +891,7 @@ export default {
       catalogs,
       getProcess,
       unsubscribeLabelChange,
+      getGeoItems,
     };
   },
   watch: {
@@ -947,6 +903,9 @@ export default {
     window.addEventListener("resize", this.closeNavBar);
     this.inputAdvanced = this.queries[this.selectedOption] + this.rangeValue;
     this.unsubscribeLabelChange = subscribeLabelChange(() => {
+      this.$forceUpdate();
+    });
+    initGeo().then(() => {
       this.$forceUpdate();
     });
   },
@@ -997,7 +956,8 @@ export default {
         );
       }
     },
-    addData() {
+    addData(event) {
+      event.stopPropagation();
       const input = document.createElement("input");
       input.type = "file";
       input.accept = ".owl, .json, .geojson, .las, .laz";
@@ -1010,6 +970,7 @@ export default {
       const result = await sparqlQuery(this.inputAdvanced);
       if (result.length > 0) {
         addSparqlQueryResult(result, this.queryName);
+        this.$forceUpdate();
       } else {
         alert("The query fetch no data");
       }
@@ -1038,19 +999,12 @@ export default {
       this.$forceUpdate();
     },
     async onClickDeleteCatalog(catalog) {
-      setCatalogVisibility(catalog.id, false, true);
-
-      if (catalog.type !== "SPARQL_QUERY") {
-        await removeCatalog(catalog.id);
-        this.$forceUpdate();
-      }
+      await setCatalogVisibility(catalog.id, false, true);
+      this.$forceUpdate();
     },
     async onClickDeleteDataset(dataset) {
-      setDatasetVisibility(dataset.id, false, true);
-      if (dataset.type !== "SPARQL_QUERY") {
-        await removeDataset(dataset.id);
-        this.$forceUpdate();
-      }
+      await setDatasetVisibility(dataset.id, false, true);
+      this.$forceUpdate();
     },
     onClickSparqlQueryCsv(catalog) {
       if (catalog.raw?.length > 0) {
@@ -1079,19 +1033,23 @@ export default {
         }
       }
     },
-    async onClickCatalogMap(catalogId) {
-      const res = await getCatalog(catalogId);
+    async onClickDatasetMap(datasetId) {
+      const res = await getDataset(datasetId);
       const mapUrl = res
         .map((x) => x.metadatas)
-        .find((x) => x.key === "http://spalod/hasHTML")?.value;
+        .find(
+          (x) => x.key === "https://geovast3d.com/ontologies/spalod#hasHTML"
+        )?.value;
 
       window.open(mapUrl, "_blank");
     },
-    async onClickCatalogOwl(catalogId) {
-      const res = await getCatalog(catalogId);
+    async onClickDatasetOwl(datasetId) {
+      const res = await getDataset(datasetId);
       const owlUrl = res
         .map((x) => x.metadatas)
-        .find((x) => x.key === "http://spalod/hasOWL")?.value;
+        .find(
+          (x) => x.key === "https://geovast3d.com/ontologies/spalod#hasOWL"
+        )?.value;
 
       window.open(owlUrl, "_blank");
     },
@@ -1105,7 +1063,7 @@ export default {
     },
     displayItem(item) {
       if (item.label) {
-        return item.label;
+        return item.label.replace(/.*\//, "").replace(/.*#/, "");
       } else if (item.id) {
         return item.id.replace(/.*\//, "").replace(/.*#/, "");
       } else {

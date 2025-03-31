@@ -1,9 +1,9 @@
 import { ref } from "vue";
 import * as ApiGeo from "./api-geo";
 
-const features = [];
+const features = {};
 const datasets = [];
-const catalogs = ref([]);
+const catalogs = [];
 const sparqlQueries = ref([]);
 
 const visibilityChangeSubscribers = [];
@@ -15,6 +15,37 @@ let nbSparqlQueries = 0;
 
 init();
 
+export function getGeoItems() {
+  const geoItems = [];
+
+  for (const catalog of catalogs) {
+    geoItems.push({
+      type: "catalog",
+      item: catalog,
+    });
+
+    if (catalog.expanded) {
+      for (const dataset of catalog.datasets) {
+        geoItems.push({
+          type: "dataset",
+          item: dataset,
+        });
+
+        if (dataset.expanded) {
+          for (const feature of dataset.features) {
+            geoItems.push({
+              type: "feature",
+              item: feature,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return geoItems;
+}
+
 export async function init() {
   const allGeos = await ApiGeo.getAllCatalogs();
 
@@ -22,7 +53,11 @@ export async function init() {
 }
 
 export async function refreshGeoData() {
-  for (const catalog of catalogs.value) {
+  const allGeos = await ApiGeo.getAllCatalogs();
+
+  addCatalogs(allGeos.map(({ metadatas }) => metadatas));
+
+  for (const catalog of catalogs) {
     if (catalog.expanded) {
       await addDatasets(catalog);
     }
@@ -31,7 +66,7 @@ export async function refreshGeoData() {
 
 async function addCatalogs(metadatas) {
   for (const { catalog: catalogId, label } of metadatas) {
-    if (!catalogs.value.find(({ id }) => id === catalogId)) {
+    if (!catalogs.find(({ id }) => id === catalogId)) {
       const catalog = {
         id: catalogId,
         label,
@@ -39,7 +74,7 @@ async function addCatalogs(metadatas) {
         expanded: false,
         visible: false,
       };
-      catalogs.value.push(catalog);
+      catalogs.push(catalog);
     }
   }
 }
@@ -72,12 +107,15 @@ async function addDatasets(catalog) {
 }
 
 async function addFeatures(dataset) {
+  let start = Date.now();
   const catalogFeatures = await ApiGeo.getAllFeatures(dataset.id);
+  console.log("time elapsed1: ", Date.now() - start);
 
+  start = Date.now();
   for (const {
     metadatas: { feature: featureId, label },
   } of catalogFeatures) {
-    let feature = features.find(({ id }) => id === featureId);
+    let feature = features[featureId];
 
     if (!feature) {
       feature = {
@@ -87,7 +125,7 @@ async function addFeatures(dataset) {
         datasetId: dataset.id,
         catalogId: dataset.catalogId,
       };
-      features.push(feature);
+      features[featureId] = feature;
       dataset.features.push(feature);
     }
 
@@ -95,6 +133,7 @@ async function addFeatures(dataset) {
       feature.label = label || "";
     }
   }
+  console.log("time elapsed2: ", Date.now() - start);
 }
 
 export function getAllFeatures() {
@@ -102,7 +141,7 @@ export function getAllFeatures() {
 }
 
 export function getAllCatalogs() {
-  return catalogs.value;
+  return catalogs;
 }
 
 export function getAllSparqlQueries() {
@@ -110,7 +149,7 @@ export function getAllSparqlQueries() {
 }
 
 export async function expandCatalog(catalogId) {
-  const catalog = catalogs.value.find(({ id }) => id === catalogId);
+  const catalog = catalogs.find(({ id }) => id === catalogId);
 
   if (catalog) {
     catalog.expanded = !catalog.expanded;
@@ -156,13 +195,13 @@ export async function setFeatureVisibility(
   let allFeaturesVisible = true;
   let catalog = null;
 
-  // const start = Date.now();
+  const start = Date.now();
 
   for (const featureId of featureIds) {
-    const feature = features.find(({ id }) => id === featureId);
+    const feature = features[featureId];
 
     if (!catalog) {
-      catalog = catalogs.value.find(({ id }) => id === feature.catalogId);
+      catalog = catalogs.find(({ id }) => id === feature.catalogId);
     }
 
     if (feature) {
@@ -202,7 +241,7 @@ export async function setFeatureVisibility(
       }
 
       if (remove) {
-        features.splice(features.indexOf(feature), 1);
+        delete features[featureId];
         featureDataset[feature.datasetId].copyFeatures.splice(
           featureDataset[feature.datasetId].copyFeatures.indexOf(feature),
           1
@@ -233,7 +272,7 @@ export async function setFeatureVisibility(
     catalog.visible = true;
   }
 
-  // console.log("time elapsed: ", Date.now() - start);
+  console.log("time elapsed: ", Date.now() - start);
 
   visibilityChangeSubscribers.forEach((x) => x(tabFeatures, remove));
 }
@@ -254,11 +293,13 @@ export async function setDatasetVisibility(datasetId, visible, remove = false) {
       const datasetWkts = await ApiGeo.getAllDatasetWkt(dataset.id);
 
       const copyFeatures = dataset.features.slice();
+      const copyFeaturesMap = copyFeatures.reduce((acc, x) => {
+        acc[x.id] = x;
+        return acc;
+      }, {});
 
       for (const datasetWkt of datasetWkts) {
-        const feature = copyFeatures.find(
-          ({ id }) => id === datasetWkt.metadatas.feature
-        );
+        let feature = copyFeaturesMap[datasetWkt.metadatas.feature];
 
         if (feature) {
           feature.wkt = {
@@ -266,14 +307,14 @@ export async function setDatasetVisibility(datasetId, visible, remove = false) {
             type: datasetWkt.type,
           };
         } else {
-          const feature = {
+          feature = {
             id: datasetWkt.metadatas.feature,
             datasetId: dataset.id,
             catalogId: dataset.catalogId,
             wkt: { geo: datasetWkt.geo, type: datasetWkt.type },
           };
           copyFeatures.push(feature);
-          features.push(feature);
+          features[datasetWkt.metadatas.feature] = feature;
         }
       }
 
@@ -289,17 +330,21 @@ export async function setDatasetVisibility(datasetId, visible, remove = false) {
     if (remove) {
       datasets.splice(datasets.indexOf(dataset), 1);
 
-      const catalog = catalogs.value.find(({ id }) => id === dataset.catalogId);
+      const catalog = catalogs.find(({ id }) => id === dataset.catalogId);
 
       if (catalog) {
         catalog.datasets.splice(catalog.datasets.indexOf(dataset), 1);
+      }
+
+      if (dataset.type !== "SPARQL_QUERY") {
+        await ApiGeo.removeDataset(dataset.id);
       }
     }
   }
 }
 
 export async function setCatalogVisibility(catalogId, visible, remove = false) {
-  const catalog = catalogs.value.find(({ id }) => id === catalogId);
+  const catalog = catalogs.find(({ id }) => id === catalogId);
 
   if (catalog) {
     visible = visible && !remove;
@@ -318,9 +363,7 @@ export async function setCatalogVisibility(catalogId, visible, remove = false) {
         const featureWkts = await ApiGeo.getAllCatalogWkt(catalog.id);
 
         for (const featureWkt of featureWkts) {
-          const feature = features.find(
-            ({ id }) => id === featureWkt.metadatas.feature
-          );
+          const feature = features[featureWkt.metadatas.feature];
 
           if (feature) {
             feature.wkt = {
@@ -351,7 +394,7 @@ export async function setCatalogVisibility(catalogId, visible, remove = false) {
               catalogId: catalog.id,
               wkt: { geo: featureWkt.geo, type: featureWkt.type },
             };
-            features.push(feature);
+            features[featureWkt.metadatas.feature] = feature;
             dataset.features.push(feature);
           }
         }
@@ -367,7 +410,11 @@ export async function setCatalogVisibility(catalogId, visible, remove = false) {
     );
 
     if (remove) {
-      catalogs.value.splice(catalogs.value.indexOf(catalog), 1);
+      catalogs.splice(catalogs.indexOf(catalog), 1);
+
+      if (catalog.type !== "SPARQL_QUERY") {
+        await ApiGeo.removeCatalog(catalog.id);
+      }
     }
   }
 }
@@ -386,7 +433,7 @@ export function subscribeFeatureVisibiltyChange(func) {
 }
 
 export function triggerFeatureClick(featureId) {
-  const feature = features.find(({ id }) => id === featureId);
+  const feature = features[featureId];
 
   if (feature && feature.visible) {
     clickSubscribers.forEach((x) => x(featureId));
@@ -394,7 +441,7 @@ export function triggerFeatureClick(featureId) {
 }
 
 export function triggerFeatureDoubleClick(featureId) {
-  const feature = features.find(({ id }) => id === featureId);
+  const feature = features[featureId];
 
   if (feature && feature.visible) {
     doubleClickSubscribers.forEach((x) => x(featureId));
@@ -443,7 +490,7 @@ export function subscribeLabelChange(func) {
 export function addSparqlQueryResult(res, queryName) {
   nbSparqlQueries++;
 
-  let queriesCatalog = catalogs.value.find(({ id }) => id === `custom-queries`);
+  let queriesCatalog = catalogs.find(({ id }) => id === `custom-queries`);
 
   if (!queriesCatalog) {
     queriesCatalog = {
@@ -454,7 +501,7 @@ export function addSparqlQueryResult(res, queryName) {
       expanded: true,
       visible: true,
     };
-    catalogs.value.push(queriesCatalog);
+    catalogs.push(queriesCatalog);
   }
 
   const datasetId = `sparql-query-${nbSparqlQueries}`;
@@ -485,7 +532,7 @@ export function addSparqlQueryResult(res, queryName) {
       visible: true,
     };
 
-    features.push(feature);
+    features[feature.id] = feature;
     dataset.features.push(feature);
     tabFeatures.push(feature);
   }
@@ -496,7 +543,7 @@ export function addSparqlQueryResult(res, queryName) {
 const featureUdates = {};
 
 export function updateFeature(featureId, key, value, needInsert = false) {
-  const feature = features.find(({ id }) => id === featureId);
+  const feature = features[featureId];
 
   if (feature) {
     if (
@@ -541,9 +588,11 @@ export function updateFeature(featureId, key, value, needInsert = false) {
 }
 
 export function reset() {
-  features.splice(0, features.length);
+  Object.keys(features).forEach((key) => {
+    delete features[key];
+  });
   datasets.splice(0, datasets.length);
-  catalogs.value.splice(0, catalogs.value.length);
+  catalogs.splice(0, catalogs.length);
   sparqlQueries.value.splice(0, sparqlQueries.value.length);
 
   clickSubscribers.splice(0, clickSubscribers.length);

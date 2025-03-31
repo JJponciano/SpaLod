@@ -198,7 +198,7 @@ class GeoGetFeatureWKT(APIView):
         # sparql_view = SparqlQueryAPIView()
         # return sparql_view.post(request, *args, **kwargs)
     
-class GeoGetFeature(APIView):
+class GeoGetItem(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGetFeature :::::::")
         
