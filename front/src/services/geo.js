@@ -10,6 +10,7 @@ const visibilityChangeSubscribers = [];
 const clickSubscribers = [];
 const doubleClickSubscribers = [];
 const labelChangeSubscribers = [];
+const dataRefreshSuscribers = [];
 
 let nbSparqlQueries = 0;
 
@@ -62,6 +63,8 @@ export async function refreshGeoData() {
       await addDatasets(catalog);
     }
   }
+
+  dataRefreshSuscribers.forEach((x) => x());
 }
 
 async function addCatalogs(metadatas) {
@@ -488,6 +491,19 @@ export function subscribeLabelChange(func) {
   const unsubscribe = () => {
     labelChangeSubscribers.splice(
       labelChangeSubscribers.indexOf((x) => x === func),
+      1
+    );
+  };
+
+  return unsubscribe;
+}
+
+export function subscribeDataRefresh(func) {
+  dataRefreshSuscribers.push(func);
+
+  const unsubscribe = () => {
+    dataRefreshSuscribers.splice(
+      dataRefreshSuscribers.indexOf((x) => x === func),
       1
     );
   };

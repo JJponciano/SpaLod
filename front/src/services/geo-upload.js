@@ -37,7 +37,6 @@ export function uploadGeo(file, metadata) {
     success: async () => {
       progress.value = "";
       await refreshGeoData();
-      this.$forceUpdate();
     },
     error: (error) => {
       console.error(error);

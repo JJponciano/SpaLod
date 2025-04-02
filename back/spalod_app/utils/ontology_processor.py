@@ -279,7 +279,7 @@ class OntologyProcessor:
                 raise ValueError("Invalid JSON structure: 'type' must be 'FeatureCollection'.")
 
             if "name" not in data:
-                data["name"] = "UntitledCollection"
+                data["name"] = str(uuid.uuid4())  # Generate a random name if not provided
 
             if "features" not in data or not isinstance(data["features"], list):
                 raise ValueError("Invalid JSON structure: Missing or incorrect 'features' field (must be a list).")

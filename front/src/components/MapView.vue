@@ -417,8 +417,9 @@ export default {
               delete this.mapObjList[feature.id];
             }
           }
-          delete this.featuresToDisplay[feature.id];
         }
+
+        delete this.featuresToDisplay[feature.id];
       }
 
       setTimeout(() => {

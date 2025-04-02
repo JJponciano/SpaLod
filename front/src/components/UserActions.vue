@@ -839,6 +839,7 @@ import {
   expandDataset,
   subscribeLabelChange,
   getGeoItems,
+  subscribeDataRefresh,
   init as initGeo,
 } from "../services/geo";
 import { ref } from "vue";
@@ -871,6 +872,7 @@ export default {
     const selectedOption = ref("default");
     const queryName = ref("");
     const unsubscribeLabelChange = null;
+    const unsubscribeDataRefresh = null;
 
     return {
       menuOpen,
@@ -890,6 +892,7 @@ export default {
       getProcess,
       unsubscribeLabelChange,
       getGeoItems,
+      unsubscribeDataRefresh,
     };
   },
   watch: {
@@ -904,6 +907,9 @@ export default {
       this.$forceUpdate();
     });
     initGeo().then(() => {
+      this.$forceUpdate();
+    });
+    this.unsubscribeDataRefresh = subscribeDataRefresh(() => {
       this.$forceUpdate();
     });
   },
@@ -1039,7 +1045,7 @@ export default {
       const mapUrl = res
         .map((x) => x.metadatas)
         .find(
-          (x) => x.key === "https://geovast3d.com/ontologies/spalod#hasHTML"
+          (x) => x.key === "https://geovast3d.com/ontologies/spalod#hasFile"
         )?.value;
 
       window.open(mapUrl, "_blank");
