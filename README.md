@@ -141,7 +141,12 @@ Example file upload with associated metadata:
 ```bash
 curl -X POST http://127.0.0.1:8000/api/upload-file/ \
 -H "Authorization: Token b9208365e4bbd3500888a6deb7dcb3e6d05c05a3" \
--F "file=@/Volumes/poncianoCloud/workspace/2025/data/bkg/test.geojson" \
+-F "file=@/Volumes/poncianoCloud/workspace/DATA/i3mainz/bkg/test.geojson" \
+-F "metadata={\"catalog\": \"catalog_name_TEST-KEV\", \"title\": \"dataset titel \", \"description\": \"des\", \"distribution\": \"distri\", \"publisher\": \"publi\"}"
+
+curl -X POST http://127.0.0.1:8000/api/upload-file/ \
+-H "Authorization: Token b9208365e4bbd3500888a6deb7dcb3e6d05c05a3" \
+-F "file=@/Volumes/poncianoCloud/workspace/DATA/i3mainz/bkg/spalod_test_01/1km_565_5934.las" \
 -F "metadata={\"catalog\": \"catalog_name_TEST-KEV\", \"title\": \"dataset titel \", \"description\": \"des\", \"distribution\": \"distri\", \"publisher\": \"publi\"}"
 
 curl -X POST http://127.0.0.1:8000/api/upload-file/ \

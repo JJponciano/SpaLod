@@ -19,7 +19,8 @@ class FlyvastUploadHandler(FileUploadHandler):
         if self.flyvast_upload:
             print("::::::: CreatePointcloud :::::::")
             self.flyvast_pointcloud = create_flyvast_pointcloud(self.file_name, self.file_size)
-            
+            print("::::::: create_flyvast_pointcloud :::::::")
+
             self.file = FlyvastUploadedFile(
                 self.file_name,
                 self.content_type,

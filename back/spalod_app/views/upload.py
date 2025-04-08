@@ -32,7 +32,7 @@ class FileUploadView(APIView):
         user_id = request.user.id
         print(f"Uploading file for User ID: {user_id}")
         if not file or not metadata:
-            return Response({'error': 'File and metadata are required.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': f'File and metadata are required: file {file} ; metadata {metadata}'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             metadata = json.loads(metadata)
@@ -60,9 +60,13 @@ class FileUploadView(APIView):
                 for chunk in file.chunks():
                     destination.write(chunk)
             try:
+                print("[INFO] Read Metadata")
                 processor = OntologyProcessor(file_uuid, ontology_url, original_url,metadata,user_id)
+                print("[INFO]Starting processing file ")
+
                 ## POINT CLOUD 
-                if file.name.endswith('las') or file.name.endswith('laz'):
+                if file_extension.endswith('las') or file_extension.endswith('laz') or file_extension.endswith('xyz') or file_extension.endswith('ply')or file_extension.endswith('pcd'):
+                    print("[INFO] Pointcloud detected !")
                     t = threading.Thread(
                         target=send_to_flyvast,
                         args=[file],
