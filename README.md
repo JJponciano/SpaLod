@@ -204,8 +204,8 @@ curl -X GET "http://127.0.0.1:8000/api/geo/catalog?id=http://spalod/catalog_acc5
 ### Delete a Catalog
 
 ```bash
-curl -X GET "http://127.0.0.1:8000/api/geo/catalog/delete?id=http://spalod/catalog_acc53514-6a2f-4521-afa5-40783906d4ba" \
--H "Authorization: Token 9b2b164be957dcfc9dcb399f91acc06d4b0f4228"
+curl -X GET "http://127.0.0.1:8000/api/geo/delete?id=https://geovast3d.com/ontologies/spalod%23909ef21f-2af6-4240-aacc-4b3ed3320e18" \
+-H "Authorization: Token b9208365e4bbd3500888a6deb7dcb3e6d05c05a3"
 ```
 
 ### Retrieve Feature Information

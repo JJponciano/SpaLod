@@ -4,9 +4,9 @@ from rdflib import Graph
 import os
 from django.conf import settings
 from rdflib import URIRef, Literal, RDF
+from tqdm import tqdm
+from SPARQLWrapper import SPARQLWrapper, JSON, POST, GET,POSTDIRECTLY
 
-from SPARQLWrapper import SPARQLWrapper, JSON, POST, GET
-from SPARQLWrapper import SPARQLWrapper, JSON, POST, GET
 from rdflib import URIRef
 from rdflib import Namespace, URIRef
 def delete_ontology_entry(owl_url, sparql_delete_query):
@@ -323,52 +323,158 @@ class GraphDBManager:
             print("QUERY:\n")
             print(insert_query)
             raise
+    
+    def delete_all(self, target_uri):
+        print(f"[INFO] Preparing to delete dataset and related data: {target_uri}")
+        target_uri = f"<{target_uri}>"
+        graph_clause = f"GRAPH <{self.graph_iri}>" if self.graph_iri else ""
         
-    def delete_all(self,id):
-       # Set up SPARQLWrapper for updates
-       # If the user has a specific graph
-        if self.graph_iri is not None:
-            exec_query1 = self.prefixes + f"""
-            DELETE WHERE {{
-                GRAPH <{self.graph_iri}> {{
-                    <{id}> ?key ?value .
-                }}
-            }}
-            """
-            exec_query2 = self.prefixes + f"""
-            DELETE WHERE {{
-                GRAPH <{self.graph_iri}> {{
-                    ?key ?value <{id}> .
-                }}
-            }}
-            """
-        else:
-            exec_query1  = self.prefixes + f"""
-            DELETE WHERE {{
-                    <{id}> ?key ?value .
-                }}
-            }}
-            """
-            exec_query2  = self.prefixes + f"""
-            DELETE WHERE {{
-                    ?key ?value <{id}> .
-                }}
-            }}
-            """
-            
-        self.sparql_statements.setMethod(POST)
-        self.sparql_statements.setReturnFormat(JSON)
-
+        select_query = f"""
+        SELECT DISTINCT ?type WHERE {{
+            {target_uri} a ?type .
+            FILTER (?type IN (
+                <{self.NS["DCAT"].Dataset}>,
+                <{self.NS["DCAT"].Catalog}>,
+                <{self.NS["GEOSPARQL"].Feature}>,
+                <{self.NS["GEOSPARQL"].FeatureCollection}>
+            ))
+        }}
+        """
         try:
-            self.sparql_statements.setQuery(exec_query1.encode("utf-8"))
-            self.sparql_statements.query()
-            
-            self.sparql_statements.setQuery(exec_query2.encode("utf-8"))
-            response = self.sparql_statements.query()
-            return response
+            self.sparql.setQuery(select_query)
+            self.sparql.setReturnFormat(JSON)
+            response = self.sparql.query().convert()
+            res_type=response.get("results", {}).get("bindings", [])['type']['value']
+            print(res_type)
+            # FOR A DATASET
+            queries=[
+                f"""
+        DELETE {{?g ?gp ?go}} WHERE {{
+            {graph_clause} {{
+                {target_uri} 
+                    <{self.NS["GEOSPARQL"].hasFeatureCollection}>/
+                    <{self.NS["GEOSPARQL"].hasFeature}>/ 
+                    <{self.NS["GEOSPARQL"].hasGeometry}> ?g.
+                    ?g ?gp ?go .
+            }}
+        }}
+        """,f"""
+        DELETE {{?g ?gp ?go}} WHERE {{
+            {graph_clause} {{
+                {target_uri} 
+                    <{self.NS["GEOSPARQL"].hasFeatureCollection}>/
+                    <{self.NS["GEOSPARQL"].hasFeature}> ?g.
+                    ?g ?gp ?go .
+            }}
+        }}
+        """,f"""
+        DELETE {{?g ?gp ?go}} WHERE {{
+            {graph_clause} {{
+                {target_uri} 
+                    <{self.NS["GEOSPARQL"].hasFeatureCollection}> ?g.
+                    ?g ?gp ?go .
+            }}
+        }}
+        """,
+        #For a Feature Collection
+        f"""
+        DELETE {{?g ?gp ?go}} WHERE {{
+            {graph_clause} {{
+                {target_uri} 
+                    <{self.NS["GEOSPARQL"].hasFeature}>/ 
+                    <{self.NS["GEOSPARQL"].hasGeometry}> ?g.
+                    ?g ?gp ?go .
+            }}
+        }}
+        """,f"""
+        DELETE {{?g ?gp ?go}} WHERE {{
+            {graph_clause} {{
+                {target_uri} 
+                    <{self.NS["GEOSPARQL"].hasFeature}> ?g.
+                    ?g ?gp ?go .
+            }}
+        }}
+        """, #For a Feature
+        f"""
+        DELETE {{?g ?gp ?go}} WHERE {{
+            {graph_clause} {{
+                {target_uri} 
+                    <{self.NS["GEOSPARQL"].hasGeometry}> ?g.
+                    ?g ?gp ?go .
+            }}
+        }}
+        """,
+        #LAST 2 QUERIES->
+        f"""
+        DELETE WHERE {{
+            {graph_clause} {{
+                {target_uri} ?p ?o .
+            }}
+        }}
+        """,f"""
+        DELETE WHERE {{
+            {graph_clause} {{
+                ?s ?p  {target_uri} .
+            }}
+        }}
+        """]
+
+            for query in tqdm(queries):
+                delete_query =query
+                self.sparql_statements.setMethod(POST)
+                self.sparql_statements.setReturnFormat(JSON)
+                self.sparql_statements.setQuery(delete_query.encode("utf-8"))
+                self.sparql_statements.query()
+            print("✅ All related triples deleted.")
         except Exception as e:
-            print(f"SPARQL update failed: {e}")
+            print(f"❌ Deletion failed: {e}")
             raise
+
+       # def delete_all(self,id):
+    #    # Set up SPARQLWrapper for updates
+    #    # If the user has a specific graph
+    #     if self.graph_iri is not None:
+    #         exec_query1 = self.prefixes + f"""
+    #         DELETE WHERE {{
+    #             GRAPH <{self.graph_iri}> {{
+    #                 <{id}> ?key ?value .
+    #             }}
+    #         }}
+    #         """
+    #         exec_query2 = self.prefixes + f"""
+    #         DELETE WHERE {{
+    #             GRAPH <{self.graph_iri}> {{
+    #                 ?key ?value <{id}> .
+    #             }}
+    #         }}
+    #         """
+    #     else:
+    #         exec_query1  = self.prefixes + f"""
+    #         DELETE WHERE {{
+    #                 <{id}> ?key ?value .
+    #             }}
+    #         }}
+    #         """
+    #         exec_query2  = self.prefixes + f"""
+    #         DELETE WHERE {{
+    #                 ?key ?value <{id}> .
+    #             }}
+    #         }}
+    #         """
+            
+    #     self.sparql_statements.setMethod(POST)
+    #     self.sparql_statements.setReturnFormat(JSON)
+
+    #     try:
+    #         self.sparql_statements.setQuery(exec_query1.encode("utf-8"))
+    #         self.sparql_statements.query()
+            
+    #         self.sparql_statements.setQuery(exec_query2.encode("utf-8"))
+    #         response = self.sparql_statements.query()
+    #         return response
+    #     except Exception as e:
+    #         print(f"SPARQL update failed: {e}")
+    #         raise
 
     def construct_graphdb(self, construct_query):
         """Executes a SPARQL CONSTRUCT query only within the user's named graph (if user_id is set)."""
