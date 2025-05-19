@@ -67,12 +67,12 @@ class FileUploadView(APIView):
                 ## POINT CLOUD 
                 if file_extension.endswith('las') or file_extension.endswith('laz') or file_extension.endswith('xyz') or file_extension.endswith('ply')or file_extension.endswith('pcd'):
                     print("[INFO] Pointcloud detected !")
-                    t = threading.Thread(
-                        target=send_to_flyvast,
-                        args=[file],
-                        daemon=True,
-                    )
-                    t.start()
+                    # t = threading.Thread(
+                    #     target=send_to_flyvast,
+                    #     args=[file],
+                    #     daemon=True,
+                    # )
+                    # t.start()
                     processor.add_pointcloud(
                         file_path,
                         file.flyvast_pointcloud["pointcloud_id"],

@@ -40,7 +40,7 @@ export function uploadGeo(file, metadata) {
     },
     error: (error) => {
       console.error(error);
-      alert("Error while checking ontology!");
+      alert(error.responseJSON.error);
       progress.value = "";
     },
   });
