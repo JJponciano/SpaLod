@@ -18,6 +18,7 @@ urlpatterns = [
     path('geo/catalog/all/wkt', GeoCatalogWKT.as_view(), name='geo-catalog-all-wkt'),
     path('geo/catalog/delete', GeoRemoveID.as_view(), name='geo-catalog-delete'),
     path('geo/dataset', GeoGetItem.as_view(), name='geo-dataset'),
+    path('geo/dataset/filter', GeoFilterDatasetByMetadata.as_view(), name='geo-dataset-filter'),
     path('geo/dataset/all', GeoGetDatasetOfCatalogView.as_view(), name='geo-dataset-all'),
     path('geo/dataset/all/wkt', GeoDatasetWKT.as_view(), name='geo-dataset-all-wkt'),
     path('geo/dataset/delete', GeoRemoveID.as_view(), name='geo-dataset-remove'),
@@ -28,6 +29,9 @@ urlpatterns = [
     path('geo/delete', GeoRemoveID.as_view(), name='geo-delete'),
     path('geo/feature/update', GeoUpdateFeatureItem.as_view(), name='geo-feature-update'),
     path('geo/feature/insert', GeoInsertFeatureItem.as_view(), name='geo-feature-insert'),
+    path('geo/generic/delete', GeoGenericDelete.as_view(), name='geo-feature-insert'),
+    path('geo/feature/add/file', GeoFeatureAddFile.as_view(), name='geo-feature-add-file'),
+    path('geo/feature/new', GeoFeatureNew.as_view(), name='geo-feature-new'),
 ]
 
 if settings.DEBUG:

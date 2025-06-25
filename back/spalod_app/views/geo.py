@@ -51,6 +51,34 @@ class GeoGetDatasetOfCatalogView(APIView):
             return Response(results, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class GeoFilterDatasetByMetadata(APIView):
+    def get(self, request, *args, **kwargs):
+        print("::::::: GeoFilterDatasetByMetadata :::::::")
+        filter_str = request.query_params.get('filter_str')
+        user_id = request.user.id
+        graph_manager = GraphDBManager(user_id)
+        sparql_query=f"""
+            select * where {{
+                ?dataset a <http://www.w3.org/ns/dcat#Dataset>.
+                OPTIONAL {{ ?dataset <http://www.w3.org/2000/01/rdf-schema#label> ?label }}
+                ?dataset ?p ?o .
+                FILTER (contains(?o, '{filter_str}'))
+                VALUES ?p {{ 
+                    <http://purl.org/dc/terms/description> 
+                    <http://www.w3.org/2000/01/rdf-schema#label> 
+                    <http://purl.org/dc/terms/distribution>
+                    <http://purl.org/dc/terms/publisher>
+                }}
+            }}
+        """
+        try:
+            results = graph_manager.query_graphdb(sparql_query)
+            return Response(results, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)     
+
+
 class GeoGetAllFeaturesOfDatasetView(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGetAllFeaturesOfDatasetView :::::::")
@@ -309,5 +337,73 @@ class GeoRemoveID(APIView):
             response=graph_manager.delete_all(id)
             print(response)
             return Response({'message': f'Elements with ID {id} has been successfully deleted.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GeoGenericDelete(APIView):
+    def get(self, request, *args, **kwargs):
+        print("::::::: GeoGenericDelete :::::::")
+        
+        s = request.query_params.get('s')
+        p = request.query_params.get('p')
+        o = request.query_params.get('o')
+        
+        sparql_query = f"""
+            DELETE {{
+                <{s}> <{p}> "{o}" .
+            }}
+            WHERE {{
+                <{s}> <{p}> "{o}" .
+            }}
+        """
+        try:
+            user_id = request.user.id
+            graph_manager = GraphDBManager(user_id)
+            results = graph_manager.update_graphdb(sparql_query)
+            return Response(results, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+# TODO: JJ
+class GeoFeatureAddFile(APIView):
+    def post(self, request, *args, **kwargs):
+        print("::::::: GeoGenericDelete :::::::")
+        
+        feature_id = request.data.get('feature_id')
+        file = request.FILES.get('file')
+        
+        sparql_query = f"""
+            
+        """
+        try:
+            user_id = request.user.id
+            graph_manager = GraphDBManager(user_id)
+            return Response({
+                'message': ''
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+      
+# TODO: JJ  
+class GeoFeatureNew(APIView):
+    def post(self, request, *args, **kwargs):
+        print("::::::: GeoFeatureNew :::::::")
+        
+        lat = request.data.get('lat')
+        lng = request.data.get('lng')
+        catalog_name = request.data.get('catalog_name')
+        dataset_name = request.data.get('dataset_name')
+        metadata = request.data.get('metadata') # serialized in JSON
+        
+        sparql_query = f"""
+            
+        """
+        try:
+            user_id = request.user.id
+            graph_manager = GraphDBManager(user_id)
+            return Response({
+                'message': ''
+            }, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
