@@ -675,7 +675,7 @@ class GraphDBManager:
             self.upload_to_graphdb(dataset_data)
             return dataset_uri
     
-    def add_file_to_dataset(self, dataset_uri, file_url):
+    def add_file_to_dataset_or_feature(self, dataset_uri, file_url):
         """
         Adds a file to the dataset using the `spalod:hasFile` property.
 

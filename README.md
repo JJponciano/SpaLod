@@ -242,8 +242,7 @@ curl -X GET "http://127.0.0.1:8000/api/geo/all" \
 
 # Add a new feature
 ```bash
-
-curl -X POST http://127.0.0.1:8000/geo/feature/new \
+curl -X POST http://127.0.0.1:8000/api/geo/feature/new \
 -H "Authorization: Token 63644bad468695c215d7d77ef8186ea6658a4cfa" \
 -H "Content-Type: application/json" \
 -d '{
@@ -257,4 +256,11 @@ curl -X POST http://127.0.0.1:8000/geo/feature/new \
     "http://purl.org/dc/terms/date": "2025-06-20"
   }
 }'
+```
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/geo/feature/add/file \
+-H "Authorization: Token 63644bad468695c215d7d77ef8186ea6658a4cfa" \
+-F "feature_id=https://geovast3d.com/ontologies/spalod#Test_Dataset/collection/feature/00df4906-c3f6-48d9-85cd-f34389eb1741" \
+-F "file=@/Users/jean-jacquesponciano/Downloads/model.glb"
 ```
