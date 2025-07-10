@@ -33,6 +33,13 @@ dcat_catalog_uri = "http://www.w3.org/ns/dcat#Catalog"
 gdi_uri="https://registry.gdi-de.org/"
 dcterms = "http://purl.org/dc/terms/"
 spalod="https://geovast3d.com/ontologies/spalod#"
+NS = {
+            "GEOSPARQL": Namespace(hasGeometry.rsplit('#', 1)[0] + "#"),
+            'SPALOD': Namespace(hasFeature.rsplit('#', 1)[0] + "#"),
+            "DCAT": Namespace(dcat_dataset_uri.rsplit('#', 1)[0] + "#"),
+            "DCTERMS": Namespace(dcterms),
+            "GDI": Namespace(gdi_uri)
+        }
 class OntologyProcessor:
     def __init__(self, file_uuid, ontology_url, file_url, metadata,user_id):
         self.sparql = SPARQLWrapper(settings.GRAPH_DB)
@@ -42,31 +49,22 @@ class OntologyProcessor:
         self.file_url = file_url
         self.metadata = metadata
         self.graph_iri = f"https://geovast3d.com/ontologies/spalod#graph_{user_id}"
-         # Define namespaces
-        self.NS = {
-            "GEOSPARQL": Namespace(hasGeometry.rsplit('#', 1)[0] + "#"),
-            'SPALOD': Namespace(hasFeature.rsplit('#', 1)[0] + "#"),
-            "DCAT": Namespace(dcat_dataset_uri.rsplit('#', 1)[0] + "#"),
-            "DCTERMS": Namespace(dcterms),
-            "GDI": Namespace(gdi_uri)
-        }
+
         # Generate URIs as class attributes
         catalog_name = self.metadata.get("catalog")
         catalog_name = re.sub(r"[ .-]", "_", catalog_name)
-        self.catalog_uri = URIRef(f"{self.NS['SPALOD']}{catalog_name}")
-        self.dataset_uri = URIRef(f"{self.NS['SPALOD']}{self.file_uuid}")
+        self.catalog_uri = URIRef(f"{NS['SPALOD']}{catalog_name}")
+        self.dataset_uri = URIRef(f"{NS['SPALOD']}{self.file_uuid}")
 
         # Load ontology into an RDFlib graph
         ontology_path = os.path.join(os.path.dirname(__file__), '../data/spalod.owl')
         self.graph = Graph()
         self.graph.parse(ontology_path, format="application/rdf+xml")
 
-       
-
-        self.graph.bind("dcat", self.NS["DCAT"])
-        self.graph.bind("dcterms", self.NS["DCTERMS"])
-        self.graph.bind("geo", self.NS["GEOSPARQL"])
-        self.graph.bind('SPALOD', self.NS['SPALOD'])
+        self.graph.bind("dcat", NS["DCAT"])
+        self.graph.bind("dcterms", NS["DCTERMS"])
+        self.graph.bind("geo", NS["GEOSPARQL"])
+        self.graph.bind('SPALOD', NS['SPALOD'])
         self.process_catalog_and_dataset()
 
     def process_catalog_and_dataset(self):
@@ -88,7 +86,7 @@ class OntologyProcessor:
        
         query = f"""
         ASK {{
-            <{self.catalog_uri}> a <{self.NS["DCAT"].Catalog}> .
+            <{self.catalog_uri}> a <{NS["DCAT"].Catalog}> .
         }}
         """
         self.sparql.setQuery(query)
@@ -102,7 +100,7 @@ class OntologyProcessor:
 
     def create_catalog(self, catalog_name):
         catalog_data = [
-            (self.catalog_uri, RDF.type, self.NS["DCAT"].Catalog),
+            (self.catalog_uri, RDF.type, NS["DCAT"].Catalog),
             (self.catalog_uri, RDFS.label, Literal(catalog_name)),
         ]
         for triple in catalog_data:
@@ -111,17 +109,17 @@ class OntologyProcessor:
 
     def create_dataset(self, title):
         dataset_data = [
-            (self.dataset_uri, RDF.type, self.NS["DCAT"].Dataset),
+            (self.dataset_uri, RDF.type, NS["DCAT"].Dataset),
             (self.dataset_uri, RDFS.label, Literal(title)),
-            (self.catalog_uri, self.NS["DCAT"].dataset, self.dataset_uri),
-            (self.dataset_uri, self.NS['SPALOD'].hasOWL, URIRef(f"https://spalod.geovast3d.com{self.ontology_url}")),  # Ensure it's a URI
-            (self.dataset_uri, self.NS['SPALOD'].hasFile, URIRef(f"https://spalod.geovast3d.com{self.file_url}"))  # Ensure it's a URI
+            (self.catalog_uri, NS["DCAT"].dataset, self.dataset_uri),
+            (self.dataset_uri, NS['SPALOD'].hasOWL, URIRef(f"https://spalod.geovast3d.com{self.ontology_url}")),  # Ensure it's a URI
+            (self.dataset_uri, NS['SPALOD'].hasFile, URIRef(f"https://spalod.geovast3d.com{self.file_url}"))  # Ensure it's a URI
         ]
 
         # Add additional metadata from DCTERMS
         for key, value in self.metadata.items():
             if key not in ["catalog", "title"]:  # Exclude mandatory fields already handled
-                dataset_data.append((self.dataset_uri, self.NS["DCTERMS"][key], Literal(value)))
+                dataset_data.append((self.dataset_uri, NS["DCTERMS"][key], Literal(value)))
         for triple in dataset_data:
             self.graph.add(triple)
         self.upload_to_graphdb(dataset_data)
@@ -225,23 +223,23 @@ class OntologyProcessor:
     def add_pointcloud(self, file_path, pointcloud_id, pointcloud_uuid):
         """Adds a point cloud to the ontology and GraphDB."""
         random_uuid = uuid.uuid4()
-        feature_uri = URIRef(self.NS['SPALOD'][f"feature{random_uuid}"])
-        geom_uri = URIRef(self.NS['SPALOD'][f"geom{random_uuid}"])
-        pointcloud_uri = URIRef(self.NS['SPALOD'][pointcloud_uuid])
+        feature_uri = URIRef(NS['SPALOD'][f"feature{random_uuid}"])
+        geom_uri = URIRef(NS['SPALOD'][f"geom{random_uuid}"])
+        pointcloud_uri = URIRef(NS['SPALOD'][pointcloud_uuid])
 
         # Add data to ontology
         wkt_string = self.get_wkt_polygon(file_path)
-        geom_literal = Literal(wkt_string, datatype=self.NS["GEOSPARQL"].asWKT)
+        geom_literal = Literal(wkt_string, datatype=NS["GEOSPARQL"].asWKT)
 
         triples = [
-            (pointcloud_uri, RDF.type, self.NS['SPALOD'].Pointcloud),
-            (pointcloud_uri, self.NS['SPALOD'].pointcloud_id, Literal(pointcloud_id, datatype=XSD.string)),
-            (pointcloud_uri, self.NS['SPALOD'].pointcloud_uuid, Literal(pointcloud_uuid, datatype=XSD.string)),
-            (feature_uri, self.NS['SPALOD'].hasPointcloud, pointcloud_uri),
-            (feature_uri, RDF.type, self.NS["GEOSPARQL"].Feature),
-            (feature_uri, self.NS["GEOSPARQL"].hasGeometry, geom_uri),
-            (geom_uri, RDF.type, self.NS["GEOSPARQL"].Geometry),
-            (geom_uri, self.NS["GEOSPARQL"].asWKT, geom_literal)
+            (pointcloud_uri, RDF.type, NS['SPALOD'].Pointcloud),
+            (pointcloud_uri, NS['SPALOD'].pointcloud_id, Literal(pointcloud_id, datatype=XSD.string)),
+            (pointcloud_uri, NS['SPALOD'].pointcloud_uuid, Literal(pointcloud_uuid, datatype=XSD.string)),
+            (feature_uri, NS['SPALOD'].hasPointcloud, pointcloud_uri),
+            (feature_uri, RDF.type, NS["GEOSPARQL"].Feature),
+            (feature_uri, NS["GEOSPARQL"].hasGeometry, geom_uri),
+            (geom_uri, RDF.type, NS["GEOSPARQL"].Geometry),
+            (geom_uri, NS["GEOSPARQL"].asWKT, geom_literal)
         ]
 
         for triple in triples:
@@ -285,13 +283,13 @@ class OntologyProcessor:
                 raise ValueError("Invalid JSON structure: Missing or incorrect 'features' field (must be a list).")
 
             # Create FeatureCollection in RDF and link it to dataset
-            feature_collection_uri = URIRef(self.NS["GEOSPARQL"][f"FeatureCollection/{data['name']}"])
+            feature_collection_uri = URIRef(NS["GEOSPARQL"][f"FeatureCollection/{data['name']}"])
             collection_label = Literal(data["name"])
 
             batched_triples.extend([
-                (feature_collection_uri, RDF.type, self.NS["GEOSPARQL"].FeatureCollection),
+                (feature_collection_uri, RDF.type, NS["GEOSPARQL"].FeatureCollection),
                 (feature_collection_uri, RDFS.label, collection_label),
-                (self.dataset_uri, self.NS["GEOSPARQL"].hasFeatureCollection, feature_collection_uri)  # Link dataset to collection
+                (self.dataset_uri, NS["GEOSPARQL"].hasFeatureCollection, feature_collection_uri)  # Link dataset to collection
             ])
 
             # Process each feature
@@ -321,12 +319,12 @@ class OntologyProcessor:
 
                     # Generate unique URIs
                     random_uuid = uuid.uuid4()
-                    feature_uri = URIRef(self.NS["GEOSPARQL"][f"feature{random_uuid}"])
-                    geom_uri = URIRef(self.NS["GEOSPARQL"][f"geom{random_uuid}"])
+                    feature_uri = URIRef(NS["GEOSPARQL"][f"feature{random_uuid}"])
+                    geom_uri = URIRef(NS["GEOSPARQL"][f"geom{random_uuid}"])
 
                     # Convert geometry to WKT format
                     wkt_string = self.convert_coordinates_to_wkt(feature_type, coordinates)
-                    geom_literal = Literal(wkt_string, datatype=self.NS["GEOSPARQL"].asWKT)
+                    geom_literal = Literal(wkt_string, datatype=NS["GEOSPARQL"].asWKT)
 
                     # Prioritize rdfs:label assignment
                     rdfs_label = None
@@ -339,11 +337,11 @@ class OntologyProcessor:
 
                     # Collect RDF triples
                     batched_triples.extend([
-                        (feature_uri, RDF.type, self.NS["GEOSPARQL"].Feature),
-                        (feature_collection_uri, self.NS["GEOSPARQL"].hasFeature, feature_uri),  # Link feature to FeatureCollection
-                        (feature_uri, self.NS["GEOSPARQL"].hasGeometry, geom_uri),
-                        (geom_uri, RDF.type, self.NS["GEOSPARQL"].Geometry),
-                        (geom_uri, self.NS["GEOSPARQL"].asWKT, geom_literal)
+                        (feature_uri, RDF.type, NS["GEOSPARQL"].Feature),
+                        (feature_collection_uri, NS["GEOSPARQL"].hasFeature, feature_uri),  # Link feature to FeatureCollection
+                        (feature_uri, NS["GEOSPARQL"].hasGeometry, geom_uri),
+                        (geom_uri, RDF.type, NS["GEOSPARQL"].Geometry),
+                        (geom_uri, NS["GEOSPARQL"].asWKT, geom_literal)
                     ])
 
                     # Add rdfs:label if available
@@ -351,7 +349,7 @@ class OntologyProcessor:
                         batched_triples.append((feature_uri, RDFS.label, rdfs_label))
 
                     # Add other properties as triples
-                    spalod_ns = self.NS['SPALOD']
+                    spalod_ns = NS['SPALOD']
                     batched_triples.extend([
                         (feature_uri, URIRef(spalod_ns + prop), Literal(value))
                         for prop, value in properties.items()
@@ -399,7 +397,6 @@ class OntologyProcessor:
                 try:
                     self.process_json_file(file)
                 except Exception as e:
-                    print(f"Error during JSON processing: {str(e)}")
                     raise Exception(f"Ontology processing failed because: {str(e)}")
 
             elif file.endswith(('.ttl', '.rdf', '.owl', '.nt')):

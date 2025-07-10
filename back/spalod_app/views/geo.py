@@ -9,10 +9,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rdflib import Graph, URIRef, Literal, Namespace, XSD
-from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager
+from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager,NS
 from  .sparql_query import SparqlQueryAPIView
 from ..serializers import SparqlQuerySerializer
-import re
+import json, re, uuid
+
+from rdflib import URIRef, Literal, Namespace, RDF, Graph
 
 class GeoGetAllCatalogsView(APIView):
     def get(self, request, *args, **kwargs):
@@ -368,7 +370,7 @@ class GeoGenericDelete(APIView):
 # TODO: JJ
 class GeoFeatureAddFile(APIView):
     def post(self, request, *args, **kwargs):
-        print("::::::: GeoGenericDelete :::::::")
+        print("::::::: GeoFeatureAddFile :::::::")
         
         feature_id = request.data.get('feature_id')
         file = request.FILES.get('file')
@@ -385,25 +387,159 @@ class GeoFeatureAddFile(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
       
-# TODO: JJ  
+
+
 class GeoFeatureNew(APIView):
+    # =============================================================================
+# 📘 GeoFeatureNew — Add a Geospatial Feature via REST API
+#
+# Description:
+#     This API endpoint allows authenticated users to add a new geospatial
+#     feature to a semantic graph. It automatically creates the catalog and
+#     dataset if they do not already exist, ensures feature collections are
+#     attached, and inserts a GeoSPARQL-compliant feature with optional metadata.
+#
+# Endpoint:
+#     POST /api/geo/feature/new
+#
+# Required Headers:
+#     Authorization: Token <your_token>
+#     Content-Type: application/json
+#
+# JSON Payload:
+#     {
+#       "label": "Test Point A",
+#       "lat": 49.756,
+#       "lng": 6.641,
+#       "catalog_name": "Test Catalog",
+#       "dataset_name": "Test Dataset",
+#       "metadata": {
+#         "http://purl.org/dc/terms/creator": "Jean-Jacques Ponciano",
+#         "http://purl.org/dc/terms/date": "2025-06-20"
+#       }
+#     }
+#
+# Example curl:
+#     curl -X POST http://127.0.0.1:8000/api/geo/feature/new \
+#     -H "Authorization: Token 63644bad468695c215d7d77ef8186ea6658a4cfa" \
+#     -H "Content-Type: application/json" \
+#     -d '{ ... }'
+#
+# Example Success Response:
+#     {
+#       "message": "Feature successfully added.",
+#       "feature_uri": "https://geovast3d.com/ontologies/spalod#Test_Dataset/collection/feature/<uuid>"
+#     }
+#
+# Tested: ✅ Yes
+# Test date: 2025-06-20
+# Tested by: Jean-Jacques Ponciano
+# =============================================================================
     def post(self, request, *args, **kwargs):
         print("::::::: GeoFeatureNew :::::::")
-        
-        lat = request.data.get('lat')
-        lng = request.data.get('lng')
-        catalog_name = request.data.get('catalog_name')
-        dataset_name = request.data.get('dataset_name')
-        metadata = request.data.get('metadata') # serialized in JSON
-        
-        sparql_query = f"""
-            
-        """
+
+        # Extract basic data from the request
+        label = request.data.get('label')  # Label for the new feature
+        lat = request.data.get('lat')      # Latitude (float)
+        lng = request.data.get('lng')      # Longitude (float)
+        catalog_name = request.data.get('catalog_name')  # Catalog grouping this dataset
+        dataset_name = request.data.get('dataset_name')  # Dataset under the catalog
+        user_id = request.user.id                        # Authenticated user
+        metadata = request.data.get('metadata')          # Additional metadata as JSON
+
+        print(f"Adding a new feature for User: {user_id}")
+
+        # Validate coordinates
         try:
-            user_id = request.user.id
+            lat = float(lat)
+            lng = float(lng)
+        except ValueError:
+            return Response({'error': 'Invalid coordinates.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Initialize the GraphDB manager for SPARQL communication
+        try:
             graph_manager = GraphDBManager(user_id)
-            return Response({
-                'message': ''
-            }, status=status.HTTP_201_CREATED)
         except Exception as e:
+            return Response({'error': f'GraphDB initialization failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        try:
+            # Normalize catalog and dataset names to make valid URIs (replace spaces, dots, dashes)
+            catalog_name = re.sub(r"[ .-]", "_", catalog_name)
+            dataset_name = re.sub(r"[ .-]", "_", dataset_name)
+
+            # Initialize the GraphDB manager for the user
+            graph_manager = GraphDBManager(user_id)
+            # Build  catalog and dataset
+            if not graph_manager.catalog_exists(catalog_name):
+                catalog_uri=graph_manager.create_catalog(catalog_name)
+            else:
+                catalog_uri = URIRef(f"{NS['SPALOD']}{catalog_name}")
+            if not graph_manager.dataset_exists(dataset_name):
+               dataset_uri= graph_manager.create_dataset(dataset_name,catalog_uri)
+            else:
+                dataset_uri = URIRef(f"{NS['SPALOD']}{dataset_name}")
+            # Check if the dataset triple exists (catalog dcat:dataset dataset)
+            check_dataset_query = f"""
+            ASK {{
+                <{catalog_uri}> <{NS["DCAT"].dataset}> <{dataset_uri}> .
+            }}
+            """
+            if not graph_manager.query_graphdb(check_dataset_query)['boolean']:
+                # If not, create the catalog → dataset triple and dataset metadata
+                dataset_graph = Graph()
+                dataset_graph.add((catalog_uri, NS["DCAT"].dataset, dataset_uri))
+                dataset_graph.add((dataset_uri, RDF.type, NS["DCAT"].Dataset))
+                dataset_graph.add((dataset_uri, NS["RDFS"].label, Literal(dataset_name)))
+                graph_manager.add_graph(dataset_graph)
+
+            # Define the feature collection URI for this dataset
+            feature_collection_uri = URIRef(f"{dataset_uri}/collection")
+
+            # Check if the dataset has a linked feature collection
+            check_fc_query = f"""
+            ASK {{
+                <{dataset_uri}> <{NS["GEOSPARQL"].hasFeatureCollection}> <{feature_collection_uri}> .
+            }}
+            """
+            if not graph_manager.query_graphdb(check_fc_query)['boolean']:
+                # Create and link the feature collection if missing
+                fc_graph =  Graph() 
+                fc_graph.add((dataset_uri, NS["GEOSPARQL"].hasFeatureCollection, feature_collection_uri))
+                fc_graph.add((feature_collection_uri, RDF.type, NS["GEOSPARQL"].FeatureCollection))
+                graph_manager.add_graph(fc_graph)
+
+            # Generate a unique URI for the new feature
+            feature_id = str(uuid.uuid4())
+            feature_uri = URIRef(f"{feature_collection_uri}/feature/{feature_id}")
+            geometry_uri = URIRef(f"{feature_uri}/geom")
+
+            # Create WKT representation of the geometry
+            point_wkt = f"POINT({lng} {lat})"
+
+            # Create RDF triples for the new feature
+            feature_graph = Graph()
+            feature_graph.add((feature_collection_uri, NS["GEOSPARQL"].hasFeature, feature_uri))
+            feature_graph.add((feature_uri, RDF.type, NS["GEOSPARQL"].Feature))
+            feature_graph.add((feature_uri, NS["RDFS"].label, Literal(label)))
+            feature_graph.add((feature_uri, NS["GEOSPARQL"].hasGeometry, geometry_uri))
+            feature_graph.add((geometry_uri, RDF.type, NS["GEOSPARQL"].Geometry))
+            feature_graph.add((geometry_uri, NS["GEOSPARQL"].asWKT, Literal(point_wkt, datatype=NS["GEOSPARQL"].wktLiteral)))
+
+            # If metadata is passed, add it as RDF properties on the feature
+            if isinstance(metadata, dict):
+                for key, value in metadata.items():
+                    # Assumes `key` is a valid full URI (e.g., DCTERMS.creator)
+                    feature_graph.add((feature_uri, URIRef(key), Literal(value)))
+
+            # Upload all triples to GraphDB
+            graph_manager.add_graph(feature_graph)
+
+            # Respond with success and return the new feature URI
+            return Response({
+                'message': 'Feature successfully added.',
+                'feature_uri': str(feature_uri)
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            # Generic fallback for unexpected errors
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -31,7 +31,7 @@ To create the environment manually:
 ```bash
 conda create -n spalod_env python=3.10
 conda activate spalod_env
-pip install django djangorestframework dj-rest-auth social-auth-app-django django-allauth pydeck rdflib pyproj folium shapely laspy
+pip install django djangorestframework dj-rest-auth social-auth-app-django django-allauth pydeck rdflib pyproj folium shapely laspy tqdm
 ```
 
 ### 3. Activate the Environment
@@ -75,7 +75,7 @@ http://localhost:7200/repositories/Spalod
 Register a new user:
 
 ```bash
-curl -X POST http://127.0.0.1:8000/auth/registration/ -d "username=JJ&password1=GNybRXbC563&password2=GNybRXbC563"
+curl -X POST http://127.0.0.1:8000/auth/registration/ -d "username=jj&password1=GNybRXbC563&password2=GNybRXbC563"
 ```
 
 ### 2. User Login
@@ -83,7 +83,7 @@ curl -X POST http://127.0.0.1:8000/auth/registration/ -d "username=JJ&password1=
 Log in to obtain an authentication token:
 
 ```bash
-curl -X POST http://127.0.0.1:8000/auth/login/ -d "username=JJ&password=GNybRXbC563"
+curl -X POST http://127.0.0.1:8000/auth/login/ -d "username=jj&password=GNybRXbC563"
 ```
 
 Expected response:
@@ -239,3 +239,22 @@ curl -X GET "http://127.0.0.1:8000/api/geo/all" \
 ```
 
 ---
+
+# Add a new feature
+```bash
+
+curl -X POST http://127.0.0.1:8000/geo/feature/new \
+-H "Authorization: Token 63644bad468695c215d7d77ef8186ea6658a4cfa" \
+-H "Content-Type: application/json" \
+-d '{
+  "label": "Test Point A",
+  "lat": 49.756,
+  "lng": 6.641,
+  "catalog_name": "Test Catalog",
+  "dataset_name": "Test Dataset",
+  "metadata": {
+    "http://purl.org/dc/terms/creator": "Jean-Jacques Ponciano",
+    "http://purl.org/dc/terms/date": "2025-06-20"
+  }
+}'
+```

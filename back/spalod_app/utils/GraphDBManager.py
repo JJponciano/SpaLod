@@ -3,12 +3,25 @@ import rdflib
 from rdflib import Graph
 import os
 from django.conf import settings
-from rdflib import URIRef, Literal, RDF
 from tqdm import tqdm
-from SPARQLWrapper import SPARQLWrapper, JSON, POST, GET,POSTDIRECTLY
+from SPARQLWrapper import SPARQLWrapper, JSON, POST, GET,POSTDIRECTLY,SPARQLExceptions
+from rdflib import URIRef, Literal, RDF,Namespace
+from rdflib.namespace import  RDFS, OWL
 
-from rdflib import URIRef
-from rdflib import Namespace, URIRef
+        # Define namespaces, including standard RDF, RDFS, OWL, etc.
+NS = {
+            "RDF": Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+            "RDFS": Namespace("http://www.w3.org/2000/01/rdf-schema#"),
+            "OWL": Namespace("http://www.w3.org/2002/07/owl#"),
+            "XSD": Namespace("http://www.w3.org/2001/XMLSchema#"),
+            "FOAF": Namespace("http://xmlns.com/foaf/0.1/"),
+            "SKOS": Namespace("http://www.w3.org/2004/02/skos/core#"),
+            "GEOSPARQL": Namespace("http://www.opengis.net/ont/geosparql#"),
+            "SPALOD": Namespace("https://geovast3d.com/ontologies/spalod#"),
+            "DCAT": Namespace("http://www.w3.org/ns/dcat#"),
+            "DCTERMS": Namespace("http://purl.org/dc/terms/"),
+            "GDI": Namespace("https://registry.gdi-de.org/")
+        }
 def delete_ontology_entry(owl_url, sparql_delete_query):
     """
     Process an OWL file from a given URL, load it into an RDF graph, and apply a SPARQL DELETE query.
@@ -196,25 +209,12 @@ class GraphDBManager:
         self.sparql = SPARQLWrapper(settings.GRAPH_DB)  # Query endpoint
         self.sparql_statements = SPARQLWrapper(settings.GRAPH_DB_STATEMENTS)  # Update endpoint
         
-        # Define namespaces, including standard RDF, RDFS, OWL, etc.
-        self.NS = {
-            "RDF": Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
-            "RDFS": Namespace("http://www.w3.org/2000/01/rdf-schema#"),
-            "OWL": Namespace("http://www.w3.org/2002/07/owl#"),
-            "XSD": Namespace("http://www.w3.org/2001/XMLSchema#"),
-            "FOAF": Namespace("http://xmlns.com/foaf/0.1/"),
-            "SKOS": Namespace("http://www.w3.org/2004/02/skos/core#"),
-            "GEOSPARQL": Namespace("http://www.opengis.net/ont/geosparql#"),
-            "SPALOD": Namespace("https://geovast3d.com/ontologies/spalod#"),
-            "DCAT": Namespace("http://www.w3.org/ns/dcat#"),
-            "DCTERMS": Namespace("http://purl.org/dc/terms/"),
-            "GDI": Namespace("https://registry.gdi-de.org/")
-        }
+
 
         # Auto-generate SPARQL PREFIX declarations
         self.prefixes = "\n".join([
             f"PREFIX {key.lower()}: <{uri}>"
-            for key, uri in self.NS.items()
+            for key, uri in NS.items()
         ]) + "\n"
         # Set the graph IRI only if user_id is provided
         self.graph_iri = f"https://geovast3d.com/ontologies/spalod#graph_{user_id}" if user_id is not None else None
@@ -246,7 +246,7 @@ class GraphDBManager:
             print(f"SPARQL update failed: {e}")
             raise
 
-    def query_graphdb(self, select_query):
+    def query_graphdb_depreciated(self, select_query):
         """Executes a SPARQL SELECT query only within the user's named graph (if user_id is set)."""
         
         if self.graph_iri is not None:
@@ -269,6 +269,104 @@ class GraphDBManager:
             print(f"SPARQL SELECT query failed: {e}")
             print("QUERY:\n")
             print(select_query)
+            raise
+    def query_graphdb(self, select_query):
+        """Executes a SPARQL SELECT or ASK query within the user's named graph (if user_id is set)."""
+        
+        # Normalize query (strip leading/trailing spaces and lowercase the start)
+        query_type = select_query.strip().lower().split()[0]
+
+        if self.graph_iri is not None and query_type not in ["ask", "select"]:
+            # Only wrap if it's a raw pattern (e.g., `?s ?p ?o`) — not a full ASK/SELECT
+            select_query = f"""
+            SELECT * WHERE {{
+                GRAPH <{self.graph_iri}> {{
+                    {select_query}
+                }}
+            }}
+            """
+
+        # Add prefixes
+        select_query = self.prefixes + select_query
+
+        self.sparql.setMethod(GET)
+        self.sparql.setQuery(select_query)
+        self.sparql.setReturnFormat(JSON)
+
+        try:
+            response = self.sparql.query().convert()
+            return response.get("results", {}).get("bindings", []) if query_type == "select" else response
+        except Exception as e:
+            print(f"SPARQL SELECT/ASK query failed: {e}")
+            print("QUERY:\n", select_query)
+            raise
+    
+    def upload_to_graphdb(self, triples):
+        """Uploads RDFLib triples to GraphDB using INSERT DATA with SPARQL-safe serialization."""
+        
+        if self.graph_iri is None:
+            raise ValueError("User ID is required to determine the target graph.")
+
+        # Build a temporary RDFLib Graph to serialize safely
+        g = Graph()
+        for s, p, o in triples:
+            g.add((s, p, o))
+
+        # Serialize in N-Triples format (SPARQL safe) inside the named graph
+        nt_data = g.serialize(format='nt')
+
+        update_query = f"""
+        INSERT DATA {{
+            GRAPH <{self.graph_iri}> {{
+                {nt_data}
+            }}
+        }}
+        """
+
+        self.sparql_statements.setMethod(POST)
+        self.sparql_statements.setQuery(update_query.encode("utf-8"))
+        self.sparql_statements.setReturnFormat(JSON)
+
+        try:
+            self.sparql_statements.query()
+            print(f"✅ Data uploaded successfully to Graph: {self.graph_iri}")
+        except Exception as e:
+            print(f"❌ SPARQL update failed: {e}")
+            print("SPARQL QUERY:\n", update_query)
+            raise
+
+    def upload_to_graphdb_depreciated(self, triples):
+        """Uploads RDFLib triples to GraphDB using INSERT DATA with SPARQL-safe serialization."""
+        
+        if self.graph_iri is None:
+            raise ValueError("User ID is required to determine the target graph.")
+
+        # Build a temporary RDFLib Graph to serialize safely
+        g = Graph()
+        for s, p, o in triples:
+            g.add((s, p, o))
+
+        # Serialize in N-Triples format (SPARQL safe) inside the named graph
+        nt_data = g.serialize(format='nt').decode('utf-8')
+
+        update_query = f"""
+        INSERT DATA {{
+            GRAPH <{self.graph_iri}> {{
+                {nt_data}
+            }}
+        }}
+        """
+
+        self.sparql_statements.setMethod(POST)
+        self.sparql_statements.setQuery(update_query.encode("utf-8"))
+        self.sparql_statements.setReturnFormat(JSON)
+
+        try:
+            self.sparql_statements.query()
+            print(f"✅ Data uploaded successfully to Graph: {self.graph_iri}")
+        except Exception as e:
+            print(f"❌ SPARQL update failed: {e}")
+            print("SPARQL QUERY:\n", update_query)
             raise
 
     def update_graphdb(self, select_query):
@@ -333,10 +431,10 @@ class GraphDBManager:
         SELECT DISTINCT ?type WHERE {{
             {target_uri} a ?type .
             FILTER (?type IN (
-                <{self.NS["DCAT"].Dataset}>,
-                <{self.NS["DCAT"].Catalog}>,
-                <{self.NS["GEOSPARQL"].Feature}>,
-                <{self.NS["GEOSPARQL"].FeatureCollection}>
+                <{NS["DCAT"].Dataset}>,
+                <{NS["DCAT"].Catalog}>,
+                <{NS["GEOSPARQL"].Feature}>,
+                <{NS["GEOSPARQL"].FeatureCollection}>
             ))
         }}
         """
@@ -352,9 +450,9 @@ class GraphDBManager:
         DELETE {{?g ?gp ?go}} WHERE {{
             {graph_clause} {{
                 {target_uri} 
-                    <{self.NS["GEOSPARQL"].hasFeatureCollection}>/
-                    <{self.NS["GEOSPARQL"].hasFeature}>/ 
-                    <{self.NS["GEOSPARQL"].hasGeometry}> ?g.
+                    <{NS["GEOSPARQL"].hasFeatureCollection}>/
+                    <{NS["GEOSPARQL"].hasFeature}>/ 
+                    <{NS["GEOSPARQL"].hasGeometry}> ?g.
                     ?g ?gp ?go .
             }}
         }}
@@ -362,8 +460,8 @@ class GraphDBManager:
         DELETE {{?g ?gp ?go}} WHERE {{
             {graph_clause} {{
                 {target_uri} 
-                    <{self.NS["GEOSPARQL"].hasFeatureCollection}>/
-                    <{self.NS["GEOSPARQL"].hasFeature}> ?g.
+                    <{NS["GEOSPARQL"].hasFeatureCollection}>/
+                    <{NS["GEOSPARQL"].hasFeature}> ?g.
                     ?g ?gp ?go .
             }}
         }}
@@ -371,7 +469,7 @@ class GraphDBManager:
         DELETE {{?g ?gp ?go}} WHERE {{
             {graph_clause} {{
                 {target_uri} 
-                    <{self.NS["GEOSPARQL"].hasFeatureCollection}> ?g.
+                    <{NS["GEOSPARQL"].hasFeatureCollection}> ?g.
                     ?g ?gp ?go .
             }}
         }}
@@ -381,8 +479,8 @@ class GraphDBManager:
         DELETE {{?g ?gp ?go}} WHERE {{
             {graph_clause} {{
                 {target_uri} 
-                    <{self.NS["GEOSPARQL"].hasFeature}>/ 
-                    <{self.NS["GEOSPARQL"].hasGeometry}> ?g.
+                    <{NS["GEOSPARQL"].hasFeature}>/ 
+                    <{NS["GEOSPARQL"].hasGeometry}> ?g.
                     ?g ?gp ?go .
             }}
         }}
@@ -390,7 +488,7 @@ class GraphDBManager:
         DELETE {{?g ?gp ?go}} WHERE {{
             {graph_clause} {{
                 {target_uri} 
-                    <{self.NS["GEOSPARQL"].hasFeature}> ?g.
+                    <{NS["GEOSPARQL"].hasFeature}> ?g.
                     ?g ?gp ?go .
             }}
         }}
@@ -399,7 +497,7 @@ class GraphDBManager:
         DELETE {{?g ?gp ?go}} WHERE {{
             {graph_clause} {{
                 {target_uri} 
-                    <{self.NS["GEOSPARQL"].hasGeometry}> ?g.
+                    <{NS["GEOSPARQL"].hasGeometry}> ?g.
                     ?g ?gp ?go .
             }}
         }}
@@ -498,3 +596,81 @@ class GraphDBManager:
         except Exception as e:
             print(f"SPARQL CONSTRUCT query failed: {e}")
             return None
+    def catalog_exists(self, catalog_name):
+        catalog_uri = URIRef(f"{NS['SPALOD']}{catalog_name}")
+       
+        query = f"""
+        ASK {{
+            <{catalog_uri}> a <{NS["DCAT"].Catalog}> .
+        }}
+        """
+        self.sparql.setQuery(query)
+        self.sparql.setReturnFormat(JSON)
+        try:
+            result = self.sparql.query().convert()
+            return result.get("boolean", False)
+        except SPARQLExceptions.SPARQLWrapperException as e:
+            print(f"SPARQL Query Error: {e}")
+            return False
+    def dataset_exists(self,dataset_name):
+        """
+        Check if the dataset already exists in the catalog.
+        """
+        dataset_uri = URIRef(f"{NS['SPALOD']}{dataset_name}")
+        query = f"""
+        ASK {{
+            ?x <{NS["DCAT"].dataset}> <{dataset_uri}> .
+        }}
+        """
+        self.sparql.setQuery(self.prefixes + query)
+        self.sparql.setReturnFormat(JSON)
+        try:
+            result = self.sparql.query().convert()
+            return result.get("boolean", False)
+        except Exception as e:
+            print(f"[ERROR] SPARQL dataset_exists query failed: {e}")
+            return False
+
+    def create_catalog(self, catalog_name):
+        catalog_uri = URIRef(f"{NS['SPALOD']}{catalog_name}")
+
+        catalog_data = [
+            (catalog_uri, RDF.type, NS["DCAT"].Catalog),
+            (catalog_uri, RDFS.label, Literal(catalog_name)),
+        ]
+        self.upload_to_graphdb(catalog_data)
+        return catalog_uri
+    def add_graph(self, graph):
+        """
+        Uploads all triples from an RDFLib Graph object to the user's named graph in GraphDB.
+        
+        Args:
+            graph (rdflib.Graph): The RDFLib graph containing the triples to insert.
+        """
+        if not isinstance(graph, Graph):
+            raise TypeError("Input must be an instance of rdflib.Graph")
+
+        # Extract triples and pass to the upload method
+        triples = list(graph.triples((None, None, None)))
+        if not triples:
+            print("[INFO] No triples to upload.")
+            return
+
+        try:
+            self.upload_to_graphdb(triples)
+            print(f"[INFO] Uploaded {len(triples)} triples to graph <{self.graph_iri}>.")
+        except Exception as e:
+            print(f"[ERROR] Failed to upload RDF graph: {e}")
+            raise
+
+    def create_dataset(self, name,catalog_uri):
+            dataset_uri = URIRef(f"{NS['SPALOD']}{name}")
+            dataset_data = [
+                (dataset_uri, RDF.type, NS["DCAT"].Dataset),
+                (dataset_uri, RDFS.label, Literal(name)),
+                (catalog_uri, NS["DCAT"].dataset, dataset_uri),
+            #     (dataset_uri, NS['SPALOD'].hasOWL, URIRef(f"https://spalod.geovast3d.com{self.ontology_url}")),  # Ensure it's a URI
+            #     (dataset_uri, NS['SPALOD'].hasFile, URIRef(f"https://spalod.geovast3d.com{self.file_url}"))  # Ensure it's a URI
+            ]
+            self.upload_to_graphdb(dataset_data)
+            return dataset_uri

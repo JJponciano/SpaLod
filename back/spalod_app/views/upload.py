@@ -62,24 +62,23 @@ class FileUploadView(APIView):
             try:
                 print("[INFO] Read Metadata")
                 processor = OntologyProcessor(file_uuid, ontology_url, original_url,metadata,user_id)
-                print("[INFO]Starting processing file ")
 
                 ## POINT CLOUD 
                 if file_extension.endswith('las') or file_extension.endswith('laz') or file_extension.endswith('xyz') or file_extension.endswith('ply')or file_extension.endswith('pcd'):
                     print("[INFO] Pointcloud detected !")
-                    # t = threading.Thread(
-                    #     target=send_to_flyvast,
-                    #     args=[file],
-                    #     daemon=True,
-                    # )
-                    # t.start()
+                    t = threading.Thread(
+                        target=send_to_flyvast,
+                        args=[file],
+                        daemon=True,
+                    )
+                    t.start()
                     processor.add_pointcloud(
                         file_path,
                         file.flyvast_pointcloud["pointcloud_id"],
                         file.flyvast_pointcloud["pointcloud_uuid"]
                     )
                 else:
-                    print("start to process ",file_path)
+                    print("[INFO] Starting processing file ")
                     processor.process(file_path)
                 print("Saving ",ontology_file_path) 
                 processor.save(ontology_file_path)
