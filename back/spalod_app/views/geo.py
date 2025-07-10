@@ -371,21 +371,26 @@ class GeoGenericDelete(APIView):
         
 class GeoFeatureAddFile(APIView):
     """
-    Uploads a file and attaches it to a feature using spalod:hasFile.
+    Uploads a file and attaches it to a feature using a semantic SPALOD property.
 
-    Required fields in the request:
-    - feature_id: URI or identifier of the dataset to which the file is linked
-    - file: multipart/form-data file to upload
+    Property depends on file type:
+    - .las, .laz → spalod:hasPointCloud
+    - .glb, .gltf, .ply, .obj, .fbx → spalod:has3D
+    - .mp4, .webm → spalod:hasVideo
+    - .pdf, .docx, .doc, .pptx, .txt → spalod:hasDocument
+    - otherwise → spalod:hasFile
+
+    Required fields:
+    - feature_id (URI)
+    - file (multipart/form-data)
 
     Tested: ✅ Yes
     Test date: 2025-07-10
     Tested by: Jean-Jacques Ponciano
     """
-
     def post(self, request, *args, **kwargs):
         print("::::::: GeoFeatureAddFile :::::::")
 
-        # Extract the dataset (feature) ID and uploaded file
         feature_id = request.data.get('feature_id')
         file = request.FILES.get('file')
 
@@ -396,31 +401,42 @@ class GeoFeatureAddFile(APIView):
             user_id = request.user.id
             graph_manager = GraphDBManager(user_id)
 
-            # Generate a unique file ID and extension
+            # Generate unique file ID and path
             file_uuid = str(uuid.uuid4())
-            file_ext = os.path.splitext(file.name)[1]
+            file_ext = os.path.splitext(file.name)[1].lower()
             filename = f"{file_uuid}{file_ext}"
 
-            # Create upload path
             upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads', file_uuid)
             os.makedirs(upload_dir, exist_ok=True)
-
             file_path = os.path.join(upload_dir, filename)
 
-            # Save the file
+            # Save file
             with open(file_path, 'wb+') as dest:
                 for chunk in file.chunks():
                     dest.write(chunk)
 
-            # Construct the public URL
+            # Public URL
             file_url = f"/media/uploads/{file_uuid}/{filename}"
+            full_url = f"https://spalod.geovast3d.com{file_url}"
 
-            # Add the file to the dataset using SPALOD
+            # Determine semantic property based on extension
+            ext_map = {
+                ".las": "hasPointCloud", ".laz": "hasPointCloud",
+                ".glb": "has3D", ".gltf": "has3D", ".ply": "has3D", ".obj": "has3D", ".fbx": "has3D",
+                ".mp4": "hasVideo", ".webm": "hasVideo",
+                ".pdf": "hasDocument", ".docx": "hasDocument", ".doc": "hasDocument",
+                ".pptx": "hasDocument", ".ppt": "hasDocument", ".txt": "hasDocument"
+            }
+            predicate_key = ext_map.get(file_ext, "hasFile")
+            predicate_uri = NS["SPALOD"][predicate_key]
+
+            # Add triple to graph
             feature_uri = URIRef(feature_id)
-            graph_manager.add_file_to_dataset_or_feature(feature_uri, file_url)
+            triple = (feature_uri, predicate_uri, URIRef(full_url))
+            graph_manager.upload_to_graphdb([triple])
 
             return Response({
-                'message': 'File successfully uploaded and linked to dataset.',
+                'message': f'File uploaded and linked using {predicate_key}.',
                 'file_url': file_url,
                 'uri': str(feature_uri)
             }, status=status.HTTP_201_CREATED)
@@ -428,8 +444,6 @@ class GeoFeatureAddFile(APIView):
         except Exception as e:
             print(f"[ERROR] {e}")
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 class GeoFeatureNew(APIView):
     # =============================================================================
