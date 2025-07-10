@@ -674,3 +674,22 @@ class GraphDBManager:
             ]
             self.upload_to_graphdb(dataset_data)
             return dataset_uri
+    
+    def add_file_to_dataset(self, dataset_uri, file_url):
+        """
+        Adds a file to the dataset using the `spalod:hasFile` property.
+
+        Args:
+            dataset_uri (rdflib.URIRef): The URI of the dataset to update.
+            file_url (str): The relative or full URL of the file to attach.
+        """
+        if not file_url.startswith("http"):
+            file_url = f"https://spalod.geovast3d.com{file_url}"  # Ensure it's an absolute URI
+
+        triple = (dataset_uri, NS["SPALOD"].hasFile, URIRef(file_url))
+        try:
+            self.upload_to_graphdb([triple])
+            print(f"[INFO] File {file_url} added to dataset <{dataset_uri}>.")
+        except Exception as e:
+            print(f"[ERROR] Failed to add file to dataset: {e}")
+            raise
