@@ -10,7 +10,7 @@
         <div>Data</div>
 
         <button class="addfile" @click="addData" v-if="getProcess() === ''">
-          Add
+          Import file
         </button>
         <div class="addfile-alt" v-else>
           <div class="progress">
@@ -854,6 +854,7 @@ $.ajaxSetup({
 });
 
 export default {
+  emits: ["fileSelected"],
   components: {
     VirtualScroller,
   },

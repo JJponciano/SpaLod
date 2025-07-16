@@ -585,6 +585,10 @@ export function updateFeature(featureId, key, value, needInsert = false) {
     if (needInsert) {
       ((featureId) => {
         featureUdates[featureId].pendingInsert = true;
+        if (!/http(s?)\/\/.*?\/.+/.test(key)) {
+          key = `https://geovast3d.com/ontologies/spalod#${key}`;
+        }
+
         ApiGeo.updateFeature(featureId, key, value, true).then(() => {
           featureUdates[featureId].pendingInsert = false;
         });
@@ -610,6 +614,42 @@ export function updateFeature(featureId, key, value, needInsert = false) {
       updateFeatureDelayed(featureId);
     }
   }
+}
+
+export function deleteFeatureProperty(featureId, key, value) {
+  if (
+    key === "rdfs:label" ||
+    key === "http://www.w3.org/2000/01/rdf-schema#label"
+  ) {
+    const feature = features[featureId];
+    if (feature) {
+      feature.label = "";
+      labelChangeSubscribers.forEach((x) => x());
+    }
+  }
+  ApiGeo.deleteFeatureProperty(featureId, key, value);
+}
+
+export async function addGeoFeature(
+  lat,
+  lng,
+  label,
+  catalogName,
+  datasetName,
+  metadata
+) {
+  const res = await ApiGeo.addFeature(
+    lat,
+    lng,
+    label,
+    catalogName,
+    datasetName,
+    metadata
+  );
+
+  console.log("addGeoFeature res: ", res);
+
+  // TODO
 }
 
 export function reset() {

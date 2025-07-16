@@ -8,8 +8,16 @@ export const queryables = [
     literal: true,
   },
   {
-    q: "description",
+    q: "publisher",
     required: true,
+    d: "Entity making the resource available",
+    v: false,
+    p: "http://purl.org/dc/terms/publisher",
+    literal: false,
+  },
+  {
+    q: "description",
+    required: false,
     d: "Description of the resource",
     v: false,
     p: "http://purl.org/dc/terms/description",
@@ -17,18 +25,10 @@ export const queryables = [
   },
   {
     q: "distribution",
-    required: true,
+    required: false,
     d: "The url of the distribution",
     v: false,
     p: "http://www.w3.org/ns/dcat#distribution",
-    literal: false,
-  },
-  {
-    q: "publisher",
-    required: true,
-    d: "Entity making the resource available",
-    v: false,
-    p: "http://purl.org/dc/terms/publisher",
     literal: false,
   },
   {

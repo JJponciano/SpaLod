@@ -43,9 +43,6 @@ export default {
     handleCatalogUpdate(data) {
       this.receivedData = data;
     },
-    logUsername(data) {
-      this.username = data;
-    },
   },
 };
 </script>
@@ -53,7 +50,7 @@ export default {
 <template>
   <div class="app">
     <div class="navbar">
-      <NavBar @username-updated="logUsername"></NavBar>
+      <NavBar></NavBar>
     </div>
     <div class="main">
       <RouterView />

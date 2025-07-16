@@ -2,65 +2,74 @@
   <div class="container">
     <h2 class="file">{{ file?.name }}</h2>
     <div class="metadatas">
-      <div class="metadata-element">
-        <h3>
-          Catalog: *
-          <!-- <button @click="addNewCatalog">+</button> -->
-        </h3>
-        <div class="metadata-input">
-          <!-- <input
-            type="text"
-            v-model="metadata.catalog"
-            class="metadata-textbox"
-            placeholder="The name of the catalog"
-            @focus="$event.target.select()"
-            spellcheck="false"
-          /> -->
-
-          <AutoComplete
-            placeholder="The name of the catalog"
-            v-model="metadata.catalog"
-            :suggestions="items"
-            @complete="search"
-            completeOnFocus="true"
-          ></AutoComplete>
-
-          <!-- <select v-model="selectedOption">
-            <option value="" disabled selected hidden>Choose a Catalog</option>
-            <option v-for="option in options">
-              {{ option.name }}
-            </option>
-          </select>
-          <div class="validate"></div> -->
+      <div class="required">
+        <div class="metadata-element">
+          <h3>Catalog:</h3>
+          <div :class="{ 'metadata-input': true, required: !metadata.catalog }">
+            <AutoComplete
+              placeholder="The name of the catalog"
+              v-model="metadata.catalog"
+              :suggestions="items"
+              @complete="searchCatalogs"
+              :completeOnFocus="true"
+            ></AutoComplete>
+          </div>
+        </div>
+        <div class="metadata-element" v-if="latlng">
+          <h3>Dataset:</h3>
+          <div :class="{ 'metadata-input': true, required: !metadata.dataset }">
+            <AutoComplete
+              placeholder="The name of the dataset"
+              v-model="metadata.dataset"
+              :suggestions="items"
+              @complete="searchDatasets"
+              :completeOnFocus="true"
+            ></AutoComplete>
+          </div>
+        </div>
+        <div
+          v-for="(queryable, index) in queryables.filter((x) => x.required)"
+          :key="index"
+          class="metadata-element"
+        >
+          <h3>{{ queryable.q }}:</h3>
+          <div
+            :class="{
+              'metadata-input': true,
+              required: !metadata[queryable.q],
+            }"
+          >
+            <input
+              type="text"
+              v-model="metadata[queryable.q]"
+              class="metadata-textbox"
+              :placeholder="queryable.d"
+              @focus="$event.target.select()"
+              @input="queryable.v = false"
+              spellcheck="false"
+            />
+          </div>
         </div>
       </div>
-      <div
-        v-for="(queryable, index) in queryables"
-        :key="index"
-        class="metadata-element"
-      >
-        <h3 v-if="queryable.required">{{ queryable.q }}: *</h3>
-        <h3 v-else>{{ queryable.q }}:</h3>
-        <div class="metadata-input">
-          <input
-            type="text"
-            v-model="metadata[queryable.q]"
-            class="metadata-textbox"
-            :placeholder="queryable.d"
-            @focus="$event.target.select()"
-            @input="queryable.v = false"
-            spellcheck="false"
-          />
-          <button
-            :id="queryable.q"
-            class="validate"
-            @click="validateMetadata(queryable.q)"
-            :class="{ added: queryable.v }"
-            :disabled="queryable.q !== 'identifier' && !queryables[0].v"
-            v-show="queryable.q === 'identifier' || queryables[0].v"
-          >
-            {{ queryable.v ? "Validated" : "Validate" }}
-          </button>
+      <button @click="showOptional = !showOptional">Other metadatas</button>
+      <div v-if="showOptional" class="optional">
+        <div
+          v-for="(queryable, index) in queryables.filter((x) => !x.required)"
+          :key="index"
+          class="metadata-element"
+        >
+          <h3>{{ queryable.q }}:</h3>
+          <div class="metadata-input">
+            <input
+              type="text"
+              v-model="metadata[queryable.q]"
+              class="metadata-textbox"
+              :placeholder="queryable.d"
+              @focus="$event.target.select()"
+              @input="queryable.v = false"
+              spellcheck="false"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -85,6 +94,13 @@
     overflow: auto;
     flex: 1;
     padding: 0px 20px;
+    display: flex;
+    flex-direction: column;
+
+    .optional {
+      flex: 1;
+      overflow: auto;
+    }
   }
 
   .actions {
@@ -147,12 +163,11 @@ select {
 .metadata-input {
   display: flex;
   flex-direction: row;
-}
+  border-left: 2px solid transparent;
 
-.metadata-input > button:hover {
-  background-color: #1a202c;
-  color: white;
-  transition: background-color 0.3s ease;
+  &.required {
+    border-left: 2px solid #ef4444;
+  }
 }
 
 button {
@@ -196,14 +211,21 @@ button:hover {
 import { queryables } from "../services/constants";
 import { uploadGeo } from "../services/geo-upload";
 import AutoComplete from "primevue/autocomplete";
-import { getAllCatalogs } from "../services/geo";
+import { getAllCatalogs, addGeoFeature } from "../services/geo";
+import { getUsername } from "../services/login";
+import { getAllDatasetsFromCatalogName } from "../services/api-geo";
 
 export default {
+  emits: ["close"],
   components: {
     AutoComplete,
   },
   props: {
     file: File,
+    latlng: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
@@ -212,7 +234,20 @@ export default {
       options: [],
       selectedOption: "",
       items: [],
+      showOptional: false,
     };
+  },
+  watch: {
+    file() {
+      this.showOptional = false;
+      this.metadata = {
+        publisher: getUsername(),
+      };
+    },
+    latlng() {
+      this.showOptional = false;
+      this.metadata = { publisher: getUsername() };
+    },
   },
   methods: {
     onClickCancel() {
@@ -222,20 +257,57 @@ export default {
       if (!this.validateMetadatas()) {
         return;
       }
-      uploadGeo(this.file, this.metadata);
-      this.$emit("close");
+      if (this.file) {
+        uploadGeo(this.file, this.metadata);
+      } else if (this.latlng) {
+        const catalogName = this.metadata["catalog"];
+        const datasetName = this.metadata["dataset"];
+        const label = this.metadata["title"];
+
+        const metadata = {
+          ...this.metadata,
+        };
+
+        delete metadata["catalog"];
+        delete metadata["dataset"];
+        delete metadata["title"];
+
+        addGeoFeature(
+          this.latlng.lat,
+          this.latlng.lng,
+          label,
+          catalogName,
+          datasetName,
+          metadata
+        );
+      }
+      this.onClickCancel();
     },
     validateMetadatas() {
-      for (const { required, q } of this.queryables) {
+      for (const { required, q } of this.queryables.concat([
+        { required: true, q: "catalog" },
+        { required: this.latlng, q: "dataset" },
+      ])) {
         if (required && !this.metadata[q]) {
           return false;
         }
       }
       return true;
     },
-    search(event) {
+    searchCatalogs(event) {
+      this.items = [];
       this.items = getAllCatalogs()
         .map(({ label }) => label)
+        .filter((label) =>
+          label.toLowerCase().startsWith(event.query.toLowerCase())
+        );
+    },
+    async searchDatasets(event) {
+      this.items = [];
+      this.items = (
+        await getAllDatasetsFromCatalogName(this.metadata["catalog"])
+      )
+        .map(({ metadatas: { label } }) => label)
         .filter((label) =>
           label.toLowerCase().startsWith(event.query.toLowerCase())
         );

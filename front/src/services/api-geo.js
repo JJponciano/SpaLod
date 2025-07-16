@@ -14,6 +14,14 @@ export async function getAllDatasets(catalogId) {
   return getGeoData(result);
 }
 
+export async function getAllDatasetsFromCatalogName(catalogName) {
+  const result = await $fetch(
+    `api/geo/dataset/all?catalog_name=${encodeURIComponent(catalogName)}`
+  ).then((x) => x.json());
+
+  return getGeoData(result);
+}
+
 export async function getAllFeatures(datasetId) {
   const result = await $fetch(
     `api/geo/feature/all?dataset_id=${encodeURIComponent(datasetId)}`
@@ -59,6 +67,14 @@ export async function getCatalog(catalogId) {
 export async function getDataset(datasetId) {
   const result = await $fetch(
     `api/geo/dataset?id=${encodeURIComponent(datasetId)}`
+  ).then((x) => x.json());
+
+  return getGeoData(result);
+}
+
+export async function filterDataset(filterStr) {
+  const result = await $fetch(
+    `api/geo/dataset/filter?filter_str=${encodeURIComponent(filterStr)}`
   ).then((x) => x.json());
 
   return getGeoData(result);
@@ -131,14 +147,6 @@ export async function getGeoData(results) {
         itemRes.geo = /POINT\s*?\((-?[\d\.]+) (-?[\d\.]+)\)/i
           .exec(property)
           .slice(1);
-        // itemRes.geo = property.split(" ").map((x) =>
-        //   Number(
-        //     x
-        //       .trim()
-        //       .replace(/POINT\s*?\(/i, "")
-        //       .replace(")", "")
-        //   )
-        // );
       }
 
       itemRes.metadatas[header] = property;
@@ -187,6 +195,14 @@ export async function removeCatalog(id) {
   );
 }
 
+export async function deleteFeatureProperty(featureId, key, value) {
+  return $fetch(
+    `api/geo/generic/delete?s=${encodeURIComponent(
+      featureId
+    )}&p=${encodeURIComponent(key)}&o=${encodeURIComponent(value)}`
+  );
+}
+
 export async function updateFeature(id, key, value, needInsert = false) {
   const verb = needInsert ? "insert" : "update";
   return $fetch(
@@ -194,4 +210,26 @@ export async function updateFeature(id, key, value, needInsert = false) {
       id
     )}&key=${encodeURIComponent(key)}&value=${encodeURIComponent(value)}`
   ).then((x) => x.json());
+}
+
+export async function addFeature(
+  lat,
+  lng,
+  label,
+  catalogName,
+  datasetName,
+  metadata
+) {
+  let formData = new FormData();
+  formData.append("lat", lat);
+  formData.append("lng", lng);
+  formData.append("label", label);
+  formData.append("catalog_name", catalogName);
+  formData.append("dataset_name", datasetName);
+  formData.append("metadata", JSON.stringify(metadata));
+
+  return $fetch("/api/geo/feature/new", {
+    method: "POST",
+    body: formData,
+  }).then((x) => x.json());
 }

@@ -8,30 +8,63 @@
     >
       <table>
         <tr class="feature" v-for="item of feature.items">
-          <td class="title">{{ displayLastPortion(item.key) }}</td>
+          <td class="title">
+            <div v-if="!item.new">{{ displayLastPortion(item.key) }}</div>
+            <input v-else type="text" v-model="item.key" />
+          </td>
           <td>
-            <div
-              :id="'div-' + item.key"
-              v-if="!item.hasFocus"
-              @click="setItemInput(item)"
-            >
-              {{ item.value }}
+            <div style="display: flex">
+              <div
+                :id="'div-' + item.key"
+                v-if="!item.hasFocus && !item.new"
+                @click="setItemInput(item)"
+              >
+                {{ item.value }}
+              </div>
+              <input
+                v-else-if="!item.new"
+                :id="'btn-' + item.key"
+                type="text"
+                v-model="item.value"
+                @blur="item.hasFocus = false"
+                :style="getInputStyle()"
+                @input="changeProperty(item)"
+              />
+              <input v-else type="text" v-model="item.value" />
+              <button
+                style="margin-left: auto"
+                v-if="item.new"
+                @click="confirmAddProperty(item)"
+              >
+                ✔
+              </button>
             </div>
-            <input
-              v-else
-              :id="'btn-' + item.key"
-              type="text"
-              v-model="item.value"
-              @blur="item.hasFocus = false"
-              :style="getInputStyle()"
-              @input="changeObject(item)"
-            />
+          </td>
+          <td>
+            <button
+              v-if="
+                item.key !==
+                  'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' &&
+                item.key !==
+                  'http://www.opengis.net/ont/geosparql#hasGeometry' &&
+                item.key !== 'https://geovast3d.com/ontologies/spalod#hasOWL' &&
+                item.key !==
+                  'https://geovast3d.com/ontologies/spalod#hasFile' &&
+                item.key !==
+                  'http://www.opengis.net/ont/geosparql#hasFeatureCollection'
+              "
+              @click="deleteFeatureProperty(item)"
+            >
+              🗑
+            </button>
           </td>
         </tr>
       </table>
       <iframe v-if="pointcloudUrl" :src="pointcloudUrl"></iframe>
-      <div class="insert" v-if="showAddLabel()">
-        <button @click="addLabel()">Add Label</button>
+      <div class="insert">
+        <button v-if="showAddLabel()" @click="addLabel()">Add Label</button>
+        <button @click="addProperty()">Add Property</button>
+        <button @click="addFile()">Add File</button>
       </div>
       <div class="close"><button @click="closeFeature()">Close</button></div>
     </div>
@@ -42,6 +75,9 @@
       <div class="progress" :style="{ width: getProgressWidth() }"></div>
     </div>
   </div>
+  <button v-if="!addingFeature" @click="addFeature()" class="add-feature">
+    +
+  </button>
 </template>
 
 <style lang="scss">
@@ -111,6 +147,9 @@
     box-shadow: 0px 0px 10px 0px #a3a3a3;
     display: flex;
     flex-direction: column;
+    max-width: calc(100% - 20px);
+    max-height: calc(100% - 20px);
+    overflow: auto;
 
     &.has-pointcloud {
       width: calc(100% - 20px);
@@ -169,6 +208,22 @@
     margin-top: 20px;
   }
 }
+
+.add-feature {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  color: white;
+  font-size: 30px;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
+  box-shadow: 0px 0px 5px 0px #000000;
+}
 </style>
 
 <script>
@@ -179,9 +234,11 @@ import {
   subscribeFeatureClick,
   subscribeFeatureDoubleClick,
   updateFeature,
+  deleteFeatureProperty,
 } from "../services/geo";
 
 export default {
+  emits: ["addFeature"],
   data() {
     return {
       map: null,
@@ -193,6 +250,7 @@ export default {
       total: 0,
       actual: 0,
       inputMinWidth: 0,
+      addingFeature: false,
     };
   },
   methods: {
@@ -462,6 +520,15 @@ export default {
     },
 
     setItemInput(item) {
+      if (
+        item.key === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" ||
+        item.key === "http://www.opengis.net/ont/geosparql#hasGeometry" ||
+        item.key === "https://geovast3d.com/ontologies/spalod#hasOWL" ||
+        item.key === "https://geovast3d.com/ontologies/spalod#hasFile" ||
+        item.key === "http://www.opengis.net/ont/geosparql#hasFeatureCollection"
+      ) {
+        return;
+      }
       item.hasFocus = true;
       this.inputMinWidth = document.getElementById(
         `div-${item.key}`
@@ -477,7 +544,27 @@ export default {
       };
     },
 
-    changeObject(item) {
+    changeProperty(item) {
+      updateFeature(this.feature.id, item.key, item.value, item.new);
+      item.new = false;
+    },
+
+    deleteFeatureProperty(item) {
+      this.feature.items = this.feature.items.filter(
+        (x) => x.key !== item.key && x.value !== item.value
+      );
+      deleteFeatureProperty(this.feature.id, item.key, item.value);
+    },
+
+    addProperty() {
+      this.feature.items.push({
+        key: "",
+        value: "",
+        new: true,
+      });
+    },
+
+    confirmAddProperty(item) {
       updateFeature(this.feature.id, item.key, item.value, item.new);
       item.new = false;
     },
@@ -496,6 +583,56 @@ export default {
         value: "",
         new: true,
       });
+    },
+
+    addFeature() {
+      this.addingFeature = true;
+
+      const mapObj = L.circleMarker(new L.LatLng(0, 0), {
+        color: "#3388ff",
+      });
+      mapObj.addTo(this.map);
+
+      const mousemove = (event) => {
+        let lat = Math.round(event.latlng.lat * 100000) / 100000;
+        let lng = Math.round(event.latlng.lng * 100000) / 100000;
+
+        mapObj.setLatLng(new L.LatLng(lat, lng));
+      };
+
+      const click = (event) => {
+        let lat = Math.round(event.latlng.lat * 100000) / 100000;
+        let lng = Math.round(event.latlng.lng * 100000) / 100000;
+
+        mapObj.setLatLng(new L.LatLng(lat, lng));
+
+        this.$emit("addFeature", { lat, lng });
+
+        this.map.removeEventListener("mousemove", mousemove);
+        this.map.removeEventListener("click", click);
+        this.map.removeEventListener("contextmenu", contextmenu);
+
+        this.addingFeature = false;
+
+        setTimeout(() => {
+          mapObj.removeFrom(this.map);
+        }, 100);
+      };
+
+      const contextmenu = (event) => {
+        event.originalEvent.preventDefault();
+        mapObj.removeFrom(this.map);
+
+        this.map.removeEventListener("mousemove", mousemove);
+        this.map.removeEventListener("click", click);
+        this.map.removeEventListener("contextmenu", contextmenu);
+
+        this.addingFeature = false;
+      };
+
+      this.map.addEventListener("mousemove", mousemove);
+      this.map.addEventListener("click", click);
+      this.map.addEventListener("contextmenu", contextmenu);
     },
   },
   mounted() {

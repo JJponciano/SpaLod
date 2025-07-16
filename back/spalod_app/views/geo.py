@@ -41,15 +41,28 @@ class GeoGetDatasetOfCatalogView(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoGetDatasetOfCatalogView :::::::")
         catalog_id = request.query_params.get('catalog_id')
+        catalog_name = request.query_params.get('catalog_name')
         user_id = request.user.id
         graph_manager = GraphDBManager(user_id)
-        sparql_query=f"""
-            SELECT ?dataset ?label
-            WHERE {{ 
-                <{catalog_id}>  dcat:dataset ?dataset.
-                OPTIONAL {{ ?dataset rdfs:label ?label }} 
-            }}
-        """
+        
+        if catalog_id:
+            sparql_query=f"""
+                SELECT ?dataset ?label
+                WHERE {{ 
+                    <{catalog_id}>  dcat:dataset ?dataset.
+                    OPTIONAL {{ ?dataset rdfs:label ?label }} 
+                }}
+            """
+        else:
+            sparql_query=f"""
+                SELECT ?label
+                WHERE {{ 
+                    ?catalog a dcat:Catalog .
+                    ?catalog dcat:dataset ?dataset.
+                    OPTIONAL {{ ?dataset rdfs:label ?label }} 
+                    FILTER (str(?catalog) = "https://geovast3d.com/ontologies/spalod#{catalog_name}")
+                }}
+            """
         try:
             results = graph_manager.query_graphdb(sparql_query)
             return Response(results, status=status.HTTP_200_OK)
@@ -293,44 +306,7 @@ class GeoInsertFeatureItem(APIView):
             return Response(results, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-    
-# class GeoGetFeature_graphdb_only(APIView):
-#     def get(self, request, *args, **kwargs):
-#         print("::::::: GeoGetFeature :::::::")
-#         id = request.query_params.get('id')
-#         catalog_id = request.query_params.get('catalog_id')
 
-#         if catalog_id:
-#             # If catalog_id is provided, query within the specific graph.
-#             sparql_query = f"""     
-#                 select ?key ?value
-#                 where {{
-#                     GRAPH <{catalog_id}> {{ 
-#                         <{id}> ?key ?value .
-#                     }}
-#                 }}
-#             """
-#         else:
-#             # If catalog_id is not provided, query across all graphs.
-#             sparql_query = f"""     
-#                 select ?key ?value
-#                 where {{
-#                     <{id}> ?key ?value .
-#                 }}
-#             """
-
-#         sparql = SPARQLWrapper("http://localhost:7200/repositories/Spalod")
-#         self.spalod = Namespace("http://spalod/")
-#         sparql.setQuery(sparql_query)
-#         sparql.setReturnFormat(JSON)
-        
-#         try:
-#             results = sparql.query().convert()
-#             print(results)
-#             return Response(results, status=status.HTTP_200_OK)
-#         except Exception as e:
-#             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 class GeoRemoveID(APIView):
     def get(self, request, *args, **kwargs):
         print("::::::: GeoRemoveID :::::::")
@@ -593,7 +569,9 @@ class GeoFeatureNew(APIView):
             # Respond with success and return the new feature URI
             return Response({
                 'message': 'Feature successfully added.',
-                'feature_uri': str(feature_uri)
+                'feature_uri': str(feature_uri),
+                'catalog_uri': str(catalog_uri),
+                'dataset_uri': str(dataset_uri),
             }, status=status.HTTP_201_CREATED)
 
         except Exception as e:

@@ -3,10 +3,14 @@
     <UserActions @file-selected="onFileSelected"> </UserActions>
   </div>
   <div class="map-container">
-    <MapView></MapView>
+    <MapView @add-feature="onAddFeature"></MapView>
   </div>
-  <div class="metadatas-container" v-show="file">
-    <Metadatas :file="file" @close="file = null"></Metadatas>
+  <div class="metadatas-container" v-show="file || latlng">
+    <Metadatas
+      :file="file"
+      :latlng="latlng"
+      @close="(file = null), (latlng = null)"
+    ></Metadatas>
   </div>
 </template>
 
@@ -24,6 +28,7 @@ export default {
   data() {
     return {
       file: null,
+      latlng: null,
       chooseCSV: false,
       chooseJson: false,
       popup: false,
@@ -36,6 +41,9 @@ export default {
   methods: {
     onFileSelected(file) {
       this.file = file;
+    },
+    onAddFeature({ lat, lng }) {
+      this.latlng = { lat, lng };
     },
   },
 };
