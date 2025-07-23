@@ -17,10 +17,12 @@ import threading
 from io import BytesIO
 import requests
 import gzip
+import json, re, uuid
+from rdflib import URIRef, Literal, RDF
 
 from ..serializers import UploadedFileSerializer
 from ..utils.ontology_processor import OntologyProcessor
-from ..utils.GraphDBManager import add_ontology_to_graphdb
+from ..utils.GraphDBManager import add_pointcloud_to_dataset,add_dcterms_metadata_to_dataset,add_ontology_to_graphdb,process_owl_file,delete_ontology_entry,GraphDBManager,NS,initialize_dataset_structure,create_feature_with_geometry,get_or_create_feature_collection_uri
 
 MAX_CHUNK_SIZE = 50 * 1024 * 1024 
 
@@ -55,14 +57,22 @@ class FileUploadView(APIView):
 
             ontology_url = f'/media/uploads/{file_uuid}/{file_uuid}_ontology.owl'
             original_url = f'/media/uploads/{file_uuid}/{file_uuid}{file_extension}'
+            
             # Save the file to the constructed path
             with open(original_file_path, 'wb') as destination:
                 for chunk in file.chunks():
                     destination.write(chunk)
             try:
                 print("[INFO] Read Metadata")
+                catalog_name = self.metadata.get("catalog")
+                dataset_name = self.metadata.get("title")
+                # Normalize catalog and dataset names to make valid URIs (replace spaces, dots, dashes)
+                catalog_name = re.sub(r"[ .-]", "_", catalog_name)
+                dataset_name = re.sub(r"[ .-]", "_", dataset_name)
+                catalog_uri, dataset_uri = initialize_dataset_structure(user_id,catalog_name,dataset_name)
+                triples_added = add_dcterms_metadata_to_dataset(user_id,dataset_uri,metadata)
+                print(f"✅ Added {len(triples_added)} DCTERMS metadata triples.")
                 processor = OntologyProcessor(file_uuid, ontology_url, original_url,metadata,user_id)
-
                 ## POINT CLOUD 
                 if file_extension.endswith('las') or file_extension.endswith('laz') or file_extension.endswith('xyz') or file_extension.endswith('ply')or file_extension.endswith('pcd'):
                     print("[INFO] Pointcloud detected !")
@@ -72,11 +82,8 @@ class FileUploadView(APIView):
                         daemon=True,
                     )
                     t.start()
-                    processor.add_pointcloud(
-                        file_path,
-                        file.flyvast_pointcloud["pointcloud_id"],
-                        file.flyvast_pointcloud["pointcloud_uuid"]
-                    )
+                    result = add_pointcloud_to_dataset(user_id,  dataset_uri,file_path,original_url,file.flyvast_pointcloud["pointcloud_id"],file.flyvast_pointcloud["pointcloud_uuid"])
+
                 else:
                     print("[INFO] Starting processing file ")
                     processor.process(file_path)

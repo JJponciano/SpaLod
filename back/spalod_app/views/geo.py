@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rdflib import Graph, URIRef, Literal, Namespace, XSD
-from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager,NS,initialize_dataset_structure,create_feature_with_geometry
+from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager,NS,initialize_dataset_structure,create_feature_with_geometry,get_or_create_feature_collection_uri
 from  .sparql_query import SparqlQueryAPIView
 from ..serializers import SparqlQuerySerializer
 import json, re, uuid
@@ -498,7 +498,9 @@ class GeoFeatureNew(APIView):
             catalog_name = re.sub(r"[ .-]", "_", catalog_name)
             dataset_name = re.sub(r"[ .-]", "_", dataset_name)
 
-            catalog_uri, dataset_uri, feature_collection_uri = initialize_dataset_structure(user_id,catalog_name,dataset_name)
+            catalog_uri, dataset_uri = initialize_dataset_structure(user_id,catalog_name,dataset_name)
+            feature_collection_uri = get_or_create_feature_collection_uri(user_id, dataset_uri)
+
             result = create_feature_with_geometry(user_id, feature_collection_uri, label, wkt, metadata)
             print("✅ Feature created:")
             print("Feature URI:", result["feature_uri"])

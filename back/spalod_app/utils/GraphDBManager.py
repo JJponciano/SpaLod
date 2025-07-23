@@ -1,15 +1,21 @@
 from SPARQLWrapper import SPARQLWrapper, POST
 import rdflib
-from rdflib import Graph
+from rdflib import XSD, Graph
 import os
 from django.conf import settings
 from tqdm import tqdm
 from SPARQLWrapper import SPARQLWrapper, JSON, POST, GET,POSTDIRECTLY,SPARQLExceptions
-from rdflib import URIRef, Literal, RDF,Namespace
 from rdflib.namespace import  RDFS, OWL
-
-from rdflib import URIRef, Literal, Graph
+import pyproj
+import laspy
+import pydeck as pdk
+from rdflib import URIRef, Literal, Graph, RDF,Namespace
 from rdflib.namespace import RDF
+from shapely.geometry import Polygon
+from shapely.ops import transform
+import numpy as np
+import json, re, uuid
+
         # Define namespaces, including standard RDF, RDFS, OWL, etc.
 NS = {
             "RDF": Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
@@ -744,10 +750,29 @@ def initialize_dataset_structure(user_id, catalog_name, dataset_name):
         dataset_graph.add((dataset_uri, NS["RDFS"].label, Literal(dataset_name)))
         graph_manager.add_graph(dataset_graph)
 
-    # Create feature collection URI
+
+    return catalog_uri, dataset_uri
+def get_or_create_feature_collection_uri(user_id, dataset_uri):
+    """
+    Ensures that the given dataset has a linked FeatureCollection.
+    If not, creates the triple and returns the FeatureCollection URI.
+
+    Args:
+        user_id (str): The ID used to initialize the GraphDBManager.
+        dataset_uri (str or URIRef): The URI of the dataset.
+
+    Returns:
+        URIRef: The URI of the associated FeatureCollection.
+    """
+    try:
+        graph_manager = GraphDBManager(user_id)
+    except Exception as e:
+        raise RuntimeError(f"GraphDB initialization failed: {str(e)}")
+
+    dataset_uri = URIRef(dataset_uri)
     feature_collection_uri = URIRef(f"{dataset_uri}/collection")
 
-    # Ensure feature collection is linked to dataset
+    # Check if dataset → FeatureCollection link exists
     check_fc_query = f"""
     ASK {{
         <{dataset_uri}> <{NS["GEOSPARQL"].hasFeatureCollection}> <{feature_collection_uri}> .
@@ -759,7 +784,7 @@ def initialize_dataset_structure(user_id, catalog_name, dataset_name):
         fc_graph.add((feature_collection_uri, RDF.type, NS["GEOSPARQL"].FeatureCollection))
         graph_manager.add_graph(fc_graph)
 
-    return catalog_uri, dataset_uri, feature_collection_uri
+    return feature_collection_uri
 
 def create_feature_with_geometry(user_id, feature_collection_uri, label, wkt, metadata=None):
     """
@@ -816,3 +841,144 @@ def create_feature_with_geometry(user_id, feature_collection_uri, label, wkt, me
         'feature_uri': str(feature_uri),
         'geometry_uri': str(geometry_uri)
     }
+
+def add_dcterms_metadata_to_dataset(user_id, dataset_uri, metadata, excluded_keys=None):
+    """
+    Initializes GraphDBManager and adds DCTERMS metadata triples to a dataset,
+    excluding specified keys.
+
+    Args:
+        user_id (str): The ID used to initialize GraphDBManager.
+        dataset_uri (str or URIRef): The URI of the dataset.
+        metadata (dict): Metadata dictionary with DCTERMS keys and literal values.
+        excluded_keys (list, optional): List of keys to exclude (default: ["catalog", "title"]).
+
+    Returns:
+        list: List of inserted RDF triples.
+    
+    Raises:
+        RuntimeError: If GraphDBManager initialization fails.
+    """
+    if excluded_keys is None:
+        excluded_keys = ["catalog", "title"]
+
+    try:
+        graph_manager = GraphDBManager(user_id)
+    except Exception as e:
+        raise RuntimeError(f"GraphDB initialization failed: {str(e)}")
+
+    dataset_uri = URIRef(dataset_uri)
+    dataset_data = []
+
+    for key, value in metadata.items():
+        if key not in excluded_keys:
+            predicate = NS["DCTERMS"][key]
+            dataset_data.append((dataset_uri, predicate, Literal(value)))
+
+    for triple in dataset_data:
+        graph_manager.graph.add(triple)
+
+    graph_manager.upload_to_graphdb(dataset_data)
+    return dataset_data
+
+
+def add_pointcloud_to_dataset(user_id, dataset_uri, file_path, file_url, pointcloud_id, pointcloud_uuid):
+    """
+    Adds a point cloud as a feature to the dataset's FeatureCollection,
+    generates its geometry, links metadata, and registers the file URL.
+
+    Args:
+        user_id (str): The user ID for GraphDBManager initialization.
+        dataset_uri (str or URIRef): The dataset to which the point cloud belongs.
+        file_path (str): Local path to the file used to compute WKT geometry.
+        file_url (str): Public URL of the uploaded file (e.g., "/uploads/pointclouds/model.ply").
+        pointcloud_id (str): Human-readable ID for the point cloud.
+        pointcloud_uuid (str): UUID used to create the point cloud URI.
+
+    Returns:
+        dict: {
+            'feature_uri': str,
+            'pointcloud_uri': str,
+            'geometry_uri': str
+        }
+
+    Raises:
+        RuntimeError: If GraphDBManager or WKT generation fails.
+    """
+    try:
+        graph_manager = GraphDBManager(user_id)
+    except Exception as e:
+        raise RuntimeError(f"GraphDB initialization failed: {str(e)}")
+
+    # Ensure feature collection exists
+    feature_collection_uri = get_or_create_feature_collection_uri(user_id, dataset_uri)
+
+    # Generate URIs
+    random_uuid = uuid.uuid4()
+    feature_uri = URIRef(f"{feature_collection_uri}/feature/{random_uuid}")
+    geometry_uri = URIRef(f"{feature_uri}/geom")
+    pointcloud_uri = URIRef(f"{NS['SPALOD']}{pointcloud_uuid}")
+    dataset_uri = URIRef(dataset_uri)
+    file_uri = URIRef(f"https://spalod.geovast3d.com{file_url}")  # Ensure it’s a proper URI
+
+    # Compute WKT geometry
+    try:
+        wkt_string = graph_manager.get_wkt_polygon(file_path)
+    except Exception as e:
+        raise RuntimeError(f"Failed to generate WKT from file '{file_path}': {str(e)}")
+
+    wkt_literal = Literal(wkt_string, datatype=NS["GEOSPARQL"].wktLiteral)
+
+    # Build RDF triples
+    triples = [
+        # Pointcloud metadata
+        (pointcloud_uri, RDF.type, NS['SPALOD'].Pointcloud),
+        (pointcloud_uri, NS['SPALOD'].pointcloud_id, Literal(pointcloud_id, datatype=XSD.string)),
+        (pointcloud_uri, NS['SPALOD'].pointcloud_uuid, Literal(pointcloud_uuid, datatype=XSD.string)),
+
+        # Link feature to pointcloud
+        (feature_uri, NS['SPALOD'].hasPointcloud, pointcloud_uri),
+        (feature_uri, RDF.type, NS["GEOSPARQL"].Feature),
+        (feature_uri, NS["GEOSPARQL"].hasGeometry, geometry_uri),
+
+        # Link feature to feature collection
+        (feature_collection_uri, NS["GEOSPARQL"].hasFeature, feature_uri),
+
+        # Geometry
+        (geometry_uri, RDF.type, NS["GEOSPARQL"].Geometry),
+        (geometry_uri, NS["GEOSPARQL"].asWKT, wkt_literal),
+
+        # Link dataset to downloadable file
+        (dataset_uri, NS['SPALOD'].hasFile, file_uri)
+    ]
+
+    for triple in triples:
+        graph_manager.graph.add(triple)
+
+    graph_manager.upload_to_graphdb(triples)
+
+    return {
+        'feature_uri': str(feature_uri),
+        'pointcloud_uri': str(pointcloud_uri),
+        'geometry_uri': str(geometry_uri)
+    }
+
+
+def get_wkt_polygon(file_path, utm_zone=32, northern_hemisphere=True):
+        """Generates a WKT polygon from a LAS file, transforming coordinates to WGS84."""
+        with laspy.open(file_path) as las:
+            point_data = las.read()
+
+        x_coords = point_data.x
+        y_coords = point_data.y
+
+        # Create a convex hull
+        points = np.vstack((x_coords, y_coords)).T
+        hull = Polygon(points).convex_hull
+
+        # Transform to WGS84
+        utm_crs = f"epsg:326{utm_zone}" if northern_hemisphere else f"epsg:327{utm_zone}"
+        project = pyproj.Transformer.from_crs(utm_crs, "epsg:4326", always_xy=True).transform
+        hull_latlon = transform(project, hull)
+
+        return hull_latlon.wkt

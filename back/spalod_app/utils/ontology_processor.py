@@ -49,7 +49,7 @@ class OntologyProcessor:
         self.file_url = file_url
         self.metadata = metadata
         self.graph_iri = f"https://geovast3d.com/ontologies/spalod#graph_{user_id}"
-
+        
         # Generate URIs as class attributes
         catalog_name = self.metadata.get("catalog")
         catalog_name = re.sub(r"[ .-]", "_", catalog_name)
