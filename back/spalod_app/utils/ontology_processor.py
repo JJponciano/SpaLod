@@ -226,12 +226,12 @@ class OntologyProcessor:
         feature_uri = URIRef(NS['SPALOD'][f"feature{random_uuid}"])
         geom_uri = URIRef(NS['SPALOD'][f"geom{random_uuid}"])
         pointcloud_uri = URIRef(NS['SPALOD'][pointcloud_uuid])
-        print(f"[INFO] creation of pointcloud_uri {pointcloud_uri}")
+        # print(f"[INFO] creation of pointcloud_uri {pointcloud_uri}")
 
         # Add data to ontology
         wkt_string = self.get_wkt_polygon(file_path)
         geom_literal = Literal(wkt_string, datatype=NS["GEOSPARQL"].asWKT)
-        print(f"[INFO] creation of wkt polygon {wkt_string}")
+        # print(f"[INFO] creation of wkt polygon {wkt_string}")
 
         triples = [
             (pointcloud_uri, RDF.type, NS['SPALOD'].Pointcloud),
@@ -248,7 +248,7 @@ class OntologyProcessor:
             self.graph.add(triple)
 
         self.upload_to_graphdb(triples)
-        print(f"[INFO] {triples}")
+        # print(f"[INFO] {triples}")
 
 
     def format_time(self, seconds):

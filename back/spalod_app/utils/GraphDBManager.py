@@ -8,6 +8,8 @@ from SPARQLWrapper import SPARQLWrapper, JSON, POST, GET,POSTDIRECTLY,SPARQLExce
 from rdflib import URIRef, Literal, RDF,Namespace
 from rdflib.namespace import  RDFS, OWL
 
+from rdflib import URIRef, Literal, Graph
+from rdflib.namespace import RDF
         # Define namespaces, including standard RDF, RDFS, OWL, etc.
 NS = {
             "RDF": Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
@@ -699,3 +701,62 @@ class GraphDBManager:
         except Exception as e:
             print(f"[ERROR] Failed to add file to dataset: {e}")
             raise
+
+
+def initialize_dataset_structure(user_id, catalog_name, dataset_name):
+    """
+    Initializes catalog, dataset, and feature collection in the triple store
+    if they do not already exist. Returns their URIs.
+
+    Args:
+        user_id (str): The ID of the user (used to initialize GraphDBManager).
+        catalog_name (str): The name of the catalog.
+        dataset_name (str): The name of the dataset.
+
+    Returns:
+        tuple: (catalog_uri, dataset_uri, feature_collection_uri)
+    """
+    # Initialize the GraphDB manager for the user
+    graph_manager = GraphDBManager(user_id)
+
+    # Create or retrieve catalog
+    if not graph_manager.catalog_exists(catalog_name):
+        catalog_uri = graph_manager.create_catalog(catalog_name)
+    else:
+        catalog_uri = URIRef(f"{NS['SPALOD']}{catalog_name}")
+
+    # Create or retrieve dataset
+    if not graph_manager.dataset_exists(dataset_name):
+        dataset_uri = graph_manager.create_dataset(dataset_name, catalog_uri)
+    else:
+        dataset_uri = URIRef(f"{NS['SPALOD']}{dataset_name}")
+
+    # Ensure dataset is linked to catalog
+    check_dataset_query = f"""
+    ASK {{
+        <{catalog_uri}> <{NS["DCAT"].dataset}> <{dataset_uri}> .
+    }}
+    """
+    if not graph_manager.query_graphdb(check_dataset_query)['boolean']:
+        dataset_graph = Graph()
+        dataset_graph.add((catalog_uri, NS["DCAT"].dataset, dataset_uri))
+        dataset_graph.add((dataset_uri, RDF.type, NS["DCAT"].Dataset))
+        dataset_graph.add((dataset_uri, NS["RDFS"].label, Literal(dataset_name)))
+        graph_manager.add_graph(dataset_graph)
+
+    # Create feature collection URI
+    feature_collection_uri = URIRef(f"{dataset_uri}/collection")
+
+    # Ensure feature collection is linked to dataset
+    check_fc_query = f"""
+    ASK {{
+        <{dataset_uri}> <{NS["GEOSPARQL"].hasFeatureCollection}> <{feature_collection_uri}> .
+    }}
+    """
+    if not graph_manager.query_graphdb(check_fc_query)['boolean']:
+        fc_graph = Graph()
+        fc_graph.add((dataset_uri, NS["GEOSPARQL"].hasFeatureCollection, feature_collection_uri))
+        fc_graph.add((feature_collection_uri, RDF.type, NS["GEOSPARQL"].FeatureCollection))
+        graph_manager.add_graph(fc_graph)
+
+    return catalog_uri, dataset_uri, feature_collection_uri

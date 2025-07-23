@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rdflib import Graph, URIRef, Literal, Namespace, XSD
-from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager,NS
+from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager,NS,initialize_dataset_structure
 from  .sparql_query import SparqlQueryAPIView
 from ..serializers import SparqlQuerySerializer
 import json, re, uuid
@@ -245,10 +245,11 @@ class GeoGetFeatureWKT(APIView):
     
 class GeoGetItem(APIView):
     def get(self, request, *args, **kwargs):
-        print("::::::: GeoGetFeature :::::::")
+        print("::::::: GeoGetItem :::::::")
         
         id = request.query_params.get('id')
-        
+        print(f"[INFO] ID:{id}")
+
         sparql_query = f"""     
              SELECT ?key ?value ?label WHERE {{
                 <{id}> ?key ?value . 
@@ -256,6 +257,7 @@ class GeoGetItem(APIView):
 
             }}
         """
+        print(f"[INFO]{sparql_query}")
         try:
             user_id = request.user.id
             graph_manager = GraphDBManager(user_id)
@@ -487,6 +489,8 @@ class GeoFeatureNew(APIView):
             lng = float(lng)
         except ValueError:
             return Response({'error': 'Invalid coordinates.'}, status=status.HTTP_400_BAD_REQUEST)
+        # Create WKT representation of the geometry
+        point_wkt = f"POINT({lng} {lat})"
 
         # Initialize the GraphDB manager for SPARQL communication
         try:
@@ -499,54 +503,12 @@ class GeoFeatureNew(APIView):
             catalog_name = re.sub(r"[ .-]", "_", catalog_name)
             dataset_name = re.sub(r"[ .-]", "_", dataset_name)
 
-            # Initialize the GraphDB manager for the user
-            graph_manager = GraphDBManager(user_id)
-            # Build  catalog and dataset
-            if not graph_manager.catalog_exists(catalog_name):
-                catalog_uri=graph_manager.create_catalog(catalog_name)
-            else:
-                catalog_uri = URIRef(f"{NS['SPALOD']}{catalog_name}")
-            if not graph_manager.dataset_exists(dataset_name):
-               dataset_uri= graph_manager.create_dataset(dataset_name,catalog_uri)
-            else:
-                dataset_uri = URIRef(f"{NS['SPALOD']}{dataset_name}")
-            # Check if the dataset triple exists (catalog dcat:dataset dataset)
-            check_dataset_query = f"""
-            ASK {{
-                <{catalog_uri}> <{NS["DCAT"].dataset}> <{dataset_uri}> .
-            }}
-            """
-            if not graph_manager.query_graphdb(check_dataset_query)['boolean']:
-                # If not, create the catalog → dataset triple and dataset metadata
-                dataset_graph = Graph()
-                dataset_graph.add((catalog_uri, NS["DCAT"].dataset, dataset_uri))
-                dataset_graph.add((dataset_uri, RDF.type, NS["DCAT"].Dataset))
-                dataset_graph.add((dataset_uri, NS["RDFS"].label, Literal(dataset_name)))
-                graph_manager.add_graph(dataset_graph)
-
-            # Define the feature collection URI for this dataset
-            feature_collection_uri = URIRef(f"{dataset_uri}/collection")
-
-            # Check if the dataset has a linked feature collection
-            check_fc_query = f"""
-            ASK {{
-                <{dataset_uri}> <{NS["GEOSPARQL"].hasFeatureCollection}> <{feature_collection_uri}> .
-            }}
-            """
-            if not graph_manager.query_graphdb(check_fc_query)['boolean']:
-                # Create and link the feature collection if missing
-                fc_graph =  Graph() 
-                fc_graph.add((dataset_uri, NS["GEOSPARQL"].hasFeatureCollection, feature_collection_uri))
-                fc_graph.add((feature_collection_uri, RDF.type, NS["GEOSPARQL"].FeatureCollection))
-                graph_manager.add_graph(fc_graph)
+            catalog_uri, dataset_uri, feature_collection_uri = initialize_dataset_structure(user_id,catalog_name,dataset_name)
 
             # Generate a unique URI for the new feature
             feature_id = str(uuid.uuid4())
             feature_uri = URIRef(f"{feature_collection_uri}/feature/{feature_id}")
             geometry_uri = URIRef(f"{feature_uri}/geom")
-
-            # Create WKT representation of the geometry
-            point_wkt = f"POINT({lng} {lat})"
 
             # Create RDF triples for the new feature
             feature_graph = Graph()

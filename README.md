@@ -264,3 +264,8 @@ curl -X POST http://127.0.0.1:8000/api/geo/feature/add/file \
 -F "feature_id=https://geovast3d.com/ontologies/spalod#Test_Dataset/collection/feature/00df4906-c3f6-48d9-85cd-f34389eb1741" \
 -F "file=@/Users/jean-jacquesponciano/Downloads/model.glb"
 ```
+
+### Get features properties
+ curl -X GET \
+"http://127.0.0.1:8000/api/geo/feature?id=https://geovast3d.com/ontologies/spalod#3de4eb5f-71d6-410e-b3d4-20b103417a74" \
+-H "Authorization: Token b9208365e4bbd3500888a6deb7dcb3e6d05c05a3"
