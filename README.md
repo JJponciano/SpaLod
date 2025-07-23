@@ -265,7 +265,18 @@ curl -X POST http://127.0.0.1:8000/api/geo/feature/add/file \
 -F "file=@/Users/jean-jacquesponciano/Downloads/model.glb"
 ```
 
-### Get features properties
- curl -X GET \
-"http://127.0.0.1:8000/api/geo/feature?id=https://geovast3d.com/ontologies/spalod#3de4eb5f-71d6-410e-b3d4-20b103417a74" \
+---
+
+### 🔍 Get Feature Properties
+
+You can retrieve all RDF properties linked to a specific feature using the API.
+
+**Request:**
+
+```bash
+curl -X GET \
+"http://127.0.0.1:8000/api/geo/feature?id=https://geovast3d.com/ontologies/spalod%233de4eb5f-71d6-410e-b3d4-20b103417a74" \
 -H "Authorization: Token b9208365e4bbd3500888a6deb7dcb3e6d05c05a3"
+```
+
+> 📝 Note: Ensure that the feature URI is URL-encoded (`#` → `%23`).
