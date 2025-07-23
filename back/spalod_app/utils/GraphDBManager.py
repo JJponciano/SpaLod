@@ -442,7 +442,13 @@ class GraphDBManager:
             self.sparql.setQuery(select_query)
             self.sparql.setReturnFormat(JSON)
             response = self.sparql.query().convert()
-            res_type=response.get("results", {}).get("bindings", [])['type']['value']
+            bindings = response.get("results", {}).get("bindings", [])
+            if not bindings:
+                print("⚠️ No type found for the target URI.")
+                return
+
+            res_type = bindings[0].get("type", {}).get("value", None)
+            print(res_type)
             print(res_type)
             # FOR A DATASET
             queries=[
