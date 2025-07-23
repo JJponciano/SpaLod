@@ -760,3 +760,59 @@ def initialize_dataset_structure(user_id, catalog_name, dataset_name):
         graph_manager.add_graph(fc_graph)
 
     return catalog_uri, dataset_uri, feature_collection_uri
+
+def create_feature_with_geometry(user_id, feature_collection_uri, label, wkt, metadata=None):
+    """
+    Creates a new feature with geometry and optional metadata inside a feature collection.
+
+    Args:
+        user_id (str): User ID for initializing GraphDBManager.
+        feature_collection_uri (str or URIRef): URI of the FeatureCollection.
+        label (str): Label for the new feature.
+        wkt (str): Geometry as WKT (e.g., POINT, POLYGON, LINESTRING).
+        metadata (dict, optional): Additional metadata as {predicate URI: literal value}.
+
+    Returns:
+        dict: {
+            'feature_uri': str,
+            'geometry_uri': str
+        }
+
+    Raises:
+        RuntimeError: if GraphDBManager initialization fails.
+    """
+    from rdflib import URIRef, Literal, Graph
+    from rdflib.namespace import RDF
+    import uuid
+
+    try:
+        graph_manager = GraphDBManager(user_id)
+    except Exception as e:
+        raise RuntimeError(f"GraphDB initialization failed: {str(e)}")
+
+    # Generate URIs
+    feature_id = str(uuid.uuid4())
+    feature_uri = URIRef(f"{feature_collection_uri}/feature/{feature_id}")
+    geometry_uri = URIRef(f"{feature_uri}/geom")
+
+    # Create triples
+    feature_graph = Graph()
+    feature_graph.add((URIRef(feature_collection_uri), NS["GEOSPARQL"].hasFeature, feature_uri))
+    feature_graph.add((feature_uri, RDF.type, NS["GEOSPARQL"].Feature))
+    feature_graph.add((feature_uri, NS["RDFS"].label, Literal(label)))
+    feature_graph.add((feature_uri, NS["GEOSPARQL"].hasGeometry, geometry_uri))
+    feature_graph.add((geometry_uri, RDF.type, NS["GEOSPARQL"].Geometry))
+    feature_graph.add((geometry_uri, NS["GEOSPARQL"].asWKT, Literal(wkt, datatype=NS["GEOSPARQL"].wktLiteral)))
+
+    # Optional metadata
+    if isinstance(metadata, dict):
+        for key, value in metadata.items():
+            feature_graph.add((feature_uri, URIRef(key), Literal(value)))
+
+    # Upload to GraphDB
+    graph_manager.add_graph(feature_graph)
+
+    return {
+        'feature_uri': str(feature_uri),
+        'geometry_uri': str(geometry_uri)
+    }

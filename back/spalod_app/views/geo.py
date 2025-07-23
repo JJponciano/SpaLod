@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rdflib import Graph, URIRef, Literal, Namespace, XSD
-from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager,NS,initialize_dataset_structure
+from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager,NS,initialize_dataset_structure,create_feature_with_geometry
 from  .sparql_query import SparqlQueryAPIView
 from ..serializers import SparqlQuerySerializer
 import json, re, uuid
@@ -490,48 +490,25 @@ class GeoFeatureNew(APIView):
         except ValueError:
             return Response({'error': 'Invalid coordinates.'}, status=status.HTTP_400_BAD_REQUEST)
         # Create WKT representation of the geometry
-        point_wkt = f"POINT({lng} {lat})"
+        wkt = f"POINT({lng} {lat})"
 
-        # Initialize the GraphDB manager for SPARQL communication
-        try:
-            graph_manager = GraphDBManager(user_id)
-        except Exception as e:
-            return Response({'error': f'GraphDB initialization failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+       
         try:
             # Normalize catalog and dataset names to make valid URIs (replace spaces, dots, dashes)
             catalog_name = re.sub(r"[ .-]", "_", catalog_name)
             dataset_name = re.sub(r"[ .-]", "_", dataset_name)
 
             catalog_uri, dataset_uri, feature_collection_uri = initialize_dataset_structure(user_id,catalog_name,dataset_name)
+            result = create_feature_with_geometry(user_id, feature_collection_uri, label, wkt, metadata)
+            print("✅ Feature created:")
+            print("Feature URI:", result["feature_uri"])
+            print("Geometry URI:", result["geometry_uri"])
 
-            # Generate a unique URI for the new feature
-            feature_id = str(uuid.uuid4())
-            feature_uri = URIRef(f"{feature_collection_uri}/feature/{feature_id}")
-            geometry_uri = URIRef(f"{feature_uri}/geom")
-
-            # Create RDF triples for the new feature
-            feature_graph = Graph()
-            feature_graph.add((feature_collection_uri, NS["GEOSPARQL"].hasFeature, feature_uri))
-            feature_graph.add((feature_uri, RDF.type, NS["GEOSPARQL"].Feature))
-            feature_graph.add((feature_uri, NS["RDFS"].label, Literal(label)))
-            feature_graph.add((feature_uri, NS["GEOSPARQL"].hasGeometry, geometry_uri))
-            feature_graph.add((geometry_uri, RDF.type, NS["GEOSPARQL"].Geometry))
-            feature_graph.add((geometry_uri, NS["GEOSPARQL"].asWKT, Literal(point_wkt, datatype=NS["GEOSPARQL"].wktLiteral)))
-
-            # If metadata is passed, add it as RDF properties on the feature
-            if isinstance(metadata, dict):
-                for key, value in metadata.items():
-                    # Assumes `key` is a valid full URI (e.g., DCTERMS.creator)
-                    feature_graph.add((feature_uri, URIRef(key), Literal(value)))
-
-            # Upload all triples to GraphDB
-            graph_manager.add_graph(feature_graph)
 
             # Respond with success and return the new feature URI
             return Response({
                 'message': 'Feature successfully added.',
-                'feature_uri': str(feature_uri),
+                'feature_uri': str(result["feature_uri"]),
                 'catalog_uri': str(catalog_uri),
                 'dataset_uri': str(dataset_uri),
             }, status=status.HTTP_201_CREATED)
