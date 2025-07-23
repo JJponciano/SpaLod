@@ -2,7 +2,6 @@ import os
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from SPARQLWrapper import SPARQLWrapper, JSON
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,13 +9,11 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rdflib import Graph, URIRef, Literal, Namespace, XSD
-from ..utils.GraphDBManager import process_owl_file,delete_ontology_entry,GraphDBManager,NS,initialize_dataset_structure,create_feature_with_geometry,get_or_create_feature_collection_uri
-from  .sparql_query import SparqlQueryAPIView
-from ..serializers import SparqlQuerySerializer
-import json, re, uuid
+from rdflib import URIRef
+from ..utils.GraphDBManager import GraphDBManager,NS
+import re, uuid
 
-from rdflib import URIRef, Literal, Namespace, RDF, Graph
+from rdflib import URIRef
 
 class GeoGetAllCatalogsView(APIView):
     def get(self, request, *args, **kwargs):
@@ -497,11 +494,11 @@ class GeoFeatureNew(APIView):
             # Normalize catalog and dataset names to make valid URIs (replace spaces, dots, dashes)
             catalog_name = re.sub(r"[ .-]", "_", catalog_name)
             dataset_name = re.sub(r"[ .-]", "_", dataset_name)
+            graph_manager = GraphDBManager(user_id)
+            catalog_uri, dataset_uri = graph_manager.initialize_dataset_structure(catalog_name,dataset_name)
+            feature_collection_uri = graph_manager.get_or_create_feature_collection_uri(dataset_uri)
 
-            catalog_uri, dataset_uri = initialize_dataset_structure(user_id,catalog_name,dataset_name)
-            feature_collection_uri = get_or_create_feature_collection_uri(user_id, dataset_uri)
-
-            result = create_feature_with_geometry(user_id, feature_collection_uri, label, wkt, metadata)
+            result =  graph_manager.create_feature_with_geometry(feature_collection_uri, label, wkt, metadata)
             print("✅ Feature created:")
             print("Feature URI:", result["feature_uri"])
             print("Geometry URI:", result["geometry_uri"])

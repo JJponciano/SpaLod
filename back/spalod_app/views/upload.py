@@ -12,17 +12,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
-from rdflib.namespace import Namespace # type: ignore
 import threading
-from io import BytesIO
 import requests
 import gzip
 import json, re, uuid
-from rdflib import URIRef, Literal, RDF
 
 from ..serializers import UploadedFileSerializer
-from ..utils.ontology_processor import OntologyProcessor
-from ..utils.GraphDBManager import add_pointcloud_to_dataset,add_dcterms_metadata_to_dataset,add_ontology_to_graphdb,process_owl_file,delete_ontology_entry,GraphDBManager,NS,initialize_dataset_structure,create_feature_with_geometry,get_or_create_feature_collection_uri
+from ..utils.GraphDBManager import validate_geojson_file,GraphDBManager
 
 MAX_CHUNK_SIZE = 50 * 1024 * 1024 
 
@@ -64,15 +60,17 @@ class FileUploadView(APIView):
                     destination.write(chunk)
             try:
                 print("[INFO] Read Metadata")
-                catalog_name = self.metadata.get("catalog")
-                dataset_name = self.metadata.get("title")
+                catalog_name = metadata.get("catalog")
+                dataset_name = metadata.get("title")
                 # Normalize catalog and dataset names to make valid URIs (replace spaces, dots, dashes)
                 catalog_name = re.sub(r"[ .-]", "_", catalog_name)
                 dataset_name = re.sub(r"[ .-]", "_", dataset_name)
-                catalog_uri, dataset_uri = initialize_dataset_structure(user_id,catalog_name,dataset_name)
-                triples_added = add_dcterms_metadata_to_dataset(user_id,dataset_uri,metadata)
+                graph_manager = GraphDBManager(user_id)
+
+                catalog_uri, dataset_uri = graph_manager.initialize_dataset_structure(catalog_name,dataset_name)
+                triples_added = graph_manager.add_dcterms_metadata_to_dataset(dataset_uri,metadata)
                 print(f"✅ Added {len(triples_added)} DCTERMS metadata triples.")
-                processor = OntologyProcessor(file_uuid, ontology_url, original_url,metadata,user_id)
+                # processor = OntologyProcessor(file_uuid, ontology_url, original_url,metadata,user_id)
                 ## POINT CLOUD 
                 if file_extension.endswith('las') or file_extension.endswith('laz') or file_extension.endswith('xyz') or file_extension.endswith('ply')or file_extension.endswith('pcd'):
                     print("[INFO] Pointcloud detected !")
@@ -82,15 +80,22 @@ class FileUploadView(APIView):
                         daemon=True,
                     )
                     t.start()
-                    result = add_pointcloud_to_dataset(user_id,  dataset_uri,file_path,original_url,file.flyvast_pointcloud["pointcloud_id"],file.flyvast_pointcloud["pointcloud_uuid"])
-
+                    result = graph_manager.add_pointcloud_to_dataset( dataset_uri,file_path,original_url,file.flyvast_pointcloud["pointcloud_id"],file.flyvast_pointcloud["pointcloud_uuid"])
                 else:
-                    print("[INFO] Starting processing file ")
-                    processor.process(file_path)
-                print("Saving ",ontology_file_path) 
-                processor.save(ontology_file_path)
+                    ## GEOJSON
+                    print("[INFO] Starting processing GEOJSON ")
+                    validation = validate_geojson_file(file_path)
+                    if not validation['valid']:
+                        e=validation['message']
+                        return Response({'error': f'❌ Failed: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    else:
+                        graph_manager.add_geojson_to_dataset(dataset_uri,file_path,original_url)
+                    # processor.process(file_path)
+                        # process_ontology_file(user_id, file_path)
+
+                # processor.save(ontology_file_path)
             except Exception as e:
-                return Response({'error': f'Ontology processing failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'error': f'❌ Failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             data = {
                 'uuid': file_uuid,
