@@ -41,23 +41,23 @@ class FileUploadView(APIView):
         file_uuid = str(uuid.uuid4())
 
         upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads', file_uuid)
+
         os.makedirs(upload_dir, exist_ok=True)
-       
-        file_path = file.temporary_file_path()
+        print("MEDIA_ROOT =", settings.MEDIA_ROOT)
+
          # Extract the original file extension
         file_extension = os.path.splitext(file.name)[1] 
         try:
-
-            ontology_file_path = os.path.join(upload_dir, f'{file_uuid}_ontology.owl')
-            original_file_path = os.path.join(upload_dir, f'{file_uuid}{file_extension}')
-
-            ontology_url = f'/media/uploads/{file_uuid}/{file_uuid}_ontology.owl'
+            file_path = os.path.join(upload_dir, f'{file_uuid}{file_extension}')
             original_url = f'/media/uploads/{file_uuid}/{file_uuid}{file_extension}'
-            
-            # Save the file to the constructed path
-            with open(original_file_path, 'wb') as destination:
+
+             # Save the file to the constructed path
+            with open(file_path, 'wb') as destination:
                 for chunk in file.chunks():
                     destination.write(chunk)
+            # ontology_file_path = os.path.join(upload_dir, f'{file_uuid}_ontology.owl')
+            # ontology_url = f'/media/uploads/{file_uuid}/{file_uuid}_ontology.owl'
+           
             try:
                 print("[INFO] Read Metadata")
                 catalog_name = metadata.get("catalog")
@@ -99,8 +99,8 @@ class FileUploadView(APIView):
 
             data = {
                 'uuid': file_uuid,
-                'owl_path': ontology_file_path,
-                'map_path': original_file_path,
+                'owl_path': None,# I removed the ontology, no one downloaded it.
+                'map_path': file_path,
                 'metadata': metadata
             }
             # Save in Database
@@ -111,7 +111,7 @@ class FileUploadView(APIView):
             return Response({
                 'message': 'File uploaded and ontology processed successfully.',
                 'uuid': file_uuid,
-                'ontology_url': ontology_url,
+                'ontology_url': None,# I removed the ontology
                 'map_url': original_url
             }, status=status.HTTP_201_CREATED)
 

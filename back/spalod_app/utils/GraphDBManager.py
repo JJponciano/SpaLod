@@ -290,7 +290,6 @@ class GraphDBManager:
 
         try:
             self.sparql_statements.query()
-            print(f"Data uploaded successfully to Graph: {self.graph_iri}")
         except Exception as e:
             print(f"SPARQL update failed: {e}")
             raise
@@ -378,7 +377,6 @@ class GraphDBManager:
 
         try:
             self.sparql_statements.query()
-            print(f"✅ Data uploaded successfully to Graph: {self.graph_iri}")
         except Exception as e:
             print(f"❌ SPARQL update failed: {e}")
             print("SPARQL QUERY:\n", update_query)
@@ -412,7 +410,6 @@ class GraphDBManager:
 
         try:
             self.sparql_statements.query()
-            print(f"✅ Data uploaded successfully to Graph: {self.graph_iri}")
         except Exception as e:
             print(f"❌ SPARQL update failed: {e}")
             print("SPARQL QUERY:\n", update_query)

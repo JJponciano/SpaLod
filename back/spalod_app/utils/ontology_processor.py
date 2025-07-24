@@ -2,12 +2,12 @@ import os
 import uuid
 import json
 import pyproj
+import laspy
 import pydeck as pdk
 import rdflib
 from rdflib import Graph, URIRef, Literal, Namespace, XSD
 from rdflib.namespace import RDF, RDFS, OWL
 import re
-import laspy
 from shapely.geometry import Polygon
 from shapely.ops import transform
 from SPARQLWrapper import SPARQLWrapper, POST, URLENCODED
@@ -19,7 +19,7 @@ from shapely import wkt as shapely_wkt
 from SPARQLWrapper import SPARQLWrapper, POST, JSON, SPARQLExceptions
 import uuid
 import time
-from rdflib import URIRef, Literal, RDF
+
 
 BATCH_SIZE = 5000  # Adjust batch size to balance speed and memory usage
 #PROPERTIES AND CLASS URIs
