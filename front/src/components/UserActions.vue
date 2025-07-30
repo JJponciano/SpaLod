@@ -9,13 +9,14 @@
       >
         <div>Data</div>
 
-        <button class="addfile" @click="addData" v-if="getProcess() === ''">
+        <button class="addfile" @click="addData" v-if="getProgress() === -1">
           Import file
         </button>
         <div class="addfile-alt" v-else>
-          <div class="progress">
-            {{ getProcess() }}
+          <div v-if="getProgress() < 100" class="progress">
+            Upload: {{ getProcess() }}%
           </div>
+          <div v-else class="progress">Treatment...</div>
           <div class="loader"></div>
         </div>
       </button>
@@ -845,7 +846,7 @@ import {
 import { ref } from "vue";
 import { removeFeature, getDataset, sparqlQuery } from "../services/api-geo";
 import { sparqlQueries } from "../services/constants";
-import { getProcess } from "../services/geo-upload";
+import { getProgress } from "../services/geo-upload";
 
 $.ajaxSetup({
   xhrFields: {
@@ -890,7 +891,7 @@ export default {
       options: sparqlQueries.options,
       queries: sparqlQueries.queries,
       catalogs,
-      getProcess,
+      getProgress: getProgress,
       unsubscribeLabelChange,
       getGeoItems,
       unsubscribeDataRefresh,

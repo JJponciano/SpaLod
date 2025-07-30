@@ -2,9 +2,9 @@ import { ref } from "vue";
 import { $ajax } from "./api";
 import { refreshGeoData } from "./geo";
 
-const progress = ref("");
+const progress = ref(-1);
 
-export function getProcess() {
+export function getProgress() {
   return progress.value;
 }
 
@@ -18,13 +18,7 @@ export function uploadGeo(file, metadata) {
       const xhr = new XMLHttpRequest();
 
       xhr.upload.onprogress = (event) => {
-        const percentage = Math.floor((event.loaded / event.total) * 100);
-
-        if (percentage === 100) {
-          progress.value = "Processing";
-        } else {
-          progress.value = `Upload: ${percentage}%`;
-        }
+        progress.value = Math.floor((event.loaded / event.total) * 100);
       };
 
       return xhr;
@@ -35,13 +29,13 @@ export function uploadGeo(file, metadata) {
     processData: false,
     contentType: false,
     success: async () => {
-      progress.value = "";
+      progress.value = -1;
       await refreshGeoData();
     },
     error: (error) => {
       console.error(error);
       alert(error.responseJSON.error);
-      progress.value = "";
+      progress.value = -1;
     },
   });
 }

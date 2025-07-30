@@ -328,14 +328,26 @@ class GeoGenericDelete(APIView):
         p = request.query_params.get('p')
         o = request.query_params.get('o')
         
-        sparql_query = f"""
-            DELETE {{
-                <{s}> <{p}> "{o}" .
-            }}
-            WHERE {{
-                <{s}> <{p}> "{o}" .
-            }}
-        """
+        if o.startswith("http://") or o.startswith("https://"):
+            sparql_query = f"""
+                DELETE {{
+                    <{s}> <{p}> ?o .
+                }}
+                WHERE {{
+                    <{s}> <{p}> ?o .
+                    FILTER (?o IN ("{o}", <{o}>))
+                }}
+            """
+        else:
+            sparql_query = f"""
+                DELETE {{
+                    <{s}> <{p}> "{o}" .
+                }}
+                WHERE {{
+                    <{s}> <{p}> "{o}" .
+                }}
+            """
+        
         try:
             user_id = request.user.id
             graph_manager = GraphDBManager(user_id)
@@ -396,11 +408,41 @@ class GeoFeatureAddFile(APIView):
 
             # Determine semantic property based on extension
             ext_map = {
-                ".las": "hasPointCloud", ".laz": "hasPointCloud",
-                ".glb": "has3D", ".gltf": "has3D", ".ply": "has3D", ".obj": "has3D", ".fbx": "has3D",
-                ".mp4": "hasVideo", ".webm": "hasVideo",
-                ".pdf": "hasDocument", ".docx": "hasDocument", ".doc": "hasDocument",
-                ".pptx": "hasDocument", ".ppt": "hasDocument", ".txt": "hasDocument"
+                # pointcloud
+                ".las": "hasPointCloud",
+                ".laz": "hasPointCloud",
+                
+                # 3D models
+                ".glb": "has3D",
+                ".gltf": "has3D",
+                ".ply": "has3D",
+                ".obj": "has3D",
+                ".fbx": "has3D",
+                
+                # video
+                ".mp4": "hasVideo",
+                ".webm": "hasVideo",
+                
+                # PDF
+                ".pdf": "hasPdf",
+                
+                # documents
+                ".docx": "hasDocument",
+                ".doc": "hasDocument",
+                ".pptx": "hasDocument",
+                ".ppt": "hasDocument",
+                ".txt": "hasDocument",
+                
+                # images
+                ".png": "hasImage",
+                ".jpg": "hasImage",
+                ".jpeg": "hasImage",
+                ".svg": "hasImage",
+                ".bmp": "hasImage",
+                ".ico": "hasImage",
+                ".webp": "hasImage",
+                ".apng": "hasImage",
+                ".avif": "hasImage"
             }
             predicate_key = ext_map.get(file_ext, "hasFile")
             predicate_uri = NS["SPALOD"][predicate_key]

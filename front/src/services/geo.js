@@ -652,6 +652,21 @@ export async function addGeoFeature(
   // TODO
 }
 
+export async function addFileToFeature(featureId, file) {
+  const feature = features[featureId];
+
+  if (feature && !feature.uploading) {
+    feature.uploadingProgress = 0;
+    try {
+      await ApiGeo.addFileToFeature(featureId, file, (progress) => {
+        feature.uploadingProgress = progress;
+      });
+    } finally {
+      feature.uploading = false;
+    }
+  }
+}
+
 export function reset() {
   Object.keys(features).forEach((key) => {
     delete features[key];

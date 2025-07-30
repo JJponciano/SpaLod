@@ -7,7 +7,7 @@
       :class="{ 'has-pointcloud': pointcloudUrl }"
     >
       <table>
-        <tr class="feature" v-for="item of feature.items">
+        <tr class="feature" v-for="item of getFeatureItems()">
           <td class="title">
             <div v-if="!item.new">{{ displayLastPortion(item.key) }}</div>
             <input v-else type="text" v-model="item.key" />
@@ -44,14 +44,11 @@
             <button
               v-if="
                 item.key !==
-                  'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' &&
-                item.key !==
-                  'http://www.opengis.net/ont/geosparql#hasGeometry' &&
-                item.key !== 'https://geovast3d.com/ontologies/spalod#hasOWL' &&
-                item.key !==
-                  'https://geovast3d.com/ontologies/spalod#hasFile' &&
-                item.key !==
-                  'http://www.opengis.net/ont/geosparql#hasFeatureCollection'
+                  'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' /*&&
+                !item.key.startsWith(
+                  'https://geovast3d.com/ontologies/spalod#has'
+                )*/ &&
+                !item.key.startsWith('http://www.opengis.net/ont/geosparql#has')
               "
               @click="deleteFeatureProperty(item)"
             >
@@ -61,10 +58,16 @@
         </tr>
       </table>
       <iframe v-if="pointcloudUrl" :src="pointcloudUrl"></iframe>
+      <div class="feature-images" v-if="getFeatureImages().length > 0">
+        <h3>Images</h3>
+        <div class="images">
+          <img v-for="item of getFeatureImages()" :src="item.value" />
+        </div>
+      </div>
       <div class="insert">
         <button v-if="showAddLabel()" @click="addLabel()">Add Label</button>
         <button @click="addProperty()">Add Property</button>
-        <button @click="addFile()">Add File</button>
+        <button v-if="!feature.uploading" @click="addFile()">Add File</button>
       </div>
       <div class="close"><button @click="closeFeature()">Close</button></div>
     </div>
@@ -235,6 +238,7 @@ import {
   subscribeFeatureDoubleClick,
   updateFeature,
   deleteFeatureProperty,
+  addFileToFeature,
 } from "../services/geo";
 
 export default {
@@ -522,10 +526,8 @@ export default {
     setItemInput(item) {
       if (
         item.key === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" ||
-        item.key === "http://www.opengis.net/ont/geosparql#hasGeometry" ||
-        item.key === "https://geovast3d.com/ontologies/spalod#hasOWL" ||
-        item.key === "https://geovast3d.com/ontologies/spalod#hasFile" ||
-        item.key === "http://www.opengis.net/ont/geosparql#hasFeatureCollection"
+        item.key.startsWith("http://www.opengis.net/ont/geosparql#has") ||
+        item.key.startsWith("https://geovast3d.com/ontologies/spalod#has")
       ) {
         return;
       }
@@ -551,7 +553,7 @@ export default {
 
     deleteFeatureProperty(item) {
       this.feature.items = this.feature.items.filter(
-        (x) => x.key !== item.key && x.value !== item.value
+        (x) => x.key !== item.key || x.value !== item.value
       );
       deleteFeatureProperty(this.feature.id, item.key, item.value);
     },
@@ -633,6 +635,27 @@ export default {
       this.map.addEventListener("mousemove", mousemove);
       this.map.addEventListener("click", click);
       this.map.addEventListener("contextmenu", contextmenu);
+    },
+
+    addFile() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.click();
+      input.onchange = () => {
+        addFileToFeature(this.feature.id, input.files[0]);
+      };
+    },
+
+    getFeatureItems() {
+      return this.feature.items.filter(
+        (x) => !x.key.startsWith("https://geovast3d.com/ontologies/spalod#has")
+      );
+    },
+
+    getFeatureImages() {
+      return this.feature.items.filter(
+        (x) => x.key === "https://geovast3d.com/ontologies/spalod#hasImage"
+      );
     },
   },
   mounted() {

@@ -1,4 +1,4 @@
-import { $fetch } from "./api";
+import { $fetch, $ajax } from "./api";
 
 export async function getAllCatalogs() {
   const result = await $fetch("api/geo/catalog/all").then((x) => x.json());
@@ -104,14 +104,18 @@ export async function sparqlQuery(query) {
 export async function getGeoData(results) {
   const res = [];
 
+  const REGEX_POINT = /POINT\s*?\((-?[\d\.]+) (-?[\d\.]+)\)/i;
+  const REGEX_MULTILINESTRING = /MULTILINESTRING\s*?\(\(.*?\)\)/i;
+  const REGEX_LINESTRING = /LINESTRING\s*?\(.*?\)/i;
+  const REGEX_POLYGON = /POLYGON\s*?\(\(.*?\)\)/i;
+
   for (const result of results) {
     const itemRes = {
       metadatas: {},
     };
     for (const header of Object.keys(result)) {
       const property = result[header].value;
-      if (property.toUpperCase().startsWith("LINESTRING")) {
-        itemRes.type = "LINESTRING";
+      if (REGEX_LINESTRING.test(property)) {
         itemRes.geo = property.split(",").map((x) =>
           x
             .trim()
@@ -120,8 +124,8 @@ export async function getGeoData(results) {
             .split(" ")
             .map((y) => Number(y))
         );
-      } else if (property.toUpperCase().startsWith("MULTILINESTRING")) {
-        itemRes.type = "MULTILINESTRING";
+        itemRes.type = "LINESTRING";
+      } else if (REGEX_MULTILINESTRING.test(property)) {
         itemRes.geo = property.split(/\).*?,.*?\(/).map((x) =>
           x.split(",").map((y) =>
             y
@@ -132,8 +136,8 @@ export async function getGeoData(results) {
               .map((z) => Number(z))
           )
         );
-      } else if (property.toUpperCase().startsWith("POLYGON")) {
-        itemRes.type = "POLYGON";
+        itemRes.type = "MULTILINESTRING";
+      } else if (REGEX_POLYGON.test(property)) {
         itemRes.geo = property.split(",").map((x) =>
           x
             .trim()
@@ -142,11 +146,12 @@ export async function getGeoData(results) {
             .split(" ")
             .map((y) => Number(y))
         );
-      } else if (property.toUpperCase().startsWith("POINT")) {
-        itemRes.type = "POINT";
+        itemRes.type = "POLYGON";
+      } else if (REGEX_POINT.test(property)) {
         itemRes.geo = /POINT\s*?\((-?[\d\.]+) (-?[\d\.]+)\)/i
           .exec(property)
           .slice(1);
+        itemRes.type = "POINT";
       }
 
       itemRes.metadatas[header] = property;
@@ -171,6 +176,7 @@ export async function getGeoData(results) {
       res.push({
         pointcloudUrl,
       });
+    } else if (metadatas.key?.includes("hasImage")) {
     }
   }
 
@@ -232,4 +238,37 @@ export async function addFeature(
     method: "POST",
     body: formData,
   }).then((x) => x.json());
+}
+
+export function addFileToFeature(featureId, file, cbProgress) {
+  return new Promise((resolve, reject) => {
+    let formData = new FormData();
+    formData.append("file", file);
+    formData.append("feature_id", featureId);
+
+    $ajax({
+      xhr: () => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.onprogress = (event) => {
+          cbProgress(Math.floor((event.loaded / event.total) * 100));
+        };
+
+        return xhr;
+      },
+      url: "/api/geo/feature/add/file",
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: async () => {
+        resolve();
+      },
+      error: (error) => {
+        console.error(error);
+        alert(error.responseJSON.error);
+        reject(error);
+      },
+    });
+  });
 }
