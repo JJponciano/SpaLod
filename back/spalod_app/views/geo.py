@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rdflib import URIRef
 from ..utils.GraphDBManager import GraphDBManager,NS
-import re, uuid
+import re, uuid, json
 
 from rdflib import URIRef
 
@@ -519,6 +519,11 @@ class GeoFeatureNew(APIView):
         dataset_name = request.data.get('dataset_name')  # Dataset under the catalog
         user_id = request.user.id                        # Authenticated user
         metadata = request.data.get('metadata')          # Additional metadata as JSON
+        
+        try:
+            metadata = json.loads(metadata)
+        except ValueError:
+            return Response({'error': 'Invalid JSON for metadata.'}, status=status.HTTP_400_BAD_REQUEST)
 
         print(f"Adding a new feature for User: {user_id}")
 

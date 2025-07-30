@@ -265,7 +265,18 @@ export default {
         const label = this.metadata["title"];
 
         const metadata = {
-          ...this.metadata,
+          ...Object.keys(this.metadata).reduce((acc, key) => {
+            if (key === "title") {
+              return acc;
+            }
+            const item = this.queryables.find((x) => x.q === key);
+
+            if (item) {
+              acc[item.p] = this.metadata[key];
+            }
+
+            return acc;
+          }, {}),
         };
 
         delete metadata["catalog"];

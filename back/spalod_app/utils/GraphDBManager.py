@@ -851,9 +851,15 @@ class GraphDBManager:
         feature_graph.add((geometry_uri, NS["GEOSPARQL"].asWKT, Literal(wkt, datatype=NS["GEOSPARQL"].wktLiteral)))
 
         # Optional metadata
+        DCTERMS = NS["DCTERMS"]
         if isinstance(metadata, dict):
             for key, value in metadata.items():
-                feature_graph.add((feature_uri, URIRef(key), Literal(value)))
+                # Ensure the key is a full URI
+                if not key.startswith(("http://", "https://", "urn:")):
+                    full_key = DCTERMS + key
+                else:
+                    full_key = key
+                feature_graph.add((feature_uri, URIRef(full_key), Literal(value)))
 
         # Upload to GraphDB
         self.add_graph(feature_graph)
