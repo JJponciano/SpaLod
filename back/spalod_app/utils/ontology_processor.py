@@ -20,6 +20,8 @@ from SPARQLWrapper import SPARQLWrapper, POST, JSON, SPARQLExceptions
 import uuid
 import time
 
+from ..utils.env import get_env_settings
+
 
 BATCH_SIZE = 5000  # Adjust batch size to balance speed and memory usage
 #PROPERTIES AND CLASS URIs
@@ -108,12 +110,13 @@ class OntologyProcessor:
         self.upload_to_graphdb(catalog_data)
 
     def create_dataset(self, title):
+        spalod_url = get_env_settings("SPALOD_URL")
         dataset_data = [
             (self.dataset_uri, RDF.type, NS["DCAT"].Dataset),
             (self.dataset_uri, RDFS.label, Literal(title)),
             (self.catalog_uri, NS["DCAT"].dataset, self.dataset_uri),
-            (self.dataset_uri, NS['SPALOD'].hasOWL, URIRef(f"https://spalod.geovast3d.com{self.ontology_url}")),  # Ensure it's a URI
-            (self.dataset_uri, NS['SPALOD'].hasFile, URIRef(f"https://spalod.geovast3d.com{self.file_url}"))  # Ensure it's a URI
+            (self.dataset_uri, NS['SPALOD'].hasOWL, URIRef(f"{spalod_url}{self.ontology_url}")),  # Ensure it's a URI
+            (self.dataset_uri, NS['SPALOD'].hasFile, URIRef(f"{spalod_url}{self.file_url}"))  # Ensure it's a URI
         ]
 
         # Add additional metadata from DCTERMS

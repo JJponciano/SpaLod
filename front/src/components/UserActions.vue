@@ -14,7 +14,7 @@
         </button>
         <div class="addfile-alt" v-else>
           <div v-if="getProgress() < 100" class="progress">
-            Upload: {{ getProcess() }}%
+            Upload: {{ getProgress() }}%
           </div>
           <div v-else class="progress">Treatment...</div>
           <div class="loader"></div>
@@ -891,7 +891,7 @@ export default {
       options: sparqlQueries.options,
       queries: sparqlQueries.queries,
       catalogs,
-      getProgress: getProgress,
+      getProgress,
       unsubscribeLabelChange,
       getGeoItems,
       unsubscribeDataRefresh,

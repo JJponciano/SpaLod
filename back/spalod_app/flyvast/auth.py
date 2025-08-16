@@ -1,7 +1,6 @@
 from django.conf import settings
 import requests
 import hashlib
-import os
 
 from ..utils.env import get_env_settings
 

@@ -1,4 +1,5 @@
 import os
+from urllib.parse import quote_plus
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,6 +11,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rdflib import URIRef
+
+from ..utils.env import get_env_settings
 from ..utils.GraphDBManager import GraphDBManager,NS
 import re, uuid, json
 
@@ -391,7 +394,7 @@ class GeoFeatureAddFile(APIView):
             # Generate unique file ID and path
             file_uuid = str(uuid.uuid4())
             file_ext = os.path.splitext(file.name)[1].lower()
-            filename = f"{file_uuid}{file_ext}"
+            filename = f"{file_uuid}_{file.name}".replace(" ", "+")
 
             upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads', file_uuid)
             os.makedirs(upload_dir, exist_ok=True)
@@ -403,8 +406,9 @@ class GeoFeatureAddFile(APIView):
                     dest.write(chunk)
 
             # Public URL
+            spalod_url = get_env_settings("SPALOD_URL")
             file_url = f"/media/uploads/{file_uuid}/{filename}"
-            full_url = f"https://spalod.geovast3d.com{file_url}"
+            full_url = f"{spalod_url}{file_url}"
 
             # Determine semantic property based on extension
             ext_map = {

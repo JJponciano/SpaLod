@@ -15,6 +15,8 @@ from shapely.geometry import Polygon
 from shapely.ops import transform
 import numpy as np
 import json, re, uuid
+from ..utils.env import get_env_settings
+
 BATCH_SIZE = 5000  # Adjust batch size to balance speed and memory usage
 import time
         # Define namespaces, including standard RDF, RDFS, OWL, etc.
@@ -721,8 +723,6 @@ class GraphDBManager:
                 (dataset_uri, RDF.type, NS["DCAT"].Dataset),
                 (dataset_uri, RDFS.label, Literal(name)),
                 (catalog_uri, NS["DCAT"].dataset, dataset_uri),
-            #     (dataset_uri, NS['SPALOD'].hasOWL, URIRef(f"https://spalod.geovast3d.com{self.ontology_url}")),  # Ensure it's a URI
-            #     (dataset_uri, NS['SPALOD'].hasFile, URIRef(f"https://spalod.geovast3d.com{self.file_url}"))  # Ensure it's a URI
             ]
             self.upload_to_graphdb(dataset_data)
             return dataset_uri
@@ -736,7 +736,8 @@ class GraphDBManager:
             file_url (str): The relative or full URL of the file to attach.
         """
         if not file_url.startswith("http"):
-            file_url = f"https://spalod.geovast3d.com{file_url}"  # Ensure it's an absolute URI
+            spalod_url = get_env_settings("SPALOD_URL")
+            file_url = f"{spalod_url}{file_url}"  # Ensure it's an absolute URI
 
         triple = (dataset_uri, NS["SPALOD"].hasFile, URIRef(file_url))
         try:
@@ -934,7 +935,9 @@ class GraphDBManager:
         geometry_uri = URIRef(f"{feature_uri}/geom")
         pointcloud_uri = URIRef(f"{NS['SPALOD']}{pointcloud_uuid}")
         dataset_uri = URIRef(dataset_uri)
-        file_uri = URIRef(f"https://spalod.geovast3d.com{file_url}")  # Ensure it’s a proper URI
+        
+        spalod_url = get_env_settings("SPALOD_URL")
+        file_uri = URIRef(f"{spalod_url}{file_url}")  # Ensure it’s a proper URI
 
         # Compute WKT geometry
         try:
@@ -1039,7 +1042,8 @@ class GraphDBManager:
         ])
 
         # 🔗 Link the file to the dataset
-        file_uri = URIRef(f"https://spalod.geovast3d.com{file_url}")
+        spalod_url = get_env_settings("SPALOD_URL")
+        file_uri = URIRef(f"{spalod_url}{file_url}")
         batched_triples.append((URIRef(dataset_uri), NS['SPALOD'].hasFile, file_uri))
 
         total_features = len(data.get("features", []))
