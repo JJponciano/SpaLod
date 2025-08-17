@@ -638,7 +638,11 @@ export async function addGeoFeature(
   datasetName,
   metadata
 ) {
-  const res = await ApiGeo.addFeature(
+  const {
+    feature_uri: featureId,
+    dataset_uri: datasetId,
+    catalog_uri: catalogId,
+  } = await ApiGeo.addFeature(
     lat,
     lng,
     label,
@@ -647,9 +651,49 @@ export async function addGeoFeature(
     metadata
   );
 
-  console.log("addGeoFeature res: ", res);
+  let catalog = catalogs.find(({ id }) => id === catalogId);
+  if (!catalog) {
+    catalog = {
+      id: catalogId,
+      label: catalogName,
+      datasets: [],
+      expanded: true,
+      visible: true,
+    };
+    catalogs.push(catalog);
+  }
 
-  // TODO
+  if (!catalog.visible) {
+    catalog.visible = true;
+  }
+
+  let dataset = datasets.find(({ id }) => id === datasetId);
+  if (!dataset) {
+    dataset = {
+      id: datasetId,
+      label: datasetName,
+      features: [],
+      catalogId,
+      expanded: true,
+      visible: true,
+    };
+    datasets.push(dataset);
+    catalogs.find(({ id }) => id === catalogId).datasets.push(dataset);
+  }
+
+  const feature = {
+    id: featureId,
+    label,
+    wkt: { geo: [lng, lat], type: "POINT" },
+    datasetId,
+    catalogId,
+    visible: true,
+  };
+  features[featureId] = feature;
+  dataset.features.push(feature);
+
+  setFeatureVisibility([featureId], true);
+  dataRefreshSuscribers.forEach((x) => x());
 }
 
 export async function addFileToFeature(featureId, file) {

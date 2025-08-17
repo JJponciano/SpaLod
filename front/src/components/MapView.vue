@@ -5,6 +5,7 @@
     :feature="feature"
     :pointcloudUrl="pointcloudUrl"
     @close="closeFeature()"
+    @feature-updated="onFeatureUpdated($event)"
   />
 
   <div class="loader" v-if="total > 0">
@@ -172,17 +173,15 @@ export default {
       L.control.layers(baseLayers).addTo(this.map);
 
       this.unsubscribe.push(
-        ...[
-          subscribeFeatureVisibiltyChange(
-            this.onFeatureVisibilityChange.bind(this)
-          ),
-          subscribeFeatureClick(this.onFeatureClick.bind(this)),
-          subscribeFeatureDoubleClick(this.displayFeature.bind(this)),
-        ]
+        subscribeFeatureVisibiltyChange(
+          this.onFeatureVisibilityChange.bind(this)
+        ),
+        subscribeFeatureClick(this.onFeatureClick.bind(this)),
+        subscribeFeatureDoubleClick(this.displayFeature.bind(this))
       );
     },
-    async displayFeature(featureId, catalogId) {
-      const res = await getFeature(featureId, catalogId);
+    async displayFeature(featureId) {
+      const res = await getFeature(featureId);
       this.feature = {
         id: featureId,
         items: res
@@ -249,10 +248,7 @@ export default {
 
       if (mapObj) {
         mapObj.on("click", (event) => {
-          this.displayFeature(
-            event.target.spalodId,
-            event.target.spalodCatalogId
-          );
+          this.displayFeature(event.target.spalodId);
         });
         mapObj.spalodId = feature.id;
         mapObj.spalodCatalogId = feature.catalogId;
@@ -421,6 +417,19 @@ export default {
       this.map.addEventListener("mousemove", mousemove);
       this.map.addEventListener("click", click);
       this.map.addEventListener("contextmenu", contextmenu);
+    },
+
+    async onFeatureUpdated(featureId) {
+      const res = await getFeature(featureId);
+      this.feature = {
+        id: featureId,
+        items: res
+          .filter((x) => x.metadatas?.key && x.metadatas?.value)
+          .map(({ metadatas: { key, value } }) => ({
+            key,
+            value,
+          })),
+      };
     },
   },
   mounted() {

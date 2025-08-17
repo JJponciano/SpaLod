@@ -216,7 +216,7 @@ import { getUsername } from "../services/login";
 import { getAllDatasetsFromCatalogName } from "../services/api-geo";
 
 export default {
-  emits: ["close"],
+  emits: ["close", "featureAdded"],
   components: {
     AutoComplete,
   },
@@ -253,7 +253,7 @@ export default {
     onClickCancel() {
       this.$emit("close");
     },
-    onClickOk() {
+    async onClickOk() {
       if (!this.validateMetadatas()) {
         return;
       }
@@ -283,7 +283,7 @@ export default {
         delete metadata["dataset"];
         delete metadata["title"];
 
-        addGeoFeature(
+        await addGeoFeature(
           this.latlng.lat,
           this.latlng.lng,
           label,
@@ -291,6 +291,8 @@ export default {
           datasetName,
           metadata
         );
+
+        this.$emit("featureAdded");
       }
       this.onClickCancel();
     },

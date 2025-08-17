@@ -263,9 +263,10 @@ import {
   deleteFeatureProperty,
   addFileToFeature,
 } from "../services/geo";
+import { getFeature } from "../services/api-geo";
 
 export default {
-  emits: ["close"],
+  emits: ["close", "featureUpdated"],
   props: {
     feature: Object,
     pointcloudUrl: String,
@@ -359,8 +360,9 @@ export default {
       const input = document.createElement("input");
       input.type = "file";
       input.click();
-      input.onchange = () => {
-        addFileToFeature(this.feature.id, input.files[0]);
+      input.onchange = async () => {
+        await addFileToFeature(this.feature.id, input.files[0]);
+        this.$emit("featureUpdated", this.feature.id);
       };
     },
 
