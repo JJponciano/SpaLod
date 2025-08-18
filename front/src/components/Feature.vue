@@ -94,9 +94,14 @@
         <h3 v-if="getFeatureItems(kind).length > 0">{{ kind }}s</h3>
         <div class="items">
           <div class="item" v-for="item of getFeatureItems(kind)">
-            <span @click="openInBrowser(item.value)">{{
-              displayLastPortion(item.value)
-            }}</span>
+            <span
+              v-if="kind !== 'PointCloud'"
+              @click="openInBrowser(item.value)"
+              >{{ displayLastPortion(item.value) }}</span
+            >
+            <span v-else @click="openPointCloud(item.value)">
+              {{ displayLastPortion(item.value) }}
+            </span>
             <button @click="deleteFeatureProperty(item, $event)">🗑</button>
           </div>
         </div>
@@ -263,7 +268,6 @@ import {
   deleteFeatureProperty,
   addFileToFeature,
 } from "../services/geo";
-import { getFeature } from "../services/api-geo";
 
 export default {
   emits: ["close", "featureUpdated"],
@@ -381,6 +385,20 @@ export default {
 
     openInBrowser(value) {
       window.open(value, "_blank");
+    },
+
+    openPointCloud(value) {
+      const pointcloudStr = value
+        .replace(/.*\//, "")
+        .replace(/.*#/, "")
+        .split("_")[0]
+        .split("-");
+      window.open(
+        `${import.meta.env.VITE_APP_FLYVAST_POINTCLOUD_VIEWER_BASE_URL}${
+          pointcloudStr[0]
+        }/-${pointcloudStr[1]}`,
+        "_blank"
+      );
     },
   },
 };

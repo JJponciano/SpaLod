@@ -72,7 +72,7 @@ class FileUploadView(APIView):
                 print(f"✅ Added {len(triples_added)} DCTERMS metadata triples.")
                 # processor = OntologyProcessor(file_uuid, ontology_url, original_url,metadata,user_id)
                 ## POINT CLOUD 
-                if file_extension.endswith('las') or file_extension.endswith('laz') or file_extension.endswith('xyz') or file_extension.endswith('ply')or file_extension.endswith('pcd'):
+                if file_extension.endswith('las') or file_extension.endswith('laz') or file_extension.endswith('xyz'):
                     print("[INFO] Pointcloud detected !")
                     t = threading.Thread(
                         target=send_to_flyvast,

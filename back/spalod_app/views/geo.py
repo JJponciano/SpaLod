@@ -1,4 +1,5 @@
 import os
+import threading
 from urllib.parse import quote_plus
 from django.conf import settings
 from rest_framework.views import APIView
@@ -11,6 +12,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rdflib import URIRef
+
+from .upload import send_to_flyvast
 
 from ..utils.env import get_env_settings
 from ..utils.GraphDBManager import GraphDBManager,NS
@@ -390,12 +393,23 @@ class GeoFeatureAddFile(APIView):
         try:
             user_id = request.user.id
             graph_manager = GraphDBManager(user_id)
-
-            # Generate unique file ID and path
-            file_uuid = str(uuid.uuid4())
             file_ext = os.path.splitext(file.name)[1].lower()
+            
+            if file_ext.endswith('las') or file_ext.endswith('laz') or file_ext.endswith('xyz'):
+                pointcloud_uuid = file.flyvast_pointcloud["pointcloud_uuid"]
+                pointcloud_id = file.flyvast_pointcloud["pointcloud_id"]
+                file_uuid = f"{pointcloud_id}{pointcloud_uuid}"
+                print("[INFO] Pointcloud detected !")
+                t = threading.Thread(
+                    target=send_to_flyvast,
+                    args=[file],
+                    daemon=True,
+                )
+                t.start()
+            else:
+                file_uuid = str(uuid.uuid4())
+            
             filename = f"{file_uuid}_{file.name}".replace(" ", "+")
-
             upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads', file_uuid)
             os.makedirs(upload_dir, exist_ok=True)
             file_path = os.path.join(upload_dir, filename)
