@@ -104,10 +104,10 @@ export async function sparqlQuery(query) {
 export async function getGeoData(results) {
   const res = [];
 
-  const REGEX_POINT = /POINT\s*?\((-?[\d\.]+) (-?[\d\.]+)\)/i;
-  const REGEX_MULTILINESTRING = /MULTILINESTRING\s*?\(\(.*?\)\)/i;
-  const REGEX_LINESTRING = /LINESTRING\s*?\(.*?\)/i;
-  const REGEX_POLYGON = /POLYGON\s*?\(\(.*?\)\)/i;
+  const REGEX_POINT = /^POINT\s*?\((-?[\d\.]+) (-?[\d\.]+)\)/i;
+  const REGEX_MULTILINESTRING = /^MULTILINESTRING\s*?\(\(.*?\)\)/i;
+  const REGEX_LINESTRING = /^LINESTRING\s*?\(.*?\)/i;
+  const REGEX_POLYGON = /^POLYGON\s*?\(\(.*?\)\)/i;
 
   for (const result of results) {
     const itemRes = {
@@ -119,7 +119,7 @@ export async function getGeoData(results) {
         itemRes.geo = property.split(",").map((x) =>
           x
             .trim()
-            .replace(/LINESTRING \(/i, "")
+            .replace(/^LINESTRING \(/i, "")
             .replace(")", "")
             .split(" ")
             .map((y) => Number(y))
@@ -130,7 +130,7 @@ export async function getGeoData(results) {
           x.split(",").map((y) =>
             y
               .trim()
-              .replace(/MULTILINESTRING \(\(/i, "")
+              .replace(/^MULTILINESTRING \(\(/i, "")
               .replace("))", "")
               .split(" ")
               .map((z) => Number(z))
@@ -141,14 +141,14 @@ export async function getGeoData(results) {
         itemRes.geo = property.split(",").map((x) =>
           x
             .trim()
-            .replace(/POLYGON \(\(/i, "")
+            .replace(/^POLYGON \(\(/i, "")
             .replace("))", "")
             .split(" ")
             .map((y) => Number(y))
         );
         itemRes.type = "POLYGON";
       } else if (REGEX_POINT.test(property)) {
-        itemRes.geo = /POINT\s*?\((-?[\d\.]+) (-?[\d\.]+)\)/i
+        itemRes.geo = /^POINT\s*?\((-?[\d\.]+) (-?[\d\.]+)\)/i
           .exec(property)
           .slice(1);
         itemRes.type = "POINT";

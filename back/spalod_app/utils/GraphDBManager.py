@@ -326,8 +326,9 @@ class GraphDBManager:
         # Normalize query (strip leading/trailing spaces and lowercase the start)
         query_type = select_query.strip().lower().split()[0]
 
-        if self.graph_iri is not None and query_type not in ["ask", "select"]:
-            # Only wrap if it's a raw pattern (e.g., `?s ?p ?o`) — not a full ASK/SELECT
+        if self.graph_iri is not None and query_type not in ["ask"]:
+            ## Only wrap if it's a raw pattern (e.g., `?s ?p ?o`) — not a full ASK/SELECT
+        
             select_query = f"""
             SELECT * WHERE {{
                 GRAPH <{self.graph_iri}> {{

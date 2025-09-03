@@ -585,7 +585,7 @@ export function updateFeature(featureId, key, value, needInsert = false) {
     if (needInsert) {
       ((featureId) => {
         featureUdates[featureId].pendingInsert = true;
-        if (!/http(s?)\/\/.*?\/.+/.test(key)) {
+        if (!/^https?:\/\/.*?\/.+/.test(key)) {
           key = `https://geovast3d.com/ontologies/spalod#${key}`;
         }
 

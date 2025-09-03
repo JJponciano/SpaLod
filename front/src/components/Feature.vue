@@ -18,7 +18,19 @@
                 v-if="!item.hasFocus && !item.new"
                 @click="setItemInput(item)"
               >
-                {{ item.value }}
+                <a
+                  target="_blank"
+                  v-if="isUrl(item.value)"
+                  :href="item.value"
+                  >{{ item.value }}</a
+                >
+                <span v-else>{{
+                  // item.value.replace(
+                  //   /^https:\/\/geovast3d\.com\/ontologies\/spalod#/,
+                  //   ""
+                  // )
+                  item.value
+                }}</span>
               </div>
               <input
                 v-else-if="!item.new"
@@ -399,6 +411,19 @@ export default {
         }/-${pointcloudStr[1]}`,
         "_blank"
       );
+    },
+
+    isUrl(maybeUrl) {
+      if (maybeUrl.startsWith("https://geovast3d.com/ontologies/spalod#")) {
+        return false;
+      }
+
+      try {
+        new URL(maybeUrl);
+        return true;
+      } catch (e) {
+        return false;
+      }
     },
   },
 };
