@@ -896,7 +896,11 @@ class GraphDBManager:
         for key, value in metadata.items():
             if key not in excluded_keys:
                 predicate = NS["DCTERMS"][key]
-                dataset_data.append((dataset_uri, predicate, Literal(value)))
+                if key == "distribution" and isinstance(value, list):
+                    for distribution_url in value:
+                        dataset_data.append((dataset_uri, predicate, Literal(distribution_url)))
+                else:
+                 dataset_data.append((dataset_uri, predicate, Literal(value)))
         graph = rdflib.Graph()
 
         for triple in dataset_data:

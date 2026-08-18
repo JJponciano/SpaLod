@@ -119,6 +119,14 @@
 
                 <button
                   style="font-size: 12px"
+                  @click="$emit('evaluate-dataset', geoItem.item.id)"
+                  title="Evaluate metadata"
+                >
+                  📊
+                </button>
+
+                <button
+                  style="font-size: 12px"
                   @click="onClickDatasetGeoJsonLD(geoItem.item.id)"
                   v-if="geoItem.item.type !== 'SPARQL_QUERY'"
                 >
@@ -863,7 +871,7 @@ $.ajaxSetup({
 });
 
 export default {
-  emits: ["fileSelected"],
+  emits: ["fileSelected", "evaluate-dataset"],
   components: {
     VirtualScroller,
   },

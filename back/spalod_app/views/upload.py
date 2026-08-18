@@ -194,6 +194,7 @@ class FileUploadView(APIView):
         print("::::::: FileUploadView :::::::")
         file = request.FILES.get('file')  # Access the file
         metadata = request.data.get('metadata')  # Access the metadata as JSON
+        metadata_file = request.FILES.get('metadata_file')
         user_id = request.user.id
         print(f"Uploading file for User ID: {user_id}")
         if not file or not metadata:
@@ -206,10 +207,33 @@ class FileUploadView(APIView):
         
         
         file_uuid = str(uuid.uuid4())
-
         upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads', file_uuid)
-
         os.makedirs(upload_dir, exist_ok=True)
+
+        metadata_file_url = None
+        if metadata_file:
+            metadata_file_extension = os.path.splitext(metadata_file.name)[1].lower()
+
+            if metadata_file_extension != ".xml":
+                return Response(
+                    {'error': 'Only .xml metadata files are supported as metadata files.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            metadata_file_path = os.path.join(
+                upload_dir,
+                f'{file_uuid}_metadata{metadata_file_extension}'
+            )
+
+            with open(metadata_file_path, 'wb') as destination:
+                for chunk in metadata_file.chunks():
+                    destination.write(chunk)
+
+            metadata_file_url = f'/media/uploads/{file_uuid}/{file_uuid}_metadata{metadata_file_extension}'
+
+        if metadata_file_url:
+            metadata['metadata_file_url'] = metadata_file_url
+
         print("MEDIA_ROOT =", settings.MEDIA_ROOT)
 
          # Extract the original file extension

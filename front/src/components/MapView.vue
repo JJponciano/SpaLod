@@ -6,6 +6,7 @@
     :pointcloudUrl="pointcloudUrl"
     @close="closeFeature()"
     @feature-updated="onFeatureUpdated($event)"
+    @dataset-updated="onDatasetUpdated($event)"
   />
 
   <div class="loader" v-if="total > 0">
@@ -85,7 +86,7 @@
 
 <script>
 import L from "leaflet";
-import { getFeature } from "../services/api-geo";
+import { getFeature ,getDataset } from "../services/api-geo";
 import {
   subscribeFeatureVisibiltyChange,
   subscribeFeatureClick,
@@ -116,8 +117,9 @@ export default {
       const mbAttr =
         'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
         'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
-      const mbUrl =
-        "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmVkZXJkaXNwaSIsImEiOiJjbGdreWlncHcwd3F0M2hsdnhscGg5Yzc1In0.Ud5vRdMf9cbtUUd5ufgKXQ";
+
+      const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
+      const mbUrl = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`;
 
       const rUrl = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
 
@@ -178,13 +180,25 @@ export default {
           this.onFeatureVisibilityChange.bind(this)
         ),
         subscribeFeatureClick(this.onFeatureClick.bind(this)),
-        subscribeFeatureDoubleClick(this.displayFeature.bind(this))
+        subscribeFeatureDoubleClick(this.displayItem.bind(this))
       );
+    },
+    async displayItem(itemId, itemType) {
+      if (itemType === "dataset") {
+        return this.displayDataset(itemId);
+      }
+
+      if (itemType === "feature") {
+        return this.displayFeature(itemId);
+      }
+
+      console.warn("Unknown item type:", itemType, itemId);
     },
     async displayFeature(featureId) {
       const res = await getFeature(featureId);
       this.feature = {
         id: featureId,
+        type: "feature",
         items: res
           .filter((x) => x.metadatas?.key && x.metadatas?.value)
           .map(({ metadatas: { key, value , displayKey} }) => ({
@@ -195,6 +209,23 @@ export default {
       };
 
       this.pointcloudUrl = res.filter((x) => x.pointcloudUrl)[0]?.pointcloudUrl;
+    },
+    async displayDataset(datasetId) {
+      const res = await getDataset(datasetId);
+
+      this.feature = {
+        id: datasetId,
+        type: "dataset",
+        items: res
+          .filter((x) => x.metadatas?.key && x.metadatas?.value)
+          .map(({ metadatas: { key, value, displayKey } }) => ({
+            key,
+            value,
+            displayKey,
+          })),
+      };
+
+      this.pointcloudUrl = null;
     },
     closeFeature() {
       this.feature = null;
@@ -456,6 +487,9 @@ export default {
             displayKey,
           })),
       };
+    },
+    async onDatasetUpdated(datasetId) {
+      return this.displayDataset(datasetId);
     },
   },
   mounted() {

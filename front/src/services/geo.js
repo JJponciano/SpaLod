@@ -447,7 +447,7 @@ export function triggerFeatureDoubleClick(featureId) {
   const feature = features[featureId];
 
   if (feature) {
-    doubleClickSubscribers.forEach((x) => x(featureId));
+    doubleClickSubscribers.forEach((x) => x(featureId, "feature"));
   }
 }
 
@@ -455,7 +455,7 @@ export function triggerDatasetDoubleClick(datasetId) {
   const dataset = datasets.find(({ id }) => id === datasetId);
 
   if (dataset) {
-    doubleClickSubscribers.forEach((x) => x(datasetId));
+    doubleClickSubscribers.forEach((x) => x(datasetId, "dataset"));
   }
 }
 

@@ -340,3 +340,24 @@ export function addFileToFeature(featureId, file, cbProgress) {
     });
   });
 }
+
+export async function replaceDatasetMetadata(datasetId, metadataFile, metadata) {
+  const formData = new FormData();
+
+  formData.append("dataset_id", datasetId);
+  formData.append("metadata_file", metadataFile);
+  formData.append("metadata", JSON.stringify(metadata));
+
+  const response = await $fetch("/api/geo/dataset/replace-metadata", {
+    method: "POST",
+    body: formData,
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || "Failed to replace dataset metadata.");
+  }
+
+  return result;
+}

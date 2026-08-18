@@ -118,6 +118,13 @@
           </div>
         </div>
       </div>
+      <div v-if="showReplaceMetadataConfirm" class="metadata-replace-confirm">
+        <p>Do you want to add or replace the metadata information?</p>
+        <div class="metadata-replace-actions">
+          <button @click="confirmReplaceDatasetMetadata()">Yes</button>
+          <button @click="cancelReplaceDatasetMetadata()">No</button>
+        </div>
+      </div>
       <div class="insert">
         <button v-if="showAddLabel()" @click="addLabel()">Add Label</button>
         <button @click="addProperty()">Add Property</button>
@@ -260,6 +267,22 @@
         }
       }
     }
+    .metadata-replace-confirm {
+      margin-top: 15px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: #f8f8f8;
+
+      p {
+        margin: 0 0 10px 0;
+      }
+
+      .metadata-replace-actions {
+        display: flex;
+        gap: 10px;
+      }
+    }
   }
 
   .insert {
@@ -281,8 +304,11 @@ import {
   addFileToFeature,
 } from "../services/geo";
 
+import { extractMetadataFromXml } from "../services/metadata-autofill";
+import { replaceDatasetMetadata } from "../services/api-geo";
+
 export default {
-  emits: ["close", "featureUpdated"],
+  emits: ["close", "featureUpdated", "datasetUpdated"],
   props: {
     feature: Object,
     pointcloudUrl: String,
@@ -290,6 +316,7 @@ export default {
   data() {
     return {
       inputMinWidth: 0,
+      showReplaceMetadataConfirm: false,
     };
   },
   methods: {
@@ -372,7 +399,11 @@ export default {
       });
     },
 
-    addFile() {
+    async addFile() {
+      if (this.feature?.type === "dataset") {
+        this.showReplaceMetadataConfirm = true;
+        return;
+      }
       const input = document.createElement("input");
       input.type = "file";
       input.click();
@@ -387,6 +418,12 @@ export default {
         return this.feature.items.filter(
           (x) =>
             !x.key.startsWith("https://geovast3d.com/ontologies/spalod#has")
+        );
+      } else if (kind === "File") {
+        return this.feature.items.filter(
+          (x) =>
+            x.key === "https://geovast3d.com/ontologies/spalod#hasFile" ||
+            x.displayKey === "metadata_file_url"
         );
       } else {
         return this.feature.items.filter(
@@ -424,6 +461,56 @@ export default {
       } catch (e) {
         return false;
       }
+    },
+    cancelReplaceDatasetMetadata() {
+      this.showReplaceMetadataConfirm = false;
+    },
+
+    confirmReplaceDatasetMetadata() {
+      this.showReplaceMetadataConfirm = false;
+      this.openDatasetMetadataFilePicker();
+    },
+
+    openDatasetMetadataFilePicker() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".xml";
+      input.click();
+
+      input.onchange = async () => {
+        const file = input.files?.[0];
+
+        if (!file) {
+          return;
+        }
+
+        if (!file.name.toLowerCase().endsWith(".xml")) {
+          alert("Please upload an XML metadata file.");
+          return;
+        }
+
+        try {
+          const extractedMetadata = await extractMetadataFromXml(file);
+
+          const metadataToReplace = Object.fromEntries(
+            Object.entries(extractedMetadata).filter(
+              ([key, value]) =>
+                value && !["catalog", "title", "publisher"].includes(key)
+            )
+          );
+
+          await replaceDatasetMetadata(
+            this.feature.id,
+            file,
+            metadataToReplace
+          );
+
+          this.$emit("datasetUpdated", this.feature.id);
+        } catch (error) {
+          console.error("Failed to replace dataset metadata:", error);
+          alert("Failed to replace dataset metadata.");
+        }
+      };
     },
   },
 };

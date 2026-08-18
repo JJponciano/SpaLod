@@ -534,6 +534,167 @@ class GeoFeatureAddFile(APIView):
             print(f"[ERROR] {e}")
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class GeoDatasetReplaceMetadata(APIView):
+    """
+    Adds or replaces the metadata of an existing dataset.
+
+    It removes existing dcterms:* metadata triples from the dataset,
+    stores the new XML metadata file in the dataset folder,
+    adds the metadata_file_url,
+    and inserts the new metadata fields.
+    """
+
+    def post(self, request, *args, **kwargs):
+        print("::::::: GeoDatasetReplaceMetadata :::::::")
+
+        dataset_id = request.data.get("dataset_id")
+        metadata_file = request.FILES.get("metadata_file")
+        metadata = request.data.get("metadata")
+
+        if not dataset_id or not metadata_file or not metadata:
+            return Response(
+                {"error": "dataset_id, metadata_file and metadata are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        metadata_file_extension = os.path.splitext(metadata_file.name)[1].lower()
+
+        if metadata_file_extension != ".xml":
+            return Response(
+                {"error": "Only .xml metadata files are supported."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            metadata = json.loads(metadata)
+        except ValueError:
+            return Response(
+                {"error": "Invalid JSON for metadata."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user_id = request.user.id
+            graph_manager = GraphDBManager(user_id)
+
+            old_metadata_query = f"""
+                SELECT ?value WHERE {{
+                    <{dataset_id}> dcterms:metadata_file_url ?value .
+                }}
+            """
+            old_metadata_results = graph_manager.query_graphdb(old_metadata_query)
+
+            old_metadata_file_url = None
+            if old_metadata_results:
+                old_metadata_file_url = old_metadata_results[0].get("value", {}).get("value")
+
+            file_url_for_upload_dir = old_metadata_file_url
+
+            if not file_url_for_upload_dir:
+                dataset_file_query = f"""
+                    SELECT ?file WHERE {{
+                        <{dataset_id}> spalod:hasFile ?file .
+                        FILTER(CONTAINS(STR(?file), "/media/uploads/"))
+                        FILTER(!CONTAINS(STR(?file), "_metadata"))
+                        FILTER(
+                            STRENDS(LCASE(STR(?file)), ".geojson") ||
+                            STRENDS(LCASE(STR(?file)), ".json")
+                        )
+                    }}
+                    LIMIT 1
+                """
+                dataset_file_results = graph_manager.query_graphdb(dataset_file_query)
+
+                if dataset_file_results:
+                    file_url_for_upload_dir = dataset_file_results[0].get("file", {}).get("value")
+
+            if file_url_for_upload_dir:
+                parsed_path = urlparse(file_url_for_upload_dir).path
+
+                if not parsed_path.startswith(settings.MEDIA_URL):
+                    return Response(
+                        {"error": "Invalid dataset file path."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                relative_path = parsed_path.replace(settings.MEDIA_URL, "", 1)
+
+                existing_file_path = os.path.normpath(
+                    os.path.join(settings.MEDIA_ROOT, relative_path)
+                )
+
+                media_root = os.path.abspath(settings.MEDIA_ROOT)
+                existing_file_path_abs = os.path.abspath(existing_file_path)
+
+                if not existing_file_path_abs.startswith(media_root):
+                    return Response(
+                        {"error": "Invalid dataset file path."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                upload_dir = os.path.dirname(existing_file_path_abs)
+                file_uuid = os.path.basename(upload_dir)
+
+            else:
+                file_uuid = str(uuid.uuid4())
+                upload_dir = os.path.join(settings.MEDIA_ROOT, "uploads", file_uuid)
+
+            os.makedirs(upload_dir, exist_ok=True)
+
+            metadata_file_path = os.path.join(
+                upload_dir,
+                f"{file_uuid}_metadata{metadata_file_extension}"
+            )
+
+            with open(metadata_file_path, "wb") as destination:
+                for chunk in metadata_file.chunks():
+                    destination.write(chunk)
+
+            metadata_file_url = f"/media/uploads/{file_uuid}/{file_uuid}_metadata{metadata_file_extension}"
+
+            delete_old_metadata_query = f"""
+                DELETE {{
+                    <{dataset_id}> ?p ?oldValue .
+                }}
+                WHERE {{
+                    <{dataset_id}> ?p ?oldValue .
+                    FILTER(STRSTARTS(STR(?p), "http://purl.org/dc/terms/"))
+                }}
+            """
+            graph_manager.update_graphdb(delete_old_metadata_query)
+
+            metadata["metadata_file_url"] = metadata_file_url
+
+            cleaned_metadata = {
+                key: value
+                for key, value in metadata.items()
+                if value and key not in ["catalog", "title", "publisher"]
+            }
+
+            triples_added = graph_manager.add_dcterms_metadata_to_dataset(
+                dataset_id,
+                cleaned_metadata,
+                excluded_keys=["catalog", "title", "publisher"]
+            )
+
+            return Response(
+                {
+                    "message": "Dataset metadata replaced successfully.",
+                    "dataset_id": dataset_id,
+                    "metadata_file_url": metadata_file_url,
+                    "triples_added": len(triples_added),
+                },
+                status=status.HTTP_200_OK
+            )
+
+        except Exception as e:
+            print(f"[ERROR] Failed to replace dataset metadata: {e}")
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
 class GeoFeatureNew(APIView):
     # =============================================================================
 # 📘 GeoFeatureNew — Add a Geospatial Feature via REST API

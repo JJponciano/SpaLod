@@ -71,6 +71,18 @@
             />
           </div>
         </div>
+        <div v-if="file" class="metadata-element">
+          <h3>Metadata file:</h3>
+          <div class="metadata-input">
+            <input
+              ref="metadataFileInput"
+              type="file"
+              accept=".xml"
+              @change="onMetadataFileChange"
+              class="metadata-textbox"
+            />
+          </div>
+        </div>
       </div>
     </div>
     <div class="actions">
@@ -214,6 +226,7 @@ import AutoComplete from "primevue/autocomplete";
 import { getAllCatalogs, addGeoFeature } from "../services/geo";
 import { getUsername } from "../services/login";
 import { getAllDatasetsFromCatalogName } from "../services/api-geo";
+import { extractMetadataFromXml } from "../services/metadata-autofill";
 
 export default {
   emits: ["close", "featureAdded"],
@@ -231,6 +244,7 @@ export default {
     return {
       queryables,
       metadata: {},
+      metadataFile: null,
       options: [],
       selectedOption: "",
       items: [],
@@ -240,17 +254,20 @@ export default {
   watch: {
     file() {
       this.showOptional = false;
+      this.resetMetadataFile();
       this.metadata = {
         publisher: getUsername(),
       };
     },
     latlng() {
       this.showOptional = false;
+      this.resetMetadataFile();
       this.metadata = { publisher: getUsername() };
     },
   },
   methods: {
     onClickCancel() {
+      this.resetMetadataFile();
       this.$emit("close");
     },
     async onClickOk() {
@@ -258,7 +275,7 @@ export default {
         return;
       }
       if (this.file) {
-        uploadGeo(this.file, this.metadata);
+        await uploadGeo(this.file, this.metadata , this.metadataFile);
       } else if (this.latlng) {
         const catalogName = this.metadata["catalog"];
         const datasetName = this.metadata["dataset"];
@@ -295,6 +312,41 @@ export default {
         this.$emit("featureAdded");
       }
       this.onClickCancel();
+    },
+    resetMetadataFile() {
+      this.metadataFile = null;
+
+      if (this.$refs.metadataFileInput) {
+        this.$refs.metadataFileInput.value = "";
+      }
+    },
+    async onMetadataFileChange(event) {
+      const file = event.target.files?.[0] || null;
+      this.metadataFile = file;
+      if (!file){
+        this.resetMetadataFile();
+        return;
+      }
+      this.metadataFile = file;
+      try {
+        const extracted = await extractMetadataFromXml(file);
+        const protectedKeys = ["catalog", "dataset", "title", "publisher"];
+        Object.keys(this.metadata).forEach((key) => {
+          if (!protectedKeys.includes(key)) {
+            this.metadata[key] = "";
+          }
+        });
+
+        for (const [key, value] of Object.entries(extracted)) {
+          if (!value) continue;
+          if (["catalog", "title", "publisher"].includes(key)) continue;
+          if (protectedKeys.includes(key)) continue;
+          this.metadata[key] = value;
+          
+        }
+      } catch (error) {
+        console.error("Failed to parse metadata XML:", error);
+      }
     },
     validateMetadatas() {
       for (const { required, q } of this.queryables.concat([

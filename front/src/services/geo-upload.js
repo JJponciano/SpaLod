@@ -8,10 +8,13 @@ export function getProgress() {
   return progress.value;
 }
 
-export function uploadGeo(file, metadata) {
+export function uploadGeo(file, metadata, metadataFile=null) {
   let formData = new FormData();
   formData.append("file", file);
   formData.append("metadata", JSON.stringify(metadata));
+  if (metadataFile) {
+    formData.append("metadata_file", metadataFile);
+  }
 
   $ajax({
     xhr: () => {
