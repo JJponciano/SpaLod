@@ -43,3 +43,7 @@ dependencies:
       - social-auth-core==4.5.4
       - sparqlwrapper==2.0.0
       - urllib3==2.2.2
+      - pygeometa==0.16.1
+      - lxml
+      - Shapely>=2.0,<3.0
+      - pyproj>=3.6,<4.0

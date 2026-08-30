@@ -249,12 +249,16 @@ def parse_iso(xml_bytes):
         if val:
             result["versionInfo"] = val
 
-    # page (CI_OnlineResource URLs with function=information, excluding distributionInfo)
+    # page: informational online resources attached to the dataset citation
     pages = []
-    for online in _xp(tree, "//gmd:CI_OnlineResource"):
-        # skip ones inside distributionInfo (those are distribution, not landing pages)
-        if _xp(online, "ancestor::gmd:distributionInfo"):
-            continue
+    for online in _xp(
+        tree,
+            (
+                "//gmd:identificationInfo/*/"
+                "gmd:citation/gmd:CI_Citation/"
+                "gmd:CI_OnlineResource"
+            ),
+    ):
         func_codes = _xp(online, ".//gmd:CI_OnLineFunctionCode/@codeListValue")
         if not any((f or "").lower() == "information" for f in func_codes):
             continue
@@ -363,7 +367,7 @@ def parse_dcat(xml_bytes):
             for prop in (DCAT.downloadURL, DCAT.accessURL):
                 urls.extend(_objects(graph, dist, prop))
         if urls:
-            result["distribution"] = _join_unique(urls)
+            result["distribution"] = urls
 
     contacts = []
     for c in graph.objects(subject, DCAT.contactPoint):

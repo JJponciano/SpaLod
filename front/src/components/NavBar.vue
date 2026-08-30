@@ -10,9 +10,8 @@
         :class="['menuopen', menuAnimationClass]"
         @transitionend="onTransitionend"
       >
-        <li>
+        <li v-if="isLogged()">
           <button
-            v-if="isLogged()"
             @click="navigateTo('ogc-api')"
             :class="{ active: activeTab === 'ogc-api' }"
           >
@@ -21,23 +20,24 @@
         </li>
         <li>
           <button
+            class="auth-tab"
             @click="navigateTo('login')"
             :class="{ active: activeTab === 'login' }"
           >
             Login
           </button>
         </li>
-        <li>
+        <li v-if="!isLogged()">
           <button
+            class="auth-tab"
             @click="navigateTo('register')"
             :class="{ active: activeTab === 'register' }"
           >
             Register
           </button>
         </li>
-        <li>
+        <li v-if="isLogged()">
           <button
-            v-if="isLogged()"
             @click="navigateTo('admin')"
             :class="{ active: activeTab === 'admin' }"
           >
@@ -67,6 +67,7 @@
     </button>
     <button
       v-if="!isLogged()"
+      class="auth-tab"
       @click="navigateTo('login')"
       :class="{ active: activeTab === 'login' }"
     >
@@ -81,6 +82,8 @@
         SpaLod API
       </button>
       <button
+        v-if="!isLogged()"
+        class="auth-tab"
         @click="navigateTo('register')"
         :class="{ active: activeTab === 'register' }"
       >
@@ -138,6 +141,14 @@ export default {
       isLoggedIn: false,
       username: "",
     };
+  },
+  watch: {
+    "$route.path": {
+      immediate: true,
+      handler(path) {
+        this.activeTab = path.split("/")[1] || "";
+      },
+    },
   },
   mounted() {},
   methods: {
@@ -251,12 +262,25 @@ export default {
   color: white;
 }
 
-.computer button:hover {
+.computer button:not(.active):hover {
   background-color: #dee1e6;
 }
 
-.navbar.dark .computer button:hover {
+.navbar.dark .computer button:not(.active):hover {
   background-color: #4a5568;
+  color: white;
+}
+
+.computer button.active {
+  background-color: #4a5568;
+}
+
+button.auth-tab {
+  background-color: transparent;
+}
+
+button.auth-tab.active {
+  background-color: #ef4444;
   color: white;
 }
 

@@ -4,6 +4,8 @@ from django.conf import settings
 import requests
 import gzip
 
+SCHEMA_NAMESPACES = ("https://schema.org/","http://schema.org/")
+
 # @lru_cache(maxsize=1)
 # def load_graph():
 #     """Load schema.org graph once and cache it."""
@@ -56,9 +58,14 @@ def label_to_uri_map() -> dict[str, str]:
         for s in g.subjects(RDF.type, t):
             if not isinstance(s, URIRef) or s in seen:
                 continue
+
+            uri = str(s)
+            if not uri.startswith(SCHEMA_NAMESPACES):
+                continue
+
             seen.add(s)
             lbl = get_label(g, s)
-            mapping[lbl.strip().lower()] = str(s)
+            mapping[lbl.strip().lower()] = uri
 
     return mapping
 
@@ -81,11 +88,16 @@ def get_property_terms(q: str = "", limit: int = 1000) -> list[dict[str, str]]:
         for s in g.subjects(RDF.type, t):
             if not isinstance(s, URIRef) or s in seen:
                 continue
+
+            uri = str(s)
+            if not uri.startswith(SCHEMA_NAMESPACES):
+                continue
+
             seen.add(s)
             lbl = get_label(g, s)
-            if ql and (ql not in lbl.lower() and ql not in str(s).lower()):
+            if ql and (ql not in lbl.lower() and ql not in uri.lower()):
                 continue
-            out.append({"uri": str(s), "label": lbl})
+            out.append({"uri": uri, "label": lbl})
             if len(out) >= limit:
                 break
         if len(out) >= limit:

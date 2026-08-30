@@ -169,7 +169,6 @@
       border-spacing: 0px;
 
       .feature {
-        word-break: break-all;
 
         &:nth-child(odd) {
           background-color: #f2f2f2;
